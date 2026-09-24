@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Midterm practice: Modules 1–8</title>
+<script>try{var t=localStorage.getItem('mp-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap" rel="stylesheet">
@@ -103,6 +104,11 @@ textarea{width:100%; min-height:180px; resize:vertical; border:1.5px solid var(-
 .missed{margin:8px 0 0; padding-left:20px}
 .sum-list{padding-left:18px} .sum-list li{margin-bottom:8px}
 .sync{font-size:.8rem; color:var(--ink-2)}
+.titlerow{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:10px 12px}
+.titlerow>div:first-child{flex:1 1 280px}
+.theme{display:flex; flex:none; border:1px solid var(--line); border-radius:999px; padding:3px; background:var(--card)}
+.theme button{border:0; background:transparent; color:var(--ink-2); font:600 .8rem var(--sans); padding:6px 10px; border-radius:999px; cursor:pointer; min-height:32px}
+.theme button[aria-pressed="true"]{background:var(--ink); color:var(--paper)}
 dialog{border:1px solid var(--line); border-radius:14px; background:var(--card); color:var(--ink); max-width:420px; width:calc(100% - 32px); padding:20px}
 dialog::backdrop{background:rgba(10,15,25,.55)}
 @media (prefers-reduced-motion: no-preference){ .opt{transition:background-color .15s, border-color .15s} .track>i{transition:width 1s linear} }
@@ -112,9 +118,11 @@ dialog::backdrop{background:rgba(10,15,25,.55)}
 <body>
 <div class="wrap">
   <header class="top">
-    <div>
+    <div class="titlerow"><div>
       <h1>Midterm practice: Modules 1–8</h1>
       <p class="sub">Critical-thinking questions and write-it-out recall drills. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
+    </div>
+    <div class="theme" role="group" aria-label="Color theme"><button data-theme-set="auto">Auto</button><button data-theme-set="light">Light</button><button data-theme-set="dark">Dark</button></div>
     </div>
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-exam" aria-selected="true" data-tab="exam">Practice exam</button>
@@ -931,6 +939,313 @@ R('who','Who picks the numbers?',`Which numbers does software calculate, which d
  [`Choose using validation/CV, AIC/BIC, elbow, costs, constraints, domain knowledge`,['validat','aic','elbow','cost','constraint','domain']],
  [`Never choose settings using the test set`,['test']]
 ]);
+// ===== Additional lecture-based questions (appended; keeps earlier IDs stable)
+Q('m1',0,`Of the three parts of analytics modeling (choosing the model, building the data, interpreting the output), which does an algorithm actually do for you?`,[
+ [`Only part of building/working with the data and the math in the middle; choosing and interpreting are still yours`,`Software runs the math. Picking the right model and translating results for a specific organization are judgment calls.`],
+ [`All three, if the software is good enough`,`No software knows your organization's priorities or which question matters.`,`Overestimating automation.`],
+ [`Choosing the model`,`Auto-tools can compare options you give them, but framing which models fit the situation is yours.`,`Confusing tuning with choosing an approach.`],
+ [`Interpreting the output`,`The output is numbers; turning them into a recommendation for this organization is human work.`,`Thinking the numbers speak for themselves.`]
+]);
+Q('m1',1,`The definition of modeling says a model expresses the "key" parts of a situation in math. Why does "key" matter?`,[
+ [`A model deliberately leaves out details; deciding what to leave out is part of the analyst's judgment`,`No model captures everything. Choosing what matters is one of the hard translations at the start of the round trip.`],
+ [`It means the model must include every available variable`,`That's the opposite of "key."`,`Thinking more detail always makes a better model.`],
+ [`It refers to the key column (the response)`,`Unrelated use of the word.`,`Latching onto a technical-sounding meaning.`],
+ [`It means only numeric data can be modeled`,`Categorical data can be modeled too.`,`Misreading "math" as "numbers only."`]
+]);
+Q('m1',0,`A city asks: "Where should we put four new libraries so residents travel the least?" Which type of question is it?`,[
+ [`Prescriptive`,`There's an action (placement), a limited resource (four), and a goal to minimize.`],
+ [`Descriptive, because clustering residents could help`,`A clustering tool might help, but the question asks what to do.`,`Classifying by a tool you might use.`],
+ [`Predictive, because future travel is involved`,`No value for a new case is being forecast.`,`Treating any future-facing wording as predictive.`],
+ [`Descriptive, because it's about where people live now`,`The current locations are input; the answer is an action.`,`Confusing the data with the answer.`]
+]);
+Q('m2',0,`What's the difference between a hard and a soft classifier?`,[
+ [`A hard classifier separates the classes perfectly; a soft one accepts some errors when perfect separation isn't possible`,`Soft classifiers trade a few mistakes for the best separation available.`],
+ [`Hard classifiers use straight lines; soft ones use curves`,`Curves come from kernels, not "soft."`,`Mixing up soft margins with kernels.`],
+ [`Hard classifiers are for two classes; soft ones for many`,`Unrelated to the number of classes.`,`Guessing from the words.`],
+ [`Soft classifiers output probabilities`,`That's logistic regression, not soft-margin SVM.`,`Confusing "soft" with "probabilistic."`]
+]);
+Q('m2',1,`Under hard separation, every intercept from a₀ − 1 to a₀ + 1 classifies all the training points correctly. If a bad loan costs twice as much as a rejected good applicant, what should you do with that range?`,[
+ [`Pick an intercept inside the range weighted toward the costly side, e.g., ⅔(a₀ − 1) + ⅓(a₀ + 1)`,`The data can't distinguish between those intercepts, so cost should decide where the line sits.`],
+ [`Always use a₀, the middle, since it's the widest margin`,`The middle treats both mistakes as equally bad.`,`Treating the centered line as always correct.`],
+ [`Pick whichever gives the highest training accuracy`,`They all give 100% training accuracy, so accuracy can't break the tie.`,`Not realizing accuracy is identical across the range.`],
+ [`Refit with more data until the range shrinks to one value`,`The range reflects the empty gap, not a data shortage.`,`Thinking ambiguity is always a data problem.`]
+]);
+Q('m2',0,`What does a kernel add to an SVM?`,[
+ [`The ability to draw curved (nonlinear) boundaries while the rest of the SVM approach stays the same`,`Kernels let the boundary bend.`],
+ [`Probability estimates for each prediction`,`That's logistic regression.`,`Confusing kernels with probabilistic output.`],
+ [`Automatic scaling of attributes`,`Scaling is a separate preparation step.`,`Mixing up extensions.`],
+ [`The ability to handle more than two classes`,`KNN handles many classes naturally; kernels are about boundary shape.`,`Mixing up extensions.`]
+]);
+Q('m2',1,`Why does SVM minimize Σaⱼ² to get the widest margin?`,[
+ [`The margin is 2/√(Σaⱼ²), so shrinking the coefficients widens the gap`,`The coefficients are in the denominator; smaller coefficients mean a bigger margin.`],
+ [`Smaller coefficients mean fewer attributes are used`,`All attributes are still used; they're just scaled down together.`,`Confusing shrinking with dropping.`],
+ [`To prevent the intercept from getting too large`,`The intercept a₀ isn't in Σaⱼ².`,`Not knowing which terms are included.`],
+ [`Because squared errors are always minimized in analytics`,`Here the squares are of coefficients, not errors.`,`Pattern-matching "squared" to regression.`]
+]);
+Q('m2',0,`A donor organ tests negative for an infection, yet a model flags it as high-risk. Why might a model be needed alongside the lab test?`,[
+ [`A very recent infection may not show up on the test yet; other attributes can reveal risk the test can't see`,`The model fills the gap the test leaves.`],
+ [`Lab tests are always less accurate than models`,`Not true in general.`,`Overgeneralizing from one example.`],
+ [`The model double-counts the test result`,`The point is additional information, not double-counting.`,`Misunderstanding the model's role.`],
+ [`Negative results must always be rejected`,`That would discard nearly every organ.`,`Overreacting.`]
+]);
+Q('m2',0,`A "holiday? yes/no" column is best described as:`,[
+ [`Categorical (binary), though it can sometimes be treated as quantitative (0/1)`,`Binary is categorical with two values; coding it 0/1 often works like a number.`],
+ [`Quantitative, since it can be coded 0 and 1`,`Numbers as labels don't make it quantitative by nature.`,`Thinking any number is quantitative.`],
+ [`Unstructured`,`It's neatly stored, so it's structured.`,`Confusing categorical with unstructured.`],
+ [`A time series`,`It's one attribute, not a sequence of measurements over time by itself.`,`Linking dates to time series automatically.`]
+]);
+Q('m2',1,`Your notes mention three different "k"s. Which pairing is correct?`,[
+ [`KNN: neighbors that vote · k-fold: parts of the data · k-means: number of clusters`,`Same letter, three different counts.`],
+ [`KNN: clusters · k-fold: neighbors · k-means: parts of the data`,`Scrambled.`,`Assuming the same letter means the same thing.`],
+ [`All three count the number of neighbors`,`Only KNN counts neighbors.`,`Generalizing from KNN.`],
+ [`All three are chosen by the elbow diagram`,`Only k-means uses the elbow; KNN's k uses validation; k-fold is usually 5 or 10.`,`Mixing up selection methods.`]
+]);
+Q('m2',1,`In KNN, some attributes matter much more than others. According to the lecture, what can you do?`,[
+ [`Weight each attribute's distance differently, or drop attributes that barely matter`,`Larger weights give an attribute more influence; the extreme is removing it (variable selection).`],
+ [`Nothing; KNN treats all attributes equally by design`,`Weighting is a standard option.`,`Thinking KNN has no settings besides k.`],
+ [`Increase k until the unimportant attributes stop mattering`,`k controls neighbors, not attribute importance.`,`Using the wrong setting.`],
+ [`Switch to k-means`,`That's an unsupervised method with a different purpose.`,`Switching tools instead of adjusting them.`]
+]);
+Q('m3',0,`A loan classifier gets 90% on training data and 80% on validation data. You built only this one model. Which number do you report?`,[
+ [`80%`,`The validation figure excludes the training set's random effects. (With one model, validation acts as your test.)`],
+ [`90%`,`Training accuracy is inflated by fitting random patterns.`,`Reporting the more flattering number.`],
+ [`85%, the average`,`Averaging an inflated number with an honest one isn't meaningful.`,`Compromising between numbers.`],
+ [`Neither; you need three sets even for one model`,`With one model, no choosing happens, so two sets are enough.`,`Over-applying the three-set rule.`]
+]);
+Q('m3',1,`In the "10 random numbers from 1 to 50" demo, nine happened to land in the top third. What's the real lesson?`,[
+ [`Every sample contains some chance pattern, and a flexible model will fit whichever one appears`,`The specific pattern was luck, but some pattern always exists.`],
+ [`That sample was unlucky; more careful sampling avoids the problem`,`Any sample has chance patterns; you can't sample them away.`,`Thinking bad samples are rare exceptions.`],
+ [`The numbers really do skew high`,`They were uniform by construction.`,`Trusting the sample over the known truth.`],
+ [`Ten points are too few for any model`,`The lesson applies to datasets of any size.`,`Making it about sample size.`]
+]);
+Q('m3',0,`What is the main advantage of a rotation split over a purely random split?`,[
+ [`Each part of the data (e.g., each year) is spread evenly across the sets`,`A random split might give one set more early years and another more late years by chance.`],
+ [`It can never introduce bias`,`It can, if the rotation matches a cycle in the data.`,`Thinking any method is bias-proof.`],
+ [`It uses less data for training`,`That's not an advantage, and not how rotation works.`,`Confusing split size with split method.`],
+ [`It removes the need for a test set`,`Still need one.`,`Mixing up splitting with validation design.`]
+]);
+Q('m3',1,`Why was k-fold cross-validation invented, according to the lecture?`,[
+ [`So important data points never end up only in the validation or test set, where the model couldn't learn from them`,`Rotating the held-out part means every point helps train in some round.`],
+ [`To make training faster`,`It trains k times, so it's slower.`,`Guessing a practical reason.`],
+ [`To replace the test set`,`You still hold out a test set.`,`Thinking CV does everything.`],
+ [`To choose the number of clusters`,`That's the elbow method in k-means.`,`Mixing up the k's.`]
+]);
+Q('m3',0,`Which description of cross-validation, start to finish, is correct?`,[
+ [`Hold out a test set, split the rest into k parts, train and evaluate k times, average, choose, retrain the winner on all k parts, then score once on the test set`,`That's the full, correct sequence.`],
+ [`Split into k parts, train k times, choose the best fold model, then score it on the test set`,`Never deploy a fold model; retrain on all parts.`,`Treating a fold model as final.`],
+ [`Train and evaluate k times, then carve out a test set from those parts`,`The test set must be set aside first and never used during CV.`,`Getting the order wrong.`],
+ [`Average the k models' coefficients and deploy that`,`No guarantee the averaged model works well.`,`Averaging models like scores.`]
+]);
+Q('m3',1,`You pick your best model with 10-fold CV. Its average CV accuracy was 84%. Can you report 84% as its expected accuracy?`,[
+ [`No; choosing it using those scores inflates them, so score it on the untouched test set`,`CV scores used for choosing carry the same selection bias as a validation set.`],
+ [`Yes; averaging 10 folds removes the bias`,`Averaging reduces noise, not selection bias.`,`Confusing stability with unbiasedness.`],
+ [`Yes, if k was 10 or more`,`k doesn't change the selection issue.`,`Thinking a bigger k fixes everything.`],
+ [`No; CV scores are always pessimistic, so the real number is higher`,`Selecting the best pushes the other way (optimistic).`,`Mixing up the two biases.`]
+]);
+Q('m4',0,`Which clustering application uses distance in the literal, physical sense?`,[
+ [`Facility location (e.g., placing fire stations)`,`Distance is actual travel distance.`],
+ [`Targeted marketing`,`Distance there means similarity across attributes.`,`Assuming distance is always physical.`],
+ [`Personalized medicine`,`Similarity of patient attributes, not location.`,`Same.`],
+ [`Image analysis`,`Similarity of pixel values.`,`Same.`]
+]);
+Q('m4',0,`Clustering car buyers reveals an unexpected group who mostly care about running costs. What does that say about the method?`,[
+ [`It's working as intended; discovering unexpected groups is one of clustering's two payoffs`,`Clustering segments expected groups and reveals ones you didn't know about.`],
+ [`It failed because it didn't match the four planned segments`,`Clustering isn't told the planned segments.`,`Treating clustering as classification.`],
+ [`You should add the planned segments as labels`,`That would make it supervised.`,`Missing the point of unsupervised learning.`],
+ [`k must be too large`,`A surprising cluster isn't evidence of wrong k.`,`Blaming k for any surprise.`]
+]);
+Q('m4',1,`In the k-means optimization notation, x is the data, y<sub>ik</sub> says whether point i is in cluster k, and z<sub>k</sub> is center k's location. What makes the problem hard?`,[
+ [`Both y (membership) and z (centers) are unknown, and each depends on the other`,`That's why k-means alternates: fix one, update the other, repeat.`],
+ [`x is unknown`,`x is the observed data.`,`Mixing up data and unknowns.`],
+ [`There's no formula for distance`,`Distance is a chosen norm.`,`Misidentifying the difficulty.`],
+ [`The number of points is unknown`,`n is known.`,`Guessing.`]
+]);
+Q('m4',1,`Why does the ∞-norm equal the largest single difference?`,[
+ [`Raising differences to a huge power makes the biggest one dominate; the root then undoes the power`,`8^∞ swamps 7^∞, so the sum ≈ (largest)^∞, and the ∞th root gives the largest.`],
+ [`By definition it ignores all but one dimension, chosen at random`,`It's always the largest, not a random one.`,`Misremembering the definition.`],
+ [`Because it's the average of the differences`,`That's not any p-norm.`,`Guessing.`],
+ [`Because it's the smallest possible distance`,`It's the smallest of the three norms, but the value is the largest difference.`,`Mixing up the ordering with the definition.`]
+]);
+Q('m4',0,`A point lands outside every cluster in a finished k-means solution. How do you predict its cluster?`,[
+ [`Assign it to the nearest cluster center`,`That's the lecture's rule; doing this everywhere divides the space into a Voronoi diagram.`],
+ [`It can't be assigned`,`Every location has a nearest center.`,`Thinking outliers are left unassigned.`],
+ [`Rerun k-means including it`,`Unnecessary for prediction.`,`Refitting to predict.`],
+ [`Use the cluster with the most points`,`Size isn't the rule; proximity is.`,`Using a popularity rule.`]
+]);
+Q('m4',0,`In a Voronoi diagram built from cluster centers, what do the boundaries represent?`,[
+ [`Locations equally close to two centers`,`Each region holds every location nearest to its center; boundaries are the ties.`],
+ [`The edges of each cluster's data points`,`Regions cover all space, not just where data sits.`,`Picturing the convex hull instead.`],
+ [`Lines of equal distance from the origin`,`Unrelated to the origin.`,`Guessing.`],
+ [`Where outliers are removed`,`No removal happens.`,`Mixing topics.`]
+]);
+Q('m4',1,`Why can k-means afford to run many restarts and try many k values?`,[
+ [`It's fast; that speed is what pays for restarts and the elbow diagram`,`Each run is cheap, so trying many is practical.`],
+ [`Because it always finds the best answer on the first try`,`It's a heuristic, which is why restarts help.`,`Contradicting "heuristic."`],
+ [`Because restarts are required to compute centers`,`Centers come from each run's loop.`,`Misunderstanding restarts.`],
+ [`Because the elbow diagram needs exactly 10 runs`,`No fixed count is required.`,`Inventing a rule.`]
+]);
+Q('m5',0,`Which is NOT one of the three data problems named at the start of the data-preparation module?`,[
+ [`Too few rows to fit a model`,`The three were mismatched scales, extreme points, and extraneous information.`],
+ [`Attributes on very different scales`,`One of the three.`,`Not remembering the list.`],
+ [`A few extreme points`,`One of the three.`,`Same.`],
+ [`Columns that add noise rather than information`,`One of the three.`,`Same.`]
+]);
+Q('m5',0,`Which of these is NOT listed as a cause of an outlier that's simply bad data?`,[
+ [`A rare but real event, like a storm`,`That's real data, not an error.`],
+ [`A malfunctioning sensor`,`A bad-data cause.`,`Not remembering the list.`],
+ [`A failed wireless transmission`,`A bad-data cause.`,`Same.`],
+ [`A person typing the wrong value`,`A bad-data cause.`,`Same.`]
+]);
+Q('m5',0,`In a box-and-whisker plot, what are the edges of the box?`,[
+ [`The 25th and 75th percentiles`,`The box holds the middle half of the data.`],
+ [`The minimum and maximum`,`Those are beyond the box (often shown as whisker ends or dots).`,`Confusing box and whiskers.`],
+ [`The mean ± 1 standard deviation`,`Box plots use percentiles, not SD.`,`Mixing up box plots and bell curves.`],
+ [`The 10th and 90th percentiles`,`That's one choice for whiskers, not the box.`,`Mixing up box and whiskers.`]
+]);
+Q('m5',1,`Per the lecture, what's the state of automatic outlier detection for multi-dimensional data?`,[
+ [`There's no good general method; a practical approach is to fit a model and look for points with large errors`,`The lecture calls this a genuine gap and suggests model-based checks.`],
+ [`Box plots on each attribute catch everything`,`Points can look normal in every single attribute yet be odd together.`,`Assuming one-dimensional checks add up.`],
+ [`k-means removes multi-dimensional outliers automatically`,`k-means assigns every point somewhere.`,`Imagining built-in outlier handling.`],
+ [`Standardizing the data removes them`,`Standardizing changes units, not which points are unusual.`,`Confusing scaling with cleaning.`]
+]);
+Q('m5',1,`Roughly what share of normally distributed data lies more than 2 standard deviations from the mean?`,[
+ [`About 4.55%`,`So in 1,000 points, about 45 would look "extreme" by that rule, just from randomness.`],
+ [`About 0.27%`,`That's for 3 SDs.`,`Mixing up 2σ and 3σ.`],
+ [`About 32%`,`That's beyond 1 SD.`,`Mixing up 1σ and 2σ.`],
+ [`Essentially 0%`,`Extremes happen regularly in big datasets.`,`Underestimating randomness.`]
+]);
+Q('m6',0,`What does a larger C do in CUSUM?`,[
+ [`Makes the method less sensitive, since more of each reading is dismissed as noise`,`Bigger C drains the total faster, so it's harder to reach T.`],
+ [`Makes the method more sensitive`,`That's smaller C.`,`Getting the direction backwards.`],
+ [`Raises the alarm threshold`,`That's T.`,`Confusing C with T.`],
+ [`Flips the method to detect decreases`,`Direction comes from the deviation's sign.`,`Confusing C with direction.`]
+]);
+Q('m6',1,`A chip machine may have started placing parts slightly off. Every chip made before detection is scrapped; a false alarm stops production for an inspection. Which statement captures how to set C and T?`,[
+ [`Weigh scrapped chips from late detection against lost production from false alarms, and pick the balance`,`The lecture frames C and T as a trade between the two costs.`],
+ [`Always minimize false alarms`,`That ignores the cost of scrapped chips.`,`Treating one mistake as the only one.`],
+ [`Always detect as early as possible`,`That ignores the cost of stopping a healthy line.`,`Same, the other way.`],
+ [`Use the textbook values; costs don't matter`,`Costs are exactly what should decide.`,`Thinking parameters are universal.`]
+]);
+Q('m6',1,`Which question would be answered with change detection rather than forecasting?`,[
+ [`Is the stream of traffic readings still coming from the same regime as an hour ago?`,`Asking whether the process has shifted is change detection.`],
+ [`How many cars will pass this sensor at 5 p.m. tomorrow?`,`That's a forecast of a value.`,`Mixing up "change" and "future."`],
+ [`Which road segments behave alike?`,`That's clustering.`,`Mixing up methods.`],
+ [`Will this driver get a ticket?`,`That's classification.`,`Same.`]
+]);
+Q('m6',0,`How are C and T chosen?`,[
+ [`As model parameters: try values on data where you know when changes happened, and weigh the two error costs`,`There's no formula; it's validation plus costs.`],
+ [`From a fixed formula based on μ`,`No such formula in the lecture.`,`Expecting everything to be calculated.`],
+ [`Set C = T for balance`,`They play different roles.`,`Inventing a rule.`],
+ [`Software estimates them from the data automatically`,`They're analyst choices.`,`Confusing settings with learned values.`]
+]);
+Q('m7',0,`In single exponential smoothing, what's the starting value S<sub>1</sub>?`,[
+ [`x<sub>1</sub>, the first observation`,`There's no earlier baseline, so start with the first reading.`],
+ [`0`,`That would drag early baselines far below the data.`,`Confusing it with CUSUM's S<sub>0</sub> = 0.`],
+ [`The average of all observations`,`That uses future data.`,`Not thinking about time order.`],
+ [`α`,`α is a weight, not a starting level.`,`Mixing up symbols.`]
+]);
+Q('m7',1,`In the trend equation T<sub>t</sub> = β(S<sub>t</sub> − S<sub>t−1</sub>) + (1 − β)T<sub>t−1</sub>, what is S<sub>t</sub> − S<sub>t−1</sub>?`,[
+ [`The trend observed this period: how much the baseline just moved`,`It's smoothed with β, just like the baseline is smoothed with α.`],
+ [`The forecast error`,`That's actual minus forecast.`,`Mixing up terms.`],
+ [`The seasonal effect`,`Seasonality has its own factor, C.`,`Mixing up components.`],
+ [`Random noise to be ignored`,`It's the evidence for trend.`,`Misreading the formula.`]
+]);
+Q('m7',1,`Why does the Holt-Winters baseline equation divide x<sub>t</sub> by C<sub>t−L</sub>?`,[
+ [`To strip the seasonal effect so the baseline only tracks the true level`,`Dividing by "this is a 25%-above-normal day" removes that bump.`],
+ [`To convert units`,`Units aren't the issue.`,`Guessing a technical reason.`],
+ [`To add seasonality into the baseline`,`It removes it.`,`Getting the direction backwards.`],
+ [`To make the forecast larger`,`It's not about size.`,`Misreading the math.`]
+]);
+Q('m7',1,`With single exponential smoothing, what does the forecast for 5 periods ahead look like?`,[
+ [`The same as the 1-period forecast (the current baseline); only the uncertainty grows`,`Without a trend component, the forecast is flat.`],
+ [`It grows by α each period`,`α isn't added to forecasts.`,`Misreading α as a trend.`],
+ [`It returns to the long-run average`,`Not in this model.`,`Imagining mean reversion.`],
+ [`It can't be computed`,`It can; it's just flat.`,`Thinking multi-step needs extra data.`]
+]);
+Q('m7',0,`What is a stationary time series?`,[
+ [`One whose average and spread stay roughly the same over time`,`No drift and no growing swings.`],
+ [`One that doesn't change at all`,`It still varies; its behavior is just stable.`,`Taking "stationary" literally.`],
+ [`One with no seasonality but a trend`,`A trend means it's not stationary.`,`Half-remembering.`],
+ [`One measured at equal time intervals`,`That's about sampling, not stationarity.`,`Mixing up concepts.`]
+]);
+Q('m7',1,`ARIMA's "MA" (moving average) part uses:`,[
+ [`Recent forecast errors`,`q past errors are used, which is why "moving average" here differs from a stock-chart moving average.`],
+ [`The average of the last few values`,`That's the everyday meaning, not ARIMA's.`,`Carrying over the familiar meaning.`],
+ [`Past values of the series`,`That's the AR part.`,`Mixing up AR and MA.`],
+ [`The number of differences taken`,`That's d.`,`Mixing up letters.`]
+]);
+Q('m7',1,`GARCH(p, q) has no "d" like ARIMA(p, d, q). Why?`,[
+ [`GARCH models variance and doesn't difference the data`,`It uses past variances and squared errors, with no differencing step.`],
+ [`GARCH always uses d = 1 automatically`,`It doesn't difference at all.`,`Assuming a hidden default.`],
+ [`d was renamed q in GARCH`,`q still means past (squared) errors.`,`Mixing up letters.`],
+ [`GARCH only works on stationary data, so d is unnecessary`,`The reason given is simply that GARCH doesn't difference.`,`Overcomplicating.`]
+]);
+Q('m8',0,`In simple regression y = a<sub>0</sub> + a<sub>1</sub>x, what does a<sub>0</sub> mean?`,[
+ [`The predicted y when x = 0`,`It's where the line crosses the y-axis.`],
+ [`How much y changes per 1 unit of x`,`That's a<sub>1</sub>.`,`Swapping intercept and slope.`],
+ [`The average error`,`Unrelated.`,`Guessing.`],
+ [`The number of predictors`,`Unrelated.`,`Same.`]
+]);
+Q('m8',1,`The software finds regression coefficients by setting derivatives of SSE to zero. Why is that guaranteed to find the best line?`,[
+ [`The SSE "bowl" is convex, so its one flat point is the lowest point`,`A bowl has exactly one bottom, and it's the only place the slope is zero.`],
+ [`Derivatives always find maximums`,`They find flat points; convexity makes this one a minimum.`,`Misremembering what derivatives do.`],
+ [`Because the software tries every possible line`,`It solves equations directly.`,`Picturing brute force.`],
+ [`It isn't guaranteed; it's a heuristic`,`Unlike k-means, regression has an exact solution.`,`Mixing up regression and k-means.`]
+]);
+Q('m8',1,`Least squares is the same as maximum likelihood under which assumptions?`,[
+ [`Errors are normally distributed and independent`,`Under those assumptions, the likelihood is largest exactly when SSE is smallest.`],
+ [`Errors are all positive`,`Errors can be either sign.`,`Misunderstanding errors.`],
+ [`There are more predictors than data points`,`That would be a problem, not an assumption.`,`Guessing.`],
+ [`The response is binary`,`That's logistic regression territory.`,`Mixing up models.`]
+]);
+Q('m8',1,`AIC charges 2 per parameter. When does adding one parameter improve AIC?`,[
+ [`When it raises ln(L*) by more than 1`,`AIC = 2k − 2 ln(L*): the +2 penalty is beaten only if −2 ln(L*) drops by more than 2.`],
+ [`Whenever the fit improves at all`,`Small improvements don't cover the penalty.`,`Ignoring the penalty.`],
+ [`Only if its p-value is below 0.05`,`AIC doesn't use p-values.`,`Mixing up tools.`],
+ [`Never; AIC always prefers fewer parameters`,`It prefers fewer only when extra ones don't pay off.`,`Overstating the penalty.`]
+]);
+Q('m8',1,`A dataset has 5 points and a model with 4 parameters. Which version of AIC is recommended?`,[
+ [`AICc, the small-sample correction`,`AICc adds a large extra penalty when data is scarce relative to parameters.`],
+ [`Plain AIC`,`It under-penalizes in small samples.`,`Not knowing the correction exists.`],
+ [`BIC, since it's for small samples`,`BIC is recommended when data points far outnumber parameters.`,`Getting BIC's use backwards.`],
+ [`R²`,`Not an information criterion.`,`Mixing up tools.`]
+]);
+Q('m8',0,`Which of these is NOT one of the three rules of thumb for claiming causation?`,[
+ [`The p-value is below 0.05`,`Statistical significance doesn't establish causation.`],
+ [`The cause happens before the effect`,`One of the three.`,`Not remembering the list.`],
+ [`There's a sensible reason one could cause the other`,`One of the three.`,`Same.`],
+ [`No outside factor could explain the relationship`,`One of the three.`,`Same.`]
+]);
+Q('m8',1,`A model uses x₁ and x₂ but the true effect of x₁ depends on x₂ (fertilizer works better with water). What should you add?`,[
+ [`An interaction term x₁·x₂`,`It lets x₁'s effect change with x₂: effect = a₁ + a₃x₂.`],
+ [`An x₁² term`,`That captures curvature in x₁, not dependence on x₂.`,`Mixing up transformations and interactions.`],
+ [`More data only`,`The model structure is missing the relationship.`,`Thinking data fixes structure.`],
+ [`Remove x₂`,`That discards the very thing that matters.`,`Simplifying away the effect.`]
+]);
+Q('m8',1,`A 95% confidence interval for a coefficient includes zero. What does that tell you about its p-value?`,[
+ [`It's above 0.05`,`The interval and the p-value are two views of the same test.`],
+ [`It's below 0.05`,`Opposite.`,`Getting the link backwards.`],
+ [`Nothing; they're unrelated`,`They're directly linked.`,`Not connecting the two.`],
+ [`It must be exactly 0.05`,`Only if zero sits exactly at the edge.`,`Overly literal.`]
+]);
+R('m1','The three parts of analytics modeling',`Name the three parts of analytics modeling and which ones need human judgment.`,[
+ [`Selecting and specifying the right model(s)`,['select','choos','specify','model']],
+ [`Compiling, building, or forecasting the data sets`,['data','compil','build']],
+ [`Interpreting output into suggestions that fit the organization`,['interpret','organization','recommend','suggest']],
+ [`Choosing and interpreting are human judgment; software does the math in between`,['judgment','human','software','algorithm']]
+]);
+R('m4','Predicting clusters and Voronoi diagrams',`How do you assign a new point to a cluster, and what is a Voronoi diagram?`,[
+ [`Assign the new point to the nearest cluster center`,['nearest','closest','center']],
+ [`Doing this for every location divides the space into regions`,['region','every location','divide','partition']],
+ [`That partition is a Voronoi diagram; boundaries are equal-distance ties`,['voronoi','boundar','equal','tie']],
+ [`Unlike KNN, it compares to computed centers, not labeled points`,['knn','label','centers']]
+]);
+R('m6','Choosing C and T in CUSUM',`How do C and T affect CUSUM, and how should they be chosen?`,[
+ [`Larger C or T: fewer false alarms, slower detection`,['larger','fewer false','slower','higher']],
+ [`Smaller C or T: faster detection, more false alarms`,['smaller','faster','more false','sooner']],
+ [`No formula; treat them as parameters and test on data with known changes`,['no formula','validat','test','known']],
+ [`Decide based on which mistake costs more (late detection vs. false alarm)`,['cost','expensive','trade']]
+]);
 
 </script>
 <script>
@@ -1204,6 +1519,15 @@ function weakest(){
   return MOD_KEYS.map(m=>{const qq=QS.filter(q=>q.m===m), rr=RC.filter(r=>r.m===m); const t=qq.length+rr.length; const c=qq.filter(q=>qStatus(q)==='mastered').length+rr.filter(r=>rStatus(r)==='solid').length; return [m,t?c/t:1];})
    .sort((a,b)=>a[1]-b[1]).slice(0,3).map(x=>SHORT[x[0]]).join(', ');
 }
+// ---------- theme
+function applyTheme(t){
+  if(t==='light'||t==='dark') document.documentElement.setAttribute('data-theme',t); else document.documentElement.removeAttribute('data-theme');
+  try{ localStorage.setItem('mp-theme',t); }catch(e){}
+  document.querySelectorAll('[data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.themeSet===t)));
+}
+let theme='auto'; try{ theme=localStorage.getItem('mp-theme')||'auto'; }catch(e){}
+applyTheme(theme);
+document.querySelectorAll('[data-theme-set]').forEach(b=>b.onclick=()=>applyTheme(b.dataset.themeSet));
 render();
 setSync('');
 })();
