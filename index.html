@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Midterm practice: Modules 1–8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F7F9FC; --grid:#E1E8F3; --ink:#16233B; --ink-2:#4A5874; --line:#C9D4E6;
+  --pen:#2F5BD3; --pen-ink:#FFFFFF; --hl:#FFE066; --hl-ink:#16233B;
+  --ok:#1D7A4E; --ok-bg:#E3F4EA; --bad:#C23B2E; --bad-bg:#FBE8E5; --warn:#8A5A00; --warn-bg:#FFF3D1;
+  --card:#FFFFFF; --muted-bg:#EEF2F8;
+  --serif:"Literata", Georgia, "Times New Roman", serif;
+  --sans:"Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1522; --grid:#18213300; --ink:#E4EAF5; --ink-2:#A5B1C8; --line:#2A3650;
+    --pen:#7FA2FF; --pen-ink:#0F1522; --hl:#5C4C00; --hl-ink:#FFF4C2;
+    --ok:#5CC592; --ok-bg:#12301F; --bad:#F2877B; --bad-bg:#3A1714; --warn:#F2C66B; --warn-bg:#3A2D08;
+    --card:#161E2E; --muted-bg:#1C2639; --grid:#172033;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1522; --ink:#E4EAF5; --ink-2:#A5B1C8; --line:#2A3650;
+  --pen:#7FA2FF; --pen-ink:#0F1522; --hl:#5C4C00; --hl-ink:#FFF4C2;
+  --ok:#5CC592; --ok-bg:#12301F; --bad:#F2877B; --bad-bg:#3A1714; --warn:#F2C66B; --warn-bg:#3A2D08;
+  --card:#161E2E; --muted-bg:#1C2639; --grid:#172033;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0; color:var(--ink); font-family:var(--sans); font-size:16px; line-height:1.5;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),linear-gradient(90deg,var(--grid) 1px, transparent 1px);
+  background-size:24px 24px; min-height:100vh}
+.wrap{max-width:720px; margin:0 auto; padding:16px 16px 64px}
+header.top{display:flex; flex-direction:column; gap:12px; padding:8px 0 4px}
+h1{font-family:var(--serif); font-weight:600; font-size:clamp(1.5rem,4.5vw,2rem); line-height:1.15; margin:0; letter-spacing:-0.01em}
+.sub{color:var(--ink-2); margin:0; font-size:.95rem}
+nav.tabs{display:flex; gap:4px; background:var(--muted-bg); border-radius:12px; padding:4px; border:1px solid var(--line)}
+nav.tabs button{flex:1; border:0; background:transparent; color:var(--ink-2); font:600 .95rem var(--sans); padding:10px 8px; border-radius:9px; cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--card); color:var(--ink); box-shadow:0 1px 0 var(--line)}
+button:focus-visible, textarea:focus-visible, input:focus-visible, .opt:focus-visible{outline:3px solid var(--pen); outline-offset:2px}
+.panel{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-top:16px}
+h2{font-family:var(--serif); font-weight:600; font-size:1.3rem; margin:0 0 8px}
+h3{font-size:1rem; margin:18px 0 8px}
+.btn{appearance:none; border:1px solid var(--pen); background:var(--pen); color:var(--pen-ink); font:600 1rem var(--sans); padding:12px 18px; border-radius:10px; cursor:pointer; min-height:46px}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn.ghost{background:transparent; color:var(--pen)}
+.btn.quiet{background:transparent; border-color:var(--line); color:var(--ink-2)}
+.btn.danger{background:transparent; border-color:var(--bad); color:var(--bad)}
+.row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:7px 12px; font:500 .9rem var(--sans); cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.small{font-size:.88rem; color:var(--ink-2)}
+.timerbar{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--paper); border-bottom:1px solid var(--line); margin:0 -16px; padding:10px 16px}
+.timerrow{display:flex; justify-content:space-between; align-items:center; gap:12px}
+.clock{font:700 1.35rem var(--sans); font-variant-numeric:tabular-nums}
+.clock.low{color:var(--bad)}
+.track{height:4px; background:var(--muted-bg); border-radius:4px; margin-top:8px; overflow:hidden}
+.track>i{display:block; height:100%; background:var(--pen); width:0}
+.qmeta{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px}
+.tag{font:600 .78rem var(--sans); padding:3px 9px; border-radius:6px; background:var(--muted-bg); color:var(--ink-2)}
+.tag.tough{background:var(--warn-bg); color:var(--warn)}
+.qtext{font-family:var(--serif); font-size:1.12rem; line-height:1.6; margin:0 0 14px}
+.opts{display:flex; flex-direction:column; gap:10px}
+.opt{display:block; width:100%; text-align:left; background:var(--card); color:var(--ink); border:1.5px solid var(--line); border-radius:10px; padding:12px 14px; font:400 1rem/1.45 var(--sans); cursor:pointer; position:relative}
+.opt[aria-pressed="true"]{background:linear-gradient(transparent 12%, var(--hl) 12%, var(--hl) 88%, transparent 88%); color:var(--hl-ink); border-color:var(--ink)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok); background:var(--ok-bg); color:var(--ink)}
+.opt.wrong{border-color:var(--bad); background:var(--bad-bg); color:var(--ink)}
+.opt .lbl{font-weight:700; margin-right:6px}
+.fb{font-size:.92rem; margin-top:8px; color:var(--ink); border-top:1px dashed var(--line); padding-top:8px}
+.fb b.k{display:block; margin-bottom:2px}
+.fb .mis{display:block; margin-top:4px; color:var(--ink-2)}
+.verdict{font:700 1.05rem var(--sans); margin:14px 0 6px}
+.verdict.ok{color:var(--ok)} .verdict.no{color:var(--bad)}
+.actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
+.note{background:var(--muted-bg); border-radius:10px; padding:10px 12px; font-size:.92rem; margin-top:12px}
+.big{font-family:var(--serif); font-size:3.2rem; font-weight:600; line-height:1; margin:4px 0}
+.bars{display:flex; flex-direction:column; gap:12px; margin-top:8px}
+.bar .lab{display:flex; justify-content:space-between; font-size:.92rem; margin-bottom:4px; gap:8px}
+.bar .t{height:10px; background:var(--muted-bg); border-radius:6px; overflow:hidden; display:flex}
+.bar .t i{display:block; height:100%}
+.bar .t i.m{background:var(--ok)} .bar .t i.r{background:var(--warn)}
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:.85rem; color:var(--ink-2); margin-top:6px}
+.legend span::before{content:""; display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; background:var(--c)}
+.clist{display:flex; flex-direction:column; gap:8px}
+.citem{display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; text-align:left; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:11px 13px; font:500 .98rem var(--sans); color:var(--ink); cursor:pointer}
+.citem:disabled{cursor:not-allowed; opacity:.7}
+.st{font:600 .78rem var(--sans); padding:3px 8px; border-radius:6px; white-space:nowrap}
+.st.new{background:var(--muted-bg); color:var(--ink-2)} .st.solid{background:var(--ok-bg); color:var(--ok)} .st.review{background:var(--warn-bg); color:var(--warn)} .st.locked{background:var(--bad-bg); color:var(--bad)}
+textarea{width:100%; min-height:180px; resize:vertical; border:1.5px solid var(--line); border-radius:10px; padding:12px; font:1rem/1.55 var(--serif); color:var(--ink); background:var(--card)}
+.points{list-style:none; padding:0; margin:10px 0 0; display:flex; flex-direction:column; gap:8px}
+.points label{display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--line); border-radius:10px; cursor:pointer; background:var(--card)}
+.points input{width:20px; height:20px; margin-top:2px; accent-color:var(--ok); flex:none}
+.points .hint{font-size:.8rem; color:var(--ok); margin-left:6px}
+.missed{margin:8px 0 0; padding-left:20px}
+.sum-list{padding-left:18px} .sum-list li{margin-bottom:8px}
+.sync{font-size:.8rem; color:var(--ink-2)}
+dialog{border:1px solid var(--line); border-radius:14px; background:var(--card); color:var(--ink); max-width:420px; width:calc(100% - 32px); padding:20px}
+dialog::backdrop{background:rgba(10,15,25,.55)}
+@media (prefers-reduced-motion: no-preference){ .opt{transition:background-color .15s, border-color .15s} .track>i{transition:width 1s linear} }
+@media (max-width:480px){ .wrap{padding:12px 12px 56px} .panel{padding:14px} .timerbar{margin:0 -12px; padding:10px 12px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Midterm practice: Modules 1–8</h1>
+      <p class="sub">Critical-thinking questions and write-it-out recall drills. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-exam" aria-selected="true" data-tab="exam">Practice exam</button>
+      <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall">Recall drills</button>
+      <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress">Progress</button>
+    </nav>
+  </header>
+  <main id="main"></main>
+</div>
+<dialog id="dlg"><p id="dlg-msg" style="margin-top:0"></p><div class="actions" id="dlg-actions"></div></dialog>
+<script>
+const QS=[], RC=[];
+function Q(m,tough,q,opts){ QS.push({m,tough:!!tough,q,opts}); }
+function R(m,title,prompt,points){ RC.push({m,title,prompt,points}); }
+// First option is always correct in data; options are shuffled at render time.
+// Q(module, tough(0/1), question, [[text, why], [text, why, misconception], ...])
+Q('m1',0,`A hospital has 40 nurse follow-up calls available each week. It asks: "Which discharged patients should get a call?" What type of analytics question is this?`,[
+ [`Prescriptive`,`The answer is an action (who gets a call) with a limited resource to allocate. That's the signature of a prescriptive question.`],
+ [`Predictive, because it depends on each patient's readmission risk`,`Risk predictions might be an input, but the question asks what to do with 40 calls.`,`Confusing the inputs a model uses with the type of answer the question needs.`],
+ [`Descriptive, because it uses historical patient records`,`Almost every analysis uses historical data. What matters is what the answer is.`,`Thinking "uses past data" means "descriptive."`],
+ [`It can't be classified until a method is chosen`,`You classify the question first; that's what narrows the methods.`,`Believing the method determines the question type, when it's the other way around.`]
+]);
+Q('m1',1,`"Which attributes best distinguish customers who cancelled last year from those who stayed?" Which type is this?`,[
+ [`Descriptive`,`It asks for an explanation of patterns already present in past behavior, not a value for something not yet observed.`],
+ [`Predictive, because it involves customer cancellation`,`Nothing is being forecast for a new customer; it explains last year.`,`Assuming anything about churn is predictive because churn prediction is a common task.`],
+ [`Prescriptive, because the business will use it to reduce cancellations`,`What the business does later doesn't change what this question asks.`,`Classifying by the eventual use of the answer rather than the answer itself.`],
+ [`Predictive, because you'd use a classification method`,`A classification tool can be used descriptively. The shape of the answer sets the type, not the tool.`,`Thinking methods and question types map one-to-one.`]
+]);
+Q('m1',0,`A report says: "We compared five different SVM models." Which meaning of "model" is this?`,[
+ [`Method plus its specific setup (variables, settings)`,`All five are SVMs, so the method is fixed. They differ in setup, which is level 2.`],
+ [`The method (level 1), because SVM is named`,`If it were the method, there'd only be one "SVM model." Five means something below the method varies.`,`Latching onto the method name and ignoring "five different."`],
+ [`The fitted equations, because comparing models means comparing coefficients`,`You compare setups by their performance; the coefficients are just a product of each setup.`,`Thinking "comparing models" means comparing the numbers inside them.`],
+ [`All three meanings at once`,`The sentence is specific: five variations of one method.`,`Assuming the word is too vague to pin down, when the detail level tells you.`]
+]);
+Q('m1',1,`A forecasting model is very accurate on test data, but it arrives as a 40-column table two days after the weekly ordering deadline. Nobody uses it. What failed?`,[
+ [`Turning the output into a recommendation that fits how the organization decides`,`Validation only checks the math. The last leg (math back into a usable recommendation) failed: wrong form, wrong time.`],
+ [`The model is overfit, so its accuracy is misleading`,`It performed well on test data, which is exactly the check for overfitting.`,`Assuming every unused model must be statistically flawed.`],
+ [`The data was not cleaned properly`,`Nothing suggests a data problem; accuracy is good.`,`Blaming the most time-consuming step by default.`],
+ [`It should have been a prescriptive model instead`,`The question type may be fine; the delivery is what failed.`,`Treating a communication failure as a method-choice failure.`]
+]);
+Q('m1',0,`Which of these is a cross-cutting concept (used across many methods) rather than a method for answering a question?`,[
+ [`Validation`,`Validation applies to classification, clustering, forecasting, regression — it's not a method on its own.`],
+ [`Clustering`,`Clustering is a descriptive method family.`,`Mixing up tools with the checks you apply to tools.`],
+ [`Support vector machines`,`SVM is a classification method.`,`Thinking anything technical is "cross-cutting."`],
+ [`CUSUM`,`CUSUM is a change-detection method.`,`Same confusion: CUSUM answers a specific question type.`]
+]);
+Q('m1',1,`Your manager hands you a dataset and says, "Find something interesting." What should you establish first?`,[
+ [`What decision the answer is supposed to inform`,`That tells you the question type, which method family fits, and what counts as "interesting."`],
+ [`Which algorithm runs fastest on the data`,`Speed is irrelevant until you know what you're trying to answer.`,`Starting from tools instead of from the question.`],
+ [`Whether the data needs scaling`,`Important later, but preparation depends on which method you'll use.`,`Jumping into the middle of the workflow.`],
+ [`How many clusters are in the data`,`That assumes clustering is the right approach before you know the question.`,`Reaching for the method you know best.`]
+]);
+// ===== Module 2
+Q('m2',0,`You fit a hard-margin SVM, then delete a point that sits deep inside the "repaid" group and refit. What happens?`,[
+ [`The classifier stays the same`,`Only support vectors (points the margin rests on) constrain the line. An interior point doesn't.`],
+ [`The margin gets wider`,`The margin is set by the closest points, which didn't change.`,`Thinking every point pushes on the line.`],
+ [`The line shifts toward the "defaulted" group`,`Removing a far-away point changes nothing near the boundary.`,`Picturing the line as a balance between the two groups' averages.`],
+ [`The support vectors change`,`The deleted point wasn't a support vector, so they stay.`,`Not knowing which points are support vectors.`]
+]);
+Q('m2',0,`A transplant team classifies donor organs as "safe" or "infected." Using an infected organ is far worse than discarding a safe one. How should the boundary move?`,[
+ [`Toward the "safe" points, so borderline organs get classified as infected`,`Move the line away from the costly mistake so ambiguous cases land on the cheap-error side (discard).`],
+ [`Toward the "infected" points, so fewer organs get discarded`,`That makes the dangerous mistake more likely.`,`Mixing up "move toward" and "move away from" the costly class.`],
+ [`Keep it centered for the widest margin`,`The widest margin treats both errors as equally bad, which they aren't here.`,`Treating "widest margin" as always correct regardless of costs.`],
+ [`Remove attributes until the classes separate perfectly`,`Dropping information doesn't address unequal costs.`,`Thinking perfect separation solves everything.`]
+]);
+Q('m2',0,`In soft-margin SVM (error + λ·Σa²), what happens as λ becomes very large?`,[
+ [`A wide margin dominates, so more training points may be misclassified`,`λ multiplies the margin term, so large λ prioritizes width over avoiding training mistakes.`],
+ [`The margin narrows and training error goes toward zero`,`That's what happens as λ approaches 0.`,`Getting the direction of λ backwards (easy to do if you've used software's C, which works the other way).`],
+ [`λ only matters when the data can't be separated`,`λ always sets the trade-off in the soft-margin objective.`,`Confusing when soft margins are needed with how λ works.`],
+ [`The model ignores the margin entirely`,`Opposite: the margin becomes the main priority.`,`Misreading which term λ multiplies.`]
+]);
+Q('m2',0,`An SVM trained on raw data has coefficients 0.0004 on income (in dollars) and 1.8 on credit score. What can you conclude?`,[
+ [`Nothing reliable about importance; the data wasn't scaled`,`Income is measured in big numbers, so its coefficient is naturally tiny. Compare sizes only after scaling.`],
+ [`Income is irrelevant and can be dropped`,`That rule ("coefficient near 0 → drop") only holds after scaling.`,`Applying the variable-selection rule without its condition.`],
+ [`Credit score is 4,500× more important than income`,`Coefficient ratios on unscaled data reflect units, not importance.`,`Reading raw coefficients as importance weights.`],
+ [`The model is broken`,`Coefficients on different scales are expected with unscaled data; it's a warning, not proof of failure.`,`Thinking coefficients should naturally be similar in size.`]
+]);
+Q('m2',1,`After scaling all attributes to 0–1, an SVM gives coefficients of about 1.5 on four attributes and 0.002 on a fifth. What's a reasonable conclusion?`,[
+ [`The fifth attribute probably barely affects classification and is a candidate to drop (confirm with validation)`,`With comparable scales, a near-zero coefficient means that attribute hardly moves the boundary.`],
+ [`Nothing, since coefficient size never indicates importance`,`After scaling, it does.`,`Over-learning the warning from unscaled data.`],
+ [`The fifth attribute must be categorical`,`Coefficient size says nothing about data type.`,`Linking small coefficients to data type.`],
+ [`The fifth attribute should be standardized instead of scaled`,`Switching transformations won't make an irrelevant attribute relevant.`,`Treating every odd result as a scaling problem.`]
+]);
+Q('m2',1,`Credit score is on the horizontal axis and income on the vertical. The fitted classifier runs almost parallel to the horizontal axis. Which attribute barely matters?`,[
+ [`Credit score (horizontal)`,`A horizontal line means the decision changes only as income (vertical) changes. Moving left-right along credit score never crosses it.`],
+ [`Income (vertical)`,`Moving up and down (income) is exactly what crosses a horizontal line.`,`Thinking "the line lies along the horizontal axis, so that axis matters."`],
+ [`Both matter equally`,`A line parallel to one axis ignores that axis's attribute.`,`Assuming a 2-D line always uses both dimensions.`],
+ [`Can't tell without the coefficients`,`The geometry tells you directly; coefficients just confirm it.`,`Not trusting the picture.`]
+]);
+Q('m2',1,`A KNN model with k = 1 scores 100% accuracy when tested on its own training data. What's the best interpretation?`,[
+ [`Expected and meaningless: each point's nearest neighbor is itself`,`Every training point finds itself at distance 0 and votes for its own label. It says nothing about new data.`],
+ [`k = 1 is clearly the best choice`,`A perfect training score is guaranteed here, so it can't be evidence.`,`Choosing settings by training accuracy.`],
+ [`The data must be perfectly separable`,`KNN with k = 1 scores 100% on training data even when classes overlap heavily.`,`Linking 100% accuracy to separability.`],
+ [`The model is underfit`,`Opposite: k = 1 is the most flexible setting and tends to overfit.`,`Mixing up underfitting and overfitting.`]
+]);
+Q('m2',0,`ZIP codes are stored as integers and used in a KNN with Euclidean distance. What's the main problem?`,[
+ [`The model treats numeric gaps between ZIP codes as meaningful distances, but they're just labels`,`ZIP codes are categorical; 10002 isn't "close to" 10001 in any real sense the model can use.`],
+ [`ZIP codes are unstructured data`,`They're structured (fixed format), just categorical.`,`Confusing categorical with unstructured.`],
+ [`ZIP codes are binary`,`Binary means exactly two values.`,`Mixing up categorical and binary.`],
+ [`KNN can't use more than two attributes`,`KNN works in any number of dimensions.`,`Assuming the 2-D pictures are a limit.`]
+]);
+Q('m2',0,`A neural network requires every input to be between 0 and 1. Which transformation should you use?`,[
+ [`Scaling: (x − min)/(max − min)`,`Scaling guarantees a fixed range.`],
+ [`Standardization: (x − mean)/SD`,`Standardized values are unbounded (e.g., −2.7 or 3.1).`,`Thinking standardization squeezes values into a range.`],
+ [`Either, since they're interchangeable`,`They have different properties; only scaling bounds the range.`,`Treating the two as synonyms.`],
+ [`Neither; neural networks scale inputs automatically`,`Not guaranteed; the requirement here is explicit.`,`Assuming software always handles it.`]
+]);
+Q('m2',1,`You have training and test sets. Where should the min/max (for scaling) come from?`,[
+ [`The training data only, then apply those same numbers to the test data`,`Using test-set statistics leaks information from the test set into training and makes the test score optimistic.`],
+ [`The full dataset, so the range covers everything`,`That lets test data influence training (leakage).`,`Thinking "more data = better statistics" always.`],
+ [`Each set separately`,`Then the same raw value maps to different scaled values in each set.`,`Not realizing the transformation must be identical across sets.`],
+ [`The test data, since that's what you're evaluating`,`Test data must stay untouched until the final check.`,`Misunderstanding the test set's role.`]
+]);
+Q('m2',1,`Why is the SVM response coded as +1 and −1 instead of 1 and 0?`,[
+ [`Multiplying by y flips the inequality for red points, merging both "correct side" rules into one constraint`,`y·(Σaⱼxⱼ + a₀) ≥ 1 only works because y = −1 flips the sign for the red class.`],
+ [`It keeps the classes centered on zero so the math is tidier`,`Tidiness isn't the reason; merging the constraints is.`,`Accepting a vague reason over the specific one.`],
+ [`Models require inputs centered on zero`,`y is the response, not an input, and SVM has no such requirement.`,`Mixing up responses with standardized inputs.`],
+ [`It lets SVM output probabilities`,`SVM outputs a side of the line, not probabilities.`,`Confusing SVM with logistic regression.`]
+]);
+Q('m2',0,`Which statement correctly contrasts SVM and KNN?`,[
+ [`SVM builds a boundary from coefficients; KNN keeps all training points and votes among neighbors for each new point`,`SVM summarizes the data into a line; KNN never builds one.`],
+ [`KNN draws a boundary; SVM votes among neighbors`,`Reversed.`,`Mixing up the two methods' mechanisms.`],
+ [`Only SVM needs scaled data`,`KNN is distance-based, so it needs scaling just as much.`,`Linking scaling only to the margin math.`],
+ [`KNN needs extra machinery for more than two classes`,`KNN handles many classes naturally: it just counts votes.`,`Assuming all classifiers are built for two classes.`]
+]);
+// ===== Module 3
+Q('m3',0,`You compare 10 models on a validation set. The best scores 88%. What should you report as its expected performance?`,[
+ [`Its score on a separate test set that wasn't used for fitting or choosing`,`The winner of a comparison is also the one most likely to have gotten lucky. Only untouched data gives an honest number.`],
+ [`88%, because validation data was held out from training`,`Held out from fitting, yes, but used for choosing, and choosing the maximum picks luck.`,`Thinking "not trained on" is the same as "unbiased."`],
+ [`Its training accuracy`,`Training scores are the most optimistic of all.`,`Believing more data used means a better estimate.`],
+ [`The average of all 10 validation scores`,`That describes the group, not the chosen model.`,`Trying to "correct" the bias with an unrelated number.`]
+]);
+Q('m3',0,`You build exactly one model and make no comparisons. Which data sets do you need?`,[
+ [`Training and test`,`Validation is only for choosing among models. With one model, there's nothing to choose.`],
+ [`Training, validation, and test`,`The validation step can be skipped with one model.`,`Memorizing "three sets" without knowing why each exists.`],
+ [`Training only, if it's large enough`,`A training score is optimistic no matter how much data there is.`,`Thinking a big dataset removes training bias.`],
+ [`Validation and test only`,`You still need data to build the model.`,`Losing track of which set builds the model.`]
+]);
+Q('m3',1,`After reporting a test score, you try three more variants and report whichever scores best on that same test set. What's the problem?`,[
+ [`Choosing with the test set turned it into a validation set, so the new score is inflated`,`Any set you make a choice with stops being an unbiased estimate.`],
+ [`None, since the test set was never used for training`,`Selection bias doesn't require training on the data.`,`Thinking only fitting can bias a score.`],
+ [`The test set is now too small`,`Size isn't the issue; how it was used is.`,`Blaming sample size for a procedure error.`],
+ [`The variants must be retrained on the test set`,`That would make things far worse.`,`Misunderstanding what "using" a test set means.`]
+]);
+Q('m3',0,`You run 5-fold cross-validation and choose KNN with k = 7. What goes into production?`,[
+ [`A new k = 7 KNN trained on all the training + validation data`,`CV chooses the setup; you then retrain that setup on all the data.`],
+ [`The fold model with the highest score`,`That's picking the luckiest fold, and it used less data.`,`Thinking CV produces the final model.`],
+ [`A model averaging the five fold models`,`Averaging models or coefficients has no guarantee of working well.`,`Assuming "average the scores" also means "average the models."`],
+ [`The fold model trained on the most recent data`,`Fold models are only for measuring.`,`Treating folds as time periods.`]
+]);
+Q('m3',1,`Daily sales (open 7 days) are split by a repeating 7-step rotation: train, validate, train, test, train, validate, train. What's the biggest risk?`,[
+ [`The rotation lines up with the week, so specific weekdays land only in specific sets`,`Every Monday goes to the same set, every Tuesday to another, etc. Patterns tied to certain days never get checked.`],
+ [`The training set ends up smaller than half`,`4 of 7 go to training (57%).`,`Focusing on split size rather than split structure.`],
+ [`Rotation splits are always invalid`,`Rotation is fine when it doesn't line up with a cycle in the data.`,`Overgeneralizing one failure case.`],
+ [`The test set is too large`,`1 in 7 is small.`,`Not counting the rotation carefully.`]
+]);
+Q('m3',0,`Model A: 95% training, 71% validation. Model B: 82% training, 79% validation. Which should you pick?`,[
+ [`B, since it does better on validation; A's big gap suggests overfitting`,`Choose on validation performance. A large training–validation gap is a classic overfitting sign.`],
+ [`A, since it has the highest accuracy`,`Its highest number is on training data, which doesn't count for choosing.`,`Comparing the wrong column.`],
+ [`A, since the validation set was probably unlucky for it`,`Both models used the same validation set.`,`Explaining away inconvenient evidence.`],
+ [`Neither until each is retrained on the test set`,`Never train on test data.`,`Misunderstanding the test set's role.`]
+]);
+Q('m3',1,`Suppose 10 models are truly equally good. You pick the one with the highest validation score, 86%. The winner's true accuracy is most likely:`,[
+ [`Lower than 86%, closer to the typical score of all ten`,`If they're equally good, the differences are pure luck, and the top score got the most good luck.`],
+ [`Exactly 86%`,`That assumes its score contains no luck.`,`Treating one noisy measurement as the truth.`],
+ [`Higher than 86%, since it beat the others`,`Beating equals by chance doesn't make it better.`,`Thinking winning proves superiority.`],
+ [`Unknowable, so validation is useless`,`Validation still helps you choose; you just need a test set to measure.`,`Overreacting to selection bias.`]
+]);
+Q('m3',1,`Each model's validation score is unbiased on its own. Why is the winner's score biased?`,[
+ [`Taking the maximum of several noisy scores favors the one with the biggest positive error`,`Individually fair measurements aren't fair once you pick the highest.`],
+ [`The winner was trained on the validation set`,`No one trained on validation data.`,`Thinking bias always comes from fitting.`],
+ [`Validation sets are always smaller than training sets`,`Size affects noise, not the direction of bias.`,`Confusing noise with bias.`],
+ [`It isn't biased if the validation set is random`,`A random validation set still has noise, and picking the max still favors luck.`,`Believing randomness removes selection effects.`]
+]);
+Q('m3',0,`A classmate says, "70/15/15 is the correct split; 60/20/20 is wrong." How should you respond?`,[
+ [`No ratio is clearly best; keep training large and the others large enough to cover important cases`,`Several ratios are common; the principle matters more than the numbers.`],
+ [`They're right; 70/15/15 is the standard`,`It's one common option, not a rule.`,`Treating a convention as a law.`],
+ [`60/20/20 is better since test sets should be as big as training sets`,`Training should be the largest set.`,`Overvaluing the test set.`],
+ [`Split ratios don't matter at all`,`They matter; there's just no single correct one.`,`Overcorrecting.`]
+]);
+Q('m3',0,`In 4-fold cross-validation, how many of the four fold models does each data point help train?`,[
+ [`3`,`Each point is held out exactly once and used for training in the other three rounds.`],
+ [`1`,`That's how many times it's used for validation.`,`Mixing up training and validation roles.`],
+ [`4`,`It's held out in one round.`,`Forgetting the held-out round.`],
+ [`It depends on random chance`,`k-fold assigns each point to exactly one fold, so the count is fixed.`,`Confusing k-fold with random resampling.`]
+]);
+Q('m3',0,`Which is NOT a benefit of k-fold cross-validation?`,[
+ [`It produces the final model you deploy`,`Fold models are only for measuring; the final model is retrained on all the data.`],
+ [`Every point gets used for training at some point`,`That's a key benefit: no important point is permanently left out.`,`Missing that this is exactly the problem CV solves.`],
+ [`Averaging k scores is steadier than one split`,`A real benefit.`,`Not recognizing the second main benefit.`],
+ [`It helps compare and choose between models`,`That's its main use.`,`Overthinking a direct statement.`]
+]);
+Q('m3',1,`An analyst standardizes the whole dataset, then splits it into training and test sets. What's wrong? (from your notes' added material)`,[
+ [`Test data influenced the mean and SD used in training, so the test score is optimistic (leakage)`,`Any step that learns from data should use training data only.`],
+ [`Standardization must happen after fitting`,`It happens before fitting, just using training statistics.`,`Mixing up the order of steps.`],
+ [`Nothing, since standardization doesn't use the response`,`Leakage can happen through inputs, not just the response.`,`Thinking only the answer column can leak.`],
+ [`Standardized data can't be split`,`It can; the issue is where the statistics came from.`,`Misidentifying the problem.`]
+]);
+Q('m3',1,`Changing the random seed of your train/validation split flips the winner from a 4th-degree to a 6th-degree polynomial. What's the best conclusion? (added material)`,[
+ [`The two are probably indistinguishable with this much data; the estimate is too noisy to separate them`,`When small differences flip with the seed, they're within the noise.`],
+ [`One seed was bad; rerun until results are stable`,`Hunting for a seed you like is just another form of selection.`,`Thinking there's a "correct" random split.`],
+ [`The 6th-degree model is better since it won most recently`,`Recency doesn't matter for random seeds.`,`Trusting the latest result.`],
+ [`Average them and use a 5th-degree model`,`That's not a valid way to combine evidence.`,`Splitting the difference as a compromise.`]
+]);
+Q('m3',1,`As you make a model more flexible, what happens to its error on its own training data?`,[
+ [`It keeps going down, which is why it can't be used to pick the best flexibility`,`More flexibility always fits training data better, even noise. Only held-out data shows the U-shaped test error.`],
+ [`It goes down, then back up (U-shape)`,`That's test error, not training error.`,`Mixing up training and test error curves.`],
+ [`It stays the same`,`Flexibility directly reduces training error.`,`Not connecting flexibility to fit.`],
+ [`It goes up, since flexible models are unstable`,`Unstable across datasets (variance), but better on the one they're fit to.`,`Confusing variance with training error.`]
+]);
+// ===== Module 4
+Q('m4',0,`What is the ∞-norm distance between (2, 7) and (5, 3)?`,[
+ [`4`,`Differences are 3 and 4. ∞-norm = the largest = 4.`],
+ [`7`,`That's the 1-norm (3 + 4).`,`Adding instead of taking the max.`],
+ [`5`,`That's the 2-norm (√(9 + 16)).`,`Defaulting to straight-line distance.`],
+ [`3`,`That's the smallest difference.`,`Taking the min instead of the max.`]
+]);
+Q('m4',0,`A warehouse robot moves along an aisle and raises its arm at the same time. Which norm matches the time to reach a bin?`,[
+ [`∞-norm`,`Simultaneous motions finish when the slower one finishes: the maximum.`],
+ [`1-norm`,`That's for moving first, then lifting (times add).`,`Missing "at the same time."`],
+ [`2-norm`,`The robot doesn't travel diagonally.`,`Defaulting to straight-line distance.`],
+ [`It depends on k`,`k isn't involved in distance.`,`Mixing up k-means settings with norms.`]
+]);
+Q('m4',0,`A picker must finish moving along the aisle before it can start lifting. Which norm matches its travel time?`,[
+ [`1-norm`,`One motion, then the other: the times add.`],
+ [`∞-norm`,`That's for simultaneous motion.`,`Mixing up sequential and simultaneous.`],
+ [`2-norm`,`No diagonal travel.`,`Defaulting to Euclidean.`],
+ [`0-norm`,`Not a norm used in the course.`,`Guessing.`]
+]);
+Q('m4',0,`Which ordering always holds for the same two points?`,[
+ [`∞-norm ≤ 2-norm ≤ 1-norm`,`Bigger p lets the single biggest gap dominate, which never makes the distance larger.`],
+ [`1-norm ≤ 2-norm ≤ ∞-norm`,`Reversed; the grid path is the longest.`,`Assuming larger p means larger distance.`],
+ [`All three are always equal`,`Only when the points differ in one dimension.`,`Generalizing from a special case.`],
+ [`It depends on the data`,`The ordering holds for any two points.`,`Not knowing it's a general rule.`]
+]);
+Q('m4',0,`A colleague picks k in k-means by trying k = 1 to 50 and keeping whichever has the lowest total distance to centers. What happens?`,[
+ [`They'll always pick k = 50, since more clusters always reduce total distance`,`Adding a cluster never increases total distance; in the extreme, one cluster per point gives zero.`],
+ [`They'll find the true number of clusters`,`Total distance keeps falling past the true number.`,`Thinking lower error always means better.`],
+ [`They'll pick k = 1`,`k = 1 has the highest total distance.`,`Getting the direction backwards.`],
+ [`It depends on the starting centers`,`Starting centers change the details, not the overall downward trend.`,`Blaming randomness for a systematic effect.`]
+]);
+Q('m4',0,`Two k-means runs with the same data and k give different clusters. What's the best interpretation?`,[
+ [`Normal: k-means is a heuristic that depends on starting centers, so run several restarts and keep the best`,`It finds a good solution quickly but isn't guaranteed to find the best one.`],
+ [`The data has no real clusters`,`Even clear clusters can give different results from bad starts.`,`Treating instability as proof of no structure.`],
+ [`The distance measure is wrong`,`Any norm can give different local results.`,`Blaming the wrong component.`],
+ [`k is too large`,`Can happen at any k.`,`Guessing a cause without evidence.`]
+]);
+Q('m4',0,`When does the k-means loop stop?`,[
+ [`When no point changes clusters`,`If memberships don't change, the centers won't change, so it's reached a fixed point.`],
+ [`After a fixed number of rounds`,`Software may cap rounds as a safety net, but the real stopping rule is "nothing moved."`,`Confusing a practical limit with the method.`],
+ [`When total distance reaches zero`,`That only happens with one cluster per point.`,`Expecting a perfect fit.`],
+ [`When all clusters are the same size`,`Clusters can be any size.`,`Imagining a balancing rule that doesn't exist.`]
+]);
+Q('m4',0,`Customers are clustered on annual spend (thousands of dollars) and visits per year (tens), unscaled. What's most likely?`,[
+ [`Clusters are driven almost entirely by spend`,`Differences in spend are huge numbers, so they dominate every distance.`],
+ [`Clusters are driven by visits`,`Visits differ by small numbers, contributing little.`,`Getting the direction backwards.`],
+ [`k-means adjusts for units automatically`,`It doesn't; you must scale first.`,`Assuming software fixes it.`],
+ [`Both count equally because there are two attributes`,`Counting attributes isn't the same as weighting them equally.`,`Ignoring units.`]
+]);
+Q('m4',1,`You cluster unlabeled customers, a manager names each cluster "high value" or "low value," and you train a classifier on those names. What did you do?`,[
+ [`Unsupervised learning, then supervised learning, with labels that came from judgment`,`Clustering used no labels; the classifier did. The labels are opinions, not observed outcomes.`],
+ [`Supervised throughout, because the final model used labels`,`The first step had no labels.`,`Labeling the whole pipeline by its last step.`],
+ [`Unsupervised throughout, because the original data had no labels`,`Once labels exist, training on them is supervised.`,`Labeling the pipeline by its first step.`],
+ [`Cross-validation`,`Nothing here is validating.`,`Grabbing a familiar term.`]
+]);
+Q('m4',0,`Siting fire stations with k-means, one household is 12 miles from any center. Per the lecture, what should you do first?`,[
+ [`Find out what that point is and what grouping it means in reality`,`The "art of analytics": understand the situation before picking a technique.`],
+ [`Delete it and rerun`,`That's the quick default, but the lecture says investigate first.`,`Treating outliers as automatically disposable.`],
+ [`Increase k until it gets its own cluster`,`That spends a whole station on one household without thinking.`,`Solving a judgment problem with a parameter.`],
+ [`Keep it; removing real data is never allowed`,`Sometimes removing it is right — after you understand it.`,`Overcorrecting into a rigid rule.`]
+]);
+Q('m4',1,`Why does a far-away outlier distort a k-means solution?`,[
+ [`Centers are averages, so the outlier pulls its cluster's center toward itself, which can change other assignments`,`A mean is sensitive to extreme values, and the shifted center moves the boundaries.`],
+ [`k-means removes outliers automatically, losing data`,`It doesn't remove anything.`,`Imagining built-in outlier handling.`],
+ [`The outlier gets its own cluster no matter what`,`Only if k is large enough and it's far enough.`,`Overgeneralizing.`],
+ [`It changes the distance norm`,`The norm is a fixed choice.`,`Confusing data with settings.`]
+]);
+Q('m4',1,`The elbow diagram bends at k = 3, but the city has budget for exactly 5 new fire stations. What should you do?`,[
+ [`Use k = 5; the real-world constraint comes first`,`The lecture puts the qualitative answer (fit the situation) ahead of the quantitative one.`],
+ [`Use k = 3; the elbow is the objective answer`,`The elbow is a guide, not a rule that overrides the decision.`,`Treating a heuristic as authoritative.`],
+ [`Use k = 4 as a compromise`,`Neither the data nor the budget suggests 4.`,`Splitting the difference.`],
+ [`Rerun until the elbow moves to 5`,`That's forcing the data to agree.`,`Chasing a preferred answer.`]
+]);
+Q('m4',0,`Assigning a new point to the nearest k-means center looks like KNN. What's the key difference?`,[
+ [`KNN compares to real labeled points; cluster assignment compares to computed centers with no labels`,`KNN is supervised voting; cluster assignment uses averages of unlabeled groups.`],
+ [`KNN uses distance; k-means doesn't`,`Both use distance.`,`Missing the shared mechanism.`],
+ [`k-means is supervised; KNN is unsupervised`,`Reversed.`,`Mixing up the terms.`],
+ [`There's no difference`,`The labels make all the difference.`,`Focusing on surface similarity.`]
+]);
+Q('m4',1,`In the k-means loop, which step is the "expectation" step?`,[
+ [`Recomputing each center as the average of its points`,`Taking a mean is like computing an expectation.`],
+ [`Assigning each point to its nearest center`,`That's the step that minimizes distance (the "maximization" side).`,`Thinking "expect points to go to the closest group."`],
+ [`Choosing the starting centers`,`That's setup, not part of the loop.`,`Confusing setup with iteration.`],
+ [`Checking whether anything changed`,`That's the stopping check.`,`Guessing from step order.`]
+]);
+// ===== Module 5
+Q('m5',0,`A January temperature reading equals a typical July reading. What kind of outlier is it?`,[
+ [`Contextual`,`The value is ordinary; only its timing makes it odd.`],
+ [`Point`,`A point outlier is far from all values, regardless of time.`,`Ignoring the role of context.`],
+ [`Collective`,`That's a group of points that's odd together.`,`Mixing up the categories.`],
+ [`Not an outlier, since the value is within the normal range`,`It's normal overall, not for January.`,`Only looking at the value, not its context.`]
+]);
+Q('m5',0,`An EKG shows an expected heartbeat that never happens. What kind of outlier is this?`,[
+ [`Collective`,`No single value is wrong; the group of points is abnormal (by absence).`],
+ [`Point`,`No single extreme value exists.`,`Looking for one odd point.`],
+ [`Contextual`,`That's one ordinary value at the wrong time.`,`Close, but here nothing is present to be misplaced.`],
+ [`None, since no value is extreme`,`Absences can be anomalies.`,`Thinking outliers must be extreme values.`]
+]);
+Q('m5',0,`A colleague says, "The box plot found 4 outliers." What should you ask first?`,[
+ [`Where were the whiskers set?`,`Whiskers are a choice (10th/90th percentile, 1.5 × IQR, etc.), and they change the count.`],
+ [`Were they deleted?`,`Deciding what to do comes after understanding what was flagged.`,`Jumping straight to removal.`],
+ [`How many attributes does the data have?`,`A box plot looks at one attribute.`,`Irrelevant detail.`],
+ [`Can box plots find point outliers?`,`They can; that's what they're for.`,`Doubting the tool instead of its settings.`]
+]);
+Q('m5',1,`Medicine shipments are usually steady, but storms occasionally cause very long delays. The delays are real, recur, and underestimating them harms patients. What's the best approach?`,[
+ [`Model the chance of a disruption separately from shipping time under normal conditions`,`Two models: one for how likely a disruption is, one for the normal case. Each sees a consistent population.`],
+ [`Delete the storm delays as outliers`,`They're real, recurring, and costly, so deleting them makes the model too optimistic.`,`Treating "unusual" as "error."`],
+ [`Replace storm delays with the average`,`That hides exactly the risk that matters.`,`Using imputation on real data.`],
+ [`Cap them at the 90th percentile`,`Still understates the costly cases.`,`Softening extremes instead of modeling them.`]
+]);
+Q('m5',0,`In 1,000,000 roughly normal measurements, about 2,700 are more than 3 SDs from the mean. What does this suggest?`,[
+ [`It's expected randomness, not evidence of errors`,`About 0.27% of normal data falls beyond 3 SDs. Big datasets always contain extremes.`],
+ [`There are ~2,700 errors to remove`,`Being extreme isn't the same as being wrong.`,`Equating "rare" with "mistake."`],
+ [`The data isn't normal`,`That count is exactly what a normal distribution predicts.`,`Not knowing the expected rate.`],
+ [`The equipment is faulty`,`Nothing unexpected happened.`,`Looking for a cause where none is needed.`]
+]);
+Q('m5',1,`A sales spike is confirmed real, caused by a one-time news event nothing in your data could predict, and it's unlikely to recur. What's most appropriate?`,[
+ [`Remove it from the model's data and document why`,`Real but unpredictable one-offs can be removed, but record the reason in case it stops being a one-off.`],
+ [`Keep it, since removing real data always biases a model`,`A one-off the model can't explain will just distort its fit.`,`Applying "never remove real data" as an absolute.`],
+ [`Build a separate model to predict news spikes`,`Nothing in the data predicts them, so there's nothing to model.`,`Using the two-model approach where it can't work.`],
+ [`Replace it with the median`,`That invents data for a real event.`,`Treating a verified value like an error.`]
+]);
+Q('m5',0,`A detection method flags a possible outlier. What comes next?`,[
+ [`Investigate where the value came from and what happened at the time`,`Detection only produces candidates; the decision needs the cause.`],
+ [`Remove it`,`Premature; it could be your most informative data point.`,`Treating a flag as a verdict.`],
+ [`Impute a replacement`,`Only appropriate once you know it's an error.`,`Skipping the diagnosis.`],
+ [`Refit without it and keep whichever model scores better`,`That just picks whichever version looks better, without asking why.`,`Letting the score make a judgment call.`]
+]);
+Q('m5',1,`Which method is most likely to catch a normal-looking value that appears at the wrong time of year?`,[
+ [`Fit a time-series model and look for points with large errors`,`The model expects a specific value at each time, so a misplaced value produces a big error.`],
+ [`A box plot of all the values`,`The value sits comfortably inside the box, so a box plot can't see timing.`,`Thinking box plots catch every outlier type.`],
+ [`Remove the top and bottom 1% of values`,`The value isn't extreme overall.`,`Only thinking about extreme values.`],
+ [`Standardize the data and flag |z| > 3`,`Same problem: z-scores ignore timing.`,`Relying on value-only tests.`]
+]);
+Q('m5',1,`Which of the three data-prep problems is NOT fixed by transforming the values in a column?`,[
+ [`Extra columns that carry no useful information`,`That's about which columns you keep, fixed by removing or combining columns.`],
+ [`Attributes on very different scales`,`Scaling or standardizing transforms values.`,`Not recognizing scaling as a value transformation.`],
+ [`Extreme values`,`Handled point by point in the data.`,`Mixing up outliers and irrelevant columns.`],
+ [`All three are fixed by transforming values`,`Irrelevant columns need removal, not transformation.`,`Treating all prep as one kind of step.`]
+]);
+Q('m5',1,`A delivery-time model will be judged on how badly it underestimates the worst cases. Removing all long delays as "outliers" will most likely:`,[
+ [`Make the model too optimistic about delivery times`,`If big errors matter, real rare extremes belong in the data.`],
+ [`Improve it by removing noise`,`They're not noise if they're real and relevant.`,`Assuming "outlier" means "noise."`],
+ [`Have no effect`,`Removing the extreme cases changes exactly what's being judged.`,`Underestimating the influence of extremes.`],
+ [`Make it too pessimistic`,`Removing long delays pushes predictions down, not up.`,`Getting the direction wrong.`]
+]);
+// ===== Module 6
+Q('m6',0,`Why is a standard hypothesis test often a poor fit for catching a failing machine bearing?`,[
+ [`Waiting for statistically confident evidence can take longer than the bearing survives`,`With noisy data, confidence takes time. The right answer too late is useless, so change detection accepts some false alarms for speed.`],
+ [`Hypothesis tests can't use temperature data`,`They can; timing is the problem.`,`Thinking the data type is the issue.`],
+ [`The data isn't a time series`,`It is, and that's fine for both approaches.`,`Guessing a technical reason.`],
+ [`Hypothesis tests always give false alarms`,`They're designed to limit false alarms, which is what makes them slow.`,`Reversing the trade-off.`]
+]);
+Q('m6',0,`In CUSUM, what happens if you lower the threshold T?`,[
+ [`Changes are detected sooner, but false alarms become more common`,`Less evidence is needed before an alarm, for real and random changes alike.`],
+ [`False alarms become rarer`,`That's what raising T does.`,`Getting the direction backwards.`],
+ [`The running total stops accumulating`,`T only sets the alarm line; the total still accumulates.`,`Confusing T with C.`],
+ [`C has to be lowered to match`,`C and T are separate settings.`,`Thinking the two are linked.`]
+]);
+Q('m6',0,`μ = 50, C = 2, S<sub>t−1</sub> = 5, and x<sub>t</sub> = 54. What is S<sub>t</sub> (increase CUSUM)?`,[
+ [`7`,`max{0, 5 + (54 − 50 − 2)} = max{0, 7} = 7.`],
+ [`9`,`That forgets to subtract C.`,`Dropping the allowance.`],
+ [`2`,`That's just this period's contribution, without the previous total.`,`Forgetting it's a running sum.`],
+ [`4`,`That's only x − μ.`,`Skipping both C and the previous total.`]
+]);
+Q('m6',1,`μ = 100, C = 5, S<sub>t−1</sub> = 3, and x<sub>t</sub> = 90. What is S<sub>t</sub> (increase CUSUM)?`,[
+ [`0`,`3 + (90 − 100 − 5) = −12, and max{0, −12} = 0.`],
+ [`−12`,`The max with 0 stops it from going negative.`,`Forgetting the reset.`],
+ [`3`,`The total doesn't just hold steady; this period pulls it below 0, so it resets.`,`Thinking low readings are ignored rather than reset.`],
+ [`18`,`That's using μ − x + C, the wrong direction and sign.`,`Mixing up the increase and decrease formulas.`]
+]);
+Q('m6',0,`Which formula correctly detects a DECREASE in the mean?`,[
+ [`S<sub>t</sub> = max{0, S<sub>t−1</sub> + (μ − x<sub>t</sub> − C)}`,`Flip only the deviation. C is still subtracted, the floor is still 0, and T is still positive.`],
+ [`S<sub>t</sub> = max{0, S<sub>t−1</sub> + (μ − x<sub>t</sub> + C)}`,`Adding C gives a free push every period, so the total climbs on noise alone.`,`Thinking C's sign should flip along with the direction.`],
+ [`S<sub>t</sub> = min{0, S<sub>t−1</sub> + (x<sub>t</sub> − μ − C)}, alarm at −T`,`CUSUM doesn't flip into negatives. The decrease version still uses max with 0 and compares to a positive T; only the deviation flips.`,`Assuming a decrease means everything becomes negative.`],
+ [`S<sub>t</sub> = max{0, S<sub>t−1</sub> + (x<sub>t</sub> − μ + C)}`,`That's an increase detector with the wrong C sign.`,`Mixing up direction and allowance.`]
+]);
+Q('m6',1,`What would go wrong if CUSUM dropped the "max with 0" step?`,[
+ [`A long stretch of low readings would bank negative credit, delaying detection of a later increase`,`Low readings are irrelevant to whether an increase happens later; banking them makes the method slow.`],
+ [`It could never raise an alarm`,`It still could, just later.`,`Overstating the effect.`],
+ [`It would raise far more false alarms`,`Removing the floor makes it slower, not jumpier.`,`Getting the direction wrong.`],
+ [`Nothing; the reset is cosmetic`,`It's what makes CUSUM react quickly.`,`Not understanding the reset's purpose.`]
+]);
+Q('m6',1,`What happens with C = 0 on a process that hasn't changed at all?`,[
+ [`Random above-average readings keep adding up, so the total drifts upward and eventually crosses any T`,`About half of readings are above average by chance. With no allowance to drain the total, noise accumulates.`],
+ [`The total stays at 0`,`Every above-average reading adds to it.`,`Thinking no change means no accumulation.`],
+ [`It becomes more accurate`,`More sensitive, but at the cost of false alarms.`,`Equating sensitivity with accuracy.`],
+ [`It only detects decreases`,`C doesn't set direction.`,`Confusing C with the deviation's sign.`]
+]);
+Q('m6',0,`Stopping the production line to inspect is extremely expensive; a small undetected drift costs little. How should you set C and T?`,[
+ [`Raise them, accepting slower detection for fewer false alarms`,`When false alarms are the costly mistake, demand more evidence.`],
+ [`Lower them to catch changes faster`,`That increases the expensive mistake.`,`Assuming faster is always better.`],
+ [`Set C = 0 so all evidence counts`,`That causes more false alarms.`,`Misunderstanding C's role.`],
+ [`Run both increase and decrease CUSUMs`,`Two sides double the chances to alarm, adding false alarms.`,`Thinking more monitoring means more caution.`]
+]);
+Q('m6',0,`For which situation should you run BOTH an increase and a decrease CUSUM?`,[
+ [`A machined part's diameter, where too big or too small is a defect`,`Both directions matter, so watch both.`],
+ [`Server response time, where only slowdowns matter`,`Only one direction is a problem.`,`Monitoring both "just in case."`],
+ [`A bearing's temperature, where only overheating matters`,`One-sided is right here.`,`Same as above.`],
+ [`Contamination level, where only increases are harmful`,`One-sided.`,`Same as above.`]
+]);
+Q('m6',1,`Where should the expected value μ in CUSUM come from?`,[
+ [`A stretch of past data known to be normal, before any change`,`If μ is estimated from data that includes the change, the change gets hidden in the "normal" level.`],
+ [`The average of all available data`,`That may include the change you're trying to detect.`,`Thinking "more data = better μ."`],
+ [`Whatever value makes the alarm fire at the right time`,`That's tuning to a known answer.`,`Reverse-engineering settings.`],
+ [`Always 0`,`μ is the normal level of whatever you're measuring.`,`Confusing μ with the starting value S₀ = 0.`]
+]);
+Q('m6',0,`Which change-detection question is under genuine time pressure?`,[
+ [`Is this pump's temperature drifting toward failure?`,`Acting late is expensive, so the answer is needed now.`],
+ [`Did last quarter's discount raise sales?`,`This can be answered calmly with all the data.`,`Thinking all change questions are urgent.`],
+ [`Have voting patterns shifted over four elections?`,`Analysis, not urgent action.`,`Same as above.`],
+ [`Did a tax change increase hiring?`,`Evaluating a past action, not urgent.`,`Same as above.`]
+]);
+// ===== Module 7
+Q('m7',0,`Data from a cheap sensor jumps around a lot, even when nothing is wrong. Which α is a better starting point for exponential smoothing?`,[
+ [`A small α, like 0.1`,`Lots of noise means trust the past more, so put little weight on each new reading.`],
+ [`A large α, like 0.9`,`That trusts each noisy reading, so the baseline jumps around too.`,`Thinking "react quickly" is always good.`],
+ [`α = 1`,`That just copies the latest reading; no smoothing.`,`Not knowing what the extremes mean.`],
+ [`α = 0`,`The baseline would never update.`,`Taking "trust the past" to the extreme.`]
+]);
+Q('m7',1,`Software fits single exponential smoothing and returns α ≈ 1. What's the most likely explanation?`,[
+ [`The data has a trend or seasonal pattern the model can't handle, so copying the latest value is its best option`,`A fitted α near 1 is a hint to add trend/seasonality (Holt-Winters).`],
+ [`The data has almost no noise`,`Possible, but the more common cause is a missing component.`,`Reading α only as a noise meter.`],
+ [`The optimizer failed, since α must be below 0.5`,`α can be anywhere from 0 to 1.`,`Inventing a restriction.`],
+ [`The series is pure random noise`,`Pure noise would push α toward 0.`,`Getting the direction backwards.`]
+]);
+Q('m7',0,`A café's Saturday seasonal factor is 1.25. It sells 600 coffees on Saturday. What's baseline demand?`,[
+ [`480`,`600 ÷ 1.25 = 480. Divide to remove the seasonal bump.`],
+ [`750`,`That multiplies instead of dividing.`,`Applying the factor in the wrong direction.`],
+ [`575`,`That subtracts 25, treating 1.25 as an additive +25.`,`Mixing up multiplicative and additive seasonality.`],
+ [`600`,`That ignores the seasonal factor.`,`Forgetting to deseasonalize.`]
+]);
+Q('m7',1,`With α = 0.3, how much weight does the reading from 2 periods ago get in the baseline?`,[
+ [`0.147`,`α(1 − α)² = 0.3 × 0.49 = 0.147.`],
+ [`0.09`,`That's α², not α(1 − α)².`,`Mixing up which term gets the exponent.`],
+ [`0.49`,`That's (1 − α)², missing the α.`,`Dropping the leading α.`],
+ [`0`,`Old readings still count, through yesterday's baseline.`,`Thinking smoothing only uses today and yesterday.`]
+]);
+Q('m7',1,`In simple exponential smoothing with α = 0.2, what about a reading from 20 periods ago?`,[
+ [`It still has a small positive weight, carried inside the previous baseline`,`Weight = α(1 − α)²⁰, tiny but not zero. Every past reading counts, fading geometrically.`],
+ [`It has no effect; only today and yesterday matter`,`Yesterday's baseline contains all earlier readings.`,`Reading the formula too literally.`],
+ [`It has the same weight as today's reading`,`Weights shrink the further back you go.`,`Confusing it with a simple average.`],
+ [`It counts only if there's a trend`,`All versions weight past data this way.`,`Linking weights to trend.`]
+]);
+Q('m7',1,`In Holt-Winters, why does the seasonal update use C<sub>t−L</sub> instead of C<sub>t−1</sub>?`,[
+ [`You need the factor from the same point in the last cycle (last Monday, not yesterday)`,`Seasonal factors are tied to a position in the cycle.`],
+ [`C<sub>t−1</sub> hasn't been computed yet`,`It has; it's just the wrong day of the cycle.`,`Assuming a computation-order issue.`],
+ [`L stands for "lag," always 1`,`L is the cycle length (7 for weekly, 12 for monthly-yearly).`,`Misreading the symbol.`],
+ [`To make the trend smoother`,`Trend has its own term, T.`,`Mixing up components.`]
+]);
+Q('m7',0,`A sales series has seasonal swings that grow as overall sales grow. Which seasonality fits?`,[
+ [`Multiplicative`,`Growing swings mean the seasonal effect is a percentage of the level.`],
+ [`Additive`,`Additive swings stay the same size regardless of the level.`,`Mixing up the two definitions.`],
+ [`Neither; there's no seasonality`,`Repeating swings are seasonality.`,`Being thrown off by the changing size.`],
+ [`It depends only on the cycle length`,`Cycle length is separate from how swings scale.`,`Confusing L with seasonality type.`]
+]);
+Q('m7',0,`A fund manager wants to forecast how much daily returns will swing next week. Which method fits best?`,[
+ [`GARCH`,`The target is variance (how big the swings are), which is GARCH's job.`],
+ [`Holt-Winters`,`That forecasts values, not their spread.`,`Missing that the question is about uncertainty.`],
+ [`ARIMA on prices`,`ARIMA forecasts the value.`,`Same confusion.`],
+ [`CUSUM`,`CUSUM detects shifts; it doesn't forecast.`,`Mixing up detecting and forecasting.`]
+]);
+Q('m7',0,`Which ARIMA model is basic exponential smoothing?`,[
+ [`ARIMA(0, 1, 1)`,`Smoothing = new forecast = old forecast + α × last error: one difference (d = 1) and one past error (q = 1).`],
+ [`ARIMA(1, 0, 0)`,`That's a pure autoregressive model.`,`Linking "uses the past" to AR.`],
+ [`ARIMA(0, 1, 0)`,`That's a random walk.`,`Close, but missing the error term.`],
+ [`ARIMA(1, 1, 1)`,`Has an extra AR term.`,`Guessing that more terms = more general = correct.`]
+]);
+Q('m7',1,`Which statement is FALSE?`,[
+ [`Because ARIMA is more general, it always forecasts at least as well as exponential smoothing`,`More settings means more to estimate and more risk of overfitting, especially with short or spiky data.`],
+ [`Exponential smoothing is a special case of ARIMA`,`True: ARIMA(0, 1, 1).`,`Not remembering the connection.`],
+ [`ARIMA tends to do better on stable data`,`True, per the lecture.`,`Not recognizing a lecture fact.`],
+ [`ARIMA typically needs about 40+ data points`,`True as a rule of thumb.`,`Same.`]
+]);
+Q('m7',0,`The series 2, 5, 10, 17, 26 needs how many rounds of differencing to become flat?`,[
+ [`2`,`1st differences: 3, 5, 7, 9 (still rising). 2nd: 2, 2, 2 (flat).`],
+ [`1`,`First differences are still climbing.`,`Stopping too early.`],
+ [`0`,`The series clearly trends.`,`Not checking.`],
+ [`3`,`It's already flat after 2; more differencing just adds noise.`,`Over-differencing.`]
+]);
+Q('m7',1,`Why is shuffled k-fold cross-validation a poor way to judge a forecasting model?`,[
+ [`It trains on future data to predict the past, so the model effectively peeks`,`Nearby days are similar, so the score looks great but isn't realistic. Use walk-forward validation.`],
+ [`It uses too few folds`,`The number of folds isn't the problem.`,`Blaming a setting instead of the design.`],
+ [`It can't compute RMSE`,`It can compute any error measure.`,`Guessing.`],
+ [`It only works for classification`,`CV works for regression too; the issue is time order.`,`Misremembering scope.`]
+]);
+Q('m7',1,`Forecast errors over 4 weeks are +10, −10, +5, −5. The average error is 0. What does that tell you?`,[
+ [`Not much; errors cancel. Use MAE or RMSE to measure how far off it is`,`MAE = 7.5 here; the forecasts are off every week.`],
+ [`The model is perfect`,`Cancelling errors aren't zero errors.`,`Trusting the plain average.`],
+ [`The model is biased`,`Zero average error actually suggests no bias; it's the size that's hidden.`,`Mixing up bias and accuracy.`],
+ [`MAPE must also be 0`,`MAPE uses absolute values, so it's positive.`,`Not knowing how MAPE works.`]
+]);
+// ===== Module 8
+Q('m8',0,`Model A has AIC 210 and Model B has AIC 216 (same data). Which is true?`,[
+ [`A is preferred; B is about 5% as likely as A to be the better model`,`Lower AIC wins. e^((210 − 216)/2) = e^(−3) ≈ 0.05.`],
+ [`B is preferred because its AIC is higher`,`Lower is better.`,`Assuming higher scores are better.`],
+ [`They're equal because the difference is small`,`A 6-point gap is meaningful.`,`Underestimating AIC differences.`],
+ [`AICs can't be compared between models`,`They can, on the same data.`,`Over-applying "AIC alone means nothing."`]
+]);
+Q('m8',1,`With 3 million homes, a predictor has p < 0.0001, but its effect is about $0.40 on a $300,000 price. What's the right takeaway?`,[
+ [`Statistically significant but practically unimportant`,`Huge datasets make tiny effects "significant." Check size: coefficient × realistic change.`],
+ [`It's the most important predictor`,`The smallest p-value doesn't mean the biggest effect.`,`Treating p-values as effect size.`],
+ [`It proves the predictor causes the price`,`p-values say nothing about causation.`,`Reading significance as causation.`],
+ [`The model must be overfit`,`Nothing here indicates overfitting.`,`Blaming a familiar problem.`]
+]);
+Q('m8',0,`A regression finds that students with more tutoring have lower scores. What's the most likely explanation?`,[
+ [`Reverse causation: struggling students are the ones who get tutored`,`Regression shows association. Ask which came first.`],
+ [`Tutoring hurts learning`,`That assumes the arrow points from tutoring to scores.`,`Reading correlation as causation.`],
+ [`The coefficient has the wrong sign`,`The sign reflects the data honestly.`,`Distrusting the output instead of the interpretation.`],
+ [`Tutoring and scores are unrelated`,`They're clearly related, just not causally in that direction.`,`Confusing "not causal" with "not related."`]
+]);
+Q('m8',0,`A model includes an x² term. Why is it still "linear" regression?`,[
+ [`It's linear in the coefficients; x² is just another column of data`,`"Linear" refers to how coefficients enter the equation, not the shape of the curve.`],
+ [`Because x² is roughly linear for small x`,`That's not the reason.`,`Looking for an approximation argument.`],
+ [`It isn't; it's nonlinear regression`,`It is still linear regression.`,`Thinking "linear" means "straight line."`],
+ [`Because the response is continuous`,`That's true of regression generally, not the reason here.`,`Confusing regression vs. classification with linear vs. nonlinear.`]
+]);
+Q('m8',1,`A model has R² = 0.96 and adjusted R² = 0.58. What does this most suggest?`,[
+ [`Too many predictors for the data; likely overfitting`,`Adjusted R² charges for each predictor. A big gap means many aren't pulling their weight.`],
+ [`The model is excellent`,`The 0.96 is inflated by extra predictors.`,`Only reading plain R².`],
+ [`The response is categorical`,`Unrelated.`,`Guessing.`],
+ [`Adjusted R² was calculated wrong`,`A gap this size is a warning, not an error.`,`Distrusting the diagnostic.`]
+]);
+Q('m8',1,`A coefficient has p = 0.03. What does that mean?`,[
+ [`If the true coefficient were zero, an estimate this far from zero would happen about 3% of the time by luck`,`The p-value assumes "no effect" and asks how surprising your result would be.`],
+ [`There's a 3% chance the coefficient is zero`,`That's the most common misreading; p-values don't give the probability of the hypothesis.`,`Flipping the conditional.`],
+ [`There's a 97% chance the model is correct`,`p-values say nothing about the whole model being correct.`,`Treating 1 − p as confidence.`],
+ [`The predictor explains 3% of the response`,`That's what R²-type measures describe, not p.`,`Mixing up p-values and R².`]
+]);
+Q('m8',1,`An online shop's model: spend = … + 3·discount + 4·(discount × member). For members (member = 1), how much does one unit of discount add?`,[
+ [`7`,`Effect of discount = 3 + 4 × member = 3 + 4 = 7.`],
+ [`3`,`That's the effect for non-members only.`,`Reading the main coefficient alone when there's an interaction.`],
+ [`4`,`That's only the extra part for members.`,`Forgetting the base effect.`],
+ [`12`,`Multiplying the coefficients isn't how interactions work.`,`Misreading the interaction term.`]
+]);
+Q('m8',1,`An ad spending coefficient is 40 units per $1,000, from a model that also includes price and promotions. Ads and promotions usually rise together in practice. What does 40 describe?`,[
+ [`The change when only ads change and price and promotions stay fixed, which may differ from what happens in practice`,`Coefficients are "holding everything else fixed." In practice, other factors move together.`],
+ [`The total effect of a typical ad campaign, including promotions`,`That mixes in promotions' effect.`,`Forgetting "holding others fixed."`],
+ [`Proof that ads cause 40 more sales`,`Regression shows association.`,`Reading causation into a coefficient.`],
+ [`Nothing, because ads and promotions are correlated`,`The coefficient still has a meaning; you just need to interpret it carefully.`,`Overreacting to correlated predictors.`]
+]);
+Q('m8',0,`Why does regression square the errors instead of just adding them?`,[
+ [`Positive and negative errors would cancel out; squaring also penalizes big misses more`,`Without squaring, a terrible line could score zero.`],
+ [`To make the numbers bigger and easier to see`,`Size isn't the point.`,`Guessing a cosmetic reason.`],
+ [`Because errors are always negative`,`Errors can be either sign.`,`Misunderstanding errors.`],
+ [`To reduce the effect of outliers`,`Squaring does the opposite: it amplifies outliers.`,`Getting the side effect backwards.`]
+]);
+Q('m8',1,`You add a column of random numbers as a predictor. What happens to R² on the training data?`,[
+ [`It goes up or stays the same, never down`,`More freedom to fit always lets SSE shrink a little. That's why adjusted R² exists.`],
+ [`It goes down, since the predictor is useless`,`Plain R² can't penalize useless predictors.`,`Expecting R² to detect junk.`],
+ [`It stays exactly the same`,`It usually rises slightly by fitting noise.`,`Thinking random data has zero effect on the fit.`],
+ [`It becomes negative`,`Training R² for least squares with an intercept stays between 0 and 1.`,`Mixing up with other metrics.`]
+]);
+Q('m8',0,`With lots of data, how does BIC compare to AIC?`,[
+ [`BIC penalizes each extra parameter more, so it tends to pick simpler models`,`BIC's fee is ln(n) per parameter, bigger than AIC's 2 once n ≥ 8.`],
+ [`BIC always picks more complex models`,`Opposite.`,`Reversing the penalty.`],
+ [`They always agree`,`They often disagree; that's normal.`,`Thinking they're interchangeable.`],
+ [`BIC doesn't depend on the amount of data`,`It uses ln(n) directly.`,`Not knowing the formula.`]
+]);
+Q('m8',1,`Regressing umbrella sales on rainfall and rainfall on umbrella sales gives equally strong statistics. What does this show?`,[
+ [`The statistics can't tell you which direction cause flows; that needs outside knowledge`,`Correlation is symmetric. Direction comes from reasoning about the real world.`],
+ [`Umbrella sales cause rain`,`Obviously not, despite the matching statistics.`,`Trusting statistics about direction.`],
+ [`The regression is broken`,`It's working correctly; it just measures association.`,`Expecting regression to find causes.`],
+ [`Neither variable affects the other`,`Rain clearly affects umbrella sales.`,`Overcorrecting.`]
+]);
+// ===== Who picks the numbers
+Q('who',0,`In k-means, which value is NOT calculated by the algorithm?`,[
+ [`The number of clusters, k`,`You choose k (elbow + real constraints). The loop calculates the rest.`],
+ [`The cluster centers`,`Calculated as averages each round.`,`Thinking centers are placed by hand.`],
+ [`Each point's cluster`,`Calculated by nearest center.`,`Same.`],
+ [`The total distance to centers`,`Calculated from the result.`,`Same.`]
+]);
+Q('who',1,`R's HoltWinters() returns α = 0.31 even though you never gave it α. Where did 0.31 come from?`,[
+ [`It searched for the α with the smallest total squared one-step forecast error on your past data`,`When you don't fix α, the software fits it by minimizing squared forecast errors.`],
+ [`0.31 is a built-in default`,`It varies with your data.`,`Assuming software uses fixed defaults.`],
+ [`It picked the α with the highest R²`,`Holt-Winters fitting uses forecast error, not R².`,`Mixing up regression and smoothing.`],
+ [`It chose α so p-values are below 0.05`,`p-values aren't part of this fitting.`,`Assuming p-values drive every choice.`]
+]);
+Q('who',0,`How does linear regression software find the coefficients?`,[
+ [`By solving exact equations from setting the slope of the squared-error "bowl" to zero`,`Regression has an exact solution; the same data always gives the same answer.`],
+ [`By testing random lines until one looks good`,`No trial and error is needed for regression.`,`Assuming all fitting is a search.`],
+ [`By cross-validation`,`CV chooses between setups; it doesn't produce coefficients.`,`Mixing up choosing settings and fitting values.`],
+ [`The analyst picks coefficients to make p-values small`,`Coefficients come from the data, not the analyst.`,`Confusing learned values with settings.`]
+]);
+Q('who',1,`In R's ksvm() or Python's SVC, what happens if you make C much larger?`,[
+ [`The model tries harder to avoid training errors, so the margin tends to narrow`,`Software's C is the cost of errors, which works opposite to the lecture's λ.`],
+ [`The margin widens and more errors are allowed`,`That's large λ, or small C.`,`Assuming C works like λ.`],
+ [`Nothing unless you use a kernel`,`C matters for any soft-margin SVM.`,`Linking C to kernels.`],
+ [`The data gets scaled automatically`,`C has nothing to do with scaling.`,`Mixing up settings.`]
+]);
+Q('who',0,`Which value is usually chosen by the analyst using cross-validation?`,[
+ [`k in KNN`,`k is a setting; you test several and keep the best validation score.`],
+ [`The SVM coefficients`,`Calculated by the solver.`,`Mixing up learned values and settings.`],
+ [`The k-means centers`,`Calculated by the loop.`,`Same.`],
+ [`A box plot's median`,`Calculated from the data.`,`Same.`]
+]);
+Q('who',1,`A regression has R² = 0.64. What does this mean?`,[
+ [`The model removes 64% of the squared error you'd have by always guessing the average`,`R² = 1 − SSE/SST.`],
+ [`64% of predictions are exactly right`,`R² isn't a hit rate.`,`Reading R² like classification accuracy.`],
+ [`There's a 64% chance the predictors cause the response`,`R² says nothing about causation or probability.`,`Treating R² as a probability.`],
+ [`64% of coefficients are significant`,`That's unrelated.`,`Mixing up R² and p-values.`]
+]);
+// ===== Mixed: pick the right tool
+Q('mix',0,`A call center wants next week's hourly call volume. Volume has a daily pattern and has been growing steadily. Which approach fits best?`,[
+ [`Holt-Winters (triple exponential smoothing)`,`A value forecast with trend + seasonality.`],
+ [`k-means`,`Grouping, not forecasting.`,`Picking a familiar method.`],
+ [`CUSUM`,`Detects shifts; doesn't forecast.`,`Mixing up detection and forecasting.`],
+ [`SVM`,`Classifies into categories.`,`Same.`]
+]);
+Q('mix',0,`A bottling plant wants to know as early as possible if its average fill volume has shifted. Which approach fits best?`,[
+ [`CUSUM`,`"Has the process changed, and fast?" is change detection.`],
+ [`Holt-Winters`,`Forecasts values; doesn't flag shifts.`,`Confusing forecasting with detection.`],
+ [`KNN`,`Classifies new points.`,`Same.`],
+ [`Box plot`,`Flags individual odd points, not a shift in the process.`,`Confusing outliers with change.`]
+]);
+Q('mix',0,`A chain wants to group its 800 stores into similar types using sales mix and demographics, with no existing labels. Which approach fits best?`,[
+ [`k-means clustering, after scaling`,`Grouping without labels = clustering. Mixed units require scaling.`],
+ [`SVM`,`Needs labels.`,`Missing that there are no labels.`],
+ [`Linear regression`,`Predicts a number; doesn't group.`,`Same.`],
+ [`GARCH`,`Forecasts volatility.`,`Guessing.`]
+]);
+Q('mix',1,`A bank wants to estimate each applicant's probability of default, not just approve/deny. Which fits best?`,[
+ [`Logistic regression`,`It outputs a probability; the lecture points to it for exactly this.`],
+ [`SVM`,`SVM gives a side of the line, not a probability.`,`Thinking any classifier gives probabilities.`],
+ [`k-means`,`No labels are used.`,`Same.`],
+ [`CUSUM`,`Unrelated.`,`Same.`]
+]);
+Q('mix',0,`A team wants to know how many extra units each $1,000 of ads is associated with, controlling for price. Which fits best?`,[
+ [`Multiple linear regression`,`Reading a coefficient "holding others fixed" is regression's descriptive use.`],
+ [`KNN`,`Doesn't give interpretable coefficients.`,`Picking a predictive tool for a descriptive question.`],
+ [`k-means`,`Groups data; no effect sizes.`,`Same.`],
+ [`CUSUM`,`Unrelated.`,`Same.`]
+]);
+// R(module, title, prompt, [[point, [keywords...]], ...])
+R('m1','Three types of analytics questions',`Explain the three types of analytics questions and how to tell which one a question is.`,[
+ [`Descriptive: what happened / explains the past`,['descriptive','what happened','past']],
+ [`Predictive: what will happen / a value not yet observed`,['predictive','will happen','future','forecast']],
+ [`Prescriptive: what action to take, usually optimizing something`,['prescriptive','action','should','optimi','best']],
+ [`The shape of the answer decides the type, not the topic or method`,['shape','answer','not the topic','not the method']]
+]);
+R('m1','What "modeling" means',`Define modeling and describe the round trip, plus the three meanings of the word "model."`,[
+ [`Express the key parts of a real situation in math`,['key','situation','math']],
+ [`Analyze the math, then turn it back into a real recommendation`,['recommend','back','translate','interpret']],
+ [`"Model" can mean the method (e.g., regression)`,['method']],
+ [`…the method plus chosen variables, or the fitted equation with numbers`,['variable','fitted','equation','coefficient']]
+]);
+R('m2','SVM: margin and support vectors',`Explain how an SVM chooses its dividing line and what support vectors are.`,[
+ [`Many lines separate the data; SVM picks the widest margin (furthest from mistakes)`,['margin','widest','gap','furthest']],
+ [`Support vectors are the points the margin touches; only they define the line`,['support vector','touch','closest']],
+ [`Maximizing margin = minimizing the sum of squared coefficients`,['sum of squar','coefficient','minimi']],
+ [`Soft margin allows some errors when groups overlap, traded off with λ`,['soft','λ','lambda','trade','overlap','error']]
+]);
+R('m2','Unequal costs and λ',`How do SVMs handle one mistake being costlier than another, and what does λ control?`,[
+ [`Move the line away from the costly mistake`,['away','costly','shift','move']],
+ [`Or weight the error types differently in the objective`,['weight','penalt','multiplier']],
+ [`Large λ: wider margin, more training errors allowed`,['large','wide','more error','big']],
+ [`Small λ: fewer training errors, narrower margin, risk of overfitting`,['small','narrow','overfit','fewer']]
+]);
+R('m2','Scaling vs. standardization',`Why do mismatched units break models, and when do you scale vs. standardize?`,[
+ [`Big-unit attributes dominate (sum of squares / distances), so the model ignores others`,['dominat','units','ignore','scale','larger']],
+ [`Scaling: (x − min)/(max − min), gives 0–1`,['min','max','0 and 1','0-1','0 to 1']],
+ [`Standardization: (x − mean)/SD, gives mean 0, SD 1, unbounded`,['mean','standard deviation','sd','σ']],
+ [`Scale when a bounded range is needed; standardize for clustering/PCA; otherwise try both`,['bounded','neural','cluster','pca','try both']],
+ [`Use training-data statistics only`,['training','leak']]
+]);
+R('m2','k-nearest neighbors',`Describe how KNN classifies a new point and the choices you have to make.`,[
+ [`Find the k closest known points and take a majority vote`,['closest','nearest','vote','majority']],
+ [`No boundary is built; handles many classes easily`,['no boundary','no line','many class','multi']],
+ [`Choose distance measure and possibly attribute weights; scale first`,['distance','weight','scal']],
+ [`Choose k with validation`,['validat','cross']]
+]);
+R('m2','Data vocabulary',`Define data point, attribute, and response, and the main data types.`,[
+ [`Data point = a row; attribute/feature/predictor = a column`,['row','column']],
+ [`Response = the answer column; having it makes it supervised`,['response','outcome','answer','supervised']],
+ [`Quantitative (bigger means more) vs. categorical (labels, e.g., zip codes)`,['quantitative','categorical','zip']],
+ [`Binary, structured vs. unstructured, and time series`,['binary','structured','time series']]
+]);
+R('m3','Why training scores lie',`Why is a model's performance on its own training data too optimistic?`,[
+ [`Data contains real effects and random effects`,['real effect','random effect','real','random']],
+ [`The model fits both, since it can't tell them apart`,['fit','both','can\'t tell','cannot tell']],
+ [`Only real effects repeat in new data, so performance drops`,['new data','repeat','drop','worse']]
+]);
+R('m3','Training, validation, and test sets',`Explain the job of each set and why you need all three.`,[
+ [`Training: build the model(s)`,['training','build','fit']],
+ [`Validation: compare models and choose one`,['validation','compare','choose','pick']],
+ [`Test: estimate the chosen model's true performance`,['test','estimate','true']],
+ [`The winner's validation score is inflated because picking the best picks luck`,['luck','inflat','optimistic','best','max']],
+ [`Only one model: skip validation. Choosing with a test set makes it a validation set`,['one model','skip','becomes']]
+]);
+R('m3','k-fold cross-validation',`Walk through k-fold cross-validation and what happens after.`,[
+ [`Split train+validation data into k parts`,['split','parts','fold']],
+ [`Train on k−1 parts, validate on the remaining one; rotate k times`,['k-1','k − 1','rotate','each part','held out']],
+ [`Average the k scores to compare models`,['average','mean']],
+ [`Retrain the chosen setup on all the data (don't use a fold model)`,['retrain','all the data','all data']],
+ [`Then score once on the test set`,['test']]
+]);
+R('m4','Distance norms',`Explain the 1-, 2-, and ∞-norms and when each matches reality.`,[
+ [`1-norm: add the differences (city grid; one motion after another)`,['1-norm','manhattan','add','sum','grid','sequential']],
+ [`2-norm: straight-line (Euclidean)`,['2-norm','euclid','straight']],
+ [`∞-norm: the largest single difference (motions at the same time)`,['∞','infinity','largest','max','simultaneous','same time']],
+ [`General p-norm formula; ∞ ≤ 2 ≤ 1`,['p-norm','minkowski','formula']]
+]);
+R('m4','The k-means algorithm',`Describe the k-means loop and its limitations.`,[
+ [`Pick k starting centers`,['start','initial','pick k']],
+ [`Assign each point to the nearest center`,['assign','nearest','closest']],
+ [`Move each center to the average of its points; repeat until nothing changes`,['average','mean','centroid','until','no change','repeat']],
+ [`It's a heuristic: not guaranteed best, so use several restarts`,['heuristic','restart','not guaranteed','several']]
+]);
+R('m4','Choosing k and handling outliers in clustering',`How should you choose k, and what should you do with an outlier in k-means?`,[
+ [`Total distance always falls as k rises, so it can't choose k`,['always','falls','decreas','more cluster']],
+ [`Use the elbow diagram (where gains flatten)`,['elbow']],
+ [`Real-world constraints come first (e.g., budget)`,['constraint','budget','situation','real']],
+ [`Outlier: investigate what it is before removing (art of analytics)`,['investigat','understand','what it is','art']]
+]);
+R('m4','Supervised vs. unsupervised',`Explain supervised vs. unsupervised learning with examples.`,[
+ [`Supervised: correct answers (response) known, e.g., classification`,['supervised','known','label','classification']],
+ [`Unsupervised: no response, attributes only, e.g., clustering`,['unsupervised','no label','no response','clustering']],
+ [`Both can produce groups; the difference is what you knew going in`,['difference','knew','know']]
+]);
+R('m5','Types of outliers and finding them',`Describe the types of outliers and how to find them.`,[
+ [`Point: one value far from the rest`,['point']],
+ [`Contextual: normal value at the wrong time/place`,['contextual','context','wrong time']],
+ [`Collective: a group that's odd together (e.g., missing heartbeat)`,['collective','group','missing']],
+ [`Box plot for one attribute (whiskers are a choice)`,['box','whisker','percentile']],
+ [`Fit a model and look for big errors (catches contextual outliers)`,['model','error','residual']]
+]);
+R('m5','What to do with an outlier',`A point is flagged as an outlier. Walk through what you do.`,[
+ [`Investigate the cause first; detection only gives candidates`,['investigat','cause','first','where it came']],
+ [`Error (sensor, typo, contamination) → remove or impute`,['error','remove','impute','sensor','typo']],
+ [`Real extremes are expected in big data; keep them if big errors matter`,['real','expected','keep','optimistic']],
+ [`Real and predictable → two models (chance of event + normal case)`,['two model','second model','probability','logistic']],
+ [`Real but unpredictable one-off → may remove, but document why`,['one-off','document','one off','record']]
+]);
+R('m6','The change-detection trade-off',`What is change detection for, and what's its central trade-off?`,[
+ [`Determine whether a process has changed (usually time series)`,['changed','change','time']],
+ [`Hypothesis tests can be too slow with noisy data`,['hypothesis','slow','too late','noise']],
+ [`Detecting sooner means more false alarms, and vice versa`,['sooner','false alarm','false positive','trade']],
+ [`Choose settings based on which mistake costs more`,['cost']]
+]);
+R('m6','CUSUM',`Write the CUSUM formula and explain each piece.`,[
+ [`S_t = max{0, S_(t−1) + (x_t − μ − C)}; alarm when S_t ≥ T`,['max','s_t','st','x_t','xt','formula']],
+ [`Running total accumulates evidence over time`,['running','accumulat','sum','total']],
+ [`C removes normal noise each period; larger C = less sensitive`,['noise','allowance','sensitiv']],
+ [`Reset to 0 so low readings don't delay detection`,['reset','zero','negative']],
+ [`T = threshold; lower T = faster but more false alarms. For decreases flip only the deviation`,['threshold','decrease','μ − x','flip']]
+]);
+R('m7','Exponential smoothing and α',`Explain exponential smoothing, how to choose α, and why it's called "exponential."`,[
+ [`S_t = α·x_t + (1 − α)·S_(t−1): blend today's reading with yesterday's baseline`,['blend','weighted','α','alpha','baseline']],
+ [`Noisy data → small α; clean data → large α`,['noisy','small','large']],
+ [`Weights on past data shrink geometrically: α(1 − α)^k; all past data counts`,['exponential','shrink','decay','(1-α)','(1 − α)','all past']],
+ [`Software can fit α by minimizing squared forecast errors`,['minimi','squared','fit']]
+]);
+R('m7','Holt-Winters',`Explain how trend and seasonality are added (Holt-Winters) and how forecasts are made.`,[
+ [`Trend T_t smoothed with β`,['trend','β','beta']],
+ [`Seasonal factor C_t smoothed with γ, using the same point last cycle (t − L)`,['season','γ','gamma','t-l','t − l','cycle']],
+ [`Multiplicative (swings grow with level) vs. additive`,['multiplicative','additive']],
+ [`Forecast = (S_t + T_t) × seasonal factor`,['forecast','s_t + t_t','×']]
+]);
+R('m7','ARIMA and GARCH',`Explain ARIMA's p, d, q and what GARCH is for.`,[
+ [`d = number of differences to remove drift (make it stationary)`,['difference','stationary']],
+ [`p = past values (autoregression); q = past errors (moving average)`,['past value','autoregress','past error','moving average']],
+ [`Exponential smoothing = ARIMA(0,1,1); ARIMA not always better`,['0,1,1','(0, 1, 1)','0, 1, 1']],
+ [`GARCH forecasts variance/volatility, not the value; no differencing`,['garch','variance','volatil']]
+]);
+R('m7','Judging a forecast',`How should you validate and score a forecasting model?`,[
+ [`Never shuffle; only use past data to predict the future`,['shuffle','future','past']],
+ [`Walk-forward: train on history, forecast next period, repeat`,['walk','rolling','forward']],
+ [`MAE, RMSE (punishes big misses), MAPE (percent; breaks at zero)`,['mae','rmse','mape']],
+ [`Must beat naive benchmarks`,['naive','benchmark']]
+]);
+R('m8','Least squares',`Explain how regression finds the best line and why errors are squared.`,[
+ [`Error = actual − predicted`,['actual','predict','residual']],
+ [`Minimize the sum of squared errors (SSE)`,['sum of squar','sse','minimi']],
+ [`Squaring stops cancelling and punishes big misses (sensitive to outliers)`,['cancel','big','outlier','punish']],
+ [`Solved exactly (derivatives set to zero); equals max likelihood with normal errors`,['derivative','exact','likelihood','zero']]
+]);
+R('m8','AIC and BIC',`Explain AIC and BIC and how to compare models with them.`,[
+ [`Reward good fit but charge a penalty per parameter (fights overfitting)`,['penalt','parameter','overfit','complex']],
+ [`Lower is better; only compare on the same data`,['lower','same data']],
+ [`Relative likelihood = e^((AIC_low − AIC_high)/2)`,['relative','e^','exp']],
+ [`BIC penalizes more (ln n), favoring simpler models`,['bic','ln','stricter','simpler']]
+]);
+R('m8','p-values and R²',`Explain what p-values, R², and adjusted R² tell you (and don't).`,[
+ [`p-value: chance of an estimate this extreme if the true coefficient were 0`,['if the true','zero','luck','chance']],
+ [`p < 0.05 common cutoff; huge data makes tiny effects significant; check practical size`,['0.05','practical','huge','large data']],
+ [`R² = share of variation explained (1 − SSE/SST)`,['r²','r2','r-squared','variation','explained']],
+ [`Adjusted R² penalizes extra predictors; plain R² always rises`,['adjusted','always','penal']]
+]);
+R('m8','Correlation vs. causation',`When can you claim one thing causes another?`,[
+ [`Regression shows correlation/association, not causation`,['correlation','association','not causation']],
+ [`Cause comes before effect`,['before']],
+ [`There's a sensible mechanism`,['makes sense','sensible','mechanism','plausib']],
+ [`No hidden third factor (confounder); randomized experiments help`,['third','confound','hidden','random']]
+]);
+R('m8','Transformations and interactions',`Explain how regression handles curves and interactions.`,[
+ [`Add new columns like x², log x`,['x²','x^2','x2','log','squared']],
+ [`Still "linear" because it's linear in the coefficients`,['linear in','coefficient']],
+ [`Interaction: add x₁·x₂; effect of x₁ = a₁ + a₃x₂`,['interaction','x1','x₁','multipl','product']],
+ [`Box-Cox can transform the response`,['box-cox','box cox','response']]
+]);
+R('who','Who picks the numbers?',`Which numbers does software calculate, which do you choose, and how do analysts choose?`,[
+ [`Learned values (coefficients, centers, α if fitted) come from math on the data`,['learned','calculat','coefficient','center','fitted']],
+ [`Settings (k, λ/C, C and T, variables) are chosen by the analyst`,['setting','hyperparameter','choose']],
+ [`Choose using validation/CV, AIC/BIC, elbow, costs, constraints, domain knowledge`,['validat','aic','elbow','cost','constraint','domain']],
+ [`Never choose settings using the test set`,['test']]
+]);
+
+</script>
+<script>
+(function(){
+const MODS={m1:'Module 1 · Foundations',m2:'Module 2 · Classification',m3:'Module 3 · Validation',m4:'Module 4 · Clustering',m5:'Module 5 · Preparing data',m6:'Module 6 · Change detection',m7:'Module 7 · Time series',m8:'Module 8 · Regression',who:'Who picks the numbers',mix:'Pick the right tool'};
+const SHORT={m1:'M1 Foundations',m2:'M2 Classification',m3:'M3 Validation',m4:'M4 Clustering',m5:'M5 Data prep',m6:'M6 Change detection',m7:'M7 Time series',m8:'M8 Regression',who:'Who picks',mix:'Right tool'};
+const MOD_KEYS=Object.keys(MODS);
+const DAY=864e5, TOUGH_GAP=5*DAY;
+// stable ids
+const cnt={}; QS.forEach(q=>{cnt[q.m]=(cnt[q.m]||0)+1; q.id=q.m+'-'+cnt[q.m];});
+const rcnt={}; RC.forEach(r=>{rcnt[r.m]=(rcnt[r.m]||0)+1; r.id='r-'+r.m+'-'+rcnt[r.m];});
+const SESSION=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const KEY='midterm-practice-m1-8-v1';
+let st={v:1,updatedAt:0,q:{},r:{}};
+try{ const raw=localStorage.getItem(KEY); if(raw){ const p=JSON.parse(raw); if(p&&p.q&&p.r) st=p; } }catch(e){}
+const $=s=>document.querySelector(s);
+const main=$('#main');
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function shuffle(a){a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;}
+function save(){
+  st.updatedAt=Date.now();
+  try{ localStorage.setItem(KEY,JSON.stringify(st)); }catch(e){}
+  }
+function setSync(t){ const el=$('#sync'); if(el) el.textContent=t; }
+// ---------- status
+function qStatus(q){
+  const e=st.q[q.id]; if(!e) return 'new';
+  if(e.s==='wrong' && e.last!==SESSION) return 'missed';
+  if(e.s==='retry' && e.last!==SESSION) return 'retried';
+  if(e.s==='mastered' && q.tough && (e.n||0)<3 && Date.now()-(e.at||0)>TOUGH_GAP && e.last!==SESSION) return 'due';
+  return e.s;
+}
+function rStatus(r){
+  const e=st.r[r.id]; if(!e) return 'new';
+  if(e.s==='review' && e.last===SESSION) return 'locked';
+  return e.s; // 'solid' | 'review'
+}
+function answeredNow(q){ const e=st.q[q.id]; return e && e.last===SESSION; }
+function recordAnswer(q,correct){
+  const e=st.q[q.id]||{n:0};
+  const prev=qStatus(q);
+  if(correct){
+    let n=(['new','missed','retried'].includes(prev))?1:(e.n||0)+1;
+    let s=(!q.tough||n>=2)?'mastered':'review';
+    st.q[q.id]={s,n,last:SESSION,at:Date.now()};
+  } else {
+    st.q[q.id]={s:'wrong',n:0,last:SESSION,at:Date.now()};
+  }
+  save();
+}
+function markRetry(q){ st.q[q.id]={s:'retry',n:0,last:SESSION,at:Date.now()}; save(); }
+// ---------- tabs
+let tab='exam';
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  if(exam && exam.active && b.dataset.tab!=='exam'){ confirmDlg('Leave the exam? Your answers so far are saved, but the timer stops and the rest of this exam ends.','Leave exam',()=>{endExam(true); switchTab(b.dataset.tab);}); return; }
+  switchTab(b.dataset.tab);
+}));
+function switchTab(t){ tab=t; document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t))); render(); window.scrollTo(0,0); }
+function render(){ if(tab==='exam') renderExam(); else if(tab==='recall') renderRecall(); else renderProgress(); }
+// ---------- dialog
+function confirmDlg(msg,okLabel,onOk,cancelLabel='Cancel'){
+  const d=$('#dlg'); $('#dlg-msg').textContent=msg; const a=$('#dlg-actions'); a.innerHTML='';
+  const ok=document.createElement('button'); ok.className='btn'; ok.textContent=okLabel; ok.onclick=()=>{d.close(); onOk();};
+  a.appendChild(ok);
+  if(cancelLabel){ const c=document.createElement('button'); c.className='btn quiet'; c.textContent=cancelLabel; c.onclick=()=>d.close(); a.appendChild(c); }
+  if(d.showModal) d.showModal(); else if(confirm(msg)) onOk();
+}
+// ---------- exam
+let exam=null; let setup={mods:new Set(MOD_KEYS),n:20,incMastered:false};
+function available(){
+  return QS.filter(q=>setup.mods.has(q.m) && !answeredNow(q) && (setup.incMastered || qStatus(q)!=='mastered'));
+}
+function renderExam(){
+  if(exam && exam.active) return renderQuestion();
+  if(exam && exam.done) return renderSummary();
+  const av=available(); const cntS=s=>av.filter(q=>qStatus(q)===s).length;
+  const missed=cntS('missed'), retried=cntS('retried'), due=cntS('review')+cntS('due'), toughNew=av.filter(q=>q.tough&&qStatus(q)==='new').length;
+  const pr=[missed?`${missed} you missed before`:'',retried?`${retried} you asked to retry`:'',due?`${due} tough question${due>1?'s':''} due for another round`:''].filter(Boolean);
+  const n=setup.n==='all'?av.length:Math.min(setup.n,av.length);
+  main.innerHTML=`<section class="panel">
+    <h2>Start a timed practice exam</h2>
+    <p class="small" style="margin-top:0">One minute per question. Pick an answer, then press <b>Submit final answer</b> to lock it in and see why each option is right or wrong.</p>
+    <h3>Modules</h3>
+    <div class="chips" id="modchips">${MOD_KEYS.map(k=>`<button class="chip" data-m="${k}" aria-pressed="${setup.mods.has(k)}">${SHORT[k]}</button>`).join('')}</div>
+    <div class="row" style="margin-top:8px"><button class="btn quiet" id="allm">Select all</button><button class="btn quiet" id="nonem">Clear</button></div>
+    <h3>Number of questions</h3>
+    <div class="chips" id="nchips">${[10,20,40,60,'all'].map(v=>`<button class="chip" data-n="${v}" aria-pressed="${setup.n===v}">${v==='all'?'All available':v}</button>`).join('')}</div>
+    <label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(a wrong answer resets them)</span></span></label>
+    <div class="note">${av.length} questions available. Each exam is a fresh random draw, weighted toward ${pr.length?pr.join(', ')+', and ':''}tough questions (${toughNew} not yet tried). This exam: <b>${n} question${n===1?'':'s'}, ${n} minute${n===1?'':'s'}</b>.</div>
+    <div class="actions"><button class="btn" id="go" ${n?'':'disabled'}>Start exam (${n} min)</button></div>
+    ${av.length===0?`<p class="small">Nothing left in the selected modules for this session. Wrong answers come back the next time you open this page, or turn on "Include questions I've already mastered."</p>`:''}
+  </section>
+  <section class="panel"><h2>How it works</h2>
+   <ul class="small" style="padding-left:18px;margin:0">
+    <li>Every exam is a new random draw. Questions you missed, asked to retry, or marked tough are much more likely to be picked, and so are modules where you're struggling.</li>
+    <li>A correct answer counts toward your comfort score.</li>
+    <li>A wrong answer resets that question and gives it top priority the next time you open this page.</li>
+    <li>Tough questions (marked) must be answered correctly in two separate sessions, and return once more after 5 days.</li>
+    <li>After a correct answer, <b>Ask me again next time</b> resets it so you can re-test yourself later.</li>
+   </ul></section>`;
+  document.querySelectorAll('#modchips .chip').forEach(c=>c.onclick=()=>{const m=c.dataset.m; setup.mods.has(m)?setup.mods.delete(m):setup.mods.add(m); renderExam();});
+  $('#allm').onclick=()=>{setup.mods=new Set(MOD_KEYS); renderExam();};
+  $('#nonem').onclick=()=>{setup.mods=new Set(); renderExam();};
+  document.querySelectorAll('#nchips .chip').forEach(c=>c.onclick=()=>{const v=c.dataset.n; setup.n=v==='all'?'all':+v; renderExam();});
+  $('#incm').onchange=e=>{setup.incMastered=e.target.checked; renderExam();};
+  $('#go').onclick=()=>startExam(n);
+}
+function startExam(n){
+  const av=available();
+  const W={missed:8,retried:6,due:6,review:6,new:1,mastered:0.4};
+  const weak={}; MOD_KEYS.forEach(m=>{const qq=QS.filter(q=>q.m===m); weak[m]=qq.length?qq.filter(q=>['missed','review','due'].includes(qStatus(q))).length/qq.length:0;});
+  const weight=q=>{const s=qStatus(q); let w=W[s]||1; if(s==='new'&&q.tough) w=3; return w*(1+2*weak[q.m]);};
+  const picked=av.map(q=>({q,k:Math.pow(Math.random(),1/weight(q))})).sort((a,b)=>b.k-a.k).slice(0,n).map(x=>x.q);
+  const list=shuffle(picked).map(q=>({q,st0:qStatus(q),order:shuffle(q.opts.map((_,i)=>i)),pick:null,submitted:false,correct:null}));
+  exam={active:true,done:false,items:list,i:0,total:n*60,left:n*60,timed:true,started:Date.now()};
+  exam.tick=setInterval(()=>{ if(!exam.timed) return; exam.left--; updateClock(); if(exam.left<=0){ exam.left=0; timeUp(); } },1000);
+  renderQuestion();
+}
+function fmt(s){const m=Math.floor(s/60), r=s%60; return m+':'+String(r).padStart(2,'0');}
+function updateClock(){
+  const c=$('#clock'); if(!c) return;
+  if(!exam.timed){ c.textContent='Untimed'; c.classList.remove('low'); }
+  else { c.textContent=fmt(exam.left); c.classList.toggle('low',exam.left<=60); }
+  const t=$('#trk'); if(t) t.style.width=(100*(1-exam.left/exam.total))+'%';
+}
+function timeUp(){
+  clearInterval(exam.tick); exam.timed=false;
+  const left=exam.items.filter(it=>!it.submitted).length;
+  if(left===0){ endExam(); return; }
+  confirmDlg(`Time's up. You have ${left} question${left>1?'s':''} left. On the real exam, time would be over.`,'See results',()=>endExam(),null);
+  const a=$('#dlg-actions'); const k=document.createElement('button'); k.className='btn quiet'; k.textContent='Keep going without the clock'; k.onclick=()=>{$('#dlg').close(); updateClock();}; a.appendChild(k);
+}
+function endExam(silent){ if(!exam) return; clearInterval(exam.tick); exam.active=false; exam.done=!silent; exam.used=Math.round((Date.now()-exam.started)/1000); if(silent) exam=null; render(); }
+function renderQuestion(){
+  const it=exam.items[exam.i], q=it.q; const L='ABCD';
+  const answered=exam.items.filter(x=>x.submitted).length;
+  const correctIdx=0;
+  let html=`<div class="timerbar"><div class="timerrow"><div><span class="clock" id="clock"></span> <span class="small">left</span></div>
+    <div class="small">Question ${exam.i+1} of ${exam.items.length} · ${answered} answered</div>
+    <button class="btn quiet" id="endbtn" style="min-height:36px;padding:6px 12px">End exam</button></div><div class="track"><i id="trk"></i></div></div>
+  <section class="panel">
+    <div class="qmeta"><span class="tag">${MODS[q.m]}</span>${q.tough?'<span class="tag tough">Tough: needs 2 sessions</span>':''}${{missed:'<span class="tag" style="background:var(--bad-bg);color:var(--bad)">Missed last time</span>',retried:'<span class="tag">You asked to retry this</span>',review:'<span class="tag">Second round</span>',due:'<span class="tag">5-day check</span>'}[it.st0]||''}</div>
+    <p class="qtext">${q.q}</p><div class="opts">`;
+  it.order.forEach((oi,pos)=>{
+    const o=q.opts[oi]; let cls='opt'; if(it.submitted){cls+=' locked'; if(oi===correctIdx) cls+=' right'; else if(oi===it.pick) cls+=' wrong';}
+    html+=`<button class="${cls}" data-oi="${oi}" aria-pressed="${it.pick===oi}" ${it.submitted?'aria-disabled="true"':''}><span class="lbl">${L[pos]}.</span>${o[0]}`;
+    if(it.submitted){
+      if(oi===correctIdx) html+=`<div class="fb"><b class="k">✓ Correct answer${oi===it.pick?' (your pick)':''}</b>${o[1]}</div>`;
+      else html+=`<div class="fb"><b class="k">✗ ${oi===it.pick?'Your pick: why it\'s wrong':'Why it\'s wrong'}</b>${o[1]}<span class="mis"><b>Misconception behind it:</b> ${o[2]||''}</span></div>`;
+    }
+    html+=`</button>`;
+  });
+  html+=`</div>`;
+  if(!it.submitted){
+    html+=`<div class="actions"><button class="btn" id="submit" ${it.pick===null?'disabled':''}>Submit final answer</button><button class="btn quiet" id="skip">Skip for now</button></div>`;
+  } else {
+    const e=st.q[q.id]||{};
+    html+=`<p class="verdict ${it.correct?'ok':'no'}">${it.correct?'Correct.':'Not quite. This question will come back next time you open the page.'}</p>`;
+    if(it.correct){
+      if(e.s==='retry') html+=`<p class="small">Reset: this question will be asked again next time.</p>`;
+      else if(e.s==='review') html+=`<p class="small">Tough question: answer it correctly again in a future session to master it.</p>`;
+      else html+=`<p class="small">Mastered. It counts toward your comfort score.</p>`;
+    }
+    html+=`<div class="actions"><button class="btn" id="next">${exam.i<exam.items.length-1||exam.items.some(x=>!x.submitted)?'Next question':'See results'}</button>${it.correct&&e.s!=='retry'?'<button class="btn ghost" id="retry">Ask me again next time</button>':''}</div>`;
+  }
+  html+=`</section>`;
+  main.innerHTML=html; updateClock();
+  $('#endbtn').onclick=()=>confirmDlg('End the exam now? Unanswered questions stay available for later.','End exam',()=>endExam());
+  if(!it.submitted){
+    document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{it.pick=+b.dataset.oi; renderQuestion();});
+    $('#submit').onclick=()=>{ if(it.pick===null) return; it.submitted=true; it.correct=(it.pick===correctIdx); recordAnswer(q,it.correct); renderQuestion(); };
+    $('#skip').onclick=()=>{ const x=exam.items.splice(exam.i,1)[0]; exam.items.push(x); if(exam.items[exam.i].submitted) goNext(); else renderQuestion(); };
+  } else {
+    $('#next').onclick=goNext;
+    const r=$('#retry'); if(r) r.onclick=()=>{ markRetry(q); renderQuestion(); };
+  }
+}
+function goNext(){
+  const n=exam.items.length;
+  for(let k=1;k<=n;k++){ const j=(exam.i+k)%n; if(!exam.items[j].submitted){ exam.i=j; renderQuestion(); window.scrollTo(0,0); return; } }
+  endExam();
+}
+function renderSummary(){
+  const done=exam.items.filter(x=>x.submitted), right=done.filter(x=>x.correct), wrong=done.filter(x=>!x.correct);
+  const pct=done.length?Math.round(100*right.length/done.length):0;
+  main.innerHTML=`<section class="panel"><h2>Exam results</h2>
+    <p class="big">${right.length} / ${done.length}</p><p class="small">${pct}% correct · ${exam.items.length-done.length} not answered · time used ${fmt(Math.min(exam.used,exam.total))} of ${fmt(exam.total)}</p>
+    ${wrong.length?`<h3>Review these (they'll come back next session)</h3><ol class="sum-list">${wrong.map(x=>`<li><span class="tag">${SHORT[x.q.m]}</span> ${x.q.q}<br><span class="small"><b>Answer:</b> ${x.q.opts[0][0]}</span></li>`).join('')}</ol>`:'<p>No misses this round.</p>'}
+    <div class="actions"><button class="btn" id="again">Start another exam</button><button class="btn quiet" id="prog">See progress</button></div></section>`;
+  $('#again').onclick=()=>{exam=null; renderExam();};
+  $('#prog').onclick=()=>{exam=null; switchTab('progress');};
+}
+// ---------- recall
+let drill=null;
+function renderRecall(){
+  if(drill) return renderDrill();
+  let html=`<section class="panel"><h2>Write what you know</h2>
+  <p class="small" style="margin-top:0">Pick a concept and write everything you remember, without looking. Then check it against the key points. If you miss any, review them and try again the next time you open this page.</p></section>`;
+  MOD_KEYS.forEach(m=>{
+    const rs=RC.filter(r=>r.m===m); if(!rs.length) return;
+    html+=`<section class="panel"><h2 style="font-size:1.1rem">${MODS[m]}</h2><div class="clist">`;
+    rs.forEach(r=>{ const s=rStatus(r); const lab={new:'Not tried',solid:'Solid',review:'Needs another try',locked:'Try again next session'}[s];
+      html+=`<button class="citem" data-r="${r.id}" ${s==='locked'?'disabled':''}><span>${r.title}</span><span class="st ${s}">${lab}</span></button>`; });
+    html+=`</div></section>`;
+  });
+  main.innerHTML=html;
+  document.querySelectorAll('.citem').forEach(b=>b.onclick=()=>{ drill={r:RC.find(x=>x.id===b.dataset.r),text:'',checked:false}; renderDrill(); window.scrollTo(0,0); });
+}
+function matchPoints(r,text){ const t=text.toLowerCase(); return r.points.map(p=>p[1].some(k=>t.includes(k.toLowerCase()))); }
+function renderDrill(){
+  const r=drill.r, e=st.r[r.id];
+  let html=`<section class="panel"><div class="qmeta"><span class="tag">${MODS[r.m]}</span><span class="tag">${esc(r.title)}</span></div>
+    <p class="qtext">${r.prompt}</p>`;
+  if(e && e.s==='review' && e.missed && !drill.checked) html+=`<div class="note">Last time you missed: ${e.missed.map(i=>esc(r.points[i][0])).join('; ')}</div>`;
+  if(!drill.checked){
+    html+=`<textarea id="ta" placeholder="Write it in your own words. Aim for 3–6 sentences.">${esc(drill.text)}</textarea>
+    <div class="actions"><button class="btn" id="chk">Check my answer</button><button class="btn quiet" id="back">Back to list</button></div>`;
+  } else {
+    html+=`<h3>Your answer</h3><div class="note" style="white-space:pre-wrap;font-family:var(--serif)">${esc(drill.text)||'<i>(blank)</i>'}</div>
+    <h3>Key points you should have included</h3><p class="small" style="margin:0">Tick each point you genuinely covered. Points with a matching keyword are pre-ticked as a hint, so double-check them.</p>
+    <ul class="points">${r.points.map((p,i)=>`<li><label><input type="checkbox" data-i="${i}" ${drill.ticks[i]?'checked':''}><span>${esc(p[0])}${drill.auto[i]?'<span class="hint">keyword found</span>':''}</span></label></li>`).join('')}</ul>
+    <div class="actions"><button class="btn" id="savr">Save result</button><button class="btn quiet" id="redo">Edit my answer</button></div>`;
+  }
+  html+=`</section>`;
+  main.innerHTML=html;
+  if(!drill.checked){
+    const ta=$('#ta'); ta.oninput=()=>drill.text=ta.value; ta.focus();
+    $('#chk').onclick=()=>{ drill.text=ta.value; drill.auto=matchPoints(r,drill.text); drill.ticks=drill.auto.slice(); drill.checked=true; renderDrill(); };
+    $('#back').onclick=()=>{drill=null; renderRecall();};
+  } else {
+    document.querySelectorAll('.points input').forEach(c=>c.onchange=()=>{drill.ticks[+c.dataset.i]=c.checked;});
+    $('#redo').onclick=()=>{drill.checked=false; renderDrill();};
+    $('#savr').onclick=()=>{
+      const missed=drill.ticks.map((t,i)=>t?null:i).filter(x=>x!==null);
+      st.r[r.id]= missed.length? {s:'review',missed,last:SESSION,at:Date.now()} : {s:'solid',last:SESSION,at:Date.now()};
+      save(); showRecallResult(r,missed);
+    };
+  }
+}
+function showRecallResult(r,missed){
+  main.innerHTML=`<section class="panel">${missed.length?
+    `<h2>Review these points</h2><p class="small" style="margin-top:0">You covered ${r.points.length-missed.length} of ${r.points.length}. Reread these in your guide, then try this concept again the next time you open the page.</p><ul class="missed">${missed.map(i=>`<li>${esc(r.points[i][0])}</li>`).join('')}</ul>`:
+    `<h2>Solid</h2><p>You covered all ${r.points.length} key points for <b>${esc(r.title)}</b>. This counts toward your comfort score.</p>`}
+    <div class="actions"><button class="btn" id="bk">Back to concepts</button></div></section>`;
+  $('#bk').onclick=()=>{drill=null; renderRecall(); window.scrollTo(0,0);};
+}
+// ---------- progress
+function renderProgress(){
+  const qm=QS.filter(q=>qStatus(q)==='mastered').length, qr=QS.filter(q=>['review','due','missed'].includes(qStatus(q))).length;
+  const rs=RC.filter(r=>rStatus(r)==='solid').length, rr=RC.filter(r=>['review','locked'].includes(rStatus(r))).length;
+  const overall=Math.round(100*(qm+rs)/(QS.length+RC.length));
+  let html=`<section class="panel"><h2>What you're comfortable with</h2>
+   <p class="big">${overall}%</p><p class="small">of all ${QS.length} exam questions and ${RC.length} recall concepts combined</p>
+   <div class="bars">${bar('Exam questions mastered',qm,qr,QS.length)}${bar('Recall concepts solid',rs,rr,RC.length)}</div>
+   <div class="legend"><span style="--c:var(--ok)">Comfortable</span><span style="--c:var(--warn)">In progress (missed questions, tough questions, or missed recall points)</span></div></section>
+   <section class="panel"><h2>By module</h2><div class="bars">`;
+  MOD_KEYS.forEach(m=>{
+    const qq=QS.filter(q=>q.m===m), rr2=RC.filter(r=>r.m===m);
+    const c=qq.filter(q=>qStatus(q)==='mastered').length+rr2.filter(r=>rStatus(r)==='solid').length;
+    const p=qq.filter(q=>['review','due','missed'].includes(qStatus(q))).length+rr2.filter(r=>['review','locked'].includes(rStatus(r))).length;
+    html+=bar(MODS[m],c,p,qq.length+rr2.length);
+  });
+  html+=`</div><p class="small" style="margin-bottom:0">Weakest modules first: ${weakest()}</p></section>
+   <section class="panel"><h2>Start over</h2><p class="small" style="margin-top:0">Clears every saved answer and recall result on this page.</p><button class="btn danger" id="reset">Reset all progress</button></section>`;
+  main.innerHTML=html;
+  $('#reset').onclick=()=>confirmDlg('Reset all progress? This can\'t be undone.','Reset everything',()=>{ st={v:1,updatedAt:0,q:{},r:{}}; save(); renderProgress(); });
+}
+function bar(label,c,p,t){ const pc=t?100*c/t:0, pp=t?100*p/t:0;
+  return `<div class="bar"><div class="lab"><span>${label}</span><span>${Math.round(pc)}% · ${c}/${t}</span></div><div class="t" role="img" aria-label="${label}: ${c} of ${t} comfortable"><i class="m" style="width:${pc}%"></i><i class="r" style="width:${pp}%"></i></div></div>`; }
+function weakest(){
+  return MOD_KEYS.map(m=>{const qq=QS.filter(q=>q.m===m), rr=RC.filter(r=>r.m===m); const t=qq.length+rr.length; const c=qq.filter(q=>qStatus(q)==='mastered').length+rr.filter(r=>rStatus(r)==='solid').length; return [m,t?c/t:1];})
+   .sort((a,b)=>a[1]-b[1]).slice(0,3).map(x=>SHORT[x[0]]).join(', ');
+}
+render();
+setSync('');
+})();
+
+</script>
+</body>
+</html>
