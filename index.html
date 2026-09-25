@@ -103,6 +103,12 @@ textarea{width:100%; min-height:180px; resize:vertical; border:1.5px solid var(-
 .points .hint{font-size:.8rem; color:var(--ok); margin-left:6px}
 .missed{margin:8px 0 0; padding-left:20px}
 .sum-list{padding-left:18px} .sum-list li{margin-bottom:8px}
+.rv-filter{display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 4px}
+.rv-filter .btn[aria-pressed="true"]{border-color:var(--ink); background:var(--muted-bg)}
+.rv-item{border-top:1px solid var(--line); padding-top:14px; margin-top:14px}
+.rv-item .qtext{margin-top:6px}
+.rv-item .opts .opt{margin-top:8px}
+.rv-res{font:600 .85rem var(--sans)} .rv-res.ok{color:var(--ok)} .rv-res.no{color:var(--bad)}
 .sync{font-size:.8rem; color:var(--ink-2)}
 .titlerow{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:10px 12px}
 .titlerow>div:first-child{flex:1 1 280px}
@@ -1379,6 +1385,20 @@ function timeUp(){
   const a=$('#dlg-actions'); const k=document.createElement('button'); k.className='btn quiet'; k.textContent='Keep going without the clock'; k.onclick=()=>{$('#dlg').close(); updateClock();}; a.appendChild(k);
 }
 function endExam(silent){ if(!exam) return; clearInterval(exam.tick); exam.active=false; exam.done=!silent; exam.used=Math.round((Date.now()-exam.started)/1000); if(silent) exam=null; render(); }
+function optsHTML(it,tag){
+  const q=it.q, L='ABCD', correctIdx=0; let h='';
+  it.order.forEach((oi,pos)=>{
+    const o=q.opts[oi]; let cls='opt'; if(it.submitted){cls+=' locked'; if(oi===correctIdx) cls+=' right'; else if(oi===it.pick) cls+=' wrong';}
+    const attrs=tag==='button'?`data-oi="${oi}" aria-pressed="${it.pick===oi}" ${it.submitted?'aria-disabled="true"':''}`:'';
+    h+=`<${tag} class="${cls}" ${attrs}><span class="lbl">${L[pos]}.</span>${o[0]}`;
+    if(it.submitted){
+      if(oi===correctIdx) h+=`<div class="fb"><b class="k">✓ Correct answer${oi===it.pick?' (your pick)':''}</b>${o[1]}</div>`;
+      else h+=`<div class="fb"><b class="k">✗ ${oi===it.pick?'Your pick: why it\'s wrong':'Why it\'s wrong'}</b>${o[1]}<span class="mis"><b>Misconception behind it:</b> ${o[2]||''}</span></div>`;
+    }
+    h+=`</${tag}>`;
+  });
+  return h;
+}
 function renderQuestion(){
   const it=exam.items[exam.i], q=it.q; const L='ABCD';
   const answered=exam.items.filter(x=>x.submitted).length;
@@ -1389,15 +1409,7 @@ function renderQuestion(){
   <section class="panel">
     <div class="qmeta"><span class="tag">${MODS[q.m]}</span>${q.tough?'<span class="tag tough">Tough: needs 2 sessions</span>':''}${{missed:'<span class="tag" style="background:var(--bad-bg);color:var(--bad)">Missed last time</span>',retried:'<span class="tag">You asked to retry this</span>',review:'<span class="tag">Second round</span>',due:'<span class="tag">5-day check</span>'}[it.st0]||''}</div>
     <p class="qtext">${q.q}</p><div class="opts">`;
-  it.order.forEach((oi,pos)=>{
-    const o=q.opts[oi]; let cls='opt'; if(it.submitted){cls+=' locked'; if(oi===correctIdx) cls+=' right'; else if(oi===it.pick) cls+=' wrong';}
-    html+=`<button class="${cls}" data-oi="${oi}" aria-pressed="${it.pick===oi}" ${it.submitted?'aria-disabled="true"':''}><span class="lbl">${L[pos]}.</span>${o[0]}`;
-    if(it.submitted){
-      if(oi===correctIdx) html+=`<div class="fb"><b class="k">✓ Correct answer${oi===it.pick?' (your pick)':''}</b>${o[1]}</div>`;
-      else html+=`<div class="fb"><b class="k">✗ ${oi===it.pick?'Your pick: why it\'s wrong':'Why it\'s wrong'}</b>${o[1]}<span class="mis"><b>Misconception behind it:</b> ${o[2]||''}</span></div>`;
-    }
-    html+=`</button>`;
-  });
+  html+=optsHTML(it,'button');
   html+=`</div>`;
   if(!it.submitted){
     html+=`<div class="actions"><button class="btn" id="submit" ${it.pick===null?'disabled':''}>Submit final answer</button><button class="btn quiet" id="skip">Skip for now</button></div>`;
@@ -1431,10 +1443,22 @@ function goNext(){
 function renderSummary(){
   const done=exam.items.filter(x=>x.submitted), right=done.filter(x=>x.correct), wrong=done.filter(x=>!x.correct);
   const pct=done.length?Math.round(100*right.length/done.length):0;
+  if(!exam.rvFilter) exam.rvFilter=wrong.length?'missed':'all';
+  const shown=exam.rvFilter==='missed'?wrong:done;
+  const review=done.length?`<h3>Answer review</h3>
+    <p class="small" style="margin-top:0">Every option with the reason it's right or wrong. Missed questions come back next session.</p>
+    <div class="rv-filter" role="group" aria-label="Filter review">
+      <button class="btn quiet" data-f="all" aria-pressed="${exam.rvFilter==='all'}" style="min-height:36px;padding:6px 12px">All (${done.length})</button>
+      <button class="btn quiet" data-f="missed" aria-pressed="${exam.rvFilter==='missed'}" style="min-height:36px;padding:6px 12px">Missed (${wrong.length})</button>
+    </div>
+    ${shown.length?shown.map(x=>`<div class="rv-item">
+      <div class="qmeta"><span class="small">Question ${exam.items.indexOf(x)+1}</span><span class="tag">${SHORT[x.q.m]}</span>${x.q.tough?'<span class="tag tough">Tough</span>':''}<span class="rv-res ${x.correct?'ok':'no'}">${x.correct?'✓ Correct':'✗ Missed'}</span></div>
+      <p class="qtext">${x.q.q}</p><div class="opts">${optsHTML(x,'div')}</div></div>`).join(''):'<p>No misses this round.</p>'}`:'<p>No questions were answered.</p>';
   main.innerHTML=`<section class="panel"><h2>Exam results</h2>
     <p class="big">${right.length} / ${done.length}</p><p class="small">${pct}% correct · ${exam.items.length-done.length} not answered · time used ${fmt(Math.min(exam.used,exam.total))} of ${fmt(exam.total)}</p>
-    ${wrong.length?`<h3>Review these (they'll come back next session)</h3><ol class="sum-list">${wrong.map(x=>`<li><span class="tag">${SHORT[x.q.m]}</span> ${x.q.q}<br><span class="small"><b>Answer:</b> ${x.q.opts[0][0]}</span></li>`).join('')}</ol>`:'<p>No misses this round.</p>'}
+    ${review}
     <div class="actions"><button class="btn" id="again">Start another exam</button><button class="btn quiet" id="prog">See progress</button></div></section>`;
+  document.querySelectorAll('.rv-filter .btn').forEach(b=>b.onclick=()=>{exam.rvFilter=b.dataset.f; renderSummary();});
   $('#again').onclick=()=>{exam=null; renderExam();};
   $('#prog').onclick=()=>{exam=null; switchTab('progress');};
 }
