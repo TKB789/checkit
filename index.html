@@ -68,6 +68,10 @@ h3{font-size:1rem; margin:18px 0 8px}
 .qmeta{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px}
 .tag{font:600 .78rem var(--sans); padding:3px 9px; border-radius:6px; background:var(--muted-bg); color:var(--ink-2)}
 .tag.tough{background:var(--warn-bg); color:var(--warn)}
+.tag.disc{background:var(--hl); color:var(--hl-ink)}
+.panel.prof{border:2px solid var(--pen)}
+.panel.prof h2 .mark{background:linear-gradient(transparent 55%, var(--hl) 55%); padding:0 2px}
+.citem .dtag{font:600 .72rem var(--sans); padding:2px 7px; border-radius:6px; background:var(--hl); color:var(--hl-ink); margin-left:6px; white-space:nowrap}
 .qtext{font-family:var(--serif); font-size:1.12rem; line-height:1.6; margin:0 0 14px}
 .opts{display:flex; flex-direction:column; gap:10px}
 .opt{display:block; width:100%; text-align:left; background:var(--card); color:var(--ink); border:1.5px solid var(--line); border-radius:10px; padding:12px 14px; font:400 1rem/1.45 var(--sans); cursor:pointer; position:relative}
@@ -103,12 +107,6 @@ textarea{width:100%; min-height:180px; resize:vertical; border:1.5px solid var(-
 .points .hint{font-size:.8rem; color:var(--ok); margin-left:6px}
 .missed{margin:8px 0 0; padding-left:20px}
 .sum-list{padding-left:18px} .sum-list li{margin-bottom:8px}
-.rv-filter{display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 4px}
-.rv-filter .btn[aria-pressed="true"]{border-color:var(--ink); background:var(--muted-bg)}
-.rv-item{border-top:1px solid var(--line); padding-top:14px; margin-top:14px}
-.rv-item .qtext{margin-top:6px}
-.rv-item .opts .opt{margin-top:8px}
-.rv-res{font:600 .85rem var(--sans)} .rv-res.ok{color:var(--ok)} .rv-res.no{color:var(--bad)}
 .sync{font-size:.8rem; color:var(--ink-2)}
 .titlerow{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:10px 12px}
 .titlerow>div:first-child{flex:1 1 280px}
@@ -143,6 +141,8 @@ dialog::backdrop{background:rgba(10,15,25,.55)}
 const QS=[], RC=[];
 function Q(m,tough,q,opts){ QS.push({m,tough:!!tough,q,opts}); }
 function R(m,title,prompt,points){ RC.push({m,title,prompt,points}); }
+function DQ(d,m,t,q,o){ Q(m,t,q,o); QS[QS.length-1].disc=d; }
+function RD(d,m,title,prompt,points){ R(m,title,prompt,points); RC[RC.length-1].disc=d; RC[RC.length-1].prof=true; }
 // First option is always correct in data; options are shuffled at render time.
 // Q(module, tough(0/1), question, [[text, why], [text, why, misconception], ...])
 Q('m1',0,`A hospital has 40 nurse follow-up calls available each week. It asks: "Which discharged patients should get a call?" What type of analytics question is this?`,[
@@ -1252,6 +1252,295 @@ R('m6','Choosing C and T in CUSUM',`How do C and T affect CUSUM, and how should 
  [`No formula; treat them as parameters and test on data with known changes`,['no formula','validat','test','known']],
  [`Decide based on which mistake costs more (late detection vs. false alarm)`,['cost','expensive','trade']]
 ]);
+// ===== Professor's discussion topics: new questions (DQ = tagged with discussion topic numbers)
+DQ([1],'m2',1,`In hard-margin SVM, your attribute values come from measurements that are slightly imprecise. Why does the widest margin help?`,[
+ [`A small measurement error can't push a point across a line that's far from every point, so classifications stay stable`,`Data is never perfectly exact. The further the line is from all points, the more error it takes to flip a decision.`],
+ [`It guarantees 100% accuracy on new data`,`Nothing guarantees that; the margin reduces risk, it doesn't eliminate it.`,`Treating a robustness benefit as a guarantee.`],
+ [`It means the model uses fewer attributes`,`Margin width has nothing to do with how many attributes are used.`,`Confusing small coefficients with dropped attributes.`],
+ [`It lets the model ignore the support vectors`,`The support vectors are exactly what define the margin.`,`Misremembering what support vectors do.`]
+]);
+DQ([1],'m2',1,`In soft-margin SVM, when would a SMALLER margin (fewer mistakes on training data) be the better choice?`,[
+ [`When the data is accurate and trustworthy, and classes are nearly separable, so misclassified training points are probably real signal`,`A narrow margin respects the training data closely. That's good when the data is reliable; risky when it's noisy.`],
+ [`Whenever you have lots of data`,`Data volume alone doesn't decide it; noise and reliability do.`,`Using a size rule instead of a quality rule.`],
+ [`Never; a wider margin is always better`,`Wider margins trade training accuracy for robustness, which isn't always worth it.`,`Over-learning the "widest margin" rule from hard SVMs.`],
+ [`When the data is very noisy`,`Noisy data is exactly when a narrow margin overfits.`,`Getting the direction backwards.`]
+]);
+DQ([2],'m2',0,`Which attribute is the best candidate for scaling to 0–1 rather than standardization?`,[
+ [`Customer satisfaction on a fixed 1–5 survey scale`,`It has a known, fixed minimum and maximum, which is when scaling fits.`],
+ [`Adult height, which is roughly bell-shaped with no hard limits`,`No set min/max and roughly normal: that's standardization territory.`,`Thinking every numeric column should be scaled.`],
+ [`Measurement errors from a lab instrument`,`Errors are typically bell-shaped and unbounded.`,`Same.`],
+ [`Daily stock returns`,`No fixed bounds; extreme values can always occur.`,`Same.`]
+]);
+DQ([2],'m2',1,`A classmate's code says "scale" but actually computes (x − mean)/SD. What's the most useful takeaway?`,[
+ [`The words "scaling" and "standardization" aren't used consistently, so always check the formula being applied`,`Your professor notes these terms themselves aren't standardized. The formula tells you what really happened.`],
+ [`The code is wrong and must be fixed`,`It may be exactly what they intended; only the label differs.`,`Assuming one universal definition.`],
+ [`The values are now between 0 and 1`,`(x − mean)/SD is unbounded.`,`Trusting the label over the formula.`],
+ [`It doesn't matter which one is used`,`It matters when a model needs a bounded range, or when outliers stretch the min/max.`,`Treating the two as interchangeable.`]
+]);
+DQ([3],'m2',1,`The "approved" class forms three separate pockets scattered around the data, surrounded by "denied" points. Which classifier is likely to do better, and why?`,[
+ [`KNN, because it classifies by local neighbors and doesn't need one straight boundary`,`A single linear SVM line can't wrap around several pockets; KNN follows local structure naturally.`],
+ [`Linear SVM, because it finds the widest margin`,`The widest straight line still can't separate pockets.`,`Assuming the margin idea solves any geometry.`],
+ [`Both would do equally well`,`Their shapes of boundary are very different here.`,`Not picturing the geometry.`],
+ [`Neither can be used when classes form pockets`,`KNN (or SVM with a kernel) can.`,`Overlooking flexible options.`]
+]);
+DQ([3],'m2',1,`In the training data, 95% of loans were repaid. How does this imbalance tend to affect KNN?`,[
+ [`Neighbors are mostly "repaid" just because that class is common, so the rare "default" class gets outvoted`,`Majority votes are pulled toward the common class. You may need weighting, a different k, or rebalancing.`],
+ [`It has no effect; KNN only looks at distance`,`Distance picks the neighbors, but the vote counts them, and common classes dominate counts.`,`Forgetting the vote.`],
+ [`KNN will predict "default" too often`,`Opposite: the rare class is underpredicted.`,`Getting the direction backwards.`],
+ [`It makes KNN more accurate at catching defaults`,`Rarity makes defaults harder to catch.`,`Confusing overall accuracy with catching the rare class.`]
+]);
+DQ([3],'m2',1,`Red and blue points are heavily mixed together, with lots of each scattered inside the other. What does this most likely tell you?`,[
+ [`The attributes don't separate the classes well; both SVM and KNN will struggle, and better attributes may be needed`,`When classes overlap everywhere, no boundary or neighborhood vote can sort them reliably.`],
+ [`Use k = 1, since it can match every point`,`k = 1 just memorizes the noise.`,`Chasing training accuracy.`],
+ [`Use a hard-margin SVM`,`A hard margin requires perfect separation, which doesn't exist here.`,`Misapplying hard margins.`],
+ [`The data must contain errors, so delete the mixed points`,`Overlap is usually real, not an error.`,`Deleting inconvenient data.`]
+]);
+DQ([3],'m2',1,`You need a rough sense of how likely each new classification is to be correct. What can KNN and SVM give you?`,[
+ [`KNN: the vote share (e.g., 4 of 5 neighbors agree). SVM: the distance from the line (further = more confident). Neither is a true probability`,`Both give a confidence signal. For real probabilities, logistic regression is the usual tool.`],
+ [`SVM outputs an exact probability for each point`,`SVM outputs a side of the line.`,`Confusing SVM with logistic regression.`],
+ [`KNN can't give any confidence information`,`The vote split is a natural confidence signal.`,`Overlooking the vote.`],
+ [`Both give identical confidence values`,`Their signals are different in kind.`,`Treating them as interchangeable.`]
+]);
+DQ([4],'m2',0,`Why is scaling especially important before KNN?`,[
+ [`KNN picks neighbors by distance, so an attribute with big numbers (like income in dollars) would decide who the neighbors are almost by itself`,`Scaling gives each attribute a comparable say in the distance.`],
+ [`KNN can't run on unscaled data`,`It runs, it just gives distorted results.`,`Thinking unscaled data causes an error.`],
+ [`Scaling reduces the number of neighbors needed`,`k is chosen separately.`,`Mixing up settings.`],
+ [`Scaling turns categorical attributes into numbers`,`That's encoding, not scaling.`,`Mixing up preparation steps.`]
+]);
+DQ([4],'m2',1,`A KNN uses square footage (500–5,000) and number of bedrooms (1–6), unscaled. A new home has 2,000 sq ft and 5 bedrooms. Its nearest neighbors will mostly be homes that:`,[
+ [`Have similar square footage, regardless of bedrooms`,`A 1,000 sq ft gap swamps a 4-bedroom gap in the distance.`],
+ [`Have 5 bedrooms`,`Bedroom differences are tiny numbers compared to square footage.`,`Assuming each attribute counts equally.`],
+ [`Are similar in both, equally`,`Only true after scaling.`,`Same.`],
+ [`Are randomly chosen`,`The distance is dominated, not random.`,`Guessing.`]
+]);
+DQ([5],'m3',1,`Five models of almost-equal quality are compared on one validation set. Is the one with the best validation score likely to be the truly best model?`,[
+ [`Not necessarily; with nearly equal models, random noise in the validation data often decides the winner`,`When real differences are small, luck dominates the ranking. The chosen one is probably good, but maybe not the best.`],
+ [`Yes, the highest score identifies the best model`,`Scores contain noise; small gaps can be pure luck.`,`Treating one measurement as exact.`],
+ [`Yes, if the validation set was chosen randomly`,`Random selection doesn't remove noise.`,`Believing randomness fixes selection.`],
+ [`No, validation can never help choose`,`It helps; it just can't reliably separate near-equals.`,`Overcorrecting.`]
+]);
+DQ([5],'m3',1,`With several near-equal models, what does help you choose more reliably?`,[
+ [`A bigger or repeated evaluation, such as k-fold cross-validation, which reduces the noise in each model's score`,`More evaluation data makes luck matter less; averaging over folds steadies the scores.`],
+ [`Picking the model with the highest training accuracy`,`Training scores are the most biased.`,`Using the wrong data.`],
+ [`Re-running the same validation many times`,`The same data gives the same scores.`,`Confusing repetition with new information.`],
+ [`Choosing whichever model was trained last`,`Order has no bearing on quality.`,`Guessing.`]
+]);
+DQ([6],'m3',0,`You picked the best model on validation data. Why is its test score likely to be worse than its validation score?`,[
+ [`It won partly because of good luck on the validation data, and that luck doesn't repeat on new test data`,`Selection bias: the winner's score was inflated by random effects.`],
+ [`Test sets are always harder than validation sets`,`They come from the same source; neither is designed to be harder.`,`Imagining a built-in difficulty difference.`],
+ [`The model was trained on the test data`,`It wasn't; that would be a serious error.`,`Misunderstanding the setup.`],
+ [`Test scores use a stricter formula`,`Same formula.`,`Guessing.`]
+]);
+DQ([6],'m3',1,`After choosing Model A on validation data, you run all models on the test data and Model C looks best. Should you switch to C?`,[
+ [`No; switching means choosing with the test data, which makes it a validation set, and C's test score would then be inflated too`,`The test set's job is an honest estimate for the model you already chose. To choose again, you'd need fresh data.`],
+ [`Yes; test data is the most trustworthy, so trust its ranking`,`It's trustworthy only if you don't use it for choosing.`,`Not seeing that choosing adds bias.`],
+ [`Yes, then report C's test score as its true quality`,`That score now has selection bias.`,`Same.`],
+ [`Average A and C instead`,`That's still a choice made using test results.`,`Looking for a compromise.`]
+]);
+DQ([7],'m4',0,`What is the fundamental difference between classification and clustering?`,[
+ [`Classification learns from points whose categories are already known; clustering finds groups when no categories are known`,`Supervised (labels) vs. unsupervised (no labels).`],
+ [`Classification uses distance; clustering doesn't`,`Both often use distance.`,`Focusing on mechanics.`],
+ [`Clustering only works in two dimensions`,`Works in any number of dimensions.`,`Taking the diagrams literally.`],
+ [`Classification always uses more data`,`Data size isn't the difference.`,`Guessing.`]
+]);
+DQ([7],'m4',1,`Which pair correctly matches task to method?`,[
+ [`Flag which new emails are spam, using emails already labeled spam/not spam → classification. Group news articles by topic with no labels → clustering`,`Known labels → classification; discover groups → clustering.`],
+ [`Flag spam → clustering. Group articles → classification`,`Reversed.`,`Mixing up which one needs labels.`],
+ [`Both are classification, since both assign groups`,`Only one has known categories.`,`Treating "assigning a group" as the definition.`],
+ [`Both are clustering, since both involve similar items`,`Spam flagging uses known labels.`,`Same.`]
+]);
+DQ([8],'m5',1,`Why are collective and contextual outliers generally harder to identify than point outliers?`,[
+ [`No single value looks extreme on its own; you need to know the context (time, place) or the pattern of a group`,`Simple tools like box plots only look at values, so they miss these.`],
+ [`They are always caused by data-entry errors`,`They're often real.`,`Linking "hard to find" with "error."`],
+ [`They only occur in very large datasets`,`They can occur in any dataset.`,`Guessing.`],
+ [`Point outliers can't be found either`,`Point outliers are the easiest; a box plot often catches them.`,`Not ranking the types.`]
+]);
+DQ([8],'m5',1,`A credit card shows many small, ordinary-looking purchases in rapid succession at different stores. Nothing is extreme on its own. What kind of anomaly is this, and how would you catch it?`,[
+ [`A collective anomaly; look at patterns across groups of transactions (e.g., a model of normal spending sequences), not single values`,`Each purchase is normal; the burst together is odd.`],
+ [`A point outlier; a box plot of amounts will catch it`,`None of the amounts is extreme.`,`Using a value-only tool.`],
+ [`Not an anomaly, since each purchase is normal`,`The group behavior is abnormal.`,`Only checking individual values.`],
+ [`A contextual outlier caught by standardizing the amounts`,`Standardizing doesn't reveal a sequence pattern.`,`Mixing up types and tools.`]
+]);
+DQ([9],'m5',1,`A delivery-time model is being built for NORMAL operations. Which outlier is real, correct data that is NOT relevant and can be removed?`,[
+ [`Deliveries during a one-day citywide shutdown for a major event that won't recur`,`Correct data, but it doesn't describe the normal operations the model is for.`],
+ [`A delivery recorded as 900 minutes that was really 90`,`That's bad data (an error), a different category.`,`Mixing up "incorrect" and "irrelevant."`],
+ [`Long delays during winter storms, which happen every year`,`Real, recurring, and relevant; keep them.`,`Treating all unusual data as irrelevant.`],
+ [`The fastest delivery of the year`,`Unusual but still part of normal operations.`,`Thinking extreme means irrelevant.`]
+]);
+DQ([9],'m5',1,`An insurer is modeling total claims to decide how much money to hold in reserve. One hurricane produced enormous, verified claims. What should happen to that data?`,[
+ [`Keep it: it's correct and exactly the kind of extreme event reserves exist for`,`Good, relevant data. Removing it would make the reserve dangerously low.`],
+ [`Remove it, since it's an outlier`,`Being extreme isn't a reason to delete.`,`Equating outlier with removal.`],
+ [`Replace it with an average claim`,`That hides the very risk being planned for.`,`Imputing real data.`],
+ [`Remove it, since hurricanes are rare`,`Rare but relevant: exactly the tail risk that matters.`,`Confusing rare with irrelevant.`]
+]);
+DQ([10],'m6',1,`A hospital monitors a patient's vital signs with CUSUM. Missing a real deterioration could be fatal; a false alarm means a nurse checks in. How should C and T be set?`,[
+ [`Lower C and lower T, to catch changes quickly and accept more false alarms`,`When missing a change is the costly mistake, make the method more sensitive.`],
+ [`Higher C and higher T, to avoid bothering staff`,`That delays detecting a dangerous change.`,`Treating false alarms as the bigger cost.`],
+ [`C = T, for balance`,`They play different roles; there's no such rule.`,`Inventing a rule.`],
+ [`Whatever values the software suggests`,`The cost trade-off is the analyst's decision.`,`Handing judgment to defaults.`]
+]);
+DQ([10],'m6',1,`A process is naturally quite noisy, and only large shifts matter. Which adjustment fits best?`,[
+ [`A higher C, so normal random ups and downs don't accumulate`,`C sets how much variation counts as "normal noise."`],
+ [`A lower C, so every fluctuation counts`,`That piles up noise and raises false alarms.`,`Maximizing sensitivity regardless of the goal.`],
+ [`A negative C`,`That adds to the total each period and guarantees alarms.`,`Misunderstanding C.`],
+ [`Remove the max-with-0 step`,`That slows detection and doesn't address noise.`,`Changing the wrong part.`]
+]);
+DQ([11],'m6',0,`Which is the best example of a change-detection problem?`,[
+ [`Detecting whether a website's average daily sign-ups have dropped since a redesign`,`The question is whether the process itself has shifted.`],
+ [`Predicting tomorrow's sign-ups`,`That's forecasting.`,`Mixing up change and prediction.`],
+ [`Grouping users by behavior`,`That's clustering.`,`Mixing up methods.`],
+ [`Deciding whether one user is a bot from labeled examples`,`That's classification.`,`Same.`]
+]);
+DQ([11],'m6',1,`A fraud team wants to know as soon as a customer's spending behavior shifts from its usual pattern. Why is change detection a good fit?`,[
+ [`It accumulates small signs of a shift over time and flags it early, instead of judging one transaction at a time`,`Fraud often shows as a sustained shift, which CUSUM-style methods catch.`],
+ [`It predicts the amount of the next purchase`,`That's forecasting.`,`Confusing detection and forecasting.`],
+ [`It needs labeled fraud examples`,`Change detection doesn't need labels.`,`Assuming every method is supervised.`],
+ [`It never produces false alarms`,`It trades speed for some false alarms.`,`Forgetting the trade-off.`]
+]);
+DQ([12],'m7',0,`Which of these is time-series data?`,[
+ [`A warehouse's hourly count of packages scanned over the past year`,`The same quantity measured repeatedly, in time order.`],
+ [`Survey answers from 1,000 customers collected on one day`,`A single snapshot, not a sequence over time.`,`Thinking any dataset with a date is a time series.`],
+ [`The heights of 500 students`,`No time order.`,`Same.`],
+ [`A list of product prices in different stores today`,`Across places, not over time.`,`Same.`]
+]);
+DQ([12],'m7',1,`Daily hospital emergency-room visits are a time series. What typically makes them different from a random sample of patients?`,[
+ [`Order matters: nearby days are related, and patterns like weekday effects and seasons repeat`,`That dependence over time is why time-series methods and time-ordered validation are needed.`],
+ [`Each day is independent of every other day`,`That's what time series usually aren't.`,`Assuming independence.`],
+ [`They can be shuffled for cross-validation without problems`,`Shuffling leaks future information.`,`Carrying over Module 3 habits.`],
+ [`They can't contain seasonality`,`They often do (flu season).`,`Guessing.`]
+]);
+DQ([13],'m7',0,`Which situation most clearly needs a forecast of the VARIANCE, not just the expected value?`,[
+ [`Deciding how much safety stock to hold when demand is unpredictable`,`Safety stock depends on how far demand could swing from the forecast.`],
+ [`Estimating the average price of a product next month`,`That's the expected value.`,`Missing the difference between level and spread.`],
+ [`Counting how many stores the company has`,`Not a forecast at all.`,`Guessing.`],
+ [`Grouping customers into segments`,`That's clustering.`,`Mixing methods.`]
+]);
+DQ([13],'m7',1,`Two suppliers both deliver in 5 days on average. Supplier A varies ±1 day; Supplier B varies ±6 days. Why does predicting variance matter here?`,[
+ [`Same average, very different risk: planning around B requires much bigger buffers`,`Variance determines how much protection you need against surprises.`],
+ [`It doesn't matter, since the averages match`,`The average hides the risk.`,`Looking only at the mean.`],
+ [`B is better because it's sometimes faster`,`Its unpredictability is a cost.`,`Focusing on best cases.`],
+ [`Variance only matters in finance`,`It matters in any planning under uncertainty.`,`Narrowing GARCH's use to stocks.`]
+]);
+DQ([14],'m7',1,`How far ahead is simple exponential smoothing generally reliable?`,[
+ [`Mainly the short term, often just the next period or so; its forecast is flat and can't anticipate future changes, so errors grow the further out you go`,`It assumes tomorrow looks like today's baseline. The longer the horizon, the more the world can change.`],
+ [`Years ahead, since it uses all past data`,`Using all past data doesn't reveal future shifts.`,`Confusing memory with foresight.`],
+ [`Exactly one seasonal cycle`,`Simple smoothing doesn't model seasons at all.`,`Mixing it up with Holt-Winters.`],
+ [`As far as you like, if α is small`,`A small α makes it smoother, not more far-sighted.`,`Misunderstanding α's role.`]
+]);
+DQ([14],'m7',1,`A Holt-Winters model forecasts well one month ahead. Why should you be more cautious about its forecast 18 months ahead?`,[
+ [`It extends today's trend and seasonal pattern; the further out, the more likely those change, and uncertainty compounds`,`Prediction ranges widen with the horizon for a reason.`],
+ [`Holt-Winters can't compute forecasts beyond one cycle`,`It can compute them; they're just less reliable.`,`Confusing "can't" with "shouldn't trust much."`],
+ [`Its α, β, γ change automatically over time`,`They're fixed once fitted.`,`Misunderstanding fitting.`],
+ [`Long forecasts are always more accurate because they average out noise`,`Uncertainty grows, not shrinks.`,`Reversing the relationship.`]
+]);
+DQ([15],'m8',1,`SVM and regression lines look alike (y = a₀ + a₁x₁ + …). Which statement about their sensitivity to points is correct?`,[
+ [`SVM is determined by points close to the line (support vectors); regression is pulled most by points far from the line, because squared errors grow fast`,`Far points barely matter to SVM; a big residual counts heavily in least squares.`],
+ [`Both are affected equally by all points`,`Their objectives treat points very differently.`,`Assuming the same formula means the same fitting.`],
+ [`SVM is affected most by far points; regression by close ones`,`Reversed.`,`Mixing up the objectives.`],
+ [`Neither is affected by outliers`,`Regression is quite sensitive to them.`,`Forgetting squared errors.`]
+]);
+DQ([15],'m8',1,`Deciding which borderline job applicants to interview versus estimating the typical salary a company must budget: which care more about points near the line, and which about points far from it?`,[
+ [`Interview cutoff: near the line (the borderline cases decide it). Salary budget: far points matter too (unusually high salaries affect the total)`,`Boundary decisions hinge on close cases; estimating amounts must account for large deviations.`],
+ [`Both care only about points near the line`,`Big salaries matter for the budget.`,`Ignoring extremes in estimation.`],
+ [`Both care only about far points`,`The interview cutoff hinges on borderline cases.`,`Ignoring what defines a boundary.`],
+ [`Interview cutoff: far points. Salary budget: near points`,`Reversed.`,`Mixing up classification and estimation.`]
+]);
+DQ([16],'m8',0,`One regression predicts how far a spring stretches under a load; another predicts how much customers will spend. Which will likely have the higher R², and why?`,[
+ [`The spring model; physical systems follow consistent laws, while human behavior has many unmeasured, unpredictable influences`,`Physical models often reach R² near 1; behavior models with R² around 0.3–0.4 can still be good.`],
+ [`The spending model, since there's more data about customers`,`More data doesn't remove behavioral randomness.`,`Equating data volume with predictability.`],
+ [`They'll be about the same`,`The inherent randomness is very different.`,`Ignoring the domain.`],
+ [`R² can't be compared across domains`,`It can indicate how predictable each outcome is, which is the point.`,`Overcorrecting.`]
+]);
+DQ([16],'m8',1,`A model of weekly gym attendance has R² = 0.35. A manager says it's useless. What's the best response?`,[
+ [`For human behavior, 0.35 can be quite good; judge it against alternatives and whether it improves decisions`,`R² norms depend heavily on the domain.`],
+ [`Agree; anything below 0.9 is useless`,`That standard fits physics, not behavior.`,`Applying textbook R² expectations everywhere.`],
+ [`Add predictors until R² passes 0.9`,`That invites overfitting; watch adjusted R².`,`Chasing R².`],
+ [`R² doesn't matter at all`,`It matters; it just needs context.`,`Overcorrecting.`]
+]);
+DQ([17],'m8',0,`What's a good first way to check whether a predictor has a linear or nonlinear relationship with the response?`,[
+ [`Plot the response against the predictor and look for a curve`,`A scatter plot shows the shape directly.`],
+ [`Check whether the coefficient's p-value is below 0.05`,`Significance doesn't tell you the shape.`,`Mixing up "matters" with "is linear."`],
+ [`Look at R² alone`,`R² doesn't reveal curvature.`,`Expecting one number to show shape.`],
+ [`Standardize the predictor`,`That changes units, not shape.`,`Confusing preparation with diagnosis.`]
+]);
+DQ([17],'m8',1,`After fitting a linear model, the residuals plotted against a predictor form a U shape. What does that suggest, and what could you try?`,[
+ [`The relationship is curved; try adding a squared term (or a log) and compare with adjusted R², AIC, or validation`,`A pattern in residuals means the straight line missed structure.`],
+ [`The model is perfect, since residuals average zero`,`Residuals can average zero and still be patterned.`,`Only checking the average.`],
+ [`Remove the points at both ends of the U`,`That hides the pattern instead of modeling it.`,`Deleting inconvenient data.`],
+ [`Switch to classification`,`The response is still a number.`,`Changing the wrong thing.`]
+]);
+// ===== Professor's discussion prompts as recall drills
+RD([1],'m2','Why a bigger SVM margin?',`Why do we prefer a larger margin in hard-classification SVM (think about the correctness and certainty of data)? In a soft-classification setting, what's the benefit of a bigger margin (possibly with more errors on known data) vs. a smaller margin (fewer errors on known data)?`,[
+ [`Data is imprecise; a wide margin means small errors won't flip a classification`,['imprecise','measurement','error','certain','robust','noise']],
+ [`New points near the boundary are classified with more confidence / less risk`,['new point','confiden','boundary','generaliz']],
+ [`Soft, bigger margin: more robust to noise, less overfitting, but more training errors`,['overfit','robust','more error','generaliz']],
+ [`Soft, smaller margin: fits known data more closely; good when data is accurate, risky when noisy`,['smaller','narrow','fewer error','accurate','trust']],
+ [`λ controls this trade-off`,['λ','lambda','trade']]
+]);
+RD([2],'m2','When to scale vs. standardize',`Give examples of situations where you'd suggest scaling (set minimum and maximum values) and where you'd suggest standardization (no set min/max, like a normal distribution).`,[
+ [`Scaling: data with fixed bounds, e.g., survey 1–5, percentages 0–100, RGB 0–255, SAT 200–800`,['survey','percent','rgb','sat','0-255','bound','fixed']],
+ [`Scaling: models that need inputs in a set range (e.g., neural networks)`,['neural','range','0 and 1','0-1']],
+ [`Standardization: roughly normal, unbounded data, e.g., heights, test-score errors, temperatures, returns`,['height','normal','unbounded','temperature','return','bell']],
+ [`Standardization for clustering/PCA or when outliers would stretch the min/max`,['cluster','pca','outlier']],
+ [`The terms aren't used consistently, so check the formula`,['terminology','consistent','formula','definition']]
+]);
+RD([3,4],'m2','SVM vs. KNN',`When would SVM be better than KNN, and when would KNN be better? Consider how points cluster, one class being much more common, heavily mixed classes, and wanting to know how likely a classification is correct. Also: why is scaling helpful before KNN?`,[
+ [`SVM: a clean boundary between classes; interpretable coefficients; fast to predict once trained`,['boundary','coefficient','interpret','fast']],
+ [`KNN: irregular or pocketed class regions, many classes, local structure`,['pocket','cluster','irregular','local','many class']],
+ [`Imbalanced classes: KNN votes get dominated by the common class`,['imbalanc','common','rare','majority']],
+ [`Heavily mixed classes: both struggle; attributes may not separate the classes`,['mixed','overlap','struggle','attribute']],
+ [`Confidence: KNN vote share; SVM distance from the line; for probabilities, logistic regression`,['vote','distance','probabil','logistic','confiden']],
+ [`Scaling before KNN: big-unit attributes would otherwise dominate the distance`,['dominat','distance','unit','scal']]
+]);
+RD([5,6],'m3','Choosing among near-equal models',`If several near-equal models are compared on the same validation data, is the truly best one likely to be chosen? After picking the best on validation, why is its test score likely worse? And if a different model looks best on the test data, should you switch?`,[
+ [`Not necessarily; random noise can decide the winner among near-equals`,['noise','luck','random','not necessarily']],
+ [`The winner's validation score is inflated by good luck (selection bias)`,['inflat','luck','bias','optimistic']],
+ [`On test data the luck doesn't repeat, so the score drops`,['test','drop','lower','repeat']],
+ [`Don't switch: choosing with the test data turns it into a validation set`,['switch','validation set','choos']],
+ [`To choose again honestly, you'd need new data`,['new data','fresh']]
+]);
+RD([7],'m4','Classification vs. clustering',`What is the fundamental difference between classification and clustering? Give an example of when to use each.`,[
+ [`Classification: categories are known in the training data (supervised)`,['known','label','supervised']],
+ [`Clustering: no categories are known; find groups (unsupervised)`,['unknown','no label','unsupervised','group']],
+ [`Classification example, e.g., loan default, spam`,['loan','spam','default','diagnos']],
+ [`Clustering example, e.g., customer segments, facility location`,['segment','customer','facility','location','market']]
+]);
+RD([8,9],'m5','Outliers: hardest type, and keep or remove?',`What's the hardest type of outlier to identify, and why? Once a point is an outlier, give examples of (1) bad data to throw out, (2) correct but irrelevant data you can remove, and (3) correct, relevant data to keep.`,[
+ [`Hardest: collective or contextual, since no single value looks extreme`,['collective','contextual','no single','context']],
+ [`Bad data, e.g., sensor failure, typo, transmission error`,['sensor','typo','error','transmission','incorrect']],
+ [`Correct but irrelevant, e.g., a one-time event outside the situation being modeled`,['irrelevant','one-time','one time','not relevant']],
+ [`Correct and relevant, e.g., storm delays, market crashes, disaster claims`,['relevant','storm','crash','keep','real']],
+ [`Investigate the cause before deciding`,['investigat','cause']]
+]);
+RD([10,11],'m6','CUSUM settings and uses',`When might you want higher or lower values of C and of T in CUSUM? Give examples of when you'd use a change-detection model.`,[
+ [`Higher C: ignore more noise, only larger shifts count; lower C: catch small shifts`,['higher c','larger c','lower c','small shift','noise']],
+ [`Higher T: fewer false alarms but slower; lower T: faster but more false alarms`,['higher t','lower t','false alarm','slower','faster']],
+ [`Choose based on costs: missing a change vs. false alarms`,['cost','expensive','critical']],
+ [`Examples: machine monitoring, quality control, patient vitals, fraud, sales after a change, climate`,['machine','quality','patient','fraud','sales','climate','monitor']]
+]);
+RD([12,13],'m7','Time series and variance',`Give examples of time-series data. When would it be important to predict the variance of something? Give specific examples.`,[
+ [`Time series: the same quantity measured over time (daily sales, stock prices, hourly electricity demand, temperatures)`,['daily','hourly','stock','sales','temperature','demand']],
+ [`Variance matters when planning for uncertainty, not just the average`,['uncertain','risk','spread','swing']],
+ [`Examples: investment risk/volatility, safety stock, staffing buffers, supplier reliability`,['volatil','portfolio','safety stock','buffer','staff','inventory']],
+ [`GARCH is the tool for forecasting variance`,['garch']]
+]);
+RD([14],'m7','How far ahead is smoothing accurate?',`How far in advance is an exponential-smoothing model accurate for forecasting? Explain.`,[
+ [`Mainly short term (often one or a few periods ahead)`,['short','one period','next','few']],
+ [`Single smoothing's forecast is flat; it can't anticipate changes`,['flat','same','constant','anticipat']],
+ [`Uncertainty grows with the horizon (wider ranges)`,['uncertain','grow','wider','horizon']],
+ [`Assumes the future resembles the recent past; changes break it`,['assum','recent','change','resembl']]
+]);
+RD([15],'m8','Regression vs. SVM: near or far points?',`Regression and SVM lines share the form y = a₀ + a₁x₁ + …. Which is affected more by points close to the line, and which by points far from it? Give a pair of similar situations where you'd care about close points in one and far points in the other.`,[
+ [`SVM: points close to the line (support vectors) decide it`,['svm','support','close','near']],
+ [`Regression: far points pull hardest, because squared errors grow fast`,['regression','far','squared','outlier']],
+ [`Pair example, e.g., a pass/fail cutoff (close points) vs. estimating total cost (far points)`,['cutoff','borderline','total','estimat','extreme']]
+]);
+RD([16,17],'m8','R² by domain, and checking linearity',`Would a regression on physical properties or on human behavior have a higher R²? How might you check whether a predictor has a linear or nonlinear relationship with the response?`,[
+ [`Physical properties: higher R² (consistent laws, less randomness)`,['physical','higher','law']],
+ [`Human behavior: lower R² (many unmeasured factors); 0.3–0.4 can be good`,['behavior','lower','0.3','random','unmeasured']],
+ [`Check linearity: scatter plot of response vs. predictor`,['scatter','plot']],
+ [`Look for patterns in residuals; try x² or log terms and compare (adjusted R², AIC, validation)`,['residual','x²','x^2','log','squared','aic','adjusted']]
+]);
 
 </script>
 <script>
@@ -1263,6 +1552,12 @@ const DAY=864e5, TOUGH_GAP=5*DAY;
 // stable ids
 const cnt={}; QS.forEach(q=>{cnt[q.m]=(cnt[q.m]||0)+1; q.id=q.m+'-'+cnt[q.m];});
 const rcnt={}; RC.forEach(r=>{rcnt[r.m]=(rcnt[r.m]||0)+1; r.id='r-'+r.m+'-'+rcnt[r.m];});
+const DISC={1:'Why a bigger SVM margin?',2:'When to scale vs. standardize',3:'SVM vs. KNN',4:'Why scale before KNN?',5:'Does validation pick the truly best model?',6:'Test vs. validation; switching models',7:'Classification vs. clustering',8:'Hardest outlier to identify',9:'Bad, irrelevant, or relevant outliers',10:'Higher or lower C and T',11:'When to use change detection',12:'Examples of time-series data',13:'When to predict variance',14:'How far ahead smoothing is accurate',15:'Regression vs. SVM: near or far points',16:'R²: physical vs. human behavior',17:'Linear or nonlinear relationship?'};
+const DISC_Q={'m2-1':[1],'m2-3':[1],'m2-13':[1],'m2-16':[1],'who-4':[1],'m2-9':[2],'m2-10':[2],'m2-12':[3],'mix-4':[3],'m4-8':[4],'m3-1':[5,6],'m3-7':[5],'m3-8':[5],'m3-13':[5],'m3-3':[6],'m3-20':[6],'m4-9':[7],'m4-13':[7],'mix-3':[7],'m5-1':[8],'m5-2':[8],'m5-8':[8],'m5-14':[8],'m5-4':[9],'m5-6':[9],'m5-7':[9],'m5-10':[9],'m5-12':[9],'m6-2':[10],'m6-7':[10],'m6-8':[10],'m6-12':[10],'m6-13':[10],'m6-15':[10],'m6-11':[11],'m6-14':[11],'mix-2':[11],'m7-8':[13],'m7-20':[13],'m7-17':[14],'m8-9':[15],'m8-4':[17],'m8-19':[17]};
+const DISC_R={'r-m2-1':[1],'r-m2-2':[1],'r-m2-3':[2],'r-m2-4':[3,4],'r-m3-2':[5,6],'r-m4-4':[7],'r-m5-1':[8],'r-m5-2':[9],'r-m6-1':[11],'r-m6-2':[10],'r-m6-3':[10],'r-m7-3':[13],'r-m8-3':[16],'r-m8-5':[17]};
+QS.forEach(q=>{ if(DISC_Q[q.id]) q.disc=(q.disc||[]).concat(DISC_Q[q.id]); });
+RC.forEach(r=>{ if(DISC_R[r.id]) r.disc=(r.disc||[]).concat(DISC_R[r.id]); });
+const discTag=d=>d&&d.length?`<span class="tag disc">Discussion topic: ${d.map(i=>DISC[i]).join(' · ')}</span>`:'';
 const SESSION=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const KEY='midterm-practice-m1-8-v1';
 let st={v:1,updatedAt:0,q:{},r:{}};
@@ -1320,9 +1615,9 @@ function confirmDlg(msg,okLabel,onOk,cancelLabel='Cancel'){
   if(d.showModal) d.showModal(); else if(confirm(msg)) onOk();
 }
 // ---------- exam
-let exam=null; let setup={mods:new Set(MOD_KEYS),n:20,incMastered:false};
+let exam=null; let setup={mods:new Set(MOD_KEYS),n:20,incMastered:false,discOnly:false};
 function available(){
-  return QS.filter(q=>setup.mods.has(q.m) && !answeredNow(q) && (setup.incMastered || qStatus(q)!=='mastered'));
+  return QS.filter(q=>setup.mods.has(q.m) && (!setup.discOnly||q.disc) && !answeredNow(q) && (setup.incMastered || qStatus(q)!=='mastered'));
 }
 function renderExam(){
   if(exam && exam.active) return renderQuestion();
@@ -1339,13 +1634,15 @@ function renderExam(){
     <div class="row" style="margin-top:8px"><button class="btn quiet" id="allm">Select all</button><button class="btn quiet" id="nonem">Clear</button></div>
     <h3>Number of questions</h3>
     <div class="chips" id="nchips">${[10,20,40,60,'all'].map(v=>`<button class="chip" data-n="${v}" aria-pressed="${setup.n===v}">${v==='all'?'All available':v}</button>`).join('')}</div>
-    <label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(a wrong answer resets them)</span></span></label>
+    <label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="disconly" ${setup.discOnly?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Only <span class="tag disc">professor's discussion topics</span> <span class="small">(${QS.filter(q=>q.disc).length} questions)</span></span></label>
+    <label style="display:flex;align-items:flex-start;margin-top:10px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(a wrong answer resets them)</span></span></label>
     <div class="note">${av.length} questions available. Each exam is a fresh random draw, weighted toward ${pr.length?pr.join(', ')+', and ':''}tough questions (${toughNew} not yet tried). This exam: <b>${n} question${n===1?'':'s'}, ${n} minute${n===1?'':'s'}</b>.</div>
     <div class="actions"><button class="btn" id="go" ${n?'':'disabled'}>Start exam (${n} min)</button></div>
     ${av.length===0?`<p class="small">Nothing left in the selected modules for this session. Wrong answers come back the next time you open this page, or turn on "Include questions I've already mastered."</p>`:''}
   </section>
   <section class="panel"><h2>How it works</h2>
    <ul class="small" style="padding-left:18px;margin:0">
+    <li>Questions on your <span class="tag disc">professor's discussion topics</span> are highlighted and twice as likely to be drawn.</li>
     <li>Every exam is a new random draw. Questions you missed, asked to retry, or marked tough are much more likely to be picked, and so are modules where you're struggling.</li>
     <li>A correct answer counts toward your comfort score.</li>
     <li>A wrong answer resets that question and gives it top priority the next time you open this page.</li>
@@ -1357,13 +1654,14 @@ function renderExam(){
   $('#nonem').onclick=()=>{setup.mods=new Set(); renderExam();};
   document.querySelectorAll('#nchips .chip').forEach(c=>c.onclick=()=>{const v=c.dataset.n; setup.n=v==='all'?'all':+v; renderExam();});
   $('#incm').onchange=e=>{setup.incMastered=e.target.checked; renderExam();};
+  $('#disconly').onchange=e=>{setup.discOnly=e.target.checked; renderExam();};
   $('#go').onclick=()=>startExam(n);
 }
 function startExam(n){
   const av=available();
   const W={missed:8,retried:6,due:6,review:6,new:1,mastered:0.4};
   const weak={}; MOD_KEYS.forEach(m=>{const qq=QS.filter(q=>q.m===m); weak[m]=qq.length?qq.filter(q=>['missed','review','due'].includes(qStatus(q))).length/qq.length:0;});
-  const weight=q=>{const s=qStatus(q); let w=W[s]||1; if(s==='new'&&q.tough) w=3; return w*(1+2*weak[q.m]);};
+  const weight=q=>{const s=qStatus(q); let w=W[s]||1; if(s==='new'&&q.tough) w=3; return w*(1+2*weak[q.m])*(q.disc?2:1);};
   const picked=av.map(q=>({q,k:Math.pow(Math.random(),1/weight(q))})).sort((a,b)=>b.k-a.k).slice(0,n).map(x=>x.q);
   const list=shuffle(picked).map(q=>({q,st0:qStatus(q),order:shuffle(q.opts.map((_,i)=>i)),pick:null,submitted:false,correct:null}));
   exam={active:true,done:false,items:list,i:0,total:n*60,left:n*60,timed:true,started:Date.now()};
@@ -1385,20 +1683,6 @@ function timeUp(){
   const a=$('#dlg-actions'); const k=document.createElement('button'); k.className='btn quiet'; k.textContent='Keep going without the clock'; k.onclick=()=>{$('#dlg').close(); updateClock();}; a.appendChild(k);
 }
 function endExam(silent){ if(!exam) return; clearInterval(exam.tick); exam.active=false; exam.done=!silent; exam.used=Math.round((Date.now()-exam.started)/1000); if(silent) exam=null; render(); }
-function optsHTML(it,tag){
-  const q=it.q, L='ABCD', correctIdx=0; let h='';
-  it.order.forEach((oi,pos)=>{
-    const o=q.opts[oi]; let cls='opt'; if(it.submitted){cls+=' locked'; if(oi===correctIdx) cls+=' right'; else if(oi===it.pick) cls+=' wrong';}
-    const attrs=tag==='button'?`data-oi="${oi}" aria-pressed="${it.pick===oi}" ${it.submitted?'aria-disabled="true"':''}`:'';
-    h+=`<${tag} class="${cls}" ${attrs}><span class="lbl">${L[pos]}.</span>${o[0]}`;
-    if(it.submitted){
-      if(oi===correctIdx) h+=`<div class="fb"><b class="k">✓ Correct answer${oi===it.pick?' (your pick)':''}</b>${o[1]}</div>`;
-      else h+=`<div class="fb"><b class="k">✗ ${oi===it.pick?'Your pick: why it\'s wrong':'Why it\'s wrong'}</b>${o[1]}<span class="mis"><b>Misconception behind it:</b> ${o[2]||''}</span></div>`;
-    }
-    h+=`</${tag}>`;
-  });
-  return h;
-}
 function renderQuestion(){
   const it=exam.items[exam.i], q=it.q; const L='ABCD';
   const answered=exam.items.filter(x=>x.submitted).length;
@@ -1407,9 +1691,17 @@ function renderQuestion(){
     <div class="small">Question ${exam.i+1} of ${exam.items.length} · ${answered} answered</div>
     <button class="btn quiet" id="endbtn" style="min-height:36px;padding:6px 12px">End exam</button></div><div class="track"><i id="trk"></i></div></div>
   <section class="panel">
-    <div class="qmeta"><span class="tag">${MODS[q.m]}</span>${q.tough?'<span class="tag tough">Tough: needs 2 sessions</span>':''}${{missed:'<span class="tag" style="background:var(--bad-bg);color:var(--bad)">Missed last time</span>',retried:'<span class="tag">You asked to retry this</span>',review:'<span class="tag">Second round</span>',due:'<span class="tag">5-day check</span>'}[it.st0]||''}</div>
+    <div class="qmeta"><span class="tag">${MODS[q.m]}</span>${q.tough?'<span class="tag tough">Tough: needs 2 sessions</span>':''}${discTag(q.disc)}${{missed:'<span class="tag" style="background:var(--bad-bg);color:var(--bad)">Missed last time</span>',retried:'<span class="tag">You asked to retry this</span>',review:'<span class="tag">Second round</span>',due:'<span class="tag">5-day check</span>'}[it.st0]||''}</div>
     <p class="qtext">${q.q}</p><div class="opts">`;
-  html+=optsHTML(it,'button');
+  it.order.forEach((oi,pos)=>{
+    const o=q.opts[oi]; let cls='opt'; if(it.submitted){cls+=' locked'; if(oi===correctIdx) cls+=' right'; else if(oi===it.pick) cls+=' wrong';}
+    html+=`<button class="${cls}" data-oi="${oi}" aria-pressed="${it.pick===oi}" ${it.submitted?'aria-disabled="true"':''}><span class="lbl">${L[pos]}.</span>${o[0]}`;
+    if(it.submitted){
+      if(oi===correctIdx) html+=`<div class="fb"><b class="k">✓ Correct answer${oi===it.pick?' (your pick)':''}</b>${o[1]}</div>`;
+      else html+=`<div class="fb"><b class="k">✗ ${oi===it.pick?'Your pick: why it\'s wrong':'Why it\'s wrong'}</b>${o[1]}<span class="mis"><b>Misconception behind it:</b> ${o[2]||''}</span></div>`;
+    }
+    html+=`</button>`;
+  });
   html+=`</div>`;
   if(!it.submitted){
     html+=`<div class="actions"><button class="btn" id="submit" ${it.pick===null?'disabled':''}>Submit final answer</button><button class="btn quiet" id="skip">Skip for now</button></div>`;
@@ -1443,22 +1735,10 @@ function goNext(){
 function renderSummary(){
   const done=exam.items.filter(x=>x.submitted), right=done.filter(x=>x.correct), wrong=done.filter(x=>!x.correct);
   const pct=done.length?Math.round(100*right.length/done.length):0;
-  if(!exam.rvFilter) exam.rvFilter=wrong.length?'missed':'all';
-  const shown=exam.rvFilter==='missed'?wrong:done;
-  const review=done.length?`<h3>Answer review</h3>
-    <p class="small" style="margin-top:0">Every option with the reason it's right or wrong. Missed questions come back next session.</p>
-    <div class="rv-filter" role="group" aria-label="Filter review">
-      <button class="btn quiet" data-f="all" aria-pressed="${exam.rvFilter==='all'}" style="min-height:36px;padding:6px 12px">All (${done.length})</button>
-      <button class="btn quiet" data-f="missed" aria-pressed="${exam.rvFilter==='missed'}" style="min-height:36px;padding:6px 12px">Missed (${wrong.length})</button>
-    </div>
-    ${shown.length?shown.map(x=>`<div class="rv-item">
-      <div class="qmeta"><span class="small">Question ${exam.items.indexOf(x)+1}</span><span class="tag">${SHORT[x.q.m]}</span>${x.q.tough?'<span class="tag tough">Tough</span>':''}<span class="rv-res ${x.correct?'ok':'no'}">${x.correct?'✓ Correct':'✗ Missed'}</span></div>
-      <p class="qtext">${x.q.q}</p><div class="opts">${optsHTML(x,'div')}</div></div>`).join(''):'<p>No misses this round.</p>'}`:'<p>No questions were answered.</p>';
   main.innerHTML=`<section class="panel"><h2>Exam results</h2>
     <p class="big">${right.length} / ${done.length}</p><p class="small">${pct}% correct · ${exam.items.length-done.length} not answered · time used ${fmt(Math.min(exam.used,exam.total))} of ${fmt(exam.total)}</p>
-    ${review}
+    ${wrong.length?`<h3>Review these (they'll come back next session)</h3><ol class="sum-list">${wrong.map(x=>`<li><span class="tag">${SHORT[x.q.m]}</span> ${x.q.q}<br><span class="small"><b>Answer:</b> ${x.q.opts[0][0]}</span></li>`).join('')}</ol>`:'<p>No misses this round.</p>'}
     <div class="actions"><button class="btn" id="again">Start another exam</button><button class="btn quiet" id="prog">See progress</button></div></section>`;
-  document.querySelectorAll('.rv-filter .btn').forEach(b=>b.onclick=()=>{exam.rvFilter=b.dataset.f; renderSummary();});
   $('#again').onclick=()=>{exam=null; renderExam();};
   $('#prog').onclick=()=>{exam=null; switchTab('progress');};
 }
@@ -1468,11 +1748,17 @@ function renderRecall(){
   if(drill) return renderDrill();
   let html=`<section class="panel"><h2>Write what you know</h2>
   <p class="small" style="margin-top:0">Pick a concept and write everything you remember, without looking. Then check it against the key points. If you miss any, review them and try again the next time you open this page.</p></section>`;
+  const lab=s=>({new:'Not tried',solid:'Solid',review:'Needs another try',locked:'Try again next session'}[s]);
+  const profs=RC.filter(r=>r.prof); const ps=profs.filter(r=>rStatus(r)==='solid').length;
+  html+=`<section class="panel prof"><h2><span class="mark">From your professor's discussion forum</span></h2>
+   <p class="small" style="margin-top:0">These are the questions your professor posted for discussion, a strong hint about what matters. Answer each one in your own words, then check it against the key points. (${ps} of ${profs.length} solid)</p><div class="clist">`;
+  profs.forEach(r=>{ const s=rStatus(r); html+=`<button class="citem" data-r="${r.id}" ${s==='locked'?'disabled':''}><span>${r.title}</span><span class="st ${s}">${lab(s)}</span></button>`; });
+  html+=`</div></section>`;
   MOD_KEYS.forEach(m=>{
-    const rs=RC.filter(r=>r.m===m); if(!rs.length) return;
+    const rs=RC.filter(r=>r.m===m && !r.prof); if(!rs.length) return;
     html+=`<section class="panel"><h2 style="font-size:1.1rem">${MODS[m]}</h2><div class="clist">`;
     rs.forEach(r=>{ const s=rStatus(r); const lab={new:'Not tried',solid:'Solid',review:'Needs another try',locked:'Try again next session'}[s];
-      html+=`<button class="citem" data-r="${r.id}" ${s==='locked'?'disabled':''}><span>${r.title}</span><span class="st ${s}">${lab}</span></button>`; });
+      html+=`<button class="citem" data-r="${r.id}" ${s==='locked'?'disabled':''}><span>${r.title}${r.disc?'<span class="dtag">Discussion</span>':''}</span><span class="st ${s}">${lab}</span></button>`; });
     html+=`</div></section>`;
   });
   main.innerHTML=html;
@@ -1481,10 +1767,11 @@ function renderRecall(){
 function matchPoints(r,text){ const t=text.toLowerCase(); return r.points.map(p=>p[1].some(k=>t.includes(k.toLowerCase()))); }
 function renderDrill(){
   const r=drill.r, e=st.r[r.id];
-  let html=`<section class="panel"><div class="qmeta"><span class="tag">${MODS[r.m]}</span><span class="tag">${esc(r.title)}</span></div>
+  let html=`<section class="panel${r.prof?' prof':''}"><div class="qmeta"><span class="tag">${MODS[r.m]}</span>${r.prof?'<span class="tag disc">Professor\'s discussion question</span>':`<span class="tag">${esc(r.title)}</span>`}${!r.prof?discTag(r.disc):''}</div>
     <p class="qtext">${r.prompt}</p>`;
   if(e && e.s==='review' && e.missed && !drill.checked) html+=`<div class="note">Last time you missed: ${e.missed.map(i=>esc(r.points[i][0])).join('; ')}</div>`;
   if(!drill.checked){
+    if(r.prof) html+=`<p class="small" style="margin-top:0">Tip: answering in your own words here is also good preparation for your forum post.</p>`;
     html+=`<textarea id="ta" placeholder="Write it in your own words. Aim for 3–6 sentences.">${esc(drill.text)}</textarea>
     <div class="actions"><button class="btn" id="chk">Check my answer</button><button class="btn quiet" id="back">Back to list</button></div>`;
   } else {
@@ -1523,7 +1810,7 @@ function renderProgress(){
   const overall=Math.round(100*(qm+rs)/(QS.length+RC.length));
   let html=`<section class="panel"><h2>What you're comfortable with</h2>
    <p class="big">${overall}%</p><p class="small">of all ${QS.length} exam questions and ${RC.length} recall concepts combined</p>
-   <div class="bars">${bar('Exam questions mastered',qm,qr,QS.length)}${bar('Recall concepts solid',rs,rr,RC.length)}</div>
+   <div class="bars">${bar('Exam questions mastered',qm,qr,QS.length)}${bar('Recall concepts solid',rs,rr,RC.length)}${(()=>{const dq=QS.filter(q=>q.disc), dr=RC.filter(r=>r.disc); const c=dq.filter(q=>qStatus(q)==='mastered').length+dr.filter(r=>rStatus(r)==='solid').length; const p=dq.filter(q=>['review','due','missed'].includes(qStatus(q))).length+dr.filter(r=>['review','locked'].includes(rStatus(r))).length; return bar('Professor\'s discussion topics',c,p,dq.length+dr.length);})()}</div>
    <div class="legend"><span style="--c:var(--ok)">Comfortable</span><span style="--c:var(--warn)">In progress (missed questions, tough questions, or missed recall points)</span></div></section>
    <section class="panel"><h2>By module</h2><div class="bars">`;
   MOD_KEYS.forEach(m=>{
