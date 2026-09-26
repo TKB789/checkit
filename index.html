@@ -72,6 +72,7 @@ h3{font-size:1rem; margin:18px 0 8px}
 .panel.prof{border:2px solid var(--pen)}
 .panel.prof h2 .mark{background:linear-gradient(transparent 55%, var(--hl) 55%); padding:0 2px}
 .citem .dtag{font:600 .72rem var(--sans); padding:2px 7px; border-radius:6px; background:var(--hl); color:var(--hl-ink); margin-left:6px; white-space:nowrap}
+.askframe{font:600 .8rem var(--sans); letter-spacing:.04em; text-transform:uppercase; color:var(--pen); margin:4px 0 6px}
 .qtext{font-family:var(--serif); font-size:1.12rem; line-height:1.6; margin:0 0 14px}
 .opts{display:flex; flex-direction:column; gap:10px}
 .opt{display:block; width:100%; text-align:left; background:var(--card); color:var(--ink); border:1.5px solid var(--line); border-radius:10px; padding:12px 14px; font:400 1rem/1.45 var(--sans); cursor:pointer; position:relative}
@@ -173,13 +174,13 @@ dialog::backdrop{background:rgba(10,15,25,.55)}
   <header class="top">
     <div class="titlerow"><div>
       <h1>Midterm practice: Modules 1–8</h1>
-      <p class="sub">Critical-thinking questions and write-it-out recall drills. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
+      <p class="sub">Critical-thinking questions and explain-it-to-a-new-student practice. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
     </div>
     <div class="theme" role="group" aria-label="Color theme"><button data-theme-set="auto">Auto</button><button data-theme-set="light">Light</button><button data-theme-set="dark">Dark</button></div>
     </div>
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-exam" aria-selected="true" data-tab="exam">Practice exam</button>
-      <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall">Recall drills</button>
+      <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall">New student</button>
       <button role="tab" id="tab-guides" aria-selected="false" data-tab="guides">Study guides</button>
       <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress">Progress</button>
     </nav>
@@ -1829,12 +1830,12 @@ function renderSummary(){
 let drill=null;
 function renderRecall(){
   if(drill) return renderDrill();
-  let html=`<section class="panel"><h2>Write what you know</h2>
-  <p class="small" style="margin-top:0">Pick a concept and write everything you remember, without looking. Then check it against the key points. If you miss any, review them and try again the next time you open this page.</p></section>`;
+  let html=`<section class="panel"><h2>Help a new student understand</h2>
+  <p class="small" style="margin-top:0">A classmate just joined and missed everything so far. Pick a concept and explain it to them in plain words, without looking at your notes. Then check your explanation against the key points they'd need. If you left any out, review them and try again the next time you open this page.</p></section>`;
   const lab=s=>({new:'Not tried',solid:'Solid',review:'Needs another try',locked:'Try again next session'}[s]);
   const profs=RC.filter(r=>r.prof); const ps=profs.filter(r=>rStatus(r)==='solid').length;
   html+=`<section class="panel prof"><h2><span class="mark">From your professor's discussion forum</span></h2>
-   <p class="small" style="margin-top:0">These are the questions your professor posted for discussion, a strong hint about what matters. Answer each one in your own words, then check it against the key points. (${ps} of ${profs.length} solid)</p><div class="clist">`;
+   <p class="small" style="margin-top:0">These are the questions your professor posted for discussion, a strong hint about what matters. Explain each one as you would to a classmate who just joined, then check it against the key points. (${ps} of ${profs.length} solid)</p><div class="clist">`;
   profs.forEach(r=>{ const s=rStatus(r); html+=`<button class="citem" data-r="${r.id}" ${s==='locked'?'disabled':''}><span>${r.title}</span><span class="st ${s}">${lab(s)}</span></button>`; });
   html+=`</div></section>`;
   MOD_KEYS.forEach(m=>{
@@ -1851,15 +1852,15 @@ function matchPoints(r,text){ const t=text.toLowerCase(); return r.points.map(p=
 function renderDrill(){
   const r=drill.r, e=st.r[r.id];
   let html=`<section class="panel${r.prof?' prof':''}"><div class="qmeta"><span class="tag">${MODS[r.m]}</span>${r.prof?'<span class="tag disc">Professor\'s discussion question</span>':`<span class="tag">${esc(r.title)}</span>`}${!r.prof?discTag(r.disc):''}</div>
-    <p class="qtext">${r.prompt}</p>`;
+    <p class="askframe">How would you explain this to someone who just joined the class?</p><p class="qtext">${r.prompt}</p>`;
   if(e && e.s==='review' && e.missed && !drill.checked) html+=`<div class="note">Last time you missed: ${e.missed.map(i=>esc(r.points[i][0])).join('; ')}</div>`;
   if(!drill.checked){
-    if(r.prof) html+=`<p class="small" style="margin-top:0">Tip: answering in your own words here is also good preparation for your forum post.</p>`;
-    html+=`<textarea id="ta" placeholder="Write it in your own words. Aim for 3–6 sentences.">${esc(drill.text)}</textarea>
+    if(r.prof) html+=`<p class="small" style="margin-top:0">Tip: explaining it plainly here is also good preparation for your forum post.</p>`;
+    html+=`<textarea id="ta" placeholder="Explain it like you&#39;re talking to a classmate who just joined. Skip jargon, or define it when you use it. Aim for 3–6 sentences.">${esc(drill.text)}</textarea>
     <div class="actions"><button class="btn" id="chk">Check my answer</button><button class="btn quiet" id="back">Back to list</button></div>`;
   } else {
-    html+=`<h3>Your answer</h3><div class="note" style="white-space:pre-wrap;font-family:var(--serif)">${esc(drill.text)||'<i>(blank)</i>'}</div>
-    <h3>Key points you should have included</h3><p class="small" style="margin:0">Tick each point you genuinely covered. Points with a matching keyword are pre-ticked as a hint, so double-check them.</p>
+    html+=`<h3>Your explanation</h3><div class="note" style="white-space:pre-wrap;font-family:var(--serif)">${esc(drill.text)||'<i>(blank)</i>'}</div>
+    <h3>Key points a new student would need</h3><p class="small" style="margin:0">Tick each point you genuinely covered. Points with a matching keyword are pre-ticked as a hint, so double-check them.</p>
     <ul class="points">${r.points.map((p,i)=>`<li><label><input type="checkbox" data-i="${i}" ${drill.ticks[i]?'checked':''}><span>${esc(p[0])}${drill.auto[i]?'<span class="hint">keyword found</span>':''}</span></label></li>`).join('')}</ul>
     <div class="actions"><button class="btn" id="savr">Save result</button><button class="btn quiet" id="redo">Edit my answer</button></div>`;
   }
@@ -1881,8 +1882,8 @@ function renderDrill(){
 }
 function showRecallResult(r,missed){
   main.innerHTML=`<section class="panel">${missed.length?
-    `<h2>Review these points</h2><p class="small" style="margin-top:0">You covered ${r.points.length-missed.length} of ${r.points.length}. Reread these in your guide, then try this concept again the next time you open the page.</p><ul class="missed">${missed.map(i=>`<li>${esc(r.points[i][0])}</li>`).join('')}</ul>`:
-    `<h2>Solid</h2><p>You covered all ${r.points.length} key points for <b>${esc(r.title)}</b>. This counts toward your comfort score.</p>`}
+    `<h2>Review these points</h2><p class="small" style="margin-top:0">You covered ${r.points.length-missed.length} of ${r.points.length}. Your new classmate would still be missing these. Reread them in your guide, then try explaining this concept again the next time you open the page.</p><ul class="missed">${missed.map(i=>`<li>${esc(r.points[i][0])}</li>`).join('')}</ul>`:
+    `<h2>Solid</h2><p>Your explanation covered all ${r.points.length} key points for <b>${esc(r.title)}</b>. A new student would get it. This counts toward your comfort score.</p>`}
     <div class="actions"><button class="btn" id="bk">Back to concepts</button></div></section>`;
   $('#bk').onclick=()=>{drill=null; renderRecall(); window.scrollTo(0,0);};
 }
@@ -1920,9 +1921,9 @@ function renderProgress(){
   const rs=RC.filter(r=>rStatus(r)==='solid').length, rr=RC.filter(r=>['review','locked'].includes(rStatus(r))).length;
   const overall=Math.round(100*(qm+rs)/(QS.length+RC.length));
   let html=`<section class="panel"><h2>What you're comfortable with</h2>
-   <p class="big">${overall}%</p><p class="small">of all ${QS.length} exam questions and ${RC.length} recall concepts combined</p>
-   <div class="bars">${bar('Exam questions mastered',qm,qr,QS.length)}${bar('Recall concepts solid',rs,rr,RC.length)}${(()=>{const dq=QS.filter(q=>q.disc), dr=RC.filter(r=>r.disc); const c=dq.filter(q=>qStatus(q)==='mastered').length+dr.filter(r=>rStatus(r)==='solid').length; const p=dq.filter(q=>['review','due','missed'].includes(qStatus(q))).length+dr.filter(r=>['review','locked'].includes(rStatus(r))).length; return bar('Professor\'s discussion topics',c,p,dq.length+dr.length);})()}</div>
-   <div class="legend"><span style="--c:var(--ok)">Comfortable</span><span style="--c:var(--warn)">In progress (missed questions, tough questions, or missed recall points)</span></div></section>
+   <p class="big">${overall}%</p><p class="small">of all ${QS.length} exam questions and ${RC.length} explain-it concepts combined</p>
+   <div class="bars">${bar('Exam questions mastered',qm,qr,QS.length)}${bar('Explain-it concepts solid',rs,rr,RC.length)}${(()=>{const dq=QS.filter(q=>q.disc), dr=RC.filter(r=>r.disc); const c=dq.filter(q=>qStatus(q)==='mastered').length+dr.filter(r=>rStatus(r)==='solid').length; const p=dq.filter(q=>['review','due','missed'].includes(qStatus(q))).length+dr.filter(r=>['review','locked'].includes(rStatus(r))).length; return bar('Professor\'s discussion topics',c,p,dq.length+dr.length);})()}</div>
+   <div class="legend"><span style="--c:var(--ok)">Comfortable</span><span style="--c:var(--warn)">In progress (missed questions, tough questions, or missed explain-it points)</span></div></section>
    <section class="panel"><h2>By module</h2><div class="bars">`;
   MOD_KEYS.forEach(m=>{
     const qq=QS.filter(q=>q.m===m), rr2=RC.filter(r=>r.m===m);
@@ -1931,7 +1932,7 @@ function renderProgress(){
     html+=bar(MODS[m],c,p,qq.length+rr2.length);
   });
   html+=`</div><p class="small" style="margin-bottom:0">Weakest modules first: ${weakest()}</p></section>
-   <section class="panel"><h2>Start over</h2><p class="small" style="margin-top:0">Clears every saved answer and recall result on this page.</p><button class="btn danger" id="reset">Reset all progress</button></section>`;
+   <section class="panel"><h2>Start over</h2><p class="small" style="margin-top:0">Clears every saved answer and explain-it result on this page.</p><button class="btn danger" id="reset">Reset all progress</button></section>`;
   main.innerHTML=html;
   $('#reset').onclick=()=>confirmDlg('Reset all progress? This can\'t be undone.','Reset everything',()=>{ st={v:1,updatedAt:0,q:{},r:{}}; save(); renderProgress(); });
 }
