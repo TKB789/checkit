@@ -1856,12 +1856,6 @@ S('m1','M1 L1 p5–7',`Which pairing of question type and its slide question is 
  [`Prescriptive: "What will happen?"`,`That's predictive. Prescriptive asks what action(s) would be best.`,`Swapping predictive and prescriptive.`],
  [`Predictive: "What should we do?"`,`Choosing actions is prescriptive.`,`Treating a forecast as a decision.`]
 ]);
-S('m1','M1 L1 p8',`After the three main question types, what fourth item appears on the "Analytics" slide?`,[
- [`More general questions`,`Slide 8 adds "More General Questions" beyond descriptive, predictive, and prescriptive.`],
- [`Causal questions only`,`Causation isn't listed as a question type on that slide.`,`Importing a category from elsewhere.`],
- [`Data-quality questions`,`Data quality is a cross-cutting concern, not the fourth item on that slide.`,`Confusing question types with cross-cutting concepts.`],
- [`Optimization questions`,`Optimization is a model family listed elsewhere, not the fourth item.`,`Mixing up model families and question types.`]
-]);
 S('m1','M1 L1 p10 · M1 L3 p3',`What are the three steps of modeling, in order?`,[
  [`Express the situation as math, analyze the math, turn it back into a real-life solution`,`That's the three-step definition on both slides.`],
  [`Collect data, fit an algorithm, then report the accuracy of the fitted model to the client`,`That's a workflow, not the slide's definition of modeling.`,`Equating modeling with running software.`],
@@ -1886,128 +1880,52 @@ S('m1','M1 L3 p5',`In "Regression estimate = 37 + 81×Size + 76×Weight + 4×Dis
  [`It lists the variables but still has no fitted numbers in it`,`That describes the middle level ("based on size, weight, distance").`,`Mixing up the middle and last levels.`],
  [`It uses three variables, which is what makes it a full model`,`The number of variables isn't what distinguishes the levels.`,`Focusing on variable count instead of fitted values.`]
 ]);
-S('m1','M1 L2 p4',`Which modules are listed under "Knowledge Building" as coming right after Module 4 (Clustering)?`,[
- [`5 Basic Data Preparation, 6 Change Detection, 7 Exponential Smoothing`,`That's the order on the slide, followed by 8 Basic Regression and 9 Advanced Data Preparation.`],
- [`5 Change Detection, 6 Basic Data Preparation, 7 Basic Regression, 8`,`Data preparation (5) comes before change detection (6), and 7 is exponential smoothing.`,`Mixing up the module order.`],
- [`5 Basic Regression, 6 Exponential Smoothing, 7 Change Detection`,`Regression is Module 8.`,`Misremembering the order.`],
- [`5 Missing Data, 6 Optimization, 7 Variable Selection models`,`Those are Modules 14, 15, and 11.`,`Confusing early and late modules.`]
-]);
-S('m1','M1 L2 p4',`Per the course structure slide, what is Module 9, and what comes right after it?`,[
- [`9 Advanced Data Preparation, then 10 Advanced Regression`,`Module 9 is Advanced Data Preparation; Module 10 is Advanced Regression.`],
- [`9 Basic Regression, then 10 Advanced Data Preparation`,`Basic Regression is Module 8.`,`Off by one.`],
- [`9 Variable Selection, then 10 Design of Experiments`,`Those are Modules 11 and 12.`,`Mixing up later modules.`],
- [`9 Advanced Regression, then 10 Missing Data preparation`,`Advanced Regression is 10; Missing Data is 14.`,`Swapping module numbers.`]
-]);
-S('m1','M1 L2 p4',`Which of these is listed in the second half of Knowledge Building (Modules 11–16)?`,[
- [`Probability-Based Models`,`Modules 11–16: Variable Selection, Design of Experiments, Probability-Based Models, Missing Data, Optimization, Advanced Models.`],
- [`Exponential Smoothing`,`That's Module 7.`,`Mixing up the halves.`],
- [`Basic Data Preparation`,`That's Module 5.`,`Mixing up the halves.`],
- [`Change Detection work`,`Change Detection is Module 6.`,`Mixing up the halves.`]
-]);
-S('m1','M1 L2 p5',`Which modules make up "Experience Building"?`,[
- [`Case Format, Power Co., Retailer, Monetization, Summary`,`Modules 17–21: Case Format, Power Company Case, Retailer Case, Monetization Case, Course Summary.`],
- [`Classification, Validation, Clustering, and Basic Regression`,`Those are knowledge-building modules.`,`Confusing the two parts of the course.`],
- [`Variable Selection, Experiments, and Optimization`,`Those are knowledge-building Modules 11, 12, and 15.`,`Confusing the two parts of the course.`],
- [`Homework, Peer Review, Message Boards, and Exams`,`Those are course activities, not modules.`,`Mixing logistics with course modules.`]
-]);
 S('m1','M1 L2 p7–9',`In the course-structure picture, which items sit under "Cross-cutting"?`,[
  [`Data preparation, output quality, missing data`,`Cross-cutting: Data Preparation, Output Quality, Missing Data, etc. Models: Machine Learning, Regression, Optimization, etc.`],
  [`Machine learning, regression, and optimization`,`Those are listed under "Models."`,`Swapping the two boxes.`],
  [`Case studies, homework, and peer reviews`,`Those are course activities, not concepts.`,`Mixing logistics with concepts.`],
  [`Descriptive, predictive, and prescriptive`,`Those are question types.`,`Confusing question types with cross-cutting concepts.`]
 ]);
-S('m1','M1 L2 p7–9',`In the course-structure picture, which items sit under "Models"?`,[
- [`Machine learning, regression, optimization`,`The "Models" box lists Machine Learning, Regression, Optimization, etc.`],
- [`Data preparation, output quality, missing data`,`Those are the cross-cutting items.`,`Swapping the two boxes.`],
- [`Validation, scaling, and outlier handling`,`Those are cross-cutting ideas, not listed under Models.`,`Treating data checks as models.`],
- [`Power company, retailer, and monetization cases`,`Those are experience-building case modules.`,`Mixing cases with model families.`]
+
+// ---- Module 1 applied (example-based)
+S('m1','M1 L1 p5–8 · applied',`"How many runs, on average, is a home run worth?" (the regression lecture's baseball question). Which question type is it?`,[
+ [`Descriptive`,`It explains how an existing system works using past seasons; nothing is being forecast or decided.`],
+ [`Predictive`,`It isn't estimating a future or unknown outcome.`,`Thinking any numeric estimate is a prediction.`],
+ [`Prescriptive`,`No action is being chosen.`,`Thinking a useful answer must be a decision.`],
+ [`None of the types`,`It's a classic descriptive question.`,`Missing the category.`]
 ]);
-S('m1','M1 L2 p10',`Which four items are listed under the Knowledge-Based Introduction?`,[
- [`Analytics models, cross-cutting concepts, situations/examples, basic math detail`,`That's the list on slide 10.`],
- [`Case studies, practice using models, peer reviews, and message-board discussions`,`Case studies and practice belong to the Experience-Based Section.`,`Mixing up the two sections.`],
- [`Analytics models, full proofs of every algorithm, software syntax, and grading rules`,`The slide says "basic" mathematical detail, not full proofs.`,`Overstating the math depth.`],
- [`Descriptive questions, predictive questions, prescriptive questions, general questions`,`Those are the question types from Lesson 1.`,`Confusing lesson content.`]
+S('m1','M1 L1 p5–8 · applied',`"How tall will this 2-year-old be as an adult?" (the regression lecture's height example). Which question type is it?`,[
+ [`Predictive`,`It asks what will happen for a new case.`],
+ [`Descriptive`,`It's not describing past data; it's about the future.`,`Thinking "uses data" means descriptive.`],
+ [`Prescriptive`,`No action is being recommended.`,`Confusing forecasting with deciding.`],
+ [`Clustering`,`That's a method, not a question type.`,`Mixing up methods and question types.`]
 ]);
-S('m1','M1 L2 p11',`What does the Experience-Based Section consist of?`,[
- [`Case studies and practice using models`,`Slide 11 lists case studies and practice using models.`],
- [`Basic mathematical detail and proofs`,`Math detail is part of the knowledge-based introduction.`,`Mixing up the sections.`],
- [`Cross-cutting concepts and examples`,`Those are knowledge-based items.`,`Mixing up the sections.`],
- [`Exams and quizzes on each module`,`The slide doesn't list exams here.`,`Assuming a standard course format.`]
+S('m1','M1 L1 p5–8 · applied',`A bank asks, "Which loan applicants should we approve, given our budget for bad loans?" Which question type is it?`,[
+ [`Prescriptive`,`It asks what action is best, subject to a constraint.`],
+ [`Predictive`,`Default predictions are an input, but the question asks for a decision.`,`Confusing an input with the answer.`],
+ [`Descriptive`,`It's not about explaining what happened.`,`Thinking past data makes it descriptive.`],
+ [`Change detection`,`That's a method, not a question type.`,`Mixing up methods and question types.`]
 ]);
-S('m1','M1 L2 p12–14',`How do the slides describe homework?`,[
- [`Mostly a tool for learning, less for grading`,`"Homework is mostly a tool for learning, less for grading."`],
- [`Mostly for grading, with a little learning`,`It's the reverse: mostly for learning.`,`Flipping the emphasis.`],
- [`Only for students who need extra practice`,`It's a core part of the course for everyone.`,`Treating homework as optional.`],
- [`A test of software syntax more than ideas`,`It's meant to link concepts to real questions.`,`Focusing on software over learning.`]
+S('m1','M1 L1 p5–8 · applied',`"Has global temperature changed?" (a change-detection example). Which question type does it answer?`,[
+ [`Descriptive`,`It asks what has happened.`],
+ [`Predictive`,`It isn't forecasting future temperatures.`,`Thinking climate questions are always forecasts.`],
+ [`Prescriptive`,`No action is being chosen.`,`Mixing up question types.`],
+ [`None of them`,`It fits "what happened?"`,`Missing the category.`]
 ]);
-S('m1','M1 L2 p14',`Which is one of the homework goals listed on the slides?`,[
- [`Learn to use software without being told exactly what to do`,`That's the last bullet, along with practicing models and linking material to real questions.`],
- [`Memorize the exact code used in each of the lecture videos`,`The goal is to go beyond the videos, not memorize them.`,`Thinking homework is about repetition.`],
- [`Earn points by following step-by-step templates for each answer`,`Homework is less about grading, and it avoids exact instructions.`,`Focusing on points.`],
- [`Avoid using commonly-used analytics software for practice`,`The slide says to use some commonly-used analytics software.`,`Reversing a listed goal.`]
+S('m1','M1 L3 p5 · applied',`Using Regression estimate = 37 + 81×Size + 76×Weight + 4×Distance, what is the estimate for Size = 2, Weight = 3, Distance = 10?`,[
+ [`467`,`37 + 162 + 228 + 40 = 467.`],
+ [`430`,`That drops the intercept 37.`,`Forgetting the intercept.`],
+ [`198`,`That adds the coefficients, not coefficient × value.`,`Not multiplying by the values.`],
+ [`507`,`Arithmetic slip; recheck 4 × 10 = 40.`,`Arithmetic error.`]
 ]);
-S('m1','M1 L2a p4–5',`On the homework grading scale, what earns 100?`,[
- [`All correct (maybe a few details off) with a deeper solution than expected`,`100 needs a deeper solution than expected. 90 is most or all correct and meets expectations.`],
- [`Most or all correct, meeting the expectations set out in the assignment`,`That earns 90.`,`Thinking meeting expectations is the top score.`],
- [`Not correct, but a reasonable and well-documented attempt at the whole problem`,`That earns 75.`,`Mixing up the rows.`],
- [`Every answer exactly correct with no deeper analysis beyond the question`,`Correct without extra depth is the 90 row.`,`Thinking perfection alone earns 100.`]
-]);
-S('m1','M1 L2a p4–5',`On the grading scale, what does 75 mean, and what does 50 mean?`,[
- [`75: not correct but a reasonable attempt. 50: not correct, insufficient effort`,`That's the table. 0 is not submitted.`],
- [`75: most or all correct. 50: not correct, but a reasonable attempt was made`,`Most or all correct is 90; a reasonable attempt is 75.`,`Shifting rows by one.`],
- [`75: partly correct with good effort. 50: submitted late, but otherwise correct work`,`Neither row mentions partial credit or lateness.`,`Inventing categories.`],
- [`75: not correct, insufficient effort. 50: not submitted by the due date`,`Insufficient effort is 50; not submitted is 0.`,`Shifting rows by one.`]
-]);
-S('m1','M1 L2a p5',`What advice accompanies the grading scale?`,[
- [`Focus your efforts on learning`,`The slide says "Focus your efforts on learning."`],
- [`Aim for 100 on every assignment`,`The slide stresses learning, not the score.`,`Focusing on grades.`],
- [`Submit early to get peer feedback`,`Not on this slide.`,`Inventing advice.`],
- [`Keep solutions as short as possible`,`Not on this slide.`,`Inventing advice.`]
-]);
-S('m1','M1 L2a p6',`What benefits of peer grading do the slides list?`,[
- [`See others' approaches, and practice evaluating others' analyses`,`Those are the two listed benefits.`],
- [`Get a higher grade, and have less work for the teaching staff`,`Not listed; the benefits are about learning.`,`Thinking peer review is about grades or workload.`],
- [`Find answers faster, and copy the best solution to reuse later on`,`Not listed; peer review is for learning and evaluating.`,`Misreading the purpose.`],
- [`Replace the TAs' grading, and make homework fully anonymous`,`Not listed.`,`Inventing benefits.`]
-]);
-S('m1','M1 L2a p7',`When are peer reviews assigned, and what should reviewers do?`,[
- [`After the due date; take them seriously and give helpful feedback`,`Also: think about the approach, not just the answer.`],
- [`Before the due date; skim quickly and mark each answer right or wrong`,`They come after the due date, and you should give helpful feedback.`,`Treating reviews as a quick check.`],
- [`During the lecture videos; grade only the formatting of each answer`,`They're after the due date and about the approach.`,`Focusing on formatting.`],
- [`At the end of the course; give a single overall score with no comments`,`They're after each due date and need helpful feedback.`,`Thinking a bare score is enough.`]
-]);
-S('m1','M1 L1 p11 · M1 L2a p8–10',`Per the slides, what are the course message boards for?`,[
- [`Asking, answering, and discussing questions, and building connections`,`Including extensions of material, application to your job, and connections for this course, other courses, and your career.`],
- [`Only official announcements from the instructor and TAs about deadlines`,`Students are encouraged to ask, answer, and discuss.`,`Thinking the boards are one-way.`],
- [`Only homework questions; course material belongs in office hours instead`,`Course material, modeling, software, and extensions are all welcome.`,`Narrowing the boards' scope.`],
- [`Posting finished homework solutions so everyone can compare their answers`,`The slides are about asking, answering, and connecting, not posting solutions.`,`Misreading the purpose.`]
-]);
-S('m1','M1 L1 p11',`What do the slides call "the best way to learn"?`,[
- [`Asking questions`,`"Ask Questions: best way to learn," using the discussion forums to ask and discuss answers.`],
- [`Rewatching videos`,`Not on the slide.`,`Inventing advice.`],
- [`Reading the textbook`,`Not on the slide.`,`Inventing advice.`],
- [`Doing extra problems`,`Not on the slide.`,`Inventing advice.`]
-]);
-S('m1','M1 L2a p10',`The slides list building professional connections as a benefit of the message boards. For which purposes?`,[
- [`This course, other courses, and your career`,`"Build professional connections …for this course, …for other courses, …for your career."`],
- [`This course only, since the boards close`,`The slide extends it to other courses and your career.`,`Narrowing the benefit.`],
- [`Finding study partners for the final exam only`,`Not stated that narrowly.`,`Guessing.`],
- [`Networking with the instructor's company`,`Not on the slide.`,`Inventing a benefit.`]
+S('m1','M1 L1 p10 · applied',`An analyst builds a delivery-time regression, finds a delivery will take 42 minutes, then tells the dispatcher "leave 45 minutes." Which modeling step is "tell the dispatcher 45 minutes"?`,[
+ [`Turning the math back into a real solution`,`Step 3: translate the math answer into action.`],
+ [`Expressing the real-life situation as math`,`That's step 1, building the model.`,`Mixing up steps 1 and 3.`],
+ [`Analyzing the math to get a numeric answer`,`That's step 2 (getting 42 minutes).`,`Mixing up steps 2 and 3.`],
+ [`Validating the model on held-out data`,`Validation is cross-cutting, not a modeling step here.`,`Mixing up concepts.`]
 ]);
 
 // ---- Module 2 slides
-S('m2','M2 L1 p2–6',`The "Differentiate" slides give examples of classification. Which is NOT one of them?`,[
- [`Forecasting next month's loan volume`,`That's a forecast of a number. The examples were loan applicants, potential terrorists, spam email, relevant documents, and healthy vs. infectious organs.`],
- [`Loan applicants who will or won't repay`,`That's the first classification example.`,`Missing the running example.`],
- [`Real email versus spam email`,`That's one of the listed examples.`,`Not recognizing a listed example.`],
- [`Healthy versus infectious organs`,`That's one of the listed examples.`,`Not recognizing a listed example.`]
-]);
-S('m2','M2 L1 p5',`One "Differentiate" slide is about documents. What are they being classified as?`,[
- [`Relevant or irrelevant to a certain case`,`"Between documents that are relevant or irrelevant to a certain case."`],
- [`Written by a person or by a computer`,`Not the slide's example.`,`Inventing an example.`],
- [`Public or confidential within a company`,`Not the slide's example.`,`Inventing an example.`],
- [`Short or long, based on their word count`,`Not the slide's example.`,`Inventing an example.`]
-]);
 S('m2','M2 L1 p7',`The voter slide shows supportive, opposition, and undecided voters. What does it add to the idea of classification?`,[
  [`Classification can have more than two classes`,`Three voter groups: classification isn't limited to yes/no.`],
  [`Classification only ever works for yes/no answers`,`The slide shows three classes.`,`Thinking classification must be binary.`],
@@ -2019,18 +1937,6 @@ S('m2','M2 L1 p9',`Which attributes are listed on the "Data: Ex: For loan applic
  [`Loan amount, interest rate, term length, and bank branch`,`Not the listed attributes.`,`Guessing plausible loan fields.`],
  [`Only income and credit score, since the plot has two axes`,`The plot uses two, but the slide lists more attributes.`,`Confusing the plot with the full data.`],
  [`Name, address, phone number, email, and date of birth`,`Those are identifiers, not the listed attributes.`,`Confusing identifiers with predictive attributes.`]
-]);
-S('m2','M2 L1 p10',`The first loan plot shows one applicant. Where do they sit?`,[
- [`Credit score 730, income 76,000`,`The single point is marked at 730 on the credit-score axis and 76,000 on the income axis.`],
- [`Credit score 76,000, income 730`,`The axes are swapped: credit score is horizontal, income vertical.`,`Mixing up the axes.`],
- [`Credit score 650, income 70,000`,`Not the values on the slide.`,`Misreading the plot.`],
- [`Credit score 730, income 7,600`,`The income is 76,000.`,`Dropping a digit.`]
-]);
-S('m2','M2 L1 p12',`Besides income and credit score, which extra loan attributes does the slide suggest?`,[
- [`Time as a customer of this bank, number of dependents, total assets and liabilities`,`Those are the listed extras (plus "etc.").`],
- [`The applicant's favorite branch, their loan officer, and the day of the week applied`,`Not on the slide.`,`Inventing attributes.`],
- [`Only the loan amount and the interest rate being offered to the applicant`,`Not on the slide.`,`Inventing attributes.`],
- [`The applicant's previous classification result, used again as an input attribute`,`Not on the slide, and using the answer as an input would be circular.`,`Confusing response with attributes.`]
 ]);
 S('m2','M2 L1 p14–16',`In the loan plot, a line separates the two groups, and arrows point to a couple of points. What are the arrows showing?`,[
  [`Points on the wrong side of the line: the line misclassifies them`,`A line may not separate everything perfectly; the arrows mark points it gets wrong.`],
@@ -2374,12 +2280,6 @@ S('m2','M2 L8 p14–15',`What does the classification summary say about SVM and 
  [`Both are clustering methods that group points without using any labels`,`They're classification methods using labeled data.`,`Confusing classification with clustering.`],
  [`KNN replaces SVM, which is no longer used in modern analytics work`,`Both are presented as basic methods.`,`Inventing a ranking.`]
 ]);
-S('m2','M2 L8 p17',`Which "additional subjects" does the classification wrap-up list?`,[
- [`Data terms and types, validation, distance metrics, confusion matrices`,`That's the list.`],
- [`Kernels, logistic regression, neural networks, and decision-tree models`,`Not the list on that slide.`,`Guessing related topics.`],
- [`Clustering, outlier detection, CUSUM, and exponential smoothing`,`Those are later modules, not this list.`,`Mixing up modules.`],
- [`Scaling, standardization, and one-hot encoding of the attributes`,`Not the list on that slide.`,`Guessing related topics.`]
-]);
 S('m2','M2 L3 p7',`Which example of non-numeric categorical data do the slides give?`,[
  [`Hair color: black, brown, red, blonde, gray`,`Categorical data can be non-numeric (hair color) or numbers without meaning (zip codes).`],
  [`Age in years: 18, 25, 40, 65, and older`,`Age is quantitative: higher means more.`,`Confusing quantitative and categorical.`],
@@ -2393,13 +2293,117 @@ S('m2','M2 L7 p9',`The standardizing slide describes standardization as "scaling
  [`Median = 0, range = 100`,`Not the slide's version.`,`Guessing.`]
 ]);
 
-// ---- Module 3 slides
-S('m3','M3 L1 p4',`Which example questions does the validation overview use for "How good is the model?"`,[
- [`Loan accuracy, future sales, and liver-transplant infection risk`,`"How often does it correctly determine whether a transplanted liver will transmit infectious encephalitis?"`],
- [`Loan accuracy, stock prices, and hospital readmission rates`,`Stock prices and readmissions aren't the examples used.`,`Guessing plausible examples.`],
- [`Spam detection, voter turnout, and the chance of rain tomorrow`,`Not the listed examples.`,`Guessing plausible examples.`],
- [`Clustering quality, outlier counts, and the elbow diagram shape`,`Those are later-module ideas.`,`Mixing up modules.`]
+// ---- Module 2 applied (example-based)
+S('m2','M2 L1 p4 · M2 L2 p15–18 · applied',`A spam filter is a classifier. Sending a real email to the spam folder is much worse than letting one spam through. How should the boundary move?`,[
+ [`Toward the spam side, so borderline emails are kept as real`,`Leave extra room on the side of the costlier mistake: only clear spam gets filtered.`],
+ [`Toward the real side, so borderline emails are sent to spam`,`That makes the costly mistake more common.`,`Moving the line the wrong way.`],
+ [`Keep it centered, since the widest margin is always best`,`Unequal costs justify shifting it.`,`Ignoring error costs.`],
+ [`Remove the boundary and send every email to the inbox`,`That gives up on classifying.`,`Overcorrecting.`]
 ]);
+S('m2','M2 L1 p3 · M2 L6 p9 · applied',`Airport screening classifies travelers as "regular" or "potential threat." Missing a real threat is far worse than an extra bag check. In the soft-margin SVM, what fits?`,[
+ [`Weight threat-point errors with mⱼ > 1`,`Costlier errors get bigger weights, so the line moves to catch borderline threats.`],
+ [`Weight threat-point errors with mⱼ < 1`,`That makes missed threats cheaper to the model.`,`Reversing the weights.`],
+ [`Set λ = 0 so the margin is ignored`,`λ trades off margin vs. error; it doesn't handle unequal costs.`,`Mixing up λ and mⱼ.`],
+ [`Drop the rare threat points from training`,`That removes exactly the cases you care about.`,`Deleting important data.`]
+]);
+S('m2','M2 L1 p7 · M2 L8 p5–7 · applied',`Voters are supportive, opposition, or undecided. Which method on the slides handles three classes most directly?`,[
+ [`KNN: the voter joins the most common class among neighbors`,`Majority vote works for any number of classes.`],
+ [`One SVM line, which splits the data into three sides`,`One line has only two sides.`,`Forgetting a line splits in two.`],
+ [`Standardization, which turns three classes into one scale`,`That's data preparation, not classification.`,`Mixing up tools.`],
+ [`k-means, since there are no labels for any of the voters`,`The voters' classes are known; that's classification.`,`Confusing classification with clustering.`]
+]);
+S('m2','M2 L1 p9 · M2 L3 p5 · applied',`A bank's loan table has income, credit history, age, family size, assets, liabilities, and "repaid in full (y/n)." Which column is the response?`,[
+ [`Repaid in full (y/n)`,`It's the answer the classifier learns to predict.`],
+ [`Credit history`,`That's an attribute (predictor).`,`Confusing predictors with the response.`],
+ [`Income and assets`,`Those are attributes.`,`Confusing predictors with the response.`],
+ [`Each applicant's row`,`A row is a data point.`,`Confusing rows and columns.`]
+]);
+S('m2','M2 L3 p3–8 · applied',`A restaurant's table has daily hamburger sales, day of week, and "holiday (y/n)." Which labeling is right?`,[
+ [`Sales: quantitative; day: categorical; holiday: binary`,`Binary is a subset of categorical data.`],
+ [`Sales: categorical; day: quantitative; holiday: binary`,`Higher sales mean more; day names have no order meaning here.`,`Swapping types.`],
+ [`Sales: quantitative; day: quantitative; holiday: unstructured`,`Day of week is categorical; holiday is binary.`,`Treating labels as numbers.`],
+ [`All three are unstructured, since they're recorded daily`,`They're structured data.`,`Confusing time series with unstructured.`]
+]);
+S('m2','M2 L3 p8 · applied',`Daily hamburger sales at one restaurant over a year are best described as:`,[
+ [`Time-series data`,`The same quantity recorded over time.`],
+ [`Unrelated data`,`The days are related in time order.`,`Missing the time dimension.`],
+ [`Unstructured data`,`Numbers in a table are structured.`,`Mixing up categories.`],
+ [`Binary data`,`Sales take many values.`,`Mixing up categories.`]
+]);
+S('m2','M2 L4 p5–8 · applied',`An SVM has a₁ = 2, a₂ = −1, a₀ = 1. A new applicant has x₁ = 1, x₂ = 1. What does the model say?`,[
+ [`2 − 1 + 1 = 2 ≥ 1: blue side, beyond the margin`,`Blue points satisfy Σaⱼxⱼ + a₀ ≥ 1.`],
+ [`2 − 1 + 1 = 2 ≤ −1: red side, beyond the margin`,`2 is positive; red needs ≤ −1.`,`Misreading the sign.`],
+ [`2 + 1 + 1 = 4 ≥ 1: blue side, beyond the margin`,`a₂ = −1, so a₂x₂ = −1.`,`Dropping a negative sign.`],
+ [`2 − 1 + 1 = 2: exactly on the classifier line`,`On the line means the value is 0.`,`Misreading the line equation.`]
+]);
+S('m2','M2 L4 p14–15 · applied',`A red point (yᵢ = −1) has Σⱼ aⱼxᵢⱼ + a₀ = 0.5. What is its soft-margin error max{0, 1 − (…)yᵢ}?`,[
+ [`1.5`,`1 − (0.5)(−1) = 1.5: it's on the wrong side of the line.`],
+ [`0.5`,`That forgets to multiply by yᵢ = −1.`,`Dropping yᵢ.`],
+ [`0`,`It's on the wrong side, so the error is positive.`,`Assuming every point is fine.`],
+ [`−1.5`,`The max with 0 keeps errors non-negative.`,`Forgetting the max.`]
+]);
+S('m2','M2 L4 p14–15 · applied',`A blue point (yᵢ = 1) has Σⱼ aⱼxᵢⱼ + a₀ = 0.4: correct side of the line, but inside the margin. What is its error?`,[
+ [`0.6`,`1 − 0.4 = 0.6: small penalty for being inside the margin.`],
+ [`0`,`It's inside the margin, so it still has some error.`,`Thinking correct side means no error.`],
+ [`1.4`,`That adds instead of subtracting.`,`Sign error.`],
+ [`0.4`,`That's the score, not the error.`,`Mixing up score and error.`]
+]);
+S('m2','M2 L4 p9–10 · applied',`An SVM on two scaled attributes has coefficients a₁ = 3, a₂ = 4. What is the margin width 2/√(Σaⱼ²)?`,[
+ [`0.4`,`√(9 + 16) = 5, and 2/5 = 0.4.`],
+ [`2.5`,`That's 5/2, the reciprocal.`,`Inverting the fraction.`],
+ [`0.08`,`That divides by 25 without the square root.`,`Forgetting the square root.`],
+ [`0.29`,`That's 2/7, adding the coefficients.`,`Not squaring the coefficients.`]
+]);
+S('m2','M2 L7 p8 · applied',`Loan applicants' incomes range from $20,000 to $120,000. What is $70,000 after scaling to 0–1?`,[
+ [`0.5`,`(70,000 − 20,000)/(120,000 − 20,000) = 0.5.`],
+ [`0.58`,`That's 70/120, forgetting to subtract the minimum.`,`Skipping the minimum.`],
+ [`0.7`,`That's 70/100 of the range, not the formula.`,`Misapplying the formula.`],
+ [`1.0`,`Only the maximum maps to 1.`,`Mixing up the endpoints.`]
+]);
+S('m2','M2 L7 p8–10 · applied',`A value scaled to 0.5 on [0, 1] is rescaled to the SAT range [200, 800]. What is it?`,[
+ [`500`,`0.5 × (800 − 200) + 200 = 500.`],
+ [`300`,`That forgets to add b = 200.`,`Dropping the shift.`],
+ [`400`,`That's 0.5 × 800.`,`Using a instead of (a − b).`],
+ [`650`,`Arithmetic slip.`,`Arithmetic error.`]
+]);
+S('m2','M2 L7 p9 · applied',`Applicants' credit scores have mean 700 and standard deviation 50. What is a score of 780 after standardizing?`,[
+ [`1.6`,`(780 − 700)/50 = 1.6.`],
+ [`80`,`That skips dividing by the SD.`,`Forgetting σ.`],
+ [`15.6`,`That divides 780 by 50.`,`Forgetting to subtract μ.`],
+ [`0.8`,`That divides by 100.`,`Using the wrong SD.`]
+]);
+S('m2','M2 L1 p10 · M2 L7 p3 · applied',`Two unscaled applicants differ by 30 credit-score points and $1,000 of income. What dominates their Euclidean distance?`,[
+ [`Income: √(30² + 1,000²) ≈ 1,000, nearly all of it`,`The large-unit attribute swamps the other, which is why KNN needs scaling.`],
+ [`Credit score: it's the more important attribute`,`Importance doesn't matter to raw distance; units do.`,`Confusing importance with scale.`],
+ [`Both equally: distance treats attributes the same`,`Raw distance favors big units.`,`Ignoring units.`],
+ [`Neither: 30 and 1,000 cancel out in the formula`,`Squares don't cancel.`,`Misreading the formula.`]
+]);
+S('m2','M2 L8 p5–7 · applied',`KNN with k = 5 classifies a new loan applicant. Neighbors: 3 repaid, 2 defaulted. With k = 1, the single nearest neighbor defaulted. What are the two predictions?`,[
+ [`k = 5: repaid. k = 1: defaulted`,`Majority vote among the k neighbors.`],
+ [`k = 5: defaulted. k = 1: repaid`,`Reversed.`,`Misreading the vote.`],
+ [`k = 5: repaid. k = 1: repaid`,`With k = 1, only the nearest point votes.`,`Ignoring k.`],
+ [`Both: a tie, so no prediction`,`3 vs. 2 isn't a tie.`,`Miscounting.`]
+]);
+S('m2','M2 L8 p9 · applied',`Two points differ by 3 in attribute 1 and 1 in attribute 2. With weights w₁ = 1 and w₂ = 4, what is √(Σᵢ wᵢ|xᵢ − yᵢ|²)?`,[
+ [`√13 ≈ 3.61`,`√(1·9 + 4·1) = √13.`],
+ [`√10 ≈ 3.16`,`That ignores the weights.`,`Dropping the weights.`],
+ [`√7 ≈ 2.65`,`That's √(3 + 4): not squaring the difference of 3.`,`Forgetting to square.`],
+ [`√37 ≈ 6.08`,`That puts weight 4 on the wrong attribute: √(4·9 + 1·1).`,`Swapping the weights.`]
+]);
+S('m2','M2 L6 p13–14 · applied',`After scaling, an SVM for loans has coefficient 1.9 on credit score and 0.003 on income. What's a reasonable next step?`,[
+ [`Consider dropping income; it barely moves the line`,`Near-zero coefficients are probably not relevant for classification.`],
+ [`Drop credit score, since its coefficient is so large`,`Large scaled coefficients mean the attribute matters.`,`Reversing the logic.`],
+ [`Stop scaling, since it made income's coefficient tiny`,`Scaling is what makes the coefficients comparable.`,`Blaming scaling.`],
+ [`Double income's values so its coefficient grows`,`That changes units, not relevance.`,`Gaming the coefficient.`]
+]);
+S('m2','M2 L2 p19 · applied',`In medical analytics, a donor organ could be classified "healthy" or "infectious." A borderline organ sits just on the healthy side of the widest-margin line. What does the lecture's cost reasoning suggest?`,[
+ [`Shift the line so borderline organs are treated as infectious`,`Using an infected organ is far costlier than discarding a healthy one.`],
+ [`Keep the widest-margin line, since that's always the best choice`,`Unequal costs justify shifting it.`,`Ignoring error costs.`],
+ [`Shift the line so more borderline organs count as healthy`,`That makes the costly error more common.`,`Moving the line the wrong way.`],
+ [`Use k-means, since organ status labels can't be trusted`,`The labels are known; this is classification.`,`Confusing classification with clustering.`]
+]);
+
+// ---- Module 3 slides
 S('m3','M3 L1 p5–7',`A classifier gets 3 of 24 training points wrong (87.5% correct). What do the slides say about that 87.5%?`,[
  [`Too optimistic, since it's measured on the training data`,`The number is crossed out: you can't measure effectiveness on the data the model was fit to.`],
  [`A fair estimate, since 24 points is enough to measure accuracy`,`The problem isn't sample size; it's measuring on training data.`,`Thinking more points fixes the issue.`],
@@ -2448,12 +2452,6 @@ S('m3','M3 L1 p16',`"Was this pattern just luck?" How do the slides answer?`,[
  [`Yes, but only because the data set was far too small to use`,`The point is that random patterns always exist, not just in small data.`,`Blaming size only.`],
  [`No: late-month birthdays are common for this kind of cohort`,`That claim is crossed out.`,`Believing the random pattern.`]
 ]);
-S('m3','M3 L1 p16',`Which is NOT one of the "some random pattern would've shown up" examples on the slide?`,[
- [`Born on a weekend`,`The listed examples: early in month, middle of month, even day, odd day, multiple of 3, near the instructor's kids' birthdays.`],
- [`Even-numbered day`,`That's listed.`,`Not recognizing a listed example.`],
- [`Day is a multiple of 3`,`That's listed.`,`Not recognizing a listed example.`],
- [`Middle of the month`,`That's listed.`,`Not recognizing a listed example.`]
-]);
 S('m3','M3 L1 p17',`Which is a key point of the Lesson 1 summary?`,[
  [`You can't measure a model's effectiveness on the data it was trained on`,`Also: fit captures real and random effects; only real effects repeat in other data.`],
  [`You can measure effectiveness on training data if you have enough of it to use`,`The summary says you can't measure it on training data.`,`Thinking size fixes the bias.`],
@@ -2501,12 +2499,6 @@ S('m3','M3 L2 p14',`According to the flowchart, what happens if only one model w
  [`You still need a validation set before using the test set`,`Validation is for choosing between models.`,`Thinking all three sets are always needed.`],
  [`Estimate quality on the training data, since there's no choice`,`Training accuracy is still optimistic.`,`Trusting training data.`],
  [`Build more models first, because the flowchart always requires a choice`,`The flowchart allows the single-model path.`,`Misreading the flowchart.`]
-]);
-S('m3','M3 L2 p15',`How does the summary label the three data sets?`,[
- [`Training: building. Validation: picking. Test: estimating chosen model`,`That's the summary.`],
- [`Training: picking. Validation: building. Test: estimating chosen model`,`Training builds; validation picks.`,`Swapping the roles.`],
- [`Training: building. Validation: estimating. Test: picking the model`,`Validation picks; test estimates.`,`Swapping the roles.`],
- [`Training: building. Validation: cleaning. Test: reporting to clients`,`Not the summary's labels.`,`Inventing roles.`]
 ]);
 S('m3','M3 L3 p5',`What split rule of thumb do the slides give when working with ONE model?`,[
  [`70–90% training, 10–30% test`,`Only training and test sets are needed.`],
@@ -2587,6 +2579,62 @@ S('m3','M3 L4 p17',`Which benefits of k-fold cross-validation does the summary l
  [`It picks k automatically and gives the final coefficients to deploy`,`You still retrain on all data.`,`Misunderstanding the output.`]
 ]);
 
+// ---- Module 3 applied (example-based)
+S('m3','M3 L1 p13–14 · applied',`With "26th" as the predictor, the absolute errors on the class's birthdays add up to 47 (10 people). On the new data set they add up to 99 (10 people). What does this show?`,[
+ [`Average error doubles (4.7 → 9.9); the fit captured a random effect`,`Training-data error made the predictor look far better than it really is.`],
+ [`The new group was measured wrongly, since the predictor was already validated`,`The predictor was never validated; it was fit to the first group.`,`Blaming the new data.`],
+ [`The predictor improved, since a larger total error means a more stable model`,`Larger error is worse.`,`Misreading error.`],
+ [`Nothing, since both groups have exactly 10 people and the same predictor`,`Same size, very different errors: that's the lesson.`,`Missing the comparison.`]
+]);
+S('m3','M3 L2 p4 · applied',`A loan classifier is 90% right on training data and 80% right on validation data. What best explains the 10-point gap?`,[
+ [`The fit captured random effects in the training data that don't repeat`,`Only real effects carry over to new data.`],
+ [`The validation data must contain errors that the training data didn't`,`The gap is expected even with clean data.`,`Blaming the data.`],
+ [`Validation sets are always 10 points worse, by the way they're defined`,`There's no fixed gap.`,`Inventing a rule.`],
+ [`The model was trained on the validation data by mistake, so it leaked`,`Then validation would look too good, not worse.`,`Reversing the effect.`]
+]);
+S('m3','M3 L2 p11–12 · applied',`In the thought experiment, you choose SVM-4 because it scored 97 on validation. All 10 models truly have quality 93. What should you expect on fresh test data?`,[
+ [`About 93, since its +4 was luck`,`The random boost doesn't repeat, so the score drops toward its real quality.`],
+ [`About 97, since it scored that already`,`That score included +4 of randomness.`,`Trusting the winning score.`],
+ [`About 101, since winners keep improving`,`Randomness doesn't compound in its favor.`,`Assuming momentum.`],
+ [`About 88, the lowest model's score`,`It isn't penalized below its real quality.`,`Overcorrecting.`]
+]);
+S('m3','M3 L3 p8–15 · applied',`Using the 5-point rotation Training–Validation–Training–Test–Training on 1,000 points in order, where do points #7 and #9 go?`,[
+ [`#7: validation. #9: test`,`#7 is position 2 of the second cycle; #9 is position 4.`],
+ [`#7: training. #9: training`,`Positions 2 and 4 aren't training.`,`Miscounting the cycle.`],
+ [`#7: test. #9: validation`,`Swapped.`,`Mixing up positions 2 and 4.`],
+ [`#7: validation. #9: training`,`Position 4 is the test set.`,`Miscounting.`]
+]);
+S('m3','M3 L3 p17 · applied',`Weekday (Mon–Fri) sales are split with the rotation Training–Validation–Training–Test–Training. Which weekdays does the model never train on?`,[
+ [`Tuesdays and Thursdays`,`Every Tuesday goes to validation and every Thursday to test.`],
+ [`Mondays and Fridays`,`Those land in training.`,`Miscounting the rotation.`],
+ [`Only on Wednesdays`,`Wednesday is in training.`,`Miscounting the rotation.`],
+ [`None; all days get trained`,`The rotation lines up with the week.`,`Missing the bias.`]
+]);
+S('m3','M3 L3 p5–7 · applied',`You have 1,000 points and will compare several models. Which split fits the slides' rule of thumb?`,[
+ [`600 training, 200 validation, 200 test`,`50–70% training; split the rest equally.`],
+ [`850 training, 150 test, no validation set`,`Comparing models needs a validation set.`,`Using the one-model rule.`],
+ [`200 training, 400 validation, 400 test`,`Training should get the most data.`,`Reversing the sizes.`],
+ [`1,000 training, then reuse them all to test`,`Testing on training data is too optimistic.`,`Reusing training data.`]
+]);
+S('m3','M3 L4 p8–13 · applied',`You set aside 20% of 1,000 points for testing, then run 4-fold cross-validation on the rest. How many points does each fold model train on?`,[
+ [`600`,`800 points in 4 folds of 200; each model trains on the other 3 folds.`],
+ [`800`,`One fold (200) is held out each time.`,`Forgetting the held-out fold.`],
+ [`200`,`That's the size of one fold.`,`Mixing up training and validation.`],
+ [`750`,`That's 1,000 × ¾, ignoring the test set.`,`Forgetting the test set.`]
+]);
+S('m3','M3 L4 p14 · applied',`With 10-fold cross-validation, how many times is each (non-test) data point used for training and for validation?`,[
+ [`Training 9 times, validation once`,`It's held out in exactly one of the ten rounds.`],
+ [`Training once, validation 9 times`,`Reversed.`,`Flipping the roles.`],
+ [`Training 10 times, validation 10 times`,`A point is never trained and validated on in the same round.`,`Double counting.`],
+ [`It depends on the random seed`,`k-fold assigns each point to exactly one fold.`,`Confusing with random resampling.`]
+]);
+S('m3','M3 L2 p13–14 · applied',`A team compared 5 SVM and 5 KNN loan models on validation data, picked the best, and now wants its expected accuracy. What's the correct last step?`,[
+ [`Score the chosen model once on a separate test set`,`Test data estimates the chosen model's performance.`],
+ [`Report the best validation score, since it's held out`,`Picking the maximum makes that score optimistic.`,`Trusting the winning score.`],
+ [`Average the ten validation scores and report that`,`That describes all models, not the chosen one.`,`Averaging models.`],
+ [`Retrain on the test set and report training accuracy`,`That reuses test data and is optimistic.`,`Misusing the test set.`]
+]);
+
 // ---- Module 4 slides
 S('m4','M4 L1 p9–18',`How do the slides describe clustering?`,[
  [`Grouping data points; discovering groups in the data`,`Those are the two subtitles on the clustering slides.`],
@@ -2594,23 +2642,11 @@ S('m4','M4 L1 p9–18',`How do the slides describe clustering?`,[
  [`Assigning new points to known classes from labeled data`,`That's classification.`,`Confusing clustering with classification.`],
  [`Detecting when a process's average has changed over time`,`That's change detection.`,`Mixing up modules.`]
 ]);
-S('m4','M4 L1 p9–18',`Which is NOT one of the listed examples of clustering use?`,[
- [`Real-time fraud detection`,`Listed: targeted marketing/market segmentation, personalized medicine, locating facilities, image analysis, data investigation.`],
- [`Personalized medicine`,`That's listed.`,`Not recognizing a listed example.`],
- [`Locating facilities`,`That's listed.`,`Not recognizing a listed example.`],
- [`Data investigation`,`That's listed.`,`Not recognizing a listed example.`]
-]);
 S('m4','M4 L1 p6–9',`In the market-segmentation (car buyers) example, which attributes are listed?`,[
  [`Size, price, versatility, coolness, mileage`,`Buyers can be grouped by what they care about.`],
  [`Age, income, family size, and credit score`,`Not the attributes on that slide.`,`Mixing in the loan example.`],
  [`Color, brand, dealer, and financing rate`,`Not the attributes on that slide.`,`Guessing plausible attributes.`],
  [`Horsepower, torque, weight, and top speed rating`,`Not the attributes on that slide.`,`Guessing plausible attributes.`]
-]);
-S('m4','M4 L1 p17',`What image-analysis example appears on the clustering slides?`,[
- [`A CAPTCHA with distorted words to read`,`The slide shows a CAPTCHA ("doctorow Greenspan").`],
- [`A satellite photo of cities at night`,`Not the slide's image.`,`Guessing.`],
- [`A medical X-ray showing a fracture`,`Not the slide's image.`,`Guessing.`],
- [`A face-recognition grid of people`,`Not the slide's image.`,`Guessing.`]
 ]);
 S('m4','M4 L1 p20–24',`The age vs. miles-driven-per-year plot is first grouped into two clusters, then shown with more groups. What's the point?`,[
  [`The same data can be grouped different ways; the number of clusters is a choice`,`Two big groups, or several smaller ones; which is right depends on the purpose.`],
@@ -2659,12 +2695,6 @@ S('m4','M4 L2 p23–29',`The slides' warehouse robot moves horizontally and lift
  [`Travel time is the sum of the two movement times`,`That's when moves happen one after the other (1-norm).`,`Missing "at the same time."`],
  [`Travel time follows the straight line to the box`,`The robot's motors don't move along the diagonal.`,`Defaulting to Euclidean.`],
  [`Travel time depends only on the vertical lift`,`It depends on the larger of the two.`,`Ignoring one dimension.`]
-]);
-S('m4','M4 L2 p22',`What two questions does the "Questions about infinity norms" slide raise?`,[
- [`Whose friends say "infinity norm"?! When would it be used?`,`A joke and a real question, answered with examples like the warehouse robot.`],
- [`How is the infinity norm computed? Is it faster than the 2-norm?`,`Not the slide's questions.`,`Guessing.`],
- [`Can the infinity norm be negative? Does it need scaled data?`,`Not the slide's questions.`,`Guessing.`],
- [`Who invented the infinity norm? Why is it named after infinity?`,`Not the slide's questions.`,`Guessing.`]
 ]);
 S('m4','M4 L3 p6–7',`In the k-means notation, what are xᵢⱼ, yᵢₖ, and zⱼₖ?`,[
  [`xᵢⱼ: attribute j of point i. yᵢₖ: 1 if i is in cluster k. zⱼₖ: coordinate j of center k`,`That's the slide's notation.`],
@@ -2757,13 +2787,87 @@ S('m4','M4 L6 p10',`What are supervised and unsupervised learning, per the slide
  [`Supervised: always uses a validation set. Unsupervised: skips validation entirely, always`,`Not the distinction.`,`Mixing up ideas.`]
 ]);
 
-// ---- Module 5 slides
-S('m5','M5 L1 p4',`Which quantitative-data examples does the data-preparation slide list?`,[
- [`Credit scores, Atlanta temperatures, hot dogs sold, stock prices, water chemicals`,`"Amount of a certain chemical in drinking water," plus "and more."`],
- [`Zip codes, hair colors, and customer names, which are all stored as numbers`,`Those are categorical or identifiers.`,`Confusing categorical data with quantitative.`],
- [`Written reviews, photos, and audio clips, since they can be converted to numbers`,`Those are unstructured data.`,`Confusing unstructured data with quantitative.`],
- [`Repaid (yes/no), holiday (yes/no), and ON/OFF status, since they are coded 0 and 1`,`Those are binary categorical data.`,`Treating binary data as the main quantitative example.`]
+// ---- Module 4 applied (example-based)
+S('m4','M4 L1 p6–9 · applied',`A carmaker clusters buyers on how much they care about size, price, versatility, coolness, and gas mileage. How would it use the result?`,[
+ [`Target each group with ads on what it cares about`,`That's targeted marketing / market segmentation.`],
+ [`Predict each buyer's exact purchase price with regression`,`Clustering groups people; it doesn't predict a number.`,`Confusing clustering with regression.`],
+ [`Label buyers as "will buy" or "won't buy" from past sales`,`That's classification with known labels.`,`Confusing clustering with classification.`],
+ [`Detect when a buyer's preferences shift over time`,`That's change detection.`,`Mixing up methods.`]
 ]);
+S('m4','M4 L1 p10 · applied',`In personalized medicine, why cluster patients?`,[
+ [`To find groups likely to respond alike to treatment`,`Discovering groups of similar patients lets care fit each group.`],
+ [`To diagnose each patient using labeled past diagnoses`,`With known labels, that's classification.`,`Confusing clustering with classification.`],
+ [`To forecast the total number of patients next year`,`That's a time-series forecast.`,`Mixing up methods.`],
+ [`To detect when a patient's vital signs drift upward`,`That's change detection.`,`Mixing up methods.`]
+]);
+S('m4','M4 L1 p17 · applied',`The clustering slides show a CAPTCHA under "image analysis." How can clustering help read one?`,[
+ [`Group similar pixels to separate letters from background`,`Clustering pixels by color or position finds the shapes.`],
+ [`Label each letter from thousands of prior CAPTCHA answers`,`That's classification with labels.`,`Confusing clustering with classification.`],
+ [`Forecast which letters will appear in the next CAPTCHA`,`Not a clustering task.`,`Mixing up methods.`],
+ [`Detect when the CAPTCHA website changes its font style`,`That's change detection.`,`Mixing up methods.`]
+]);
+S('m4','M4 L1 p20–24 · applied',`An insurer clusters drivers by age and miles driven per year. Two clusters or four both look reasonable. How should it choose?`,[
+ [`By what the insurer will do with the groups`,`"Fit the situation you're analyzing": e.g., how many rate tiers it can offer.`],
+ [`Always take four, since more clusters fit better`,`More clusters always lower distance; that alone doesn't pick k.`,`Minimizing distance only.`],
+ [`Always take two, since simpler is always better`,`Simplicity alone doesn't decide it either.`,`Using a fixed rule.`],
+ [`Let the data decide, since k-means finds the true k`,`k is the analyst's choice.`,`Thinking the algorithm picks k.`]
+]);
+S('m4','M4 L2 p5–11 · applied',`For points (1, 5) and (4, 1), what are the 1-norm, 2-norm, and ∞-norm distances?`,[
+ [`7, 5, and 4`,`|3| + |4| = 7; √(9 + 16) = 5; max(3, 4) = 4.`],
+ [`5, 7, and 4`,`The 1-norm is the sum; the 2-norm is the root of squares.`,`Swapping 1- and 2-norms.`],
+ [`7, 5, and 3`,`The ∞-norm is the largest difference, 4.`,`Taking the min.`],
+ [`7, 25, and 4`,`25 is before taking the square root.`,`Forgetting the root.`]
+]);
+S('m4','M4 L2 p5–7 · applied',`An ambulance must drive along a city's street grid to reach a house. Which distance best matches its travel?`,[
+ [`Rectilinear (1-norm)`,`It travels along streets: one direction, then the other.`],
+ [`Straight-line (2-norm)`,`It can't drive through buildings.`,`Defaulting to Euclidean.`],
+ [`Infinity norm (max)`,`It can't move in both directions at once.`,`Confusing with simultaneous motion.`],
+ [`It doesn't matter`,`The norm changes which station is "closest."`,`Ignoring the norm.`]
+]);
+S('m4','M4 L2 p5 · applied',`A helicopter flies directly to an accident site. Which distance best matches its travel?`,[
+ [`Straight-line (2-norm)`,`It travels directly, "as the crow flies."`],
+ [`Rectilinear (1-norm)`,`It isn't limited to a street grid.`,`Using the grid norm.`],
+ [`Infinity norm (max)`,`That's for separate simultaneous moves.`,`Confusing norms.`],
+ [`The p-norm with p = 0.5`,`Not a norm used here.`,`Guessing.`]
+]);
+S('m4','M4 L2 p23–29 · applied',`A warehouse robot moves 6 m along the aisle and lifts 4 m, both at 1 m/s and at the same time. How long does it take?`,[
+ [`6 seconds: the ∞-norm (the larger move)`,`Simultaneous motions finish when the slower one does.`],
+ [`10 seconds: the 1-norm (the total sum)`,`That's if it moved, then lifted.`,`Missing "at the same time."`],
+ [`7.2 seconds: the 2-norm (straight line)`,`The robot doesn't travel diagonally.`,`Defaulting to Euclidean.`],
+ [`4 seconds: the smaller of the two moves`,`It must finish both moves.`,`Taking the min.`]
+]);
+S('m4','M4 L3 p12–19 · applied',`One-dimensional points 1, 2, 3, 10, 11 start with centers at 2 and 10. After one assign-and-recompute round, where are the centers?`,[
+ [`2 and 10.5`,`{1, 2, 3} → mean 2; {10, 11} → mean 10.5.`],
+ [`2 and 10`,`The second center moves to the mean of 10 and 11.`,`Skipping the recompute step.`],
+ [`5.4 and 5.4`,`That's the mean of all points; there are two clusters.`,`Ignoring assignments.`],
+ [`3 and 11`,`Centers are means, not the largest point.`,`Using the max.`]
+]);
+S('m4','M4 L4 p4 · applied',`Siting fire stations with k-means, one rural home is far from everyone. Why can it distort the solution?`,[
+ [`A center is an average, so the far home pulls one station toward it`,`That can hurt service for everyone else in that cluster.`],
+ [`k-means ignores far points completely, so that home gets no station`,`It's included and pulls the center.`,`Thinking outliers are ignored.`],
+ [`The far home automatically becomes its own cluster in every run`,`Not automatically; it depends on k and starts.`,`Overstating the effect.`],
+ [`Far points only change the elbow diagram, not the station locations`,`They move the centers themselves.`,`Misplacing the effect.`]
+]);
+S('m4','M4 L4 p13–14 · applied',`Total distance to centers for k = 1…6 is 900, 500, 250, 220, 200, 185. Where is the elbow?`,[
+ [`k = 3: gains flatten after`,`Drops of 400 and 250, then only 30, 20, 15.`],
+ [`k = 6: lowest total distance`,`Distance always falls as k grows.`,`Minimizing distance only.`],
+ [`k = 1: highest distance`,`That's the starting point.`,`Misreading the plot.`],
+ [`k = 2: biggest single drop`,`The curve keeps falling steeply until k = 3.`,`Stopping too early.`]
+]);
+S('m4','M4 L5 p4–10 · applied',`Store-segment centers are fixed. A new store opens. How is it assigned, and what does the Voronoi diagram show?`,[
+ [`To the nearest center; each region is the area nearest one center`,`Predictive clustering uses the existing centers.`],
+ [`To the largest cluster; each region shows how many stores it has`,`Assignment is by distance, not size.`,`Using the wrong rule.`],
+ [`By re-running k-means; each region shows the old cluster edges`,`No re-run needed; regions cover all space.`,`Overcomplicating prediction.`],
+ [`By a vote of 5 neighbors; each region shows their majority labels`,`That's KNN classification.`,`Confusing k-means with KNN.`]
+]);
+S('m4','M4 L6 p6–10 · applied',`Case A: group loan applicants when no one knows who repaid. Case B: classify applicants using past repaid/defaulted labels. Which is which?`,[
+ [`A: unsupervised (clustering). B: supervised (classification)`,`Known answers make it supervised.`],
+ [`A: supervised (classification). B: unsupervised (clustering)`,`Reversed.`,`Swapping the definitions.`],
+ [`Both are supervised, since both use applicant data`,`Supervision depends on known responses.`,`Misreading "supervised."`],
+ [`Both are unsupervised, since neither uses a line`,`It's about labels, not lines.`,`Misreading the distinction.`]
+]);
+
+// ---- Module 5 slides
 S('m5','M5 L1 p4',`What are the variables used in a model called, per the data-preparation slide?`,[
  [`Predictors (regression), factors (classification), etc.`,`"Using specific data in our analysis: predictors (regression), factors (classification), et cetera."`],
  [`Responses (regression), outcomes (classification), etc.`,`Those name the answer column.`,`Mixing up inputs and outputs.`],
@@ -2823,12 +2927,6 @@ S('m5','M5 L2 p17–20',`What "another approach" to outlier detection do the sli
  [`Sort all the values and remove the top and bottom 5% as outliers automatically`,`Not the slide's approach, and it would miss the contextual dip.`,`Trimming by value only.`],
  [`Standardize the values and flag any reading with a z-score above 3`,`That judges values alone and would miss the dip.`,`Ignoring context.`],
  [`Cluster the readings and flag any cluster that has only one point in it`,`Not the slide's approach.`,`Mixing up methods.`]
-]);
-S('m5','M5 L2 p21',`What does the outlier-detection summary list?`,[
- [`Types: point, contextual, collective. Detection: automated (box-and-whisker) and modeling error`,`That's the summary slide.`],
- [`Types: high, low, missing. Detection: box-and-whisker, z-scores, and deleting the extremes`,`Not the slide's types.`,`Inventing categories.`],
- [`Types: bad, real, irrelevant. Detection: sensor logs, data-entry audits, and interviews`,`Those are ideas from the next lesson, not this summary.`,`Mixing up lessons.`],
- [`Types: point, contextual, collective. Detection: only visual inspection of every single data point`,`Automated methods and modeling error are listed.`,`Missing the detection methods.`]
 ]);
 S('m5','M5 L3 p4–9',`Which causes of "bad data" outliers do the slides list?`,[
  [`Sensor failure, contaminated experiment, wrong data input`,`"Or… maybe real data?" Need to investigate.`],
@@ -2891,6 +2989,56 @@ S('m5','M5 L3 p27–28',`In the two-model alternative for real outliers, what do
  [`The normal delivery length, including all the outlier shipments`,`The second model handles normal delivery length, without outliers.`,`Mixing up the two models.`]
 ]);
 
+// ---- Module 5 applied (example-based)
+S('m5','M5 L1 p5 · applied',`A KNN loan model uses household income (~10⁵) and credit score (~10²) without scaling. What problem from the data-prep lesson is this?`,[
+ [`Scale of the data: income dominates the distance`,`Big-number attributes swamp small-number ones.`],
+ [`Extraneous information: credit score adds nothing new`,`Credit score may matter; its units are the issue.`,`Confusing scale with relevance.`],
+ [`Outliers: every income is an outlier by definition`,`Large values aren't outliers by themselves.`,`Mixing up problems.`],
+ [`Time series: income changes over the loan's term`,`That's not this problem.`,`Mixing up problems.`]
+]);
+S('m5','M5 L2 p5 · applied',`A railroad temperature sensor usually reads 30–60°F but logs one reading of 900°F. What kind of outlier is it, and what's the likely cause?`,[
+ [`A point outlier, likely bad data (sensor failure)`,`Far from all other values; investigate, then omit or impute if bad.`],
+ [`A contextual outlier, likely a real seasonal shift`,`900°F is far from everything, not just its time.`,`Mixing up types.`],
+ [`A collective outlier, likely a missing heartbeat`,`That's the ECG example.`,`Mixing up examples.`],
+ [`Not an outlier, since sensors can read any value`,`It's far from the rest of the data.`,`Missing the definition.`]
+]);
+S('m5','M5 L2 p8 · applied',`Atlanta's airport logs 58°F on a July afternoon. That temperature is common in the data overall. What kind of outlier could it be?`,[
+ [`Contextual: normal overall, but far from nearby days`,`Its value is fine; its timing is odd.`],
+ [`Point: far from every other value in the data`,`58°F is common overall.`,`Ignoring context.`],
+ [`Collective: part of a pattern missing across days`,`It's a single odd reading.`,`Mixing up types.`],
+ [`Not an outlier, since the value is in the normal range`,`It's odd for July.`,`Looking only at the value.`]
+]);
+S('m5','M5 L2 p17–20 · applied',`Which detection approach would catch the July reading of 58°F?`,[
+ [`Fit exponential smoothing and flag large errors`,`The model expects a July value, so 58°F leaves a big error.`],
+ [`A box-and-whisker plot of all the temperatures`,`58°F sits inside the whiskers overall.`,`Ignoring context.`],
+ [`Remove the top and bottom 1% of temperatures`,`58°F isn't extreme overall.`,`Trimming by value only.`],
+ [`k-means on temperatures, flagging small clusters`,`Not the slide's approach, and it ignores time.`,`Mixing up methods.`]
+]);
+S('m5','M5 L3 p13–16 · applied',`An investigation confirms the 900°F sensor reading came from a failed sensor. What are the options?`,[
+ [`Omit the data point or impute a replacement`,`That's how the slides handle bad data.`],
+ [`Keep it, since removing data always biases a model`,`Bad data should be omitted or imputed.`,`Treating bad data as real.`],
+ [`Model the chance of sensor failures separately`,`That's for real outliers you expect to recur.`,`Mixing up the cases.`],
+ [`Raise the CUSUM threshold T to ignore it`,`That's change detection, not data cleaning.`,`Mixing up modules.`]
+]);
+S('m5','M5 L3 p17–20 · applied',`With 1,000,000 roughly normal measurements, about how many lie more than 2 standard deviations from the mean?`,[
+ [`About 45,000 (~4%)`,`The slides say about 4% lie outside 2 SDs.`],
+ [`About 2,700 (~0.3%)`,`That's for 3 SDs.`,`Mixing up 2 and 3 SDs.`],
+ [`About 320,000 (~32%)`,`That's outside 1 SD.`,`Mixing up 1 and 2 SDs.`],
+ [`Essentially none (~0%)`,`Tens of thousands are expected.`,`Assuming extremes are rare errors.`]
+]);
+S('m5','M5 L3 p25–28 · applied',`Medicine shipments to Africa are usually steady, but weather or political events sometimes cause huge delays. What do the two models in the slides' alternative give you?`,[
+ [`The chance of a disruption, and the normal delivery time`,`Logistic regression for the disruption probability; a second model for normal delivery time.`],
+ [`The exact date of the next storm, and the cost of each shipment`,`Neither model predicts storms or costs.`,`Overstating the models.`],
+ [`A cleaned data set with all delays removed, used for one model`,`Real delays aren't just deleted.`,`Treating real outliers as bad data.`],
+ [`Two delivery-time estimates that are averaged into one number`,`The models answer different questions.`,`Averaging models.`]
+]);
+S('m5','M5 L3 p29–31 · applied',`Chick-fil-A's weekly sales show one huge spike. It's confirmed real. What does the lecture's summary imply?`,[
+ [`Investigate it; real outliers aren't predictable or errors`,`Big real outliers happen; check the data in case you're wrong.`],
+ [`Delete it, since any spike that large must come from bad data`,`It's confirmed real.`,`Assuming spikes are errors.`],
+ [`Forecast the next spike exactly, since spikes follow a pattern`,`Outliers aren't predictable.`,`Overtrusting models.`],
+ [`Replace it with the average week, so the model stays unbiased`,`That hides a real event.`,`Imputing real data.`]
+]);
+
 // ---- Module 6 slides
 S('m6','M6 L1 p2',`How do the slides define change detection?`,[
  [`Determining whether something has changed, using time-series data`,`"Determining whether something has changed" in "time series/time-dependent data."`],
@@ -2909,12 +3057,6 @@ S('m6','M6 L1 p9',`Which examples fall under "determine impact of past action"?`
  [`When is preventive maintenance due? Has global temperature changed over time?`,`Those are "determine whether action might be needed."`,`Mixing up the categories.`],
  [`Have sales decreased due to competition? Is a machine bearing overheating?`,`The first is "action might be needed."`,`Mixing up the categories.`],
  [`Which loan applicants will default? Which emails are spam or not spam?`,`Those are classification.`,`Mixing up methods.`]
-]);
-S('m6','M6 L1 p9',`What is the third category of change-detection uses listed after "action needed" and "impact of past action"?`,[
- [`Determine changes to help plan ahead`,`That's the third bullet.`],
- [`Determine clusters of customers`,`Not a change-detection category.`,`Mixing up methods.`],
- [`Determine the best price to set`,`That's prescriptive optimization.`,`Guessing.`],
- [`Determine which data values are errors`,`That's outlier handling.`,`Mixing up modules.`]
 ]);
 S('m6','M6 L1 p10–11',`How is change detection used in the semiconductor-manufacturing example?`,[
  [`To predict and avoid future problems`,`"Using Change Detection to predict and avoid future problems."`],
@@ -3018,17 +3160,55 @@ S('m6','M6 L3 p12',`Per the summary, what can we conclude about climate change f
  [`It proves summers aren't changing`,`The data set is too small to tell.`,`Overclaiming the other way.`],
  [`The model must be wrong either way`,`The model isn't wrong; the data is limited.`,`Blaming the model.`]
 ]);
-S('m6','M6 L3 p12',`Why assign homework that leads to ambiguous results, per the summary?`,[
- [`To learn to be faithful to your results`,`"Always be honest and true to your analysis."`],
- [`To show that CUSUM doesn't work well here`,`CUSUM works; the data is limited.`,`Blaming the method.`],
- [`To practice picking the answer you want`,`That's the opposite of the lesson.`,`Reversing the lesson.`],
- [`To prove climate change isn't real at all`,`Not the purpose.`,`Misreading the lesson.`]
+
+// ---- Module 6 applied (example-based)
+S('m6','M6 L2 p14–17 · applied',`CUSUM for an increase: μ = 10, C = 1, T = 3, S₀ = 0. Readings are 12, 13, 9. What are S₁, S₂, S₃, and when is the alarm?`,[
+ [`1, 3, 1; alarm at t = 2`,`S₁ = 0 + 1 = 1; S₂ = 1 + 2 = 3 ≥ 3; S₃ = max{0, 3 − 2} = 1.`],
+ [`2, 5, 4; alarm at t = 2`,`That forgets to subtract C.`,`Dropping C.`],
+ [`1, 3, 1; no alarm yet`,`S₂ = 3 meets T = 3 (≥).`,`Using > instead of ≥.`],
+ [`1, 3, 2; alarm at t = 3`,`9 − 10 − 1 = −2, so S₃ = 1.`,`Arithmetic slip.`]
 ]);
-S('m6','M6 L3 p2',`What does the Module 6 homework-wrapup lesson say about this homework and about questions?`,[
- [`It includes an important analytics ethics issue; usually, post questions on the forum`,`The lesson covers the homework wrapup and analytics ethics.`],
- [`It has one correct answer that everyone should reach; email questions to the TAs`,`The homework can lead to different answers; post on the forum.`,`Assuming a single right answer.`],
- [`It is only about coding CUSUM correctly; questions will be answered in the next video`,`It's also about ethics; post questions on the forum.`,`Missing the ethics point.`],
- [`It is optional and ungraded; questions should wait until the end of the course`,`Not what the slide says.`,`Inventing policy.`]
+S('m6','M6 L2 p24 · applied',`A restaurant watches for sales falling due to a new competitor. μ = 50, C = 2, Sₜ₋₁ = 4, today's sales xₜ = 45. What is Sₜ in the decrease CUSUM?`,[
+ [`7`,`4 + (50 − 45 − 2) = 7.`],
+ [`11`,`That adds C instead of subtracting it.`,`Sign error on C.`],
+ [`0`,`The deviation is positive, so the total grows.`,`Using the increase formula.`],
+ [`1`,`That subtracts the deviation instead of adding it: 4 − 3 = 1.`,`Sign error.`]
+]);
+S('m6','M6 L1 p13–15 · applied',`A railroad bearing monitor shows one false temperature spike, then a real rise before breakdown. Why is CUSUM better than alarming on any single high reading?`,[
+ [`It builds up evidence, so one spike fades but a steady rise alarms`,`With C and T set well, a lone spike won't cross T; a steady rise will.`],
+ [`It ignores all high readings, so it can never be fooled by false spikes`,`It uses high readings; it just needs them to persist.`,`Overstating CUSUM.`],
+ [`It predicts the exact day of breakdown from the first temperature spike`,`It detects change; it doesn't forecast a date.`,`Confusing detection with forecasting.`],
+ [`It removes the spike as an outlier before looking at the other readings`,`CUSUM doesn't delete data.`,`Mixing up modules.`]
+]);
+S('m6','M6 L1 p10–11 · applied',`In semiconductor manufacturing, a machine may drift so parts come out slightly off. Why use change detection?`,[
+ [`To catch the drift early, before many bad parts`,`"Using change detection to predict and avoid future problems."`],
+ [`To group the parts into clusters by their shape`,`That's clustering.`,`Mixing up methods.`],
+ [`To forecast next month's demand for chips`,`That's forecasting.`,`Mixing up methods.`],
+ [`To classify each part using labeled examples`,`That's classification.`,`Mixing up methods.`]
+]);
+S('m6','M6 L1 p3 · applied',`A mechanic tracks an engine's vibration to decide when preventive maintenance is due. Only increases matter. Which setup fits?`,[
+ [`An increase CUSUM: Sₜ = max{0, Sₜ₋₁ + (xₜ − μ − C)}`,`Rising vibration is the warning sign.`],
+ [`A decrease CUSUM: Sₜ = max{0, Sₜ₋₁ + (μ − xₜ − C)}`,`That watches for drops.`,`Watching the wrong direction.`],
+ [`Both CUSUMs, since vibration can fail either way`,`Only increases matter here.`,`Adding an unneeded detector.`],
+ [`No CUSUM; just forecast the vibration level instead`,`Forecasting doesn't flag a shift.`,`Confusing detection with forecasting.`]
+]);
+S('m6','M6 L1 p9 · applied',`A state cut business taxes in 2020 and wants to know if hiring rose afterward. How does change detection fit?`,[
+ [`Determine the impact of a past action: look for a shift after the cut`,`That's the slides' "determine impact of past action" use.`],
+ [`Determine whether action is needed now: raise an alarm about hiring`,`The action already happened.`,`Mixing up the categories.`],
+ [`Classify each firm as "hired" or "didn't hire" using labeled examples`,`That's classification.`,`Mixing up methods.`],
+ [`Predict next year's hiring levels using exponential smoothing`,`That's forecasting.`,`Mixing up methods.`]
+]);
+S('m6','M6 L3 p4–6 · applied',`Two analysts run CUSUM on the same Atlanta temperature data to see if summers end later. One finds "yes," the other "no." What most likely explains it?`,[
+ [`Different choices of C, T, data, or interpretation`,`Same method, different parameters and judgment.`],
+ [`One of them must have made an arithmetic mistake in CUSUM`,`Reasonable choices can differ without mistakes.`,`Assuming one answer.`],
+ [`CUSUM gives random answers on temperature data`,`It's deterministic given C, T, and data.`,`Misunderstanding CUSUM.`],
+ [`The data proves one of them is right, the other wrong`,`The data set is too small to tell.`,`Overclaiming.`]
+]);
+S('m6','M6 L3 p7–9 · applied',`Your CUSUM analysis says "no change," but you strongly believe temperatures are rising. What do the slides say to do?`,[
+ [`Report the result honestly and explain its limits`,`Be faithful to your results; don't change them to match beliefs.`],
+ [`Adjust C and T until the model agrees with you`,`That's the unscientific rationale the slides warn about.`,`Fitting results to beliefs.`],
+ [`Declare the model wrong, since you know the truth`,`That's the slide's example of an unscientific rationale.`,`Fitting results to beliefs.`],
+ [`Drop the data that doesn't support rising temps`,`That's manipulating the analysis.`,`Cherry-picking data.`]
 ]);
 
 // ---- Module 7 slides
@@ -3043,12 +3223,6 @@ S('m7','M7 L1 p7',`What kinds of variation in time-series data do the slides nam
  [`Outliers and missing values, which appear in every time series`,`Not the categories listed.`,`Mixing up data-prep issues.`],
  [`Linear effects and interaction effects between the time periods`,`Those are regression terms.`,`Mixing up modules.`],
  [`Clusters and classes, which group the time periods by how similar they are`,`Not the categories listed.`,`Mixing up methods.`]
-]);
-S('m7','M7 L1 p9–10',`What examples of random variation do the slides list?`,[
- [`Temperatures, stock prices, blood pressure, burger sales`,`All vary randomly around their underlying level.`],
- [`Zip codes, hair color, and gender of customers`,`Those are categorical attributes.`,`Mixing up data types.`],
- [`Only stock prices, since all other data is predictable`,`Many kinds of data have random variation.`,`Over-narrowing.`],
- [`Credit scores, which never change day to day`,`Not the listed examples.`,`Guessing.`]
 ]);
 S('m7','M7 L1 p16',`In the blood-pressure example, what are Sₜ and xₜ?`,[
  [`Sₜ: the expected baseline response at time t. xₜ: the observed response`,`E.g., Sₜ = baseline blood pressure at hour t; xₜ = observed blood pressure.`],
@@ -3182,11 +3356,11 @@ S('m7','M7 L4 p17',`How do the slides say to find good values of α, β, γ?`,[
  [`Maximize the model's R² value`,`The slide says minimize squared error.`,`Mixing up criteria.`],
  [`Pick them so p-values are small`,`Not the method.`,`Mixing up criteria.`]
 ]);
-S('m7','M7 L5 p4',`What does ARIMA stand for, and what do the slides say about its theory?`,[
- [`AutoRegressive Integrated Moving Average; no theory here (see the Time Series elective)`,`The lesson skips the underlying theory.`],
- [`Automatic Regression In Moving Averages; the theory is covered in full detail in this lesson`,`Wrong expansion; the theory is skipped.`,`Guessing the acronym.`],
- [`AutoRegressive Integrated Moving Average; full proofs of each part are shown here`,`The slide says "No underlying theory."`,`Overstating the lesson.`],
- [`Adjusted Regression Index for Moving Averages; the theory comes later in Module 8`,`Wrong expansion.`,`Guessing the acronym.`]
+S('m7','M7 L5 p4',`What does ARIMA stand for, and which letters match its three parts?`,[
+ [`AutoRegressive Integrated Moving Average: AR = past values, I = differencing, MA = past errors`,`"Integrated" refers to the differencing step.`],
+ [`AutoRegressive Integrated Moving Average: AR = past errors, I = past values, MA = differencing`,`The parts are scrambled.`,`Mixing up the parts.`],
+ [`Automatic Regression In Moving Averages: all three letters describe one averaging step`,`Wrong expansion; there are three distinct parts.`,`Guessing the acronym.`],
+ [`AutoRegressive Integrated Moving Average: AR = seasonality, I = trend, MA = the level`,`Those are Holt-Winters components.`,`Mixing up methods.`]
 ]);
 S('m7','M7 L5 p6–8',`When does basic exponential smoothing (estimating Sₜ from xₜ, xₜ₋₁, …) work well?`,[
  [`When the data is stationary`,`Stationary: mean, variance, and other measures expected constant over time.`],
@@ -3284,11 +3458,79 @@ S('m7','M7 L6 p13',`What are the two differences between GARCH and ARIMA, per th
  [`GARCH needs no data; GARCH works only on stationary data with no trend at all`,`Not the listed differences.`,`Guessing.`],
  [`GARCH forecasts the mean; ARIMA forecasts the variance of the time series`,`Reversed.`,`Swapping targets.`]
 ]);
-S('m7','M7 L6 p14',`Which three methods for analyzing time series does the Module 7 summary list?`,[
- [`Exponential smoothing, ARIMA, GARCH`,`That's the summary.`],
- [`CUSUM, ARIMA, and k-means clustering`,`CUSUM and k-means are other modules.`,`Mixing up modules.`],
- [`Regression, SVM, and KNN classifiers`,`Those aren't time-series methods here.`,`Mixing up modules.`],
- [`Box-Cox, detrending, and PCA methods`,`Those are Module 9 data prep.`,`Mixing up modules.`]
+
+// ---- Module 7 applied (example-based)
+S('m7','M7 L1 p16–24 · applied',`A patient's blood-pressure baseline is Sₜ₋₁ = 100. Today's reading is xₜ = 110 and α = 0.4. What is the new baseline Sₜ?`,[
+ [`104`,`0.4 × 110 + 0.6 × 100 = 44 + 60 = 104.`],
+ [`106`,`That swaps the weights: 0.6 × 110 + 0.4 × 100.`,`Putting α on the wrong term.`],
+ [`110`,`That trusts the reading completely (α = 1).`,`Ignoring the baseline.`],
+ [`100`,`That ignores the new reading (α = 0).`,`Ignoring the observation.`]
+]);
+S('m7','M7 L1 p16–24 · applied',`A cheap home blood-pressure cuff gives very noisy readings. Which α is more sensible, and why?`,[
+ [`Small α: lots of randomness, so trust the prior baseline`,`α → 0 when there's a lot of randomness in the system.`],
+ [`Large α: noisy data needs quick reactions to each reading`,`That chases the noise.`,`Reversing α's meaning.`],
+ [`α = 1: every reading should replace the old baseline`,`That's no smoothing at all.`,`Ignoring noise.`],
+ [`α = 0: the baseline should never change with new data`,`Then real changes are never picked up.`,`Overcorrecting.`]
+]);
+S('m7','M7 L2 p11–12 · applied',`β = 0.5, Sₜ = 104, Sₜ₋₁ = 100, and Tₜ₋₁ = 2. What is the new trend Tₜ?`,[
+ [`3`,`0.5 × (104 − 100) + 0.5 × 2 = 2 + 1 = 3.`],
+ [`4`,`That's the observed change alone (β = 1).`,`Ignoring the old trend.`],
+ [`2`,`That's the old trend alone (β = 0).`,`Ignoring the new change.`],
+ [`6`,`That adds 4 + 2 without the weights.`,`Forgetting β.`]
+]);
+S('m7','M7 L4 p11–12 · applied',`With Sₜ = 104 and Tₜ = 3, what is the forecast two periods ahead?`,[
+ [`110`,`Fₜ₊₂ = Sₜ + 2Tₜ = 104 + 6.`],
+ [`107`,`That's only one period ahead.`,`Ignoring k.`],
+ [`104`,`That ignores the trend.`,`Using the flat forecast.`],
+ [`214`,`That doubles the whole sum.`,`Multiplying wrongly.`]
+]);
+S('m7','M7 L2 p16–20 · applied',`A burger restaurant has a weekly sales cycle in daily data. What is L, and what does a Saturday factor of 1.2 mean?`,[
+ [`L = 7; Saturday sales run 20% above baseline`,`Multiplicative seasonality inflates the baseline by 20%.`],
+ [`L = 12; Saturday sales run 20% above baseline`,`A weekly cycle in daily data has length 7.`,`Using months.`],
+ [`L = 7; Saturday sells 1.2 more burgers than usual`,`The factor multiplies; it doesn't add.`,`Treating the factor as additive.`],
+ [`L = 365; Saturday sales run 1.2% above baseline`,`L = 7 here, and 1.2 means +20%.`,`Misreading both.`]
+]);
+S('m7','M7 L4 p14–16 · applied',`For daily burger sales, Sₜ = 500, Tₜ = 10, and last Saturday's factor is 1.2. Tomorrow is Saturday. What is the forecast?`,[
+ [`612`,`(500 + 10) × 1.2 = 612.`],
+ [`610`,`That adds the factor effect only to the baseline: 500 × 1.2 + 10.`,`Applying the factor to part of it.`],
+ [`425`,`That divides by 1.2 instead of multiplying.`,`Deseasonalizing instead.`],
+ [`510`,`That ignores the Saturday factor.`,`Dropping seasonality.`]
+]);
+S('m7','M7 L2 p19 · applied',`γ = 0.2. This Sunday xₜ = 660 and Sₜ = 600; last Sunday's factor was 1.05. What is the updated Sunday factor?`,[
+ [`1.06`,`0.2 × (660/600) + 0.8 × 1.05 = 0.22 + 0.84.`],
+ [`1.10`,`That's this week's ratio alone (γ = 1).`,`Ignoring the old factor.`],
+ [`1.09`,`That swaps the weights: 0.8 × 1.1 + 0.2 × 1.05.`,`Putting γ on the wrong term.`],
+ [`1.05`,`That ignores the new ratio (γ = 0).`,`Ignoring the new data.`]
+]);
+S('m7','M7 L3 p12–17 · applied',`With α = 0.5, what weights do xₜ, xₜ₋₁, and xₜ₋₂ get in the baseline Sₜ?`,[
+ [`0.5, 0.25, 0.125`,`α(1 − α)ⁿ: each older reading gets half the weight.`],
+ [`0.5, 0.5, 0.5`,`Weights shrink by (1 − α) each step.`,`Missing the decay.`],
+ [`0.5, 0.25, 0`,`Older readings still count a little.`,`Cutting off after two.`],
+ [`0.125, 0.25, 0.5`,`Newer readings get more weight.`,`Reversing the order.`]
+]);
+S('m7','M7 L5 p9–12 · applied',`A series is 3, 5, 9, 15. What are its first- and second-order differences?`,[
+ [`First: 2, 4, 6. Second: 2, 2`,`The second differences are constant, so d = 2 makes it flat.`],
+ [`First: 2, 4, 6. Second: 6, 10`,`Those add neighbors instead of subtracting.`,`Adding instead of subtracting.`],
+ [`First: 3, 5, 9. Second: 2, 4`,`Differences subtract consecutive values.`,`Skipping a step.`],
+ [`First: 8, 14, 24. Second: 22, 38`,`Those are sums of neighbors.`,`Adding instead of subtracting.`]
+]);
+S('m7','M7 L5 p26 · applied',`A stock price is modeled as a random walk, ARIMA(0, 1, 0). What does that imply for the next forecast?`,[
+ [`Best guess is today's price; changes are unpredictable`,`With d = 1 and no AR or MA terms, the difference is noise.`],
+ [`The price drifts back to its long-run average over time`,`That's mean reversion, not a random walk.`,`Confusing models.`],
+ [`The price follows a fixed seasonal cycle each week`,`No seasonality in (0, 1, 0).`,`Adding structure.`],
+ [`The price grows by a constant trend every period`,`No drift term in the basic form.`,`Adding a trend.`]
+]);
+S('m7','M7 L6 p7–11 · applied',`A dealer forecasts pickup-truck demand at 100 trucks. Why also forecast the variance?`,[
+ [`To know how far off it could be, e.g., for safety stock`,`Variance tells how much the forecast might be higher or lower than the truth.`],
+ [`To make the 100-truck forecast more accurate on average`,`Variance doesn't change the expected value.`,`Confusing mean and variance.`],
+ [`To detect whether demand has shifted since last month`,`That's change detection.`,`Mixing up methods.`],
+ [`To remove the trend before forecasting the demand`,`That's detrending.`,`Mixing up methods.`]
+]);
+S('m7','M7 L6 p11 · applied',`An investor compares two portfolios with the same expected return. GARCH forecasts much higher variance for one. What does that mean?`,[
+ [`It's riskier: more volatility for the same return`,`Variance is a proxy for risk; the other portfolio is the better deal.`],
+ [`It's safer, since higher variance means more upside`,`Higher variance means more risk.`,`Reversing the idea.`],
+ [`It will earn more, since risk always brings more return`,`Here the expected returns are the same.`,`Ignoring the setup.`],
+ [`Nothing, since GARCH only forecasts prices, not risk`,`GARCH forecasts variance.`,`Mixing up targets.`]
 ]);
 
 // ---- Module 8 slides
@@ -3454,18 +3696,6 @@ S('m8','M8 L3 p13',`In the height example, what are the response, predictors, an
  [`Age-2 height; adult height, weight, and diet; prescriptive recommendation`,`Not the slide's setup.`,`Guessing.`],
  [`Whether the child plays basketball; both parents' heights; classification`,`The basketball image is just an illustration.`,`Over-reading the image.`]
 ]);
-S('m8','M8 L3 p17',`What heights are shown in the adult-height illustration?`,[
- [`Mother 5′4″, father 6′3″, boy at age 2: 2′11″`,`Used to predict the boy's adult height.`],
- [`Mother 6′3″, father 5′4″, boy at age 2: 2′11″`,`The parents' heights are swapped.`,`Misreading the figure.`],
- [`Mother 5′4″, father 6′3″, boy at age 2: 3′4″`,`The boy is 2′11″.`,`Misreading the figure.`],
- [`Mother 5′11″, father 6′3″, boy at age 2: 2′4″`,`Not the figure's values.`,`Guessing.`]
-]);
-S('m8','M8 L3 p19–21',`Which components of analytics does the regression-coefficients summary list, and what future topics?`,[
- [`Descriptive, predictive, prescriptive; future: random forests, transformations, trees`,`That's the summary slide.`],
- [`Descriptive and predictive only; future: clustering, CUSUM, and exponential smoothing methods`,`Prescriptive is included; those topics already came earlier.`,`Missing a component.`],
- [`Classification, clustering, and regression; future: PCA, Box-Cox, and detrending`,`Not the slide's list.`,`Guessing.`],
- [`Descriptive, predictive, prescriptive; future: SVM, KNN, and cross-validation`,`Those came earlier in the course.`,`Mixing up the order.`]
-]);
 S('m8','M8 L4 p3',`How do the slides define causation and correlation?`,[
  [`Causation: one thing causes another. Correlation: two things tend to happen together`,`With correlation, neither might cause the other.`],
  [`Causation: two things tend to happen together. Correlation: one thing causes another thing`,`Swapped.`,`Mixing up the definitions.`],
@@ -3507,12 +3737,6 @@ S('m8','M8 L4 p14',`Which is one of the "meaningless correlations" on the slide?
  [`Education and income, which the slides treat as causal`,`That's a descriptive regression example.`,`Mixing up examples.`],
  [`Winter temperature and outdoor time, which is spurious`,`The slide says that one is "kind of (probably)" causal.`,`Mixing up examples.`],
  [`Father's height and child's adult height, via genetics`,`That's the prediction example.`,`Mixing up examples.`]
-]);
-S('m8','M8 L4 p14',`What correlation do the slides report between spelling-bee winning-word length and venomous-spider deaths?`,[
- [`80.57% (r = 0.8057)`,`A strong but meaningless correlation.`],
- [`8.06% (r = 0.0806)`,`It's 0.8057.`,`Misplacing the decimal.`],
- [`57.80% (r = 0.5780)`,`It's 0.8057.`,`Scrambling digits.`],
- [`100% (r = 1.0000)`,`It's 0.8057.`,`Guessing.`]
 ]);
 S('m8','M8 L5 p4–6',`Why do the slides introduce "generalized modeling"?`,[
  [`Data may not fit a straight line y = a₀ + Σaⱼxⱼ well`,`The plots show curved relationships.`],
@@ -3605,6 +3829,86 @@ S('m8','M8 L6 p16',`What do the slides say about R² values like 0.4 or 0.3?`,[
  [`They mean the p-values must all be above 0.05 in the model`,`R² and p-values are separate.`,`Mixing up statistics.`]
 ]);
 
+// ---- Module 8 applied (example-based)
+S('m8','M8 L1 p13–18 · applied',`A regression gives New car sales = 200 + 30 × (workforce participation rate). What does it predict at a rate of 60, and what does 30 mean?`,[
+ [`2,000; each extra point of participation adds about 30 sales`,`200 + 30 × 60 = 2,000; a₁ is the change in y per unit of x.`],
+ [`1,800; each extra point of participation adds about 30 sales`,`That drops the intercept 200.`,`Forgetting a₀.`],
+ [`2,000; sales rise by 30% whenever participation rises`,`a₁ is units per unit, not a percentage.`,`Misreading the coefficient.`],
+ [`230; each extra point of participation adds 200 sales`,`That mixes up a₀ and a₁.`,`Swapping coefficients.`]
+]);
+S('m8','M8 L3 p9–12 · applied',`With Runs Scored = a₀ + 1.4·[HR] + …, a team hits 20 more home runs, other stats unchanged. About how many more runs should it score?`,[
+ [`About 28`,`20 × 1.4 = 28.`],
+ [`About 20`,`Each HR is worth about 1.4 runs, not 1.`,`Ignoring the coefficient.`],
+ [`About 14`,`That's 10 × 1.4.`,`Arithmetic slip.`],
+ [`About 1.4`,`That's per home run, not for 20.`,`Forgetting to multiply.`]
+]);
+S('m8','M8 L3 p13–17 · M8 L5 p14 · applied',`The adult-height model uses father's height, mother's height, and their product. What does the product term let the model capture?`,[
+ [`One parent's effect depending on the other's height`,`That's a variable interaction, treated as a new input x₃.`],
+ [`A curved effect of the father's height alone, like x₁²`,`That's a squared term, not an interaction.`,`Confusing interaction with a square.`],
+ [`The boy's height at age 2, which is otherwise missing`,`That's a separate predictor.`,`Mixing up predictors.`],
+ [`A way to make the model nonlinear in its coefficients`,`It's still linear in the coefficients.`,`Misunderstanding "linear."`]
+]);
+S('m8','M8 L1 p6 · M8 L4 p3–13 · applied',`A regression finds more education goes with higher income, with a tiny p-value. Can you say education causes higher income?`,[
+ [`Not from this alone; outside factors could drive both`,`Check the causation signs: timing, sense, and no outside factors (hard to guarantee).`],
+ [`Yes, because a tiny p-value proves the causal direction`,`p-values show association, not cause.`,`Treating significance as causation.`],
+ [`Yes, because education comes first, which is all it takes`,`Timing is one sign; outside factors must be ruled out too.`,`Using one sign only.`],
+ [`No, because income and education are never really related`,`They're correlated; causation is the open question.`,`Over-skepticism.`]
+]);
+S('m8','M8 L4 p11–12 · applied',`Across towns, ice-cream sales and swimming accidents rise together. Which slide example has the same structure?`,[
+ [`Tiredness vs. scruffiness: a third factor (kids) drives both`,`Here, hot weather likely drives both.`],
+ [`Winter recreation: temperature probably causes time outdoors`,`That one is plausibly causal in one direction.`,`Mixing up examples.`],
+ [`Home-run value: each home run adds about 1.4 more runs`,`That's a coefficient interpretation.`,`Mixing up examples.`],
+ [`Adult height: parents' heights predict a child's height`,`That's a prediction example.`,`Mixing up examples.`]
+]);
+S('m8','M8 L1 p7–11 · applied',`An insurer uses regression to estimate an applicant's remaining lifetime from age, health, and habits. What kind of use is this?`,[
+ [`Predictive: what will happen, from related factors`,`It's one of the slides' "what will happen in the future?" examples.`],
+ [`Descriptive: how the system of lifetimes works`,`The goal is a forecast for a new applicant.`,`Mixing up question types.`],
+ [`Prescriptive: which applicants to turn down`,`It estimates a number; the decision comes later.`,`Confusing prediction and decision.`],
+ [`Clustering: grouping applicants with no response`,`There's a response (lifetime).`,`Mixing up methods.`]
+]);
+S('m8','M8 L1 p6 · applied',`A political scientist regresses election results on economic factors to see which ones mattered. What kind of use is this?`,[
+ [`Descriptive: how does the system work?`,`It explains the effect of economic factors on elections.`],
+ [`Predictive: which party will win next time?`,`The goal is to explain, not forecast.`,`Mixing up question types.`],
+ [`Prescriptive: which policy should be passed?`,`No action is being chosen.`,`Mixing up question types.`],
+ [`Change detection: did voter behavior shift?`,`That's a different method.`,`Mixing up methods.`]
+]);
+S('m8','M8 L2 p21 · applied',`Model A has AIC 100 and Model B has AIC 104. What is B's relative likelihood, and which is preferred?`,[
+ [`e^((100 − 104)/2) ≈ 0.135; prefer A`,`B is about 13.5% as likely as A to be better.`],
+ [`e^((104 − 100)/2) ≈ 7.4; prefer B`,`Use AIC₁ − AIC₂ with the smaller AIC first.`,`Flipping the difference.`],
+ [`e^(100 − 104) ≈ 1.8%; prefer A`,`Divide the difference by 2 first.`,`Dropping the /2.`],
+ [`100/104 ≈ 0.96; they're about equal`,`It's an exponential, not a ratio.`,`Using a plain ratio.`]
+]);
+S('m8','M8 L2 p23 · applied',`Two models have BIC 212 and 220. How strong is the case for the first model?`,[
+ [`"Likely" better (difference of 8)`,`6 < |ΔBIC| < 10 means likely.`],
+ [`"Very likely" better (difference of 8)`,`Very likely needs > 10.`,`Misreading the cutoffs.`],
+ [`"Slightly likely" better (difference of 8)`,`That's for 0–2.`,`Misreading the cutoffs.`],
+ [`The second model is better, with higher BIC`,`Smaller BIC is better.`,`Reversing the direction.`]
+]);
+S('m8','M8 L2 p20 · applied',`A model has k = 3 parameters fit to n = 20 points. What correction does AICc add to AIC?`,[
+ [`2k(k + 1)/(n − k − 1) = 24/16 = 1.5`,`Small samples get this extra penalty.`],
+ [`2k(k + 1)/(n − k − 1) = 24/20 = 1.2`,`The denominator is n − k − 1 = 16.`,`Dropping −k −1.`],
+ [`k ln(n) = 3 ln 20 ≈ 9.0 (BIC's term)`,`That's BIC's penalty.`,`Confusing AICc with BIC.`],
+ [`2k = 2 × 3 = 6 (no correction)`,`That's plain AIC's penalty.`,`Forgetting the correction.`]
+]);
+S('m8','M8 L6 p12 · applied',`A household-income model (in dollars) gives age a coefficient of 1, with p < 0.0001. Ages range from 20 to 60. How much can age change the prediction?`,[
+ [`At most $40: significant, but not important`,`1 × (60 − 20) = $40, far less than a $100 difference.`],
+ [`About $40,000, since the p-value is so small`,`The p-value doesn't scale the effect.`,`Confusing significance with size.`],
+ [`It can't be judged without the model's R² value`,`Multiply the coefficient by the range of the attribute.`,`Missing the check.`],
+ [`Only $1 in total, no matter how old the person is`,`It's $1 per year of age.`,`Misreading the coefficient.`]
+]);
+S('m8','M8 L6 p15 · applied',`A car-sales regression has R² = 59%. What does the other 41% represent?`,[
+ [`Variability from randomness or factors left out`,`R² is the share of variability the model accounts for.`],
+ [`The 41% of predictions that are completely wrong`,`R² isn't a count of right and wrong predictions.`,`Misreading R².`],
+ [`A 41% chance that the model's predictors are wrong`,`R² isn't a probability about predictors.`,`Misreading R².`],
+ [`The share of coefficients with p-values above 0.05`,`R² and p-values are separate.`,`Mixing up statistics.`]
+]);
+S('m8','M8 L5 p4–8 · applied',`Data plotted against a predictor dips, then rises in a U shape. A straight line fits poorly. What do the slides suggest?`,[
+ [`Add a squared term: y = a₀ + a₁x₁ + a₂x₁²`,`Transforming the data can make the fit linear in the coefficients.`],
+ [`Drop the predictor, since it isn't linear`,`The predictor matters; the form is wrong.`,`Discarding useful data.`],
+ [`Use k-means to find the two arms of the U`,`That's not a regression fix.`,`Mixing up methods.`],
+ [`Keep the line and just report its low R²`,`A better form is available.`,`Giving up too soon.`]
+]);
+
 // ---- Module 9 slides
 S('m9','M9 L1 p4',`What problem does the "normality assumption" slide warn about?`,[
  [`Some models assume normal data; results are biased if it's wrong`,`Example: height of American women in their 40s is roughly normal.`],
@@ -3641,12 +3945,6 @@ S('m9','M9 L1 p14',`What practical advice do the slides give about Box-Cox?`,[
  [`Always apply it to every response before fitting any model at all`,`Check whether it's needed first.`,`Transforming by default.`],
  [`Compute λ by hand, since software can't choose it reliably`,`Software can do it for you.`,`Distrusting software.`],
  [`Use it only on predictors, never on the response variable`,`The summary says it's for transforming a response.`,`Reversing the use.`]
-]);
-S('m9','M9 L1 p17–20',`Who is the Box-Cox transformation named after, and what is it useful for?`,[
- [`George Box and David Cox; transforming a response to eliminate heteroscedasticity`,`The slide's "Fox in Socks" image is a joke on the rhyming names.`],
- [`Dr. Seuss's Fox in Socks; transforming predictors so they're all on one scale`,`The book is a joke; the method is named for Box and Cox.`,`Taking the joke literally.`],
- [`George Box and David Cox; removing the time trend from a price series`,`That's detrending.`,`Mixing up methods.`],
- [`Two box plots and a Cox model; finding outliers in multi-dimensional data`,`Named after two statisticians.`,`Guessing from the name.`]
 ]);
 S('m9','M9 L2 p6',`How do the slides define a trend in time-series data, and what example do they use?`,[
  [`An increase or decrease of data over time; gold prices`,`The gold chart rises sharply over the years.`],
@@ -3803,6 +4101,80 @@ S('m9','M9 L6 p11',`What's the overall conclusion about PCA in the summary?`,[
  [`Always good, since it never throws away useful information from data`,`It can be bad.`,`Overclaiming.`],
  [`Always bad, since it ignores the response, so it should be avoided`,`Often helpful to try.`,`Over-skepticism.`],
  [`Only useful when there are fewer factors than data points available`,`Not the summary.`,`Inventing a rule.`]
+]);
+
+// ---- Module 9 applied (example-based)
+S('m9','M9 L1 p4–8 · applied',`In the slides, the heights of women in their 40s look normal, but their weights spread out more at higher values. What is this, and what's the fix?`,[
+ [`Heteroscedasticity (unequal variance); try a Box-Cox transformation`,`Box-Cox can make the data close to normal, removing the unequal spread.`],
+ [`Multicollinearity (correlated inputs); try principal component analysis`,`That's about correlated predictors, not unequal spread.`,`Mixing up problems.`],
+ [`A trend over time in the weights; detrend with a simple regression`,`There's no time element in this example.`,`Mixing up problems.`],
+ [`Outliers in the heavier weights; delete the points above the whisker`,`The whole upper range spreads out; it's not a few bad points.`,`Treating spread as outliers.`]
+]);
+S('m9','M9 L1 p13–14 · applied',`Using the Box-Cox formula t(y) = (y^λ − 1)/λ with λ = 0.5, what is t(9)?`,[
+ [`4`,`(√9 − 1)/0.5 = 2/0.5 = 4.`],
+ [`1`,`That multiplies by 0.5 instead of dividing: (3 − 1) × 0.5.`,`Multiplying by λ.`],
+ [`16`,`That uses 9 − 1 before the power.`,`Order-of-operations slip.`],
+ [`6`,`That takes √9 but forgets to subtract 1.`,`Dropping the −1.`]
+]);
+S('m9','M9 L1 p12 · applied',`Why does a logarithmic-style Box-Cox transform help data whose large values vary much more than its small values?`,[
+ [`It stretches small ranges and shrinks large ranges`,`That evens out variability across the range.`],
+ [`It removes the largest values, which cause the spread`,`It rescales values; it doesn't delete any.`,`Treating it as outlier removal.`],
+ [`It centers every value at zero and divides by the SD`,`That's standardization; the spread pattern stays.`,`Confusing with standardizing.`],
+ [`It fits a trend line and keeps only what's left over`,`That's detrending.`,`Mixing up methods.`]
+]);
+S('m9','M9 L2 p8–9 · applied',`The slides' gold trend is Price = −45,600 + 23.2 × Year. In 2010 gold sold for $1,420. What is the detrended 2010 price?`,[
+ [`About 388`,`Trend: −45,600 + 23.2 × 2010 = 1,032. Detrended: 1,420 − 1,032 = 388.`],
+ [`About 1,032`,`That's the trend value, not what's left after removing it.`,`Stopping at the trend value.`],
+ [`About 2,452`,`That adds the trend instead of subtracting it.`,`Sign error.`],
+ [`About 1,397`,`That subtracts only the 23.2 slope, not the whole trend.`,`Subtracting part of the trend.`]
+]);
+S('m9','M9 L2 p8–9 · applied',`After detrending gold prices, one year's value is negative. What does that mean?`,[
+ [`That year's price was below the long-run trend line`,`Detrended = actual − trend, so negative means below the line.`],
+ [`Gold had a negative price in that year, which is bad data`,`Actual prices stay positive; it's the gap that's negative.`,`Misreading the detrended value.`],
+ [`The trend line was fit wrongly and needs another regression`,`Points fall on both sides of any fitted line.`,`Expecting all positive gaps.`],
+ [`The price fell compared with the year right before it`,`It compares with the trend, not the prior year.`,`Confusing with differencing.`]
+]);
+S('m9','M9 L2 p7 · applied',`A regression predicts a restaurant's yearly sales from ten years of local income and population, all of which rise over time. Why detrend first?`,[
+ [`Shared growth over time can fake a relationship among factors`,`Removing the trend from response and predictors keeps the model from fitting time itself.`],
+ [`Regression can't handle predictors that are measured in years`,`It can; the issue is shared trend.`,`Misstating the problem.`],
+ [`Detrending makes the response variable normally distributed`,`That's Box-Cox's goal.`,`Mixing up methods.`],
+ [`Detrending removes the correlation among the predictors`,`That's PCA's goal.`,`Mixing up methods.`]
+]);
+S('m9','M9 L3 p4–7 · applied',`You want to predict tomorrow's market from 6,000+ stocks' past performance. Which two issues make PCA attractive?`,[
+ [`Too many predictors, and correlated ones (same sector)`,`Needs many years of data, and related stocks move together.`],
+ [`The stock prices are heteroscedastic and not normally distributed`,`That points to Box-Cox, not PCA.`,`Mixing up methods.`],
+ [`The market has a long-run upward trend over the many years`,`That points to detrending.`,`Mixing up methods.`],
+ [`There's no response variable, so it must be a clustering task`,`Tomorrow's market is the response.`,`Misreading the setup.`]
+]);
+S('m9','M9 L3 p9 · applied',`PCA on the stock data gives 6,000 components. Why build the model on just the first few?`,[
+ [`They hold the most variability; later ones are mostly randomness`,`Keeping the first n reduces the effect of randomness.`],
+ [`They are the stocks with the highest prices in the market`,`Components are combinations of stocks, not single stocks.`,`Confusing components with stocks.`],
+ [`They are guaranteed to be the best predictors of the response`,`Not guaranteed; see "PCA can be bad."`,`Overstating PCA.`],
+ [`They are the only components that are uncorrelated with the rest`,`All components are uncorrelated.`,`Misreading PCA.`]
+]);
+S('m9','M9 L4 p12–14 · applied',`PCA regression gives b₁ = 2 and b₂ = 3. For original factor j, the eigenvector entries are v_j1 = 0.6 and v_j2 = 0.8. What is the implied coefficient aⱼ?`,[
+ [`3.6`,`aⱼ = Σₖ bₖ vⱼₖ = 2(0.6) + 3(0.8) = 1.2 + 2.4.`],
+ [`5.0`,`That just adds b₁ + b₂.`,`Ignoring the eigenvector entries.`],
+ [`1.4`,`That just adds the eigenvector entries.`,`Ignoring the b's.`],
+ [`3.4`,`That pairs b₁ with 0.8 and b₂ with 0.6.`,`Swapping the pairs.`]
+]);
+S('m9','M9 L5 p3 · applied',`For A = [[2, 0], [0, 3]], what are the eigenvalues, and is v = (0, 1) an eigenvector?`,[
+ [`2 and 3; yes, Av = (0, 3) = 3v`,`det(A − λI) = (2 − λ)(3 − λ) = 0.`],
+ [`2 and 3; no, since v has a zero entry`,`Av = 3v, so it is one; zeros are allowed.`,`Misreading the definition.`],
+ [`5 and 6; yes, Av = (0, 3) = 3v`,`Those aren't roots of det(A − λI) = 0.`,`Adding or multiplying entries.`],
+ [`0 and 1; no, since Av isn't equal to v`,`Av only has to be a multiple of v.`,`Requiring λ = 1.`]
+]);
+S('m9','M9 L6 p10–11 · applied',`A bank has two scaled factors for red (default) and blue (repaid) loans. The direction with the most spread barely separates the colors. What happens if it keeps only PCA1?`,[
+ [`It may lose the separating direction: the "PCA can be bad" case`,`PCA ignores the response, so high variance doesn't guarantee usefulness.`],
+ [`It gets the best classifier, since PCA1 always separates classes best`,`That's the good case, not a guarantee.`,`Overstating PCA.`],
+ [`Nothing changes, since PCA keeps every factor's information`,`Dropping PCA2 drops information.`,`Ignoring the dropped component.`],
+ [`PCA refuses to run, since the data has red and blue labels`,`PCA runs on any numeric factors.`,`Misreading PCA.`]
+]);
+S('m9','M9 L3 p11–15 · M9 L6 p3 · applied',`A scatter plot shows two strongly correlated factors in a diagonal cloud. What does PCA do to it?`,[
+ [`It rotates the axes so the first lies along the cloud`,`New coordinates are uncorrelated and ranked by spread.`],
+ [`It clusters the cloud into groups at the two ends`,`That's k-means, not PCA.`,`Mixing up methods.`],
+ [`It deletes the points far from the cloud's center`,`PCA transforms; it doesn't remove points.`,`Treating it as outlier removal.`],
+ [`It fits a regression line predicting one from the other`,`PCA has no response variable.`,`Confusing with regression.`]
 ]);
 
 </script>
