@@ -182,13 +182,14 @@ dialog::backdrop{background:rgba(10,15,25,.55)}
   <header class="top">
     <div class="titlerow"><div>
       <h1>Midterm practice: Modules 1–9</h1>
-      <p class="sub">Critical-thinking questions, a full slide-coverage test, and explain-it-to-a-new-student practice. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
+      <p class="sub">Critical-thinking questions, a full slide-coverage test, a 100-question core concepts test, and explain-it-to-a-new-student practice. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
     </div>
     <div class="theme" role="group" aria-label="Color theme"><button data-theme-set="auto">Auto</button><button data-theme-set="light">Light</button><button data-theme-set="dark">Dark</button></div>
     </div>
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-exam" aria-selected="true" data-tab="exam">Practice exam</button>
       <button role="tab" id="tab-slides" aria-selected="false" data-tab="slides">Slide test</button>
+      <button role="tab" id="tab-core" aria-selected="false" data-tab="core">Core concepts</button>
       <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall">New student</button>
       <button role="tab" id="tab-guides" aria-selected="false" data-tab="guides">Study guides</button>
       <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress">Progress</button>
@@ -352,7 +353,7 @@ Q('m3',0,`Model A: 95% training, 71% validation. Model B: 82% training, 79% vali
  [`A, since the validation set was probably unlucky for it`,`Both models used the same validation set.`,`Explaining away inconvenient evidence.`],
  [`Neither, until each is retrained on the test set first`,`Never train on test data.`,`Misunderstanding the test set's role.`]
 ]);
-Q('m3',1,`Suppose 10 models are truly equally good. You pick the one with the highest validation score, 86%. The winner's true accuracy is most likely:`,[
+Q('m3',1,`Suppose 10 models are truly equally good. You pick the one with the highest validation score, 86%. What is the winner's true accuracy most likely to be?`,[
  [`Lower than 86%, closer to the typical score of all ten`,`If they're equally good, the differences are pure luck, and the top score got the most good luck.`],
  [`Exactly 86%, since validation data was not used to train`,`That assumes its score contains no luck.`,`Treating one noisy measurement as the truth.`],
  [`Higher than 86%, since it clearly beat the other nine`,`Beating equals by chance doesn't make it better.`,`Thinking winning proves superiority.`],
@@ -382,13 +383,13 @@ Q('m3',0,`Which is NOT a benefit of k-fold cross-validation?`,[
  [`Averaging k scores is steadier than one split`,`A real benefit.`,`Not recognizing the second main benefit.`],
  [`It helps compare and choose between models`,`That's its main use.`,`Overthinking a direct statement.`]
 ]);
-Q('m3',1,`An analyst standardizes the whole dataset, then splits it into training and test sets. What's wrong? (from your notes' added material)`,[
+Q('m3',1,`An analyst standardizes the whole dataset, then splits it into training and test sets. What's wrong? (Supplementary material)`,[
  [`Test data shaped the mean and SD, so the score is optimistic`,`Any step that learns from data should use training data only.`],
  [`Standardization must always happen after the model has been fit`,`It happens before fitting, just using training statistics.`,`Mixing up the order of steps.`],
  [`Nothing, since standardization doesn't use the response`,`Leakage can happen through inputs, not just the response.`,`Thinking only the answer column can leak.`],
  [`Standardized data can't be split into train and test sets`,`It can; the issue is where the statistics came from.`,`Misidentifying the problem.`]
 ]);
-Q('m3',1,`Changing the random seed of your train/validation split flips the winner from a 4th-degree to a 6th-degree polynomial. What's the best conclusion? (added material)`,[
+Q('m3',1,`Changing the random seed of your train/validation split flips the winner from a 4th-degree to a 6th-degree polynomial. What's the best conclusion? (Supplementary material)`,[
  [`The two are indistinguishable; the estimate is too noisy`,`When small differences flip with the seed, they're within the noise.`],
  [`One seed was bad; rerun it until results are stable`,`Hunting for a seed you like is just another form of selection.`,`Thinking there's a "correct" random split.`],
  [`The 6th-degree model is better, since it won most recently`,`Recency doesn't matter for random seeds.`,`Trusting the latest result.`],
@@ -419,7 +420,7 @@ Q('m4',0,`A picker must finish moving along the aisle before it can start liftin
  [`2-norm`,`No diagonal travel.`,`Defaulting to Euclidean.`],
  [`0-norm`,`Not a norm used in the course.`,`Guessing.`]
 ]);
-Q('m4',0,`Which ordering always holds for the same two points?`,[
+Q('m4',0,`For any two points, how do their 1-norm, 2-norm, and ∞-norm distances always compare?`,[
  [`∞-norm ≤ 2-norm ≤ 1-norm`,`Bigger p lets the single biggest gap dominate, which never makes the distance larger.`],
  [`1-norm ≤ 2-norm ≤ ∞-norm`,`Reversed; the grid path is the longest.`,`Assuming larger p means larger distance.`],
  [`All three are always equal`,`Only when the points differ in one dimension.`,`Generalizing from a special case.`],
@@ -455,7 +456,7 @@ Q('m4',1,`You cluster unlabeled customers, a manager names each cluster "high va
  [`Unsupervised throughout, since the data began unlabeled`,`Once labels exist, training on them is supervised.`,`Labeling the pipeline by its first step.`],
  [`Cross-validation, since the labels were checked twice`,`Nothing here is validating.`,`Grabbing a familiar term.`]
 ]);
-Q('m4',0,`Siting fire stations with k-means, one household is 12 miles from any center. Per the lecture, what should you do first?`,[
+Q('m4',0,`You're siting fire stations with k-means, and one household ends up 12 miles from the nearest center. Per the lecture, what should you do first?`,[
  [`Find out what that point is and what it means in reality`,`The "art of analytics": understand the situation before picking a technique.`],
  [`Delete it and rerun, since it distorts the centers`,`That's the quick default, but the lecture says investigate first.`,`Treating outliers as automatically disposable.`],
  [`Increase k until that one household gets a cluster of its own`,`That spends a whole station on one household without thinking.`,`Solving a judgment problem with a parameter.`],
@@ -540,7 +541,7 @@ Q('m5',1,`Which of the three data-prep problems is NOT fixed by transforming the
  [`A handful of extreme values in one column`,`Handled point by point in the data.`,`Mixing up outliers and irrelevant columns.`],
  [`None; all three are fixed by transforming values`,`Irrelevant columns need removal, not transformation.`,`Treating all prep as one kind of step.`]
 ]);
-Q('m5',1,`A delivery-time model will be judged on how badly it underestimates the worst cases. Removing all long delays as "outliers" will most likely:`,[
+Q('m5',1,`A delivery-time model will be judged on how badly it underestimates the worst cases. What will removing all long delays as "outliers" most likely do?`,[
  [`Make the model too optimistic about delivery times`,`If big errors matter, real rare extremes belong in the data.`],
  [`Improve the model by removing noise from the data`,`They're not noise if they're real and relevant.`,`Assuming "outlier" means "noise."`],
  [`Have no real effect on how the model performs`,`Removing the extreme cases changes exactly what's being judged.`,`Underestimating the influence of extremes.`],
@@ -583,7 +584,7 @@ Q('m6',1,`What would go wrong if CUSUM dropped the "max with 0" step?`,[
  [`It would raise far more false alarms than before`,`Removing the floor makes it slower, not jumpier.`,`Getting the direction wrong.`],
  [`Nothing important; the reset is only cosmetic`,`It's what makes CUSUM react quickly.`,`Not understanding the reset's purpose.`]
 ]);
-Q('m6',1,`What happens with C = 0 on a process that hasn't changed at all?`,[
+Q('m6',1,`With C = 0, what happens to the CUSUM total when the process hasn't changed and readings vary only by random noise?`,[
  [`Random highs keep adding up, so the total drifts past T`,`About half of readings are above average by chance. With no allowance to drain the total, noise accumulates.`],
  [`The total stays at 0, since nothing has changed`,`Every above-average reading adds to it.`,`Thinking no change means no accumulation.`],
  [`It becomes more accurate, since no evidence is discarded`,`More sensitive, but at the cost of false alarms.`,`Equating sensitivity with accuracy.`],
@@ -607,7 +608,7 @@ Q('m6',1,`Where should the expected value μ in CUSUM come from?`,[
  [`Whatever value makes the alarm fire at the right time`,`That's tuning to a known answer.`,`Reverse-engineering settings.`],
  [`Always 0, since CUSUM works on centered deviations`,`μ is the normal level of whatever you're measuring.`,`Confusing μ with the starting value S₀ = 0.`]
 ]);
-Q('m6',0,`Which change-detection question is under genuine time pressure?`,[
+Q('m6',0,`Which change-detection question needs a fast answer, because acting late is costly?`,[
  [`Is this pump's temperature drifting toward failure?`,`Acting late is expensive, so the answer is needed now.`],
  [`Did last quarter's discount raise overall sales?`,`This can be answered calmly with all the data.`,`Thinking all change questions are urgent.`],
  [`Have voting patterns shifted over four elections?`,`Analysis, not urgent action.`,`Same as above.`],
@@ -638,7 +639,7 @@ Q('m7',1,`As α decreases, what happens to how long an old reading keeps influen
  [`It stays the same, since α only affects today's reading`,`α sets the whole decay pattern.`,`Misreading the extended form.`],
  [`It lasts forever at full weight, like a plain average`,`Older readings still get less weight.`,`Ignoring the decay.`]
 ]);
-Q('m7',1,`In simple exponential smoothing with α = 0.2, what about a reading from 20 periods ago?`,[
+Q('m7',1,`In simple exponential smoothing with α = 0.2, how much does a reading from 20 periods ago still affect the current baseline?`,[
  [`It still has a small weight, carried in the prior baseline`,`Weight = α(1 − α)²⁰, tiny but not zero. Every past reading counts, fading geometrically.`],
  [`It has no effect; only today and yesterday's values matter`,`Yesterday's baseline contains all earlier readings.`,`Reading the formula too literally.`],
  [`It has the same weight as today's reading does`,`Weights shrink the further back you go.`,`Confusing it with a simple average.`],
@@ -668,7 +669,7 @@ Q('m7',0,`Which ARIMA model is basic exponential smoothing?`,[
  [`ARIMA(0, 1, 0)`,`That's a random walk.`,`Close, but missing the error term.`],
  [`ARIMA(1, 1, 1)`,`Has an extra AR term.`,`Guessing that more terms = more general = correct.`]
 ]);
-Q('m7',1,`Which statement is FALSE?`,[
+Q('m7',1,`Comparing ARIMA and exponential smoothing, which statement is FALSE?`,[
  [`ARIMA always forecasts at least as well as smoothing`,`More settings means more to estimate and more risk of overfitting, especially with short or spiky data.`],
  [`Exponential smoothing is a special case of ARIMA`,`True: ARIMA(0, 1, 1).`,`Not remembering the connection.`],
  [`ARIMA tends to do better on stable data`,`True, per the lecture.`,`Not recognizing a lecture fact.`],
@@ -1031,7 +1032,7 @@ Q('m2',0,`What's the difference between a hard and a soft classifier?`,[
  [`Hard classifiers are for two classes; soft ones for many`,`Unrelated to the number of classes.`,`Guessing from the words.`],
  [`Soft classifiers output probabilities; hard ones do not`,`That's logistic regression, not soft-margin SVM.`,`Confusing "soft" with "probabilistic."`]
 ]);
-Q('m2',1,`Under hard separation, every intercept from a₀ − 1 to a₀ + 1 classifies all the training points correctly. If a bad loan costs twice as much as a rejected good applicant, what should you do with that range?`,[
+Q('m2',1,`With hard separation, any intercept between a₀ − 1 and a₀ + 1 classifies every training point correctly. If a bad loan costs twice as much as a rejected good applicant, what should you do with that range?`,[
  [`Pick an intercept in the range, shifted toward the costly side`,`The data can't distinguish between those intercepts, so cost should decide where the line sits.`],
  [`Always use a₀, the middle, since it's the widest margin`,`The middle treats both mistakes as equally bad.`,`Treating the centered line as always correct.`],
  [`Pick whichever intercept gives the highest training accuracy score`,`They all give 100% training accuracy, so accuracy can't break the tie.`,`Not realizing accuracy is identical across the range.`],
@@ -1055,7 +1056,7 @@ Q('m2',0,`A donor organ tests negative for an infection, yet a model flags it as
  [`The model double-counts the lab test's result`,`The point is additional information, not double-counting.`,`Misunderstanding the model's role.`],
  [`Negative lab results must always be rejected anyway`,`That would discard nearly every organ.`,`Overreacting.`]
 ]);
-Q('m2',0,`A "holiday? yes/no" column is best described as:`,[
+Q('m2',0,`How is a "holiday? yes/no" column best described?`,[
  [`Categorical (binary), though it can be coded 0/1`,`Binary is categorical with two values; coding it 0/1 often works like a number.`],
  [`Quantitative, since it can be coded 0 and 1`,`Numbers as labels don't make it quantitative by nature.`,`Thinking any number is quantitative.`],
  [`Unstructured, since it's a yes/no text label`,`It's neatly stored, so it's structured.`,`Confusing categorical with unstructured.`],
@@ -1133,7 +1134,7 @@ Q('m4',1,`Why does the ∞-norm equal the largest single difference?`,[
  [`Because it's the average of all the differences`,`That's not any p-norm.`,`Guessing.`],
  [`Because it's the smallest possible distance measure`,`It's the smallest of the three norms, but the value is the largest difference.`,`Mixing up the ordering with the definition.`]
 ]);
-Q('m4',0,`A point lands outside every cluster in a finished k-means solution. How do you predict its cluster?`,[
+Q('m4',0,`A new point falls far from every cluster in a finished k-means solution. Which cluster do you assign it to?`,[
  [`Assign it to the nearest cluster center`,`That's the lecture's rule; doing this everywhere divides the space into a Voronoi diagram.`],
  [`It can't be assigned to any cluster`,`Every location has a nearest center.`,`Thinking outliers are left unassigned.`],
  [`Rerun k-means with it included in the data`,`Unnecessary for prediction.`,`Refitting to predict.`],
@@ -1235,13 +1236,13 @@ Q('m7',0,`What is a stationary time series?`,[
  [`One with no seasonality but a steady trend`,`A trend means it's not stationary.`,`Half-remembering.`],
  [`One measured at equally spaced time intervals`,`That's about sampling, not stationarity.`,`Mixing up concepts.`]
 ]);
-Q('m7',1,`ARIMA's "MA" (moving average) part uses:`,[
+Q('m7',1,`What does ARIMA's "MA" (moving average) part use?`,[
  [`Recent forecast errors`,`q past errors are used, which is why "moving average" here differs from a stock-chart moving average.`],
  [`The last few values' average`,`That's the everyday meaning, not ARIMA's.`,`Carrying over the familiar meaning.`],
  [`Past values of the series`,`That's the AR part.`,`Mixing up AR and MA.`],
  [`The number of differences`,`That's d.`,`Mixing up letters.`]
 ]);
-Q('m7',1,`GARCH(p, q) has no "d" like ARIMA(p, d, q). Why?`,[
+Q('m7',1,`Why doesn't GARCH(p, q) have a differencing parameter like the d in ARIMA(p, d, q)?`,[
  [`GARCH models variance and doesn't difference data`,`It uses past variances and squared errors, with no differencing step.`],
  [`GARCH always uses d = 1 automatically inside it`,`It doesn't difference at all.`,`Assuming a hidden default.`],
  [`d was simply renamed q in the GARCH notation`,`q still means past (squared) errors.`,`Mixing up letters.`],
@@ -1368,7 +1369,7 @@ DQ([4],'m2',0,`Why is scaling especially important before KNN?`,[
  [`Scaling reduces the number of neighbors that the vote needs to use`,`k is chosen separately.`,`Mixing up settings.`],
  [`Scaling turns categorical attributes into usable numbers`,`That's encoding, not scaling.`,`Mixing up preparation steps.`]
 ]);
-DQ([4],'m2',1,`A KNN uses square footage (500–5,000) and number of bedrooms (1–6), unscaled. A new home has 2,000 sq ft and 5 bedrooms. Its nearest neighbors will mostly be homes that:`,[
+DQ([4],'m2',1,`A KNN uses square footage (500–5,000) and number of bedrooms (1–6), unscaled. A new home has 2,000 sq ft and 5 bedrooms. Which homes will be its nearest neighbors?`,[
  [`Have similar square footage, regardless of bedrooms`,`A 1,000 sq ft gap swamps a 4-bedroom gap in the distance.`],
  [`Have 5 bedrooms, regardless of square footage`,`Bedroom differences are tiny numbers compared to square footage.`,`Assuming each attribute counts equally.`],
  [`Are similar in both attributes, weighted about equally`,`Only true after scaling.`,`Same.`],
@@ -1380,7 +1381,7 @@ DQ([5],'m3',1,`Five models of almost-equal quality are compared on one validatio
  [`Yes, as long as the validation set was chosen completely at random`,`Random selection doesn't remove noise.`,`Believing randomness fixes selection.`],
  [`No, validation data can never help choose a model`,`It helps; it just can't reliably separate near-equals.`,`Overcorrecting.`]
 ]);
-DQ([5],'m3',1,`With several near-equal models, what does help you choose more reliably?`,[
+DQ([5],'m3',1,`With several near-equal models, what actually helps you choose more reliably?`,[
  [`A bigger or repeated evaluation, such as k-fold CV`,`More evaluation data makes luck matter less; averaging over folds steadies the scores.`],
  [`Picking the model with the highest training accuracy`,`Training scores are the most biased.`,`Using the wrong data.`],
  [`Re-running the same validation set many times`,`The same data gives the same scores.`,`Confusing repetition with new information.`],
@@ -1500,7 +1501,7 @@ DQ([15],'m8',1,`SVM and regression lines look alike (y = a₀ + a₁x₁ + …).
  [`SVM is affected most by far points; regression by near ones`,`Reversed.`,`Mixing up the objectives.`],
  [`Neither one is affected by outliers in the data`,`Regression is quite sensitive to them.`,`Forgetting squared errors.`]
 ]);
-DQ([15],'m8',1,`Deciding which borderline job applicants to interview versus estimating the typical salary a company must budget: which care more about points near the line, and which about points far from it?`,[
+DQ([15],'m8',1,`Task 1: decide which borderline job applicants to interview. Task 2: estimate the typical salary a company must budget. Which task depends more on points near the line, and which on points far from it?`,[
  [`Interview cutoff: near points. Salary budget: far points too`,`Boundary decisions hinge on close cases; estimating amounts must account for large deviations.`],
  [`Both care only about the points near the line`,`Big salaries matter for the budget.`,`Ignoring extremes in estimation.`],
  [`Both care only about the points far from the line`,`The interview cutoff hinges on borderline cases.`,`Ignoring what defines a boundary.`],
@@ -1748,7 +1749,7 @@ Q('m9',0,`Before PCA, one factor's variance is made much larger (say, by changin
  [`It stays the same, since PCA ignores units`,`PCA is sensitive to scale.`,`Ignoring scale.`],
  [`It disappears, since the factors are now uncorrelated`,`Changing units doesn't remove components.`,`Misunderstanding PCA.`]
 ]);
-Q('m9',1,`PCA reduces two factors to one, keeping D1 (most variance). But red and blue points are separated only along D2. Why can this happen?`,[
+Q('m9',1,`PCA reduces two factors to one by keeping only D1, the direction with the most variance. But the red and blue points are separated only along D2, the other direction. Why can this happen?`,[
  [`PCA ignores the response, so high variance may not be useful`,`Exactly the "PCA can be bad" example. It's unusual, but possible.`],
  [`PCA made an arithmetic error when computing the eigenvectors`,`The PCA is correct; it answered a different question.`,`Blaming the calculation.`],
  [`D2 always separates the classes better than D1 does`,`In the "good" example D1 separated them perfectly.`,`Over-generalizing from one picture.`],
@@ -2194,7 +2195,7 @@ S('m2','M2 L7 p6',`In an SVM, income is changed from dollars to thousands of dol
  [`It stays the same, since the data is the same`,`Units change the coefficient.`,`Ignoring units.`],
  [`It becomes 0, since income drops out`,`Income is still in the model.`,`Overstating the effect.`]
 ]);
-S('m2','M2 L7 p7',`Since changing units changes an SVM coefficient's size, what happens to the Σⱼ aⱼ² margin penalty on unscaled data?`,[
+S('m2','M2 L7 p7',`Changing units changes the size of an SVM coefficient. On unscaled data, how does that affect the Σⱼ aⱼ² margin penalty?`,[
  [`It treats attributes unequally, just from units`,`That distorts the classifier, which is why you scale first.`],
  [`It treats every attribute equally, whatever the units`,`Coefficient sizes, and so their squares, depend on units.`,`Ignoring units.`],
  [`It ignores attributes measured in large units`,`They still count; they just get small coefficients.`,`Overstating the effect.`],
@@ -2412,7 +2413,7 @@ S('m3','M3 L1 p5–7',`A classifier gets 3 of 24 training points wrong (87.5% co
  [`It's fine, as long as the classifier has the widest possible margin`,`Margin width doesn't fix training-data optimism.`,`Mixing up unrelated ideas.`],
  [`It's fine, since 24 points is plenty to measure accuracy on`,`The problem isn't size; it's measuring on training data.`,`Thinking more points fixes the issue.`]
 ]);
-S('m3','M3 L1 p9',`A model fits the training data. Which patterns does it pick up, and which ones carry over to new data?`,[
+S('m3','M3 L1 p9',`When a model is fit to training data, which patterns does it learn, and which of them carry over to new data?`,[
  [`Both real and random; only real effects repeat`,`Random effects look real in the training data but don't show up elsewhere.`],
  [`Only real effects, since random ones average away`,`The fit captures both; that's why training accuracy is optimistic.`,`Assuming the fit ignores noise.`],
  [`Real and random effects; both repeat in new data`,`Random effects are specific to the training data.`,`Treating noise as signal.`],
@@ -2836,7 +2837,7 @@ S('m4','M4 L2 p5 · applied',`A helicopter flies directly to an accident site. W
  [`Infinity norm (max)`,`That's for separate simultaneous moves.`,`Confusing norms.`],
  [`The p-norm with p = 0.5`,`Not a norm used here.`,`Guessing.`]
 ]);
-S('m4','M4 L2 p23–29 · applied',`A robot moves along the aisle and lifts at the same time. If you speed up only the lift, when does its total time drop?`,[
+S('m4','M4 L2 p23–29 · applied',`A robot moves along the aisle and lifts at the same time. If you speed up only the lift, in which case does its total time drop?`,[
  [`Only if the lift was the slower of the moves`,`Time is the max of the two (∞-norm); speeding the faster move doesn't help.`],
  [`Always, since the lift is part of every trip`,`If the aisle move is slower, it sets the time.`,`Using the sum instead of the max.`],
  [`Never, since only horizontal speed matters`,`The lift matters when it's the slower move.`,`Ignoring one dimension.`],
@@ -3254,7 +3255,7 @@ S('m7','M7 L1 p16',`A site smooths its daily visit counts with exponential smoot
  [`It is tomorrow's actual count, known one day in advance`,`It is an estimate, not a future observation.`,`Confusing estimate with truth.`],
  [`It is the seasonal part of the count, with trend removed`,`Basic smoothing has no seasonal component.`,`Confusing level with seasonality.`]
 ]);
-S('m7','M7 L1 p16',`A utility's hourly load reading is well above its smoothed baseline. What question is exponential smoothing implicitly weighing?`,[
+S('m7','M7 L1 p16',`A utility's hourly load reading is well above its smoothed baseline. When updating the baseline, what question is exponential smoothing effectively answering?`,[
  [`Is this a real level shift, or random noise?`,`α decides how much of the jump to treat as a real change.`],
  [`Is the meter broken, or was the value mistyped?`,`Smoothing doesn't diagnose data-quality causes.`,`Confusing smoothing with data cleaning.`],
  [`Is this part of a trend, or of a daily cycle?`,`Basic smoothing has no trend or seasonal terms.`,`Adding components not present.`],
@@ -3272,7 +3273,7 @@ S('m7','M7 L1 p21–22',`What is the basic exponential smoothing equation?`,[
  [`Sₜ = α(xₜ − Sₜ₋₁), with α greater than 1`,`It's a weighted average with 0 < α < 1.`,`Garbling the formula.`],
  [`Sₜ = xₜ + αSₜ₋₁, with α between 0 and 1`,`The weights must be α and (1 − α).`,`Garbling the formula.`]
 ]);
-S('m7','M7 L1 p23–24',`What do α → 0 and α → 1 indicate about the system?`,[
+S('m7','M7 L1 p23–24',`If the best-fit α is close to 0, or close to 1, what does that say about the system?`,[
  [`α → 0: a lot of randomness. α → 1: not much randomness`,`More randomness means trusting the previous baseline more.`],
  [`α → 0: not much randomness. α → 1: a lot of randomness`,`Reversed.`,`Flipping α's meaning.`],
  [`α → 0: a strong trend. α → 1: a strong seasonal pattern`,`α is about randomness vs. trust in new data.`,`Confusing α with β and γ.`],
@@ -3332,7 +3333,7 @@ S('m7','M7 L2 p22',`Monthly electricity demand has a slowly rising level and a s
  [`Simple exponential smoothing with a very small α`,`Small α smooths noise but ignores trend and cycle.`,`Ignoring structure.`],
  [`GARCH, since demand swings between the seasons`,`GARCH models changing variance, not a mean cycle.`,`Mixing up methods.`]
 ]);
-S('m7','M7 L3 p6',`With α = ½, what does Sₜ = ½xₜ + ½Sₜ₋₁ do with a high or low xₜ?`,[
+S('m7','M7 L3 p6',`With α = ½ (Sₜ = ½xₜ + ½Sₜ₋₁), how does Sₜ respond to an unusually high or low reading xₜ?`,[
  [`High xₜ: Sₜ pulled down. Low xₜ: pulled up. Peaks and valleys smooth out`,`That's why it's called "smoothing."`],
  [`High xₜ: Sₜ goes even higher. Low xₜ: even lower. Peaks are amplified`,`The previous baseline pulls it back toward the middle.`,`Reversing the effect.`],
  [`High xₜ and low xₜ are both ignored; Sₜ always equals Sₜ₋₁ exactly`,`α = ½ still gives xₜ half the weight.`,`Treating α as 0.`],
@@ -3858,7 +3859,7 @@ S('m8','M8 L6 p16',`A model of shoppers' spending has R² = 0.35. Is it useless?
 ]);
 
 // ---- Module 8 applied (example-based)
-S('m8','M8 L1 p13–18 · applied',`In New car sales = 200 + 30 × (participation rate), what happens to predicted sales if the rate drops by 1 point?`,[
+S('m8','M8 L1 p13–18 · applied',`In the model New car sales = 200 + 30 × (participation rate), what happens to predicted sales if the rate drops by 1 point?`,[
  [`They fall by about 30`,`a₁ = 30 is the change in sales per point.`],
  [`They fall by about 200`,`200 is the intercept.`,`Mixing up a₀ and a₁.`],
  [`They fall by about 30%`,`It's units, not percent.`,`Misreading the coefficient.`],
@@ -4220,13 +4221,637 @@ const MODS={m1:'Module 1 · Foundations',m2:'Module 2 · Classification',m3:'Mod
 const SHORT={m1:'M1 Foundations',m2:'M2 Classification',m3:'M3 Validation',m4:'M4 Clustering',m5:'M5 Data prep',m6:'M6 Change detection',m7:'M7 Time series',m8:'M8 Regression',m9:'M9 Adv. data prep',who:'Who picks',mix:'Right tool'};
 const MOD_KEYS=Object.keys(MODS);
 const DAY=864e5, TOUGH_GAP=5*DAY;
+// ---- Core concepts
+function K(m,c,q,opts){ QS.push({m,c,q,opts,core:true}); }
+// Core-concepts test: K(module, concept, question, [[correct, why], [wrong, why, misconception], ...])
+// First option is always correct; options are shuffled at render time.
+
+// ===== Module 1 · Foundations =====
+K('m1',`Question types`,`A retailer stops asking "How many customers will cancel next quarter?" and starts asking "Which customers should get a retention offer, given a $50K budget?" How did the analytics question change?`,[
+ [`It went from predictive to prescriptive: now a decision under a constraint`,`The first question forecasts an amount. The second asks what to do, given limited resources, which is prescriptive.`],
+ [`It went from descriptive to predictive: it now looks ahead in time`,`The first question already looked ahead, so it was predictive, not descriptive.`,`Treating any question about the future as the "new" part.`],
+ [`It went from prescriptive to descriptive: it now just lists customers`,`Choosing who gets an offer is a decision, not a description of what happened.`,`Reading "which customers" as a lookup.`],
+ [`It didn't change: both are classification problems about churn`,`Classification may be a tool inside it, but the question type moved from forecasting to deciding.`,`Confusing the method with the question type.`]
+]);
+K('m1',`Model vs. fitted model`,`You refit last year's churn regression with this year's data, and every coefficient shifts a little. What does that tell you?`,[
+ [`Same model type; only the fitted numbers changed`,`"Model" can mean the general method, the equation's structure, or the specific fitted numbers. New data changes only the fitted numbers.`],
+ [`The original model was wrong and should be replaced with a new one`,`Small shifts are expected whenever the data changes. They don't mean the model was wrong.`,`Expecting fitted numbers to be permanent.`],
+ [`A different algorithm must have been used for this year's fit`,`Same method, same structure; only the data changed.`,`Mixing up the method and its fitted result.`],
+ [`This year's data must contain errors that distorted the estimates`,`Real-world relationships and random samples vary from year to year.`,`Assuming any change signals bad data.`]
+]);
+K('m1',`"Key" parts of a situation`,`An analyst adds 30 extra attributes to a model "just in case they help." Given that a model should capture the key parts of a situation, what's the main concern?`,[
+ [`Irrelevant attributes let the model fit noise and make it harder to trust`,`Extra attributes that don't reflect the real system give the model more ways to fit random patterns (overfitting), and they make it harder to explain.`],
+ [`None; more attributes always give the model more to learn from`,`Training fit improves, but performance on new data often gets worse.`,`Equating training fit with real accuracy.`],
+ [`None; the algorithm automatically ignores any unhelpful attributes`,`Most methods give every attribute some weight, and noise can look helpful by chance.`,`Trusting the algorithm to do the judgment step.`],
+ [`It only matters for clustering, where every attribute sets distance`,`Overfitting from extra attributes affects prediction models directly.`,`Limiting the idea to one method.`]
+]);
+K('m1',`Data available at decision time`,`A churn model predicts very well, but one of its inputs is "number of complaints filed next month." What's the real problem?`,[
+ [`That input isn't known when the prediction must be made`,`A model can only use what's available at decision time. Future information makes it look accurate but useless in practice.`],
+ [`Complaints are categorical, so they can't be used`,`A count of complaints is quantitative, and it could be used if it were known in time.`,`Misjudging the data type.`],
+ [`The model needs more attributes to balance that one out`,`More inputs don't fix using information from the future.`,`Treating it as a model-size issue.`],
+ [`Nothing; a highly accurate model is a good model`,`Its accuracy comes from information it won't have when it's used.`,`Judging a model only by its score.`]
+]);
+K('m1',`Clustering vs. classification`,`Which change would turn a customer-grouping task from clustering into classification?`,[
+ [`Getting known group labels for past customers`,`Classification learns from labeled examples. Clustering finds groups when no labels exist.`],
+ [`Increasing the number of groups you look for`,`The number of groups doesn't decide whether labels exist.`,`Confusing k with supervision.`],
+ [`Scaling every attribute to the range 0–1`,`Scaling is data prep for either method.`,`Mistaking a data-prep step for the type of problem.`],
+ [`Collecting many more customers' data`,`More unlabeled data is still unlabeled.`,`Thinking data size decides the method.`]
+]);
+K('m1',`Choosing among models`,`Two analysts get the same data and the same question. One uses SVM and one uses logistic regression, and they recommend different loan approvals. What's the best next step?`,[
+ [`Compare both on held-out data, weighing what each kind of error costs`,`Choosing the model is a judgment call. Validation data and business costs are how you settle it.`],
+ [`Assume one of them has a bug in the code and look for it first`,`Different reasonable methods often disagree near the boundary.`,`Expecting one "true" answer from every method.`],
+ [`Go with the more complex method, since it can capture more detail`,`More complexity can mean more overfitting.`,`Equating complexity with quality.`],
+ [`Average the two models' approvals so both viewpoints count`,`Averaging without evaluating either model doesn't tell you which is better.`,`Compromising instead of evaluating.`]
+]);
+
+// ===== Module 2 · Classification =====
+K('m2',`Soft-margin λ`,`In soft-margin SVM, you minimize error + λ·Σaⱼ². What happens as you shrink λ toward 0?`,[
+ [`It cares mostly about training errors, so the margin narrows`,`With λ ≈ 0, the margin term barely counts. The model fits the training points as closely as it can, which is close to hard-margin behavior.`],
+ [`The margin gets wider, since the penalty on it is smaller`,`A small λ means the margin matters less, so it usually shrinks.`,`Reversing λ's role.`],
+ [`Training errors increase, since λ is what penalizes them`,`λ weights the margin term, not the errors.`,`Attaching λ to the wrong term.`],
+ [`The boundary becomes curved to fit the training points`,`Only a kernel makes the boundary curved.`,`Confusing λ with kernels.`]
+]);
+K('m2',`Large λ`,`A soft-margin SVM fit with a huge λ ends up with every coefficient aⱼ close to 0. What does that mean?`,[
+ [`It favored a huge margin so much that it accepts many errors`,`Tiny coefficients make Σaⱼ² small and the margin 2/√Σaⱼ² huge. The price is a classifier that barely uses the data.`],
+ [`The attributes are all unrelated to whether applicants default`,`The penalty forced the coefficients down. That says nothing about how useful the attributes are.`,`Reading shrunken coefficients as evidence of irrelevance.`],
+ [`The SVM has found a perfect line that separates both classes`,`Near-zero coefficients mean it hardly separates anything.`,`Equating a wide margin with a good fit.`],
+ [`The data must have been scaled incorrectly before fitting`,`This happens with properly scaled data too; it's what a large λ does.`,`Blaming data prep.`]
+]);
+K('m2',`Margin width`,`The margin width is 2/√(Σaⱼ²). One fit has Σaⱼ² = 4. After refitting, Σaⱼ² = 16. What happened to the margin?`,[
+ [`It was cut in half, from 1 to 0.5`,`2/√4 = 1 and 2/√16 = 0.5. Quadrupling Σaⱼ² halves the margin.`],
+ [`It shrank to a quarter of its size`,`The square root means ×4 in Σaⱼ² becomes ×2, not ×4.`,`Forgetting the square root.`],
+ [`It doubled, from 1 to 2`,`Bigger coefficients mean a smaller margin.`,`Reversing the relationship.`],
+ [`It stayed the same`,`The margin depends directly on Σaⱼ².`,`Ignoring the formula.`]
+]);
+K('m2',`Support vectors`,`In a hard-margin SVM, you slightly move one support vector toward the other class. Separately, you move a point that's far from the boundary, keeping it on its own side. What happens?`,[
+ [`The support vector move can shift it; the far point's can't`,`Only the points on the margin define it. Points deep inside their class don't affect the solution.`],
+ [`Both moves shift the boundary by roughly the same amount`,`Points away from the margin carry no weight in the solution.`,`Thinking every point pulls on the line equally.`],
+ [`Only the far point matters, because it's the most extreme one`,`That's how averages work, not SVM.`,`Confusing SVM with least squares.`],
+ [`Neither matters, since one point can't move an SVM's boundary`,`The support vectors fully determine the boundary.`,`Missing the role of support vectors.`]
+]);
+K('m2',`Unequal error costs`,`Wrongly flagging a real purchase as fraud suddenly becomes much more costly, because those customers leave. How should the fraud classifier's boundary move?`,[
+ [`So fewer purchases get flagged, accepting that more fraud slips through`,`Move the line away from the now-costly mistake. Only clearer cases get flagged.`],
+ [`So more purchases get flagged, to make sure every fraud is caught`,`That creates more of the mistake that just became expensive.`,`Moving toward the costly error.`],
+ [`It should stay centered, since costs don't change the geometry`,`The centered line assumes both mistakes cost the same.`,`Ignoring costs.`],
+ [`Drop the soft margin and use a hard classifier to avoid errors`,`That doesn't address unequal costs.`,`Solving the wrong problem.`]
+]);
+K('m2',`Coefficient sign`,`With scaled data, an SVM predicting "default" (+1) vs. "repaid" (−1) has a coefficient of +2.0 on debt ratio. What happens as an applicant's debt ratio rises, other things equal?`,[
+ [`Their score moves toward the "default" side`,`A positive coefficient pushes Σaⱼxⱼ + a₀ up, toward the class coded +1.`],
+ [`Their score moves toward the "repaid" side`,`That would take a negative coefficient.`,`Flipping the coding.`],
+ [`Nothing changes, because only support vectors matter`,`Support vectors set the line; every applicant is still scored with it.`,`Confusing fitting with scoring.`],
+ [`They default with probability 2.0`,`SVM coefficients aren't probabilities, and a probability can't exceed 1.`,`Misreading the coefficient.`]
+]);
+K('m2',`KNN: changing k`,`In KNN, you raise k from 1 to 25. What happens to the model?`,[
+ [`The boundary gets smoother and less sensitive to single noisy points`,`More neighbors vote, so one odd point matters less. If k gets too large, real local patterns blur (underfitting).`],
+ [`It overfits more, because each prediction now uses more points`,`Small k overfits; larger k smooths.`,`Thinking more neighbors means more memorization.`],
+ [`Accuracy is guaranteed to improve, since more neighbors vote`,`Too large a k can hurt; choose k with validation.`,`Assuming a monotone effect.`],
+ [`Nothing changes, as long as the attributes are already scaled`,`Scaling affects distances, not how many neighbors vote.`,`Mixing up two different settings.`]
+]);
+K('m2',`KNN: extreme k`,`What happens in KNN if k equals the total number of training points?`,[
+ [`Every new point gets the overall majority class`,`All points vote every time, so the prediction never changes.`],
+ [`It becomes a perfect classifier`,`It ignores location completely.`,`Thinking more votes always helps.`],
+ [`It becomes the same as k = 1`,`k = 1 uses only the nearest point, the opposite extreme.`,`Mixing up the extremes.`],
+ [`It automatically switches to weighted distances`,`k doesn't change the distance formula.`,`Confusing settings.`]
+]);
+K('m2',`Units in KNN`,`An unscaled KNN uses distance to the store (in km) and age (in years). You switch distance to meters. What happens?`,[
+ [`Distance now dominates neighbor choice, and predictions can change`,`Distance differences become 1,000× bigger numbers, so they swamp age differences in the calculation.`],
+ [`Nothing, since it's the same information in different units`,`KNN distances depend on the raw numbers, so units matter.`,`Assuming the method is unit-free.`],
+ [`Age now dominates, since distance values got larger`,`Larger values mean larger differences, so distance dominates.`,`Reversing the effect.`],
+ [`The model becomes more accurate, since meters are more precise`,`Precision isn't the issue; balance between attributes is.`,`Confusing precision with scaling.`]
+]);
+K('m2',`Min-max vs. extreme values`,`One customer's income is 100× everyone else's. Why can min-max scaling be a poor choice here?`,[
+ [`That one value sets the max, squeezing everyone else near 0`,`Min-max uses the extreme as the endpoint, so ordinary differences shrink to tiny numbers.`],
+ [`Min-max scaling can only be used on bounded values like percentages`,`It works on any number; the problem is the extreme value.`,`Blaming the variable type.`],
+ [`It changes the order of customers' incomes after scaling`,`Min-max keeps the order; it only squeezes the spacing.`,`Thinking scaling reorders values.`],
+ [`It makes the extreme value negative and everyone else positive`,`Min-max maps the max to 1.`,`Misremembering the formula.`]
+]);
+K('m2',`KNN attribute weights`,`In weighted KNN, you triple the weight on "purchase frequency." What does that mean?`,[
+ [`Neighbors must match more closely on purchase frequency`,`Differences in that attribute count more in the distance, so it shapes neighbor choice more.`],
+ [`Purchase frequency's values are tripled in the final prediction`,`Weights affect distance, not the predicted class.`,`Confusing distance weights with output.`],
+ [`Three times as many neighbors are used to vote on each prediction`,`That's k, not a weight.`,`Mixing up settings.`],
+ [`The other attributes are dropped from the distance calculation`,`They still count, just relatively less.`,`Overstating the effect.`]
+]);
+K('m2',`Class imbalance`,`Only 2% of training transactions are fraud. A classifier reports 98% accuracy. What does that most likely mean?`,[
+ [`It may just call everything "not fraud"`,`Predicting the majority class every time scores 98% here, so accuracy alone says little.`],
+ [`It catches 98% of all fraud cases`,`Accuracy counts all cases, mostly the easy non-fraud ones.`,`Reading accuracy as a detection rate.`],
+ [`It's an excellent model and ready to deploy`,`Check how it does on the fraud cases first.`,`Trusting one overall number.`],
+ [`It has overfit the training data`,`The issue is imbalance, not necessarily overfitting.`,`Blaming the wrong problem.`]
+]);
+K('m2',`Kernels`,`One class sits inside a circle and the other surrounds it. What does using a kernel let the SVM do?`,[
+ [`Separate them with a curved boundary in the original space`,`A kernel effectively maps the data to a space where a straight boundary works. Back in the original space, that boundary is curved.`],
+ [`Remove the training points that make the two classes overlap`,`Kernels change the geometry; they don't delete data.`,`Thinking of kernels as data cleaning.`],
+ [`Shrink the margin to zero so every point is classified correctly`,`Kernels don't set the margin size.`,`Confusing kernels with λ.`],
+ [`Turn the problem into clustering, since no line can separate them`,`It's still supervised classification.`,`Mixing up methods.`]
+]);
+K('m2',`Margin constraint`,`In a hard-margin SVM, every point satisfies (Σⱼ aⱼxᵢⱼ + a₀)·yᵢ ≥ 1. What does it mean if this equals exactly 1 for point i?`,[
+ [`The point sits exactly on its margin line; it's a support vector`,`Points at exactly 1 are the closest allowed and define the margin.`],
+ [`The point is misclassified, sitting on the wrong side of the line`,`Misclassified points give a negative value.`,`Misreading the sign.`],
+ [`The point sits exactly on the boundary line between the classes`,`The boundary is where Σⱼ aⱼxᵢⱼ + a₀ = 0, not 1.`,`Mixing up the boundary and the margin.`],
+ [`The point is an outlier, far from the rest of its class`,`It's the most informative point, not an outlier.`,`Misreading closeness as a problem.`]
+]);
+
+// ===== Module 3 · Validation =====
+K('m3',`Overfitting curve`,`As model flexibility grows, training accuracy keeps rising, but validation accuracy peaks and then falls. What does the falling part mean?`,[
+ [`The model has started fitting random noise in the training data`,`Beyond the peak, gains on training data come from chance patterns that don't carry over to new data.`],
+ [`The validation set is too small to give a trustworthy score`,`The pattern is the classic overfitting curve, not a data-size problem.`,`Blaming the measurement.`],
+ [`The model has become too simple to capture the real pattern`,`Too simple would hurt training accuracy too.`,`Reversing under- and overfitting.`],
+ [`The validation data must contain errors that the model can't fit`,`Falling validation accuracy is expected past the best flexibility.`,`Blaming the data.`]
+]);
+K('m3',`Number of models compared`,`You pick the best model by validation score. How does the winner's optimism change if you compared 300 models instead of 3?`,[
+ [`It gets bigger: with more tries, the winner more likely got lucky`,`Each score has random error. The more models you compare, the higher the luckiest one's error tends to be.`],
+ [`It shrinks, since a wider search is more likely to find the truth`,`A wider search raises the odds of picking a lucky model.`,`Equating more search with more accuracy.`],
+ [`It stays the same, since each model's score is unbiased on its own`,`Each score is unbiased alone; picking the maximum is what creates the bias.`,`Missing selection bias.`],
+ [`It disappears as long as the 300 models are all different types`,`The bias comes from picking the maximum, whatever the model types.`,`Thinking variety fixes selection.`]
+]);
+K('m3',`Test set size`,`With one model, you enlarge the test set from 10% to 40% of the data. What's the trade-off?`,[
+ [`A more reliable score, but less data to train the model`,`More test points shrink the random error in the estimate. Fewer training points can make the model itself a bit worse.`],
+ [`Higher accuracy for the model, with no real downside`,`Accuracy depends on training data, which just shrank.`,`Missing the trade-off.`],
+ [`The test score becomes biased upward by the larger set`,`Test size doesn't create optimism; reusing the test set does.`,`Confusing size with bias.`],
+ [`The model overfits more because it sees less data`,`Less training data doesn't directly mean more overfitting of the test set.`,`Mixing up the effects.`]
+]);
+K('m3',`Changing k in cross-validation`,`You switch from 5-fold to 20-fold cross-validation. What changes?`,[
+ [`Each fit trains on 95% instead of 80%, with 4× the fits`,`Larger k means each training set is closer to the full data, at more computing cost.`],
+ [`Each fit uses less data, since the data is split into more folds`,`More folds means each held-out part is smaller, so training sets get bigger.`,`Reversing the fold sizes.`],
+ [`The final model gets trained on less data than it would with 5 folds`,`After CV, the final model uses all the training data either way.`,`Confusing CV fits with the final fit.`],
+ [`Nothing meaningful; k only affects how long the computation takes`,`It also changes each fit's training size.`,`Understating the effect.`]
+]);
+K('m3',`Leave-one-out`,`What is k-fold cross-validation when k equals the number of data points, n?`,[
+ [`Leave-one-out: n fits, each leaving out a single point`,`Each point is validated once by a model trained on all the others. It's thorough but costly.`],
+ [`It's the same as using no validation at all`,`Every point is still held out once.`,`Misreading the extreme.`],
+ [`A single fit on all the data`,`That would be k = 1, which isn't cross-validation.`,`Mixing up the extremes.`],
+ [`It's impossible, since folds must hold several points`,`A one-point fold is allowed.`,`Adding a false rule.`]
+]);
+K('m3',`After cross-validation`,`CV picked your model settings. Why retrain on all the training data instead of deploying one of the fold models?`,[
+ [`All the data gives the best model; folds were just for scoring`,`CV judges the approach. The final model should learn from every available point.`],
+ [`Fold models can't make predictions on data they didn't see`,`They can; they're just trained on less data.`,`Misunderstanding the fold fits.`],
+ [`Retraining on all data removes the need for a separate test set`,`You still need clean data for a final estimate.`,`Skipping evaluation.`],
+ [`Fold models are always overfit, so none of them can be trusted`,`They're not worse in kind, just trained on a subset.`,`Overstating it.`]
+]);
+K('m3',`Reusing the test set`,`You use the test set to choose between your two final candidate models. What happens to that test score?`,[
+ [`It's now a validation score and is optimistically biased`,`Once test data helps you choose, it's part of selection. You'd need fresh data for an unbiased estimate.`],
+ [`Nothing, since it was only used once`,`Once is enough to make it part of the selection.`,`Thinking only repeated use matters.`],
+ [`It becomes pessimistic, since test data is unseen`,`Choosing the winner on it makes it optimistic.`,`Reversing the bias.`],
+ [`It becomes more reliable, since both models were checked`,`Comparing on it is exactly what biases it.`,`Confusing more checking with better estimates.`]
+]);
+K('m3',`Underfitting`,`Training accuracy is 70% and validation is 69%, and both are below what you need. What does the tiny gap suggest?`,[
+ [`It's likely underfitting; try a more flexible model or better inputs`,`A small gap with low scores points to underfitting. The model misses real patterns everywhere.`],
+ [`It's badly overfitting, so the model should be made simpler`,`Overfitting shows as a big gap between training and validation.`,`Misreading the gap.`],
+ [`The validation set is leaking into training, making scores similar`,`Leakage makes validation look too good, not bad.`,`Blaming leakage.`],
+ [`Nothing can be improved, since the gap is already very small`,`More flexible models or better attributes may help.`,`Giving up early.`]
+]);
+K('m3',`Random splits on time series`,`A forecasting model is validated by randomly splitting daily data. Why does its score look misleadingly good?`,[
+ [`It trains on days after the ones it's asked to predict`,`The future leaks into training, so filling in gaps between known days looks easy. Real forecasting has no future data.`],
+ [`Random splits always give low-variance estimates`,`The problem is leakage, not variance.`,`Naming the wrong issue.`],
+ [`Time-series models can't be validated at all`,`They can, by holding out the latest period.`,`Overgeneralizing.`],
+ [`The test set ends up too small`,`Size isn't the issue.`,`Wrong diagnosis.`]
+]);
+K('m3',`Big data splits`,`With 10 million rows, why can you hold out a smaller percentage for validation and testing?`,[
+ [`Even 1% is 100,000 rows, plenty for a precise estimate`,`The precision of an estimate depends on the number of points held out, not the percentage.`],
+ [`Large data sets can't overfit, so less checking is needed`,`They can, just less easily.`,`Overstating big data.`],
+ [`Validation isn't needed once a data set has millions of rows`,`You still need to compare models and estimate performance.`,`Skipping evaluation.`],
+ [`Held-out percentages must always follow the 70/15/15 split`,`There's no fixed rule.`,`Treating a rule of thumb as law.`]
+]);
+K('m3',`Spread across folds`,`Your 5 cross-validation fold scores are 91, 72, 88, 65, and 90. What does the large spread mean?`,[
+ [`The estimate is shaky, so small gaps between models may be noise`,`A big spread means an uncertain estimate. Don't over-trust small differences between models.`],
+ [`The best fold (91) is the model's true accuracy on new data`,`Report the average; the best fold is the luckiest.`,`Picking the maximum.`],
+ [`Cross-validation was done incorrectly, since folds should match`,`Spread is common with small or varied data.`,`Assuming an error.`],
+ [`The model is guaranteed to be overfit to its training folds`,`Spread signals instability, not necessarily overfitting.`,`Jumping to a conclusion.`]
+]);
+K('m3',`Coefficients across folds`,`In 5-fold CV, the same regression gets slightly different coefficients in each fold. Is that a problem?`,[
+ [`No; that's expected, and you refit on all the data at the end`,`Each fold sees different data, so its numbers differ. The final coefficients come from the full refit.`],
+ [`Yes; different coefficients mean the model is unreliable`,`Small differences are normal random variation.`,`Expecting identical fits.`],
+ [`Yes; you should average the five sets for the final model`,`The standard step is to refit on all data.`,`Inventing a combining step.`],
+ [`Yes; it means data was leaking between the folds`,`Leakage wouldn't show up this way.`,`Blaming leakage.`]
+]);
+
+// ===== Module 4 · Clustering =====
+K('m4',`Total distance vs. k`,`In k-means, what happens to the best achievable total distance to cluster centers as you increase k by 1?`,[
+ [`It decreases or stays the same, so it can't pick k alone`,`More centers can always match points at least as closely, which is why you need the elbow and real-world limits.`],
+ [`It increases, since there are more centers to measure from`,`Each point measures only to its own nearest center.`,`Adding up distances to every center.`],
+ [`It stays exactly the same`,`It almost always drops.`,`Ignoring the extra flexibility.`],
+ [`It depends on whether the data are scaled`,`Scaling changes the values, not the direction of the trend.`,`Mixing up issues.`]
+]);
+K('m4',`k = n`,`What's the total distance to centers when k equals the number of points, and what does that clustering tell you?`,[
+ [`Zero, and it tells you nothing: each point is its own cluster`,`A perfect score with a useless answer. It shows why minimizing distance alone can't choose k.`],
+ [`Zero, and it's the ideal clustering, since no distance is wasted`,`Every point alone reveals no groups.`,`Trusting the metric blindly.`],
+ [`It's at its maximum, since every point needs its own center`,`Each point sits on its own center.`,`Reversing the effect.`],
+ [`It's undefined, since k-means can't run with that many clusters`,`It can; it's just pointless.`,`Adding a false limit.`]
+]);
+K('m4',`p-norms`,`Two points differ by 3 in one attribute and 4 in another. What are the 1-norm, 2-norm, and ∞-norm distances?`,[
+ [`7, 5, and 4`,`1-norm = 3 + 4 = 7. 2-norm = √(9 + 16) = 5. ∞-norm = the largest difference = 4.`],
+ [`4, 5, and 7`,`The order is reversed; the 1-norm is the largest.`,`Flipping the ordering.`],
+ [`7, 25, and 4`,`The 2-norm takes the square root of 25.`,`Forgetting the root.`],
+ [`5, 5, and 5`,`They're equal only when points differ in one dimension.`,`Overgeneralizing.`]
+]);
+K('m4',`Raising p`,`Moving from the 1-norm toward the ∞-norm puts more emphasis on what?`,[
+ [`The single largest difference between the points`,`Higher p lets the biggest gap dominate. At ∞, smaller gaps don't count at all.`],
+ [`The average of all the differences`,`That's closer to the 1-norm's view.`,`Reversing the trend.`],
+ [`The smallest difference between the points`,`The largest one takes over as p grows.`,`Flipping min and max.`],
+ [`The number of attributes`,`The count doesn't change with p.`,`Confusing the ideas.`]
+]);
+K('m4',`Heuristic results`,`Running k-means from different random starting centers gives different final clusters. What does that tell you, and what should you do?`,[
+ [`It's a heuristic; run many starts and keep the best`,`k-means is a heuristic. Several starts, keeping the lowest total distance, reduces bad luck.`],
+ [`The data has no real clusters, so the results are just noise`,`Different starts can happen even with clear groups.`,`Over-reading the variation.`],
+ [`k-means is broken on this data, so switch to another method`,`This is normal behavior.`,`Treating a feature as a bug.`],
+ [`Keep the first run's result, so the answer stays consistent`,`Consistency doesn't make it the best result.`,`Ignoring the issue.`]
+]);
+K('m4',`Outliers in k-means`,`A single point very far from all others is added to the data. What can happen to the k-means solution?`,[
+ [`It can pull a center toward itself or take a whole cluster`,`Centers are averages, and squared distance weights far points heavily, so one outlier can warp the solution.`],
+ [`Nothing, since k-means is designed to ignore extreme points`,`It has no built-in outlier handling.`,`Assuming robustness.`],
+ [`k-means automatically raises k by one to isolate the outlier`,`k is fixed by you.`,`Thinking k adjusts itself.`],
+ [`All the clusters merge into one to cover the extra distance`,`That isn't how it responds.`,`Overstating it.`]
+]);
+K('m4',`Scaling before clustering`,`Customers were clustered on income (dollars) and age (years), unscaled. You then scale both to 0–1 and rerun. What's likely?`,[
+ [`Clusters can change a lot, as age now counts as much`,`Unscaled, income's big numbers dominated. Scaling rebalances both attributes.`],
+ [`Nothing changes, since the underlying data is the same`,`Distances are recalculated, so groups can change.`,`Assuming the method is unit-free.`],
+ [`Income now dominates even more, since it was already largest`,`Scaling removes its advantage.`,`Reversing the effect.`],
+ [`The number of clusters must be doubled to fit the new scale`,`Scaling doesn't dictate k.`,`Mixing up settings.`]
+]);
+K('m4',`Elbow flattening`,`An elbow diagram drops sharply from k = 1 to 4, then flattens. What does the flat part mean?`,[
+ [`Extra clusters add little; beyond 4 you mostly split real groups`,`After the bend, each added cluster buys only a small drop in total distance.`],
+ [`The algorithm stopped working properly after k = 4`,`It still works; the gains just shrink.`,`Misreading the curve.`],
+ [`k = 10 is best, since its total distance is lowest`,`Lowest distance always goes to the largest k.`,`Minimizing blindly.`],
+ [`The data has exactly 10 real groups, one per point on the flat part`,`Flatness says the opposite.`,`Reading the wrong spot.`]
+]);
+K('m4',`Center in empty space`,`A k-means cluster center lies in an empty area with no data points nearby. What might that mean?`,[
+ [`It may be merging two groups, averaging to a point between`,`Centers are averages, so they can land between subgroups. Consider a larger k or a closer look.`],
+ [`The center was calculated incorrectly and should be recomputed`,`Averages can fall anywhere.`,`Assuming a bug.`],
+ [`All the points in that cluster are outliers that should be removed`,`It points to a split group, not outliers.`,`Misreading the pattern.`],
+ [`Centers must always sit on data points, so the run has failed`,`That's k-medoids, not k-means.`,`Confusing methods.`]
+]);
+K('m4',`Voronoi regions`,`You add one new center to a finished set of cluster centers. What happens to the Voronoi diagram?`,[
+ [`The new center claims a region, and nearby regions shrink`,`Every location belongs to its nearest center. A new center takes over the spots now closest to it.`],
+ [`Every region shrinks by the same amount to make room`,`Only regions near the new center are affected.`,`Assuming uniform change.`],
+ [`Nothing changes until the whole k-means is rerun`,`The regions are defined by distance, so they change right away.`,`Confusing regions with refitting.`],
+ [`All the regions merge, then split into new ones`,`Adding a center adds a region.`,`Reversing the effect.`]
+]);
+K('m4',`Cluster shape`,`Why do long, curved clusters cause trouble for k-means?`,[
+ [`It favors compact, round groups, so curved ones get split or merged`,`Minimizing distance to a center rewards round, compact shapes, whatever the real shape of the groups.`],
+ [`It can't handle more than two attributes, and curves need more`,`It works in any number of dimensions.`,`Inventing a limit.`],
+ [`Curved clusters always contain outliers that throw off the centers`,`The problem is shape, not outliers.`,`Wrong diagnosis.`],
+ [`It needs known labels to follow a curved shape through the data`,`Clustering never uses labels.`,`Confusing methods.`]
+]);
+
+// ===== Module 5 · Data preparation =====
+K('m5',`Outlier cutoff`,`In roughly normal data, you change the outlier cutoff from 3 SDs to 2 SDs. What happens?`,[
+ [`Far more points get flagged (~5% vs. ~0.3%), mostly normal ones`,`A tighter cutoff flags far more ordinary values as "outliers."`],
+ [`Fewer points get flagged, since 2 SDs is a stricter rule`,`A lower cutoff flags more.`,`Reversing the effect.`],
+ [`Only true data errors get flagged, not real values`,`Cutoffs can't tell errors from real values.`,`Trusting the rule too much.`],
+ [`Nothing changes, since normal data has no outliers at all`,`The flagged share changes a lot.`,`Ignoring the math.`]
+]);
+K('m5',`Box-plot whiskers`,`Box-plot whiskers usually extend 1.5 × IQR from the box. What happens if you use 3 × IQR?`,[
+ [`Fewer points are flagged; only more extreme values`,`Longer whiskers cover more data, leaving only the extremes outside.`],
+ [`More points are flagged, since the rule is now wider`,`Wider whiskers flag fewer.`,`Reversing the effect.`],
+ [`The box itself gets wider to match the whiskers`,`The box is the quartiles, which don't change.`,`Mixing up the box and the whiskers.`],
+ [`The median shifts toward the extreme values`,`The median doesn't depend on the whiskers.`,`Confusing parts of the plot.`]
+]);
+K('m5',`Real, recurring outliers`,`Shipping delays are usually short, but storms cause real, recurring huge delays. What's wrong with deleting those delays before modeling?`,[
+ [`It underestimates risk; model disruptions separately`,`The delays are real and will happen again. One approach: a model for the chance of disruption, plus a model for normal times.`],
+ [`Nothing, since outliers should always be removed before fitting`,`Removal fits only bad data or irrelevant events.`,`Using a blanket rule.`],
+ [`It makes predictions too pessimistic about how long delays run`,`Removing big delays makes the model too optimistic.`,`Reversing the effect.`],
+ [`It only matters for clustering, not for predicting delays`,`It matters for any delay estimate.`,`Limiting the idea.`]
+]);
+K('m5',`Deleting vs. imputing`,`A patient record has one impossible blood-pressure value but 40 other valid fields. What's the cost of deleting the whole record?`,[
+ [`You lose 40 good values and risk biasing the data`,`Imputing the one bad value keeps the rest of the information.`],
+ [`None; any record with a bad value must be deleted entirely`,`That throws away useful data.`,`Using a blanket rule.`],
+ [`It makes the model overfit, since fewer records are left`,`It loses information; it doesn't cause overfitting directly.`,`Naming the wrong issue.`],
+ [`Every other record's scaling gets changed a lot`,`Deleting one record barely affects scaling.`,`Overstating it.`]
+]);
+K('m5',`Contextual outliers`,`A reading is normal for the year overall but abnormal for its time of year. Why won't a box plot of all readings catch it?`,[
+ [`It ignores time, so a value normal overall looks fine`,`Contextual outliers look ordinary without context. Compare each value to what's expected for its time, for example with residuals from a time-series model.`],
+ [`Box plots only work for small data sets, not a full year`,`Size isn't the issue.`,`Inventing a limit.`],
+ [`It will catch it, since the value is unusual for that time`,`It's unusual only in context.`,`Missing the idea of context.`],
+ [`Box plots only flag low values, and this one might be high`,`They find both high and low values.`,`Misremembering.`]
+]);
+K('m5',`Data size and "outliers"`,`Normally distributed data grows from 1,000 to 1,000,000 points. What happens to the count beyond 3 SDs, and what does that mean?`,[
+ [`It grows to about 2,700; big data always has normal extremes`,`About 0.27% lie beyond 3 SDs, so the count scales with n. Extreme values alone don't prove errors.`],
+ [`It stays about 3, since true outliers are rare at any size`,`The share stays fixed, so the count grows.`,`Confusing share with count.`],
+ [`It drops, since more data averages out the extreme values`,`Averages stabilize; tails still exist.`,`Confusing mean with tails.`],
+ [`It grows, which proves the data isn't really normal after all`,`2,700 is exactly what normal data predicts.`,`Misreading the number.`]
+]);
+K('m5',`Outlier effect on standardizing`,`One huge value is added before standardizing income. What happens to everyone else's standardized values?`,[
+ [`They shrink toward 0, since the huge value inflates the SD`,`The mean shifts up and the SD grows, so ordinary incomes differ by fewer SDs.`],
+ [`They're unaffected, since standardizing is robust to one value`,`The mean and SD are both sensitive to extremes.`,`Assuming robustness.`],
+ [`They all become negative, since the mean is now above them`,`Most shift down somewhat, not necessarily below 0.`,`Overstating it.`],
+ [`They spread out more, since the range of values is wider`,`A bigger SD compresses them.`,`Reversing the effect.`]
+]);
+K('m5',`Outliers in regression`,`Why can one far-away point strongly change a least-squares regression line?`,[
+ [`Squaring makes its large error dominate, pulling the line toward it`,`An error of 10 counts 100; an error of 1 counts 1. The line bends to shrink the big one.`],
+ [`It can't; least squares gives every point equal influence`,`Squared errors give big misses much more weight, and nothing is removed automatically.`,`Missing the squaring effect.`],
+ [`It can't; least squares removes outliers automatically`,`Least squares keeps every point.`,`Assuming built-in cleaning.`],
+ [`It changes only the intercept, since the slope uses all points`,`It can change both.`,`Understating it.`]
+]);
+K('m5',`When outliers are the signal`,`Why is "remove all outliers first" a bad rule for a fraud-detection model?`,[
+ [`The unusual transactions are often exactly what you're trying to find`,`In fraud, the extremes are the signal. Removing them removes what the model should learn.`],
+ [`Fraud data never contains outliers, so there's nothing to remove`,`It's full of them.`,`Misreading the domain.`],
+ [`Removing outliers always causes overfitting in any model`,`The issue is losing the signal, not overfitting.`,`Naming the wrong effect.`],
+ [`Fraud models can't be regressions, so outliers don't matter`,`The method isn't the point.`,`Changing the subject.`]
+]);
+
+// ===== Module 6 · Change detection =====
+K('m6',`Lowering T`,`In CUSUM, what happens if you lower the threshold T?`,[
+ [`Changes are caught sooner, but false alarms go up`,`Less evidence is needed before an alarm, so real shifts and random runs both trigger it sooner.`],
+ [`False alarms go down, since noise has less time to add up`,`A lower bar makes alarms easier to trigger.`,`Reversing T.`],
+ [`Small shifts get ignored, so only big ones are caught`,`That's what a larger C does.`,`Confusing C and T.`],
+ [`Only decreases can be detected once T is below μ`,`T doesn't set direction.`,`Mixing up settings.`]
+]);
+K('m6',`Raising C`,`In CUSUM, what happens if you raise the allowance C?`,[
+ [`Fewer false alarms, but small shifts are caught late or never`,`Each reading must beat μ + C to add to Sₜ, so small shifts may never build up.`],
+ [`The sum grows faster, so alarms come sooner and more often`,`A larger C subtracts more each period.`,`Reversing C.`],
+ [`Only the threshold changes; the sum itself stays the same`,`C and T are separate settings.`,`Confusing C with T.`],
+ [`CUSUM switches to detecting decreases instead of increases`,`Direction comes from the formula, not C.`,`Confusing C with direction.`]
+]);
+K('m6',`μ set too high`,`In an increase CUSUM, what happens if μ is set higher than the process's true normal mean?`,[
+ [`Real increases are caught late or missed entirely`,`A too-high baseline hides true increases, much like a larger C.`],
+ [`False alarms go up, since readings are compared to a higher bar`,`That happens when μ is too low.`,`Reversing μ.`],
+ [`Nothing, since C automatically corrects for a wrong μ`,`C doesn't know μ is off.`,`Assuming self-correction.`],
+ [`Sₜ grows without limit, since μ exceeds the true mean`,`It tends to stay near 0.`,`Reversing the effect.`]
+]);
+K('m6',`CUSUM calculation`,`Increase CUSUM with μ = 10, C = 1, T = 5. Sₜ₋₁ = 3, and the new reading is xₜ = 14. What is Sₜ, and is there an alarm?`,[
+ [`Sₜ = 6; yes, it's above T`,`Sₜ = max{0, 3 + (14 − 10 − 1)} = 6, which exceeds 5.`],
+ [`Sₜ = 7; yes`,`That forgets to subtract C.`,`Dropping C.`],
+ [`Sₜ = 3; no`,`The new reading adds 3.`,`Ignoring the new reading.`],
+ [`Sₜ = 6; no, since T must be exceeded twice`,`One crossing triggers the alarm.`,`Inventing a rule.`]
+]);
+K('m6',`Reset to zero`,`Same setup (μ = 10, C = 1). Sₜ₋₁ = 3 and the new reading is 8. What happens, and what does it mean?`,[
+ [`Sₜ = 0: the evidence for an increase is wiped out`,`3 + (8 − 11) = 0. The running total shows no current sign of an increase.`],
+ [`Sₜ = −3, building up evidence of a decrease`,`The max with 0 stops it from going negative.`,`Forgetting the floor.`],
+ [`Sₜ = 3, since readings below μ are ignored`,`Low readings do reduce Sₜ.`,`Ignoring the update.`],
+ [`Sₜ = 0, and it raises a decrease alarm`,`An increase CUSUM doesn't raise decrease alarms.`,`Mixing up directions.`]
+]);
+K('m6',`Why the reset helps`,`Why does resetting Sₜ to 0 (instead of letting it go negative) help CUSUM react faster once a real increase starts?`,[
+ [`Without it, a long low run digs a deep hole to climb out of`,`The floor stops old "normal" evidence from delaying detection.`],
+ [`It makes CUSUM ignore random noise in the readings`,`That's C's job.`,`Confusing the reset with C.`],
+ [`It lowers the threshold T automatically after quiet periods`,`T is fixed.`,`Inventing an effect.`],
+ [`It doesn't help speed; the reset is only for readability`,`It's central to how quickly CUSUM responds.`,`Underrating it.`]
+]);
+K('m6',`Setting C and T by cost`,`Missing a real change would be catastrophic, but false alarms are cheap to check. How should you set C and T?`,[
+ [`Lower both, accepting more false alarms for faster detection`,`When a miss is the costly error, ask for less evidence.`],
+ [`Raise both, so the line isn't stopped for wasted inspections`,`That delays catching the costly change.`,`Protecting the cheap error.`],
+ [`Set T = 0 and C very high, so alarms stay rare but fast`,`A high C would hide the changes you need to catch.`,`Mixing up the settings.`],
+ [`Leave them as they are; costs don't affect C and T`,`Costs are exactly what decide them.`,`Ignoring the trade-off.`]
+]);
+K('m6',`Noisy processes`,`A process's readings are much noisier than before. If C and T stay the same, what happens?`,[
+ [`False alarms rise; C and T should be scaled to the noise`,`Settings tuned for quiet data are too sensitive for noisy data.`],
+ [`Detection gets slower, since noise hides the real shifts`,`More noise makes alarms more frequent.`,`Reversing the effect.`],
+ [`Nothing, since CUSUM adjusts itself to the noise level`,`C and T are fixed by you.`,`Assuming self-tuning.`],
+ [`CUSUM can no longer be used on data this noisy`,`It can, with adjusted settings.`,`Overreacting.`]
+]);
+K('m6',`Two-sided monitoring`,`Compared with a single increase CUSUM, what happens to false alarms when you run both increase and decrease CUSUMs?`,[
+ [`They tend to go up, since there are two ways to alarm`,`Each side can raise a false alarm, so you may need somewhat higher thresholds.`],
+ [`They go down, since the two cancel out`,`They're separate sums; they don't cancel.`,`Imagining cancellation.`],
+ [`They stay the same`,`Two chances mean more alarms.`,`Ignoring the second side.`],
+ [`They disappear, since decreases offset increases`,`Each side accumulates on its own.`,`Misunderstanding the setup.`]
+]);
+K('m6',`Detection timing`,`CUSUM raises an alarm in week 30. Does that mean the change happened in week 30?`,[
+ [`No; detection lags the change and doesn't reveal the cause`,`Evidence takes time to build, so the change likely began earlier. Finding the cause needs separate investigation.`],
+ [`Yes; the alarm marks the exact week the process changed`,`The alarm is when evidence was enough, not when the change started.`,`Confusing detection with onset.`],
+ [`No; the change must have happened after week 30`,`An alarm can't come before its cause.`,`Reversing the timing.`],
+ [`Yes, as long as T was set correctly for the process`,`Any T causes some delay.`,`Expecting perfect timing.`]
+]);
+K('m6',`Fragile conclusions`,`CUSUM on yearly temperatures suggests summers end later. With slightly different reasonable C and T, the trend disappears. What should you conclude?`,[
+ [`The evidence is weak; report it as suggestive, not firm`,`A result that flips with small setting changes isn't robust.`],
+ [`Use the settings that show the trend, since they found something`,`That's choosing settings to fit the conclusion you want.`,`Cherry-picking.`],
+ [`Summers definitely aren't ending later, since the trend vanished`,`Weak evidence doesn't prove "no change" either.`,`Overcorrecting.`],
+ [`CUSUM can't be used on temperatures, so the result means nothing`,`It can; the signal is just weak.`,`Blaming the method.`]
+]);
+
+// ===== Module 7 · Time series =====
+K('m7',`Raising α`,`In Sₜ = αxₜ + (1 − α)Sₜ₋₁, what does raising α do?`,[
+ [`It reacts faster to new readings, with less smoothing`,`A higher α gives xₜ more weight, so the baseline follows the data more closely.`],
+ [`It smooths more heavily, so noise is filtered out better`,`That's a lower α.`,`Reversing α.`],
+ [`It adds a trend term to the model, so forecasts slope`,`Trend needs β.`,`Confusing parameters.`],
+ [`It makes old readings count more toward the baseline`,`Their weight shrinks faster.`,`Reversing the effect.`]
+]);
+K('m7',`Meaning of a small α`,`Software fits exponential smoothing and picks α ≈ 0.05. What does that say about the data?`,[
+ [`Mostly random noise around a baseline that changes slowly`,`Trusting the old baseline over each new reading is best when readings are noisy.`],
+ [`Lots of real change in the level, with very little noise`,`That would give α near 1.`,`Reversing α's meaning.`],
+ [`A strong seasonal pattern that repeats every cycle`,`α doesn't measure seasonality.`,`Confusing α with γ.`],
+ [`The model failed to fit, so α defaulted to a small value`,`It's a normal result.`,`Assuming failure.`]
+]);
+K('m7',`Weight on old readings`,`With α = 0.5, how much weight does the reading from 3 periods before today (xₜ₋₃) get in Sₜ?`,[
+ [`0.0625, which is 0.5 × 0.5³`,`Each step back multiplies by (1 − α): the weight is α(1 − α)³.`],
+ [`0.5, the same as today's reading`,`Weights shrink with age.`,`Treating it as a flat average.`],
+ [`0, since only today's reading and yesterday's baseline count`,`Yesterday's baseline carries all earlier readings.`,`Reading the formula too literally.`],
+ [`0.125, which is 0.5³`,`That forgets the leading α.`,`Dropping a factor.`]
+]);
+K('m7',`Raising β`,`In Holt's trend equation Tₜ = β(Sₜ − Sₜ₋₁) + (1 − β)Tₜ₋₁, what does raising β do?`,[
+ [`The trend reacts faster but gets noisier`,`A higher β trusts the latest change in the baseline more.`],
+ [`The baseline smooths more and follows the data less`,`β affects the trend, not the baseline.`,`Confusing β with α.`],
+ [`Seasonal factors update faster from recent cycles`,`That's γ.`,`Confusing β with γ.`],
+ [`The trend is forced toward zero over time`,`That would be β = 0 with T₁ = 0.`,`Misreading the effect.`]
+]);
+K('m7',`Raising γ`,`In Holt-Winters, what does raising γ do?`,[
+ [`Seasonal factors adapt faster to recent cycles`,`A higher γ gives the latest observed seasonal pattern more weight.`],
+ [`The baseline smooths more and follows the data less`,`That's α.`,`Confusing parameters.`],
+ [`The season length L gets longer to fit more data`,`L is fixed by the data's cycle.`,`Mixing up γ and L.`],
+ [`The trend gets steeper as seasons are added`,`That's the trend's job, not γ's.`,`Confusing parameters.`]
+]);
+K('m7',`Multiplicative factor`,`With multiplicative seasonality, December's factor is 1.3 and the baseline is 200. What's the December forecast, and what does 1.3 mean?`,[
+ [`260; December runs about 30% above the baseline`,`Multiplicative: 200 × 1.3 = 260.`],
+ [`201.3; December adds 1.3 units to the baseline`,`That treats it as additive.`,`Confusing additive and multiplicative.`],
+ [`153.8; the baseline is divided by December's factor`,`Dividing is for removing seasonality from data, not for forecasting.`,`Mixing up the update and the forecast.`],
+ [`230; December adds 30 units on top of the baseline`,`That's 15%, not 30%.`,`Arithmetic slip.`]
+]);
+K('m7',`Additive seasonality as sales grow`,`Additive seasonality says December adds +50. If the baseline doubles, what does the model predict for December's extra?`,[
+ [`Still +50, underestimating if spikes grow with sales`,`An additive factor is a fixed amount. Spikes that grow with the level call for multiplicative factors.`],
+ [`+100, since the extra scales with the baseline`,`That's multiplicative behavior.`,`Confusing the types.`],
+ [`+25, since it shrinks relative to the baseline`,`The amount stays the same.`,`Misreading "additive."`],
+ [`It depends on α, which sets how fast it adapts`,`α affects the baseline, not the seasonal amount.`,`Confusing parameters.`]
+]);
+K('m7',`Trend forecasts far ahead`,`Holt's forecast is Fₜ₊ₖ = Sₜ + kTₜ, with Tₜ = −2. What happens as k grows?`,[
+ [`It keeps falling by 2 per period as uncertainty grows`,`A fixed trend projects forever, which is risky far into the future.`],
+ [`It levels off at Sₜ, since the trend fades over time`,`That's simple smoothing without a trend.`,`Dropping the trend.`],
+ [`It starts rising again once the trend reverses`,`Nothing in the formula reverses it.`,`Imagining a curve.`],
+ [`It gets more accurate further out, as errors average out`,`Uncertainty grows with distance.`,`Reversing reliability.`]
+]);
+K('m7',`Choosing d`,`A series grows like a curve, and its growth keeps speeding up (a quadratic trend). How many rounds of differencing are needed to make it stationary?`,[
+ [`2`,`One difference turns a quadratic into a straight-line trend; a second turns that into a constant.`],
+ [`1`,`One round leaves a linear trend.`,`Stopping early.`],
+ [`0`,`It's clearly not stationary.`,`Ignoring the trend.`],
+ [`As many as possible, to be safe`,`Over-differencing adds noise and hurts the model.`,`Overdoing it.`]
+]);
+K('m7',`Raising p in ARIMA`,`In ARIMA(p, d, q), what does raising p do?`,[
+ [`Uses more past values of the series as predictors`,`p is the number of autoregressive lags.`],
+ [`Uses more past forecast errors as predictors`,`That's q.`,`Confusing p and q.`],
+ [`Differences the series more times to remove trend`,`That's d.`,`Confusing p and d.`],
+ [`Adds more seasonal factors for repeating cycles`,`Seasonality needs other terms.`,`Mixing up methods.`]
+]);
+K('m7',`Raising q in ARIMA`,`In ARIMA(p, d, q), what does raising q do?`,[
+ [`Uses more past forecast errors as predictors`,`q is the moving-average order.`],
+ [`Uses more past values of the series as predictors`,`That's p.`,`Confusing p and q.`],
+ [`Smooths more heavily, just like lowering α`,`q counts error terms; it isn't a smoothing weight.`,`Mixing up methods.`],
+ [`Differences the series until it's stationary`,`That's differencing (d).`,`Confusing q and d.`]
+]);
+K('m7',`ARIMA(0,0,0)`,`What does ARIMA(0, 0, 0) with a constant forecast?`,[
+ [`A flat forecast at the mean: noise around a constant`,`With no lags, no errors, and no differencing, all that's left is the mean.`],
+ [`A random walk: each forecast equals the last value`,`That's ARIMA(0, 1, 0).`,`Confusing d.`],
+ [`Basic exponential smoothing with a fixed α`,`That's ARIMA(0, 1, 1).`,`Misremembering.`],
+ [`Nothing; with all zeros, the model can't forecast`,`It forecasts the mean.`,`Underrating it.`]
+]);
+K('m7',`GARCH`,`Yesterday, a stock had a huge squared forecast error. What does a GARCH model forecast for today's variance?`,[
+ [`Higher variance, since big moves tend to cluster`,`GARCH feeds recent squared errors into the variance forecast, capturing turbulent stretches.`],
+ [`Lower variance, since big moves are followed by calm`,`GARCH assumes turbulence persists for a while.`,`Reversing the effect.`],
+ [`The same long-run average variance, regardless`,`That ignores the recent shock.`,`Missing the conditional part.`],
+ [`A higher expected return`,`GARCH models variance, not the mean.`,`Confusing variance with level.`]
+]);
+
+// ===== Module 8 · Regression =====
+K('m8',`Slope meaning`,`Price = 50,000 + 150 × sqft. What happens to the predicted price if a home is 100 sqft larger?`,[
+ [`It rises by $15,000`,`150 × 100 = 15,000. The intercept doesn't change.`],
+ [`It rises by $65,000`,`That wrongly adds the intercept.`,`Including a₀ in a change.`],
+ [`It rises by $150`,`That's the change per single square foot.`,`Wrong unit.`],
+ [`It depends on the home's current size`,`A linear term has the same effect everywhere.`,`Imagining curvature.`]
+]);
+K('m8',`Holding others constant`,`A home-price model includes sqft and bedrooms. The bedroom coefficient is negative. What does that mean?`,[
+ [`At the same sqft, more bedrooms go with lower prices`,`Each coefficient is the effect with the other predictors held fixed.`],
+ [`Houses with more bedrooms sell for less in general`,`Overall, more bedrooms usually go with larger, pricier homes.`,`Ignoring "holding others fixed."`],
+ [`The model is wrong, since bedrooms should always add value`,`It's answering a narrower question.`,`Assuming a mistake.`],
+ [`Bedrooms have no real effect on the price of a home`,`Negative isn't zero.`,`Misreading the sign.`]
+]);
+K('m8',`Interaction terms`,`y = 10 + 2x₁ + 3x₂ + 4x₁x₂. What's the effect of raising x₁ by 1 when x₂ = 0, and when x₂ = 2?`,[
+ [`+2 when x₂ = 0; +10 when x₂ = 2`,`x₁'s effect is 2 + 4x₂, so it's 2, then 2 + 8 = 10.`],
+ [`+2 in both cases`,`That ignores the interaction.`,`Dropping x₁x₂.`],
+ [`+6 in both cases`,`The interaction depends on x₂'s value.`,`Adding without x₂.`],
+ [`+4 when x₂ = 0; +8 when x₂ = 2`,`That drops the main effect and mixes the terms.`,`Mixing up terms.`]
+]);
+K('m8',`Quadratic terms`,`y = 5 + 4x − 0.5x². What happens to y as x increases from 0?`,[
+ [`It rises with diminishing gains, peaks at x = 4, then falls`,`The negative x² term bends the curve down. The slope 4 − x hits 0 at x = 4.`],
+ [`It keeps rising at a constant rate of 4 per unit`,`The x² term adds curvature.`,`Ignoring the quadratic.`],
+ [`It falls from the start, since the x² term is negative`,`At first, the 4x term dominates.`,`Misreading the signs.`],
+ [`It rises faster and faster as x gets larger`,`A negative x² slows growth.`,`Reversing curvature.`]
+]);
+K('m8',`Log response`,`log(y) = a₀ + 0.05x. What does increasing x by 1 do to y?`,[
+ [`Multiplies y by about 1.05 (roughly +5%)`,`Adding 0.05 on the log scale multiplies y by e^0.05 ≈ 1.051.`],
+ [`Adds 0.05 to y, whatever y's size`,`That's the change in log(y), not y.`,`Forgetting the transform.`],
+ [`Adds 5 units to y, whatever y's size`,`A log model gives percentage effects, not fixed amounts.`,`Misreading the scale.`],
+ [`Multiplies y by 0.05, shrinking it`,`That would shrink y a lot.`,`Wrong operation.`]
+]);
+K('m8',`p-value meaning`,`A coefficient has p = 0.04. What does that mean?`,[
+ [`If the true effect were 0, this result would be ~4% likely`,`It measures how surprising the data would be if there were no real effect.`],
+ [`There's a 4% chance that the true coefficient is 0`,`p-values aren't the probability that a hypothesis is true.`,`The most common p-value misreading.`],
+ [`The effect is large and important for the response`,`Significance isn't size.`,`Mixing up significance and importance.`],
+ [`The model explains 96% of the variation in the response`,`That's R²'s job.`,`Confusing measures.`]
+]);
+K('m8',`Data size and p-values`,`You collect 10× more data. What tends to happen to the p-value of a real but tiny effect?`,[
+ [`It shrinks, maybe to "significant," though the effect is tiny`,`More data makes small effects easier to detect. Check the effect size separately.`],
+ [`It grows, since more data also brings in more noise`,`More data reduces uncertainty.`,`Reversing the effect.`],
+ [`It stays the same, since the effect size hasn't changed`,`p-values depend on sample size.`,`Ignoring n.`],
+ [`It moves toward 0.05, the usual cutoff for significance`,`There's no pull toward 0.05.`,`Nonsense rule.`]
+]);
+K('m8',`Many tests`,`You test 200 attributes that are truly unrelated to the response, each at p < 0.05. What should you expect?`,[
+ [`About 10 to look significant just by chance`,`5% of 200 is 10 false positives.`],
+ [`None, since the attributes are truly unrelated`,`Chance still produces small p-values.`,`Ignoring false positives.`],
+ [`All 200, since each one has a 5% chance`,`Only about 5% would.`,`Overstating it.`],
+ [`Exactly 5, since the cutoff is 5%`,`That's 5% of 100, not 200.`,`Arithmetic slip.`]
+]);
+K('m8',`R² vs. adjusted R²`,`Adding a variable raises R² from 0.40 to 0.42, but adjusted R² falls. What does that mean?`,[
+ [`The variable doesn't add enough to justify the extra complexity`,`R² never falls when you add variables. Adjusted R² penalizes additions that don't pull their weight.`],
+ [`The variable is highly important, since R² went up`,`Adjusted R² says the opposite.`,`Trusting raw R².`],
+ [`There's an error, since the two can't move in opposite directions`,`This pattern is common.`,`Assuming a bug.`],
+ [`R² is the one to trust, since adjusted R² is only an estimate`,`They differ by design.`,`Confusing the measures.`]
+]);
+K('m8',`AIC relative likelihood`,`Model 1 has AIC 100 and Model 2 has AIC 104. Using e^((AIC₁ − AIC₂)/2), how does Model 2 compare?`,[
+ [`It's about 13.5% as likely as Model 1 to be better`,`e^(−4/2) = e^−2 ≈ 0.135.`],
+ [`It's 4% less likely, since the AICs differ by 4`,`AIC differences aren't percentages.`,`Misreading the scale.`],
+ [`It's better, since a larger AIC means a better fit`,`Lower AIC is better.`,`Reversing AIC.`],
+ [`The two are indistinguishable, since 4 is a small gap`,`A gap of 4 is a meaningful preference.`,`Understating it.`]
+]);
+K('m8',`BIC vs. AIC as n grows`,`As the number of data points grows, how does BIC's penalty per parameter (ln n) compare with AIC's (2)?`,[
+ [`It grows past 2 once n > 7, so BIC favors simpler models more`,`ln(8) ≈ 2.08, and it keeps growing, so BIC punishes extra parameters harder with more data.`],
+ [`It shrinks, so BIC allows more parameters with more data`,`ln n increases with n.`,`Reversing the effect.`],
+ [`They're always equal, since both count the parameters`,`Only near n ≈ 7.4.`,`Ignoring ln n.`],
+ [`BIC ignores the number of parameters as n grows`,`It penalizes them explicitly.`,`Misremembering.`]
+]);
+K('m8',`Confounders`,`You add a suspected confounder, and the original predictor's coefficient shrinks almost to 0. What does that suggest?`,[
+ [`Much of the original association came through the confounder`,`Once the confounder is held fixed, the predictor adds little on its own.`],
+ [`The predictor is the true cause after all`,`Its effect mostly vanished.`,`Reversing the evidence.`],
+ [`The confounder should be removed to restore the effect`,`That would hide the real structure.`,`Chasing the preferred result.`],
+ [`Regression can't handle two predictors`,`It can; that's the point of controlling for them.`,`Misunderstanding the method.`]
+]);
+K('m8',`Squared errors`,`In least squares, one point's error doubles from 3 to 6. What happens to its contribution to the sum of squared errors?`,[
+ [`It quadruples, from 9 to 36`,`Squaring means doubling an error multiplies its penalty by 4, so big misses dominate the fit.`],
+ [`It doubles, from 9 to 18`,`That forgets the squaring.`,`Linear thinking.`],
+ [`It stays the same`,`Bigger errors cost more.`,`Ignoring the formula.`],
+ [`It triples`,`2² = 4, not 3.`,`Arithmetic slip.`]
+]);
+K('m8',`Extrapolation`,`A price model was fit on homes from 800 to 3,000 sqft. You use it to price a 10,000 sqft mansion. What's the concern?`,[
+ [`The relationship may not hold outside the data's range`,`A model is only supported where it has data. Extrapolating assumes the pattern continues unchanged.`],
+ [`None, since a linear model works for any value of x`,`The equation gives a number, but nothing supports it out there.`,`Trusting the formula blindly.`],
+ [`Only the intercept becomes invalid that far out`,`The whole relationship is in question, not just a₀.`,`Too narrow.`],
+ [`The p-values must be recalculated for the new home`,`The concern is prediction validity, not significance.`,`Wrong focus.`]
+]);
+
+// ===== Module 9 · Advanced data prep =====
+K('m9',`Box-Cox λ`,`Box-Cox software picks λ ≈ 0 for your response. What does that mean?`,[
+ [`It's essentially a log transform, compressing big values`,`λ → 0 gives the log. That fits data whose spread grows with its size.`],
+ [`No transformation is needed; the data is already fine`,`That's λ ≈ 1.`,`Confusing 0 and 1.`],
+ [`All values become 0, since λ multiplies them`,`λ = 0 is the log case, not zeroing.`,`Reading the formula literally.`],
+ [`The data has no variance left after transforming`,`λ is about shape, not whether variance exists.`,`Misreading λ.`]
+]);
+K('m9',`Back-transforming`,`A regression on Box-Cox–transformed delivery times predicts 2.3. What must you do before reporting it?`,[
+ [`Convert it back to minutes before reporting`,`The model works on the transformed scale, so its predictions need reversing.`],
+ [`Nothing; 2.3 is already in minutes`,`It's in transformed units.`,`Forgetting the transform.`],
+ [`Multiply it by λ to undo the transform`,`Undoing Box-Cox isn't a single multiplication.`,`Wrong inverse.`],
+ [`Standardize it using the training data`,`That's a different step.`,`Mixing up transforms.`]
+]);
+K('m9',`Heteroscedasticity`,`Errors are small for cheap homes and huge for expensive ones, and you fit ordinary least squares anyway. What's the effect?`,[
+ [`Expensive homes dominate, and p-values become unreliable`,`Least squares assumes a constant spread. Unequal spread gives the big-value points outsized pull.`],
+ [`None, since least squares works well with any spread`,`It assumes constant variance.`,`Ignoring the assumption.`],
+ [`Only the intercept is affected; the slopes stay reliable`,`The whole fit is affected.`,`Too narrow.`],
+ [`Cheap homes dominate the fit, since there are more of them`,`The large errors dominate.`,`Reversing the effect.`]
+]);
+K('m9',`Shared trends`,`Over 20 years, ice-cream sales and internet use both rose, and a regression links them strongly. What likely happens after detrending both?`,[
+ [`The link weakens or vanishes; it was the shared trend`,`Two series that both grow over time look related even with no real connection.`],
+ [`The link gets stronger, since the noise is removed`,`Removing the shared trend usually weakens it.`,`Reversing the effect.`],
+ [`Nothing, since detrending only affects forecasts`,`It changes the data the regression sees.`,`Misunderstanding detrending.`],
+ [`The link stays, which proves one causes the other`,`Detrending helps; it doesn't prove cause.`,`Overclaiming.`]
+]);
+K('m9',`Detrended values`,`After detrending gold prices, 2015's value is −30. What does that mean?`,[
+ [`2015's price was 30 below the trend line's value`,`Detrended value = actual − fitted trend.`],
+ [`Gold cost −$30 that year, after adjusting for the trend`,`Prices can't be negative; it's a deviation.`,`Reading it as a price.`],
+ [`Prices fell by 30 from 2014 to 2015`,`That's a difference between years, not from the trend.`,`Confusing detrending with differencing.`],
+ [`The trend line was wrong for 2015 and should be refit`,`Deviations around the trend are expected.`,`Misreading residuals.`]
+]);
+K('m9',`Eigenvalues and variance`,`In PCA on 20 factors, the first 3 eigenvalues account for 95% of the total. What does that mean?`,[
+ [`3 components hold 95% of the variance; the rest could go`,`Eigenvalues measure each component's variance.`],
+ [`3 of the original factors explain everything in the data`,`Components are combinations of all 20 factors.`,`Confusing components with factors.`],
+ [`The model's accuracy will be about 95% on new data`,`Variance captured isn't accuracy.`,`Confusing measures.`],
+ [`The other 17 factors are useless and can be deleted`,`The factors all feed into the components.`,`Misreading the result.`]
+]);
+K('m9',`Units in PCA`,`Without scaling, one factor is changed from meters to millimeters before PCA. What happens?`,[
+ [`Its variance explodes, so it dominates the first component`,`PCA chases variance, and units inflate variance.`],
+ [`Nothing, since PCA works the same whatever the units`,`PCA depends on variance, which depends on units.`,`Assuming invariance.`],
+ [`That factor gets dropped, since its values are too large`,`It gets emphasized, not dropped.`,`Reversing the effect.`],
+ [`All the components become equal in importance`,`It creates the opposite of balance.`,`Misunderstanding.`]
+]);
+K('m9',`Keeping every component`,`You run PCA on m factors and keep all m components in a regression. What do you get?`,[
+ [`The same predictions as regressing on the original factors`,`All m components span the same space, just rotated. No dimensions were removed.`],
+ [`Better predictions, since the components are uncorrelated`,`Keeping every component doesn't add information.`,`Overrating PCA.`],
+ [`Fewer effective variables`,`You kept all of them.`,`Missing the point of reduction.`],
+ [`An error, since you can't keep them all`,`You can.`,`Inventing a limit.`]
+]);
+K('m9',`PCA ignores the response`,`Why might a low-variance component be the one that best predicts the response?`,[
+ [`PCA ranks by predictor variance, not by usefulness for y`,`PCA is unsupervised, so high variance doesn't mean high predictive value.`],
+ [`It can't; high variance always means high predictive value`,`That's the assumption that sometimes fails.`,`Overtrusting PCA.`],
+ [`PCA made a calculation mistake in ranking the components`,`The math is right; it answers a different question.`,`Blaming the math.`],
+ [`Low-variance components are always pure noise`,`Often, but not always.`,`Overgeneralizing.`]
+]);
+K('m9',`Correlation after PCA`,`Why does the problem of highly correlated predictors go away after using principal components?`,[
+ [`Components are uncorrelated by construction, so fits stabilize`,`PCA builds perpendicular directions, which removes overlap between the new predictors.`],
+ [`PCA deletes the correlated predictors, keeping one of each group`,`It combines them; it doesn't delete them.`,`Misunderstanding PCA.`],
+ [`Correlation doesn't matter much in regression anyway`,`It makes coefficients unstable.`,`Ignoring multicollinearity.`],
+ [`PCA also rescales the response, which removes the overlap`,`PCA works on the predictors.`,`Confusing steps.`]
+]);
+
 // stable ids
-const cnt={}; QS.forEach(q=>{const k=(q.slide?'s-':'')+q.m; cnt[k]=(cnt[k]||0)+1; q.id=k+'-'+cnt[k];});
-const CQ=QS.filter(q=>!q.slide), SQ=QS.filter(q=>q.slide);
+const cnt={}; QS.forEach(q=>{const k=(q.slide?'s-':q.core?'c-':'')+q.m; cnt[k]=(cnt[k]||0)+1; q.id=k+'-'+cnt[k];});
+const CQ=QS.filter(q=>!q.slide&&!q.core), SQ=QS.filter(q=>q.slide), KQ=QS.filter(q=>q.core);
 SQ.forEach(q=>{ q.lecs=[...new Set((q.src.match(/M\d+ L\d+a?/g)||[]))]; });
 const LECS=[...new Set(SQ.flatMap(q=>q.lecs))].sort((a,b)=>{const pa=a.match(/M(\d+) L(\d+)(a?)/), pb=b.match(/M(\d+) L(\d+)(a?)/); return (pa[1]-pb[1])||(pa[2]-pb[2])||pa[3].localeCompare(pb[3]);});
 const SLIDE_KEYS=MOD_KEYS.filter(k=>SQ.some(q=>q.m===k));
-const srcTag=q=>q.slide?`<span class="tag src">Slides: ${q.src}</span>`:'';
+const CORE_KEYS=MOD_KEYS.filter(k=>KQ.some(q=>q.m===k));
+const srcTag=q=>q.slide?`<span class="tag src">Slides: ${q.src}</span>`:q.core?`<span class="tag src">Core: ${esc(q.c)}</span>`:'';
 const rcnt={}; RC.forEach(r=>{rcnt[r.m]=(rcnt[r.m]||0)+1; r.id='r-'+r.m+'-'+rcnt[r.m];});
 const DISC={1:'Why a bigger SVM margin?',2:'When to scale vs. standardize',3:'SVM vs. KNN',4:'Why scale before KNN?',5:'Does validation pick the truly best model?',6:'Test vs. validation; switching models',7:'Classification vs. clustering',8:'Hardest outlier to identify',9:'Bad, irrelevant, or relevant outliers',10:'Higher or lower C and T',11:'When to use change detection',12:'Examples of time-series data',13:'When to predict variance',14:'How far ahead smoothing is accurate',15:'Regression vs. SVM: near or far points',16:'R²: physical vs. human behavior',17:'Linear or nonlinear relationship?'};
 const DISC_Q={'m2-1':[1],'m2-3':[1],'m2-13':[1],'m2-16':[1],'who-4':[1],'m2-9':[2],'m2-10':[2],'m2-12':[3],'mix-4':[3],'m4-8':[4],'m3-1':[5,6],'m3-7':[5],'m3-8':[5],'m3-13':[5],'m3-3':[6],'m3-20':[6],'m4-9':[7],'m4-13':[7],'mix-3':[7],'m5-1':[8],'m5-2':[8],'m5-8':[8],'m5-14':[8],'m5-4':[9],'m5-6':[9],'m5-7':[9],'m5-10':[9],'m5-12':[9],'m6-2':[10],'m6-7':[10],'m6-8':[10],'m6-12':[10],'m6-13':[10],'m6-15':[10],'m6-11':[11],'m6-14':[11],'mix-2':[11],'m7-8':[13],'m7-20':[13],'m7-17':[14],'m8-9':[15],'m8-4':[17],'m8-19':[17]};
@@ -4281,7 +4906,7 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('clic
   switchTab(b.dataset.tab);
 }));
 function switchTab(t){ tab=t; document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t))); render(); window.scrollTo(0,0); }
-function render(){ if(tab==='exam'||tab==='slides'){ POOL=tab==='slides'?'slide':'concept'; setup=POOL==='slide'?setupS:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else renderProgress(); }
+function render(){ if(tab==='exam'||tab==='slides'||tab==='core'){ POOL=tab==='slides'?'slide':tab==='core'?'core':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else renderProgress(); }
 // ---------- dialog
 function confirmDlg(msg,okLabel,onOk,cancelLabel='Cancel'){
   const d=$('#dlg'); $('#dlg-msg').textContent=msg; const a=$('#dlg-actions'); a.innerHTML='';
@@ -4294,8 +4919,9 @@ function confirmDlg(msg,okLabel,onOk,cancelLabel='Cancel'){
 let exam=null; let POOL='concept';
 const setupC={mods:new Set(MOD_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
 const setupS={mods:new Set(SLIDE_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
+const setupK={mods:new Set(CORE_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
 let setup=setupC;
-const inPool=q=>POOL==='slide'?q.slide:!q.slide;
+const inPool=q=>POOL==='slide'?!!q.slide:POOL==='core'?!!q.core:(!q.slide&&!q.core);
 function available(){
   return QS.filter(q=>inPool(q) && setup.mods.has(q.m) && (!setup.lec||(q.lecs||[]).includes(setup.lec)) && (!setup.discOnly||q.disc) && !answeredNow(q) && (setup.incMastered || qStatus(q)!=='mastered'));
 }
@@ -4307,12 +4933,12 @@ function renderExam(){
   const missed=cntS('missed'), retried=cntS('retried'), due=cntS('review')+cntS('due'), toughNew=av.filter(q=>q.tough&&qStatus(q)==='new').length;
   const pr=[missed?`${missed} you missed before`:'',retried?`${retried} you asked to retry`:'',due?`${due} tough question${due>1?'s':''} due for another round`:''].filter(Boolean);
   const n=setup.n==='all'?av.length:Math.min(setup.n,av.length);
-  const isS=POOL==='slide', KEYS=isS?SLIDE_KEYS:MOD_KEYS, poolQ=isS?SQ:CQ;
+  const isS=POOL==='slide', isK=POOL==='core', KEYS=isS?SLIDE_KEYS:isK?CORE_KEYS:MOD_KEYS, poolQ=isS?SQ:isK?KQ:CQ;
   const lecOpts=LECS.filter(l=>setup.mods.has('m'+l.match(/M(\d+)/)[1]));
   if(setup.lec && !lecOpts.includes(setup.lec)) setup.lec='';
   main.innerHTML=`<section class="panel">
-    <h2>${isS?'Slide-coverage test':'Start a timed practice exam'}</h2>
-    ${isS?`<p class="small" style="margin-top:0">${SQ.length} questions covering every written point, example, and equation on the Module ${SLIDE_KEYS[0].slice(1)}–${SLIDE_KEYS[SLIDE_KEYS.length-1].slice(1)} lecture slides. Each question shows the slide it comes from (e.g., <span class="tag src">Slides: M6 L2 p21</span>) so you can look it up. One minute per question.</p>`:
+    <h2>${isS?'Slide-coverage test':isK?'Core concepts test':'Start a timed practice exam'}</h2>
+    ${isK?`<p class="small" style="margin-top:0">${KQ.length} questions on the core ideas across all modules: what happens when a value changes (λ, k, C, T, α, p, d, q…) and what a result really means (a coefficient, a p-value, an AIC gap, an eigenvalue). Each question shows the concept it tests (e.g., <span class="tag src">Core: Raising C</span>). One minute per question. Choose <b>All available</b> to take all ${KQ.length}.</p>`:isS?`<p class="small" style="margin-top:0">${SQ.length} questions covering every written point, example, and equation on the Module ${SLIDE_KEYS[0].slice(1)}–${SLIDE_KEYS[SLIDE_KEYS.length-1].slice(1)} lecture slides. Each question shows the slide it comes from (e.g., <span class="tag src">Slides: M6 L2 p21</span>) so you can look it up. One minute per question.</p>`:
     `<p class="small" style="margin-top:0">One minute per question. Pick an answer, then press <b>Submit final answer</b> to lock it in and see why each option is right or wrong.</p>`}
     <h3>Modules</h3>
     <div class="chips" id="modchips">${KEYS.map(k=>`<button class="chip" data-m="${k}" aria-pressed="${setup.mods.has(k)}">${SHORT[k]}</button>`).join('')}</div>
@@ -4320,13 +4946,13 @@ function renderExam(){
     ${isS?`<h3>Lecture</h3><select class="lecsel" id="lecsel" aria-label="Lecture"><option value="">All lectures in the selected modules</option>${lecOpts.map(l=>`<option value="${l}" ${setup.lec===l?'selected':''}>${l} (${SQ.filter(q=>q.lecs.includes(l)).length} questions)</option>`).join('')}</select>`:''}
     <h3>Number of questions</h3>
     <div class="chips" id="nchips">${[10,20,40,60,'all'].map(v=>`<button class="chip" data-n="${v}" aria-pressed="${setup.n===v}">${v==='all'?'All available':v}</button>`).join('')}</div>
-    ${isS?'':`<label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="disconly" ${setup.discOnly?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Only <span class="tag disc">professor's discussion topics</span> <span class="small">(${CQ.filter(q=>q.disc).length} questions)</span></span></label>`}
+    ${isS||isK?'':`<label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="disconly" ${setup.discOnly?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Only <span class="tag disc">professor's discussion topics</span> <span class="small">(${CQ.filter(q=>q.disc).length} questions)</span></span></label>`}
     <label style="display:flex;align-items:flex-start;margin-top:10px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(a wrong answer resets them)</span></span></label>
     <div class="note">${av.length} questions available. Each exam is a fresh random draw, weighted toward ${pr.length?pr.join(', ')+', and ':''}tough questions (${toughNew} not yet tried). This exam: <b>${n} question${n===1?'':'s'}, ${n} minute${n===1?'':'s'}</b>.</div>
     <div class="actions"><button class="btn" id="go" ${n?'':'disabled'}>Start exam (${n} min)</button></div>
     ${av.length===0?`<p class="small">Nothing left in the selected modules for this session. Wrong answers come back the next time you open this page, or turn on "Include questions I've already mastered."</p>`:''}
   </section>
-  ${isS?'':`<section class="panel"><h2>How it works</h2>
+  ${isS||isK?'':`<section class="panel"><h2>How it works</h2>
    <ul class="small" style="padding-left:18px;margin:0">
     <li>Questions on your <span class="tag disc">professor's discussion topics</span> are highlighted and twice as likely to be drawn.</li>
     <li>Every exam is a new random draw. Questions you missed, asked to retry, or marked tough are much more likely to be picked, and so are modules where you're struggling.</li>
@@ -4570,6 +5196,9 @@ function renderProgress(){
    <section class="panel"><h2>Slide test coverage</h2>
    <p class="small" style="margin-top:0">${SQ.filter(q=>qStatus(q)==='mastered').length} of ${SQ.length} slide questions mastered. Each box is one lecture; tap <b>Slide test</b> and pick a lecture to drill it.</p>
    <div class="cov">${LECS.map(l=>{const qq=SQ.filter(q=>q.lecs.includes(l)); const c=qq.filter(q=>qStatus(q)==='mastered').length; const miss=qq.filter(q=>['review','due','missed'].includes(qStatus(q))).length; return `<div><b>${l}</b>${c}/${qq.length} mastered${miss?` · ${miss} to redo`:''}<i style="--w:${qq.length?Math.round(100*c/qq.length):0}%"></i></div>`;}).join('')}</div></section>
+   <section class="panel"><h2>Core concepts coverage</h2>
+   <p class="small" style="margin-top:0">${KQ.filter(q=>qStatus(q)==='mastered').length} of ${KQ.length} core questions mastered. Tap <b>Core concepts</b> to drill them.</p>
+   <div class="cov">${CORE_KEYS.map(m=>{const qq=KQ.filter(q=>q.m===m); const c=qq.filter(q=>qStatus(q)==='mastered').length; const miss=qq.filter(q=>['review','due','missed'].includes(qStatus(q))).length; return `<div><b>${SHORT[m]}</b>${c}/${qq.length} mastered${miss?` · ${miss} to redo`:''}<i style="--w:${qq.length?Math.round(100*c/qq.length):0}%"></i></div>`;}).join('')}</div></section>
    <section class="panel"><h2>Start over</h2><p class="small" style="margin-top:0">Clears every saved answer and explain-it result on this page.</p><button class="btn danger" id="reset">Reset all progress</button></section>`;
   main.innerHTML=html;
   $('#reset').onclick=()=>confirmDlg('Reset all progress? This can\'t be undone.','Reset everything',()=>{ st={v:1,updatedAt:0,q:{},r:{}}; save(); renderProgress(); });
