@@ -4848,6 +4848,10 @@ K('m9',`Correlation after PCA`,`Why does the problem of highly correlated predic
 const cnt={}; QS.forEach(q=>{const k=(q.slide?'s-':q.core?'c-':'')+q.m; cnt[k]=(cnt[k]||0)+1; q.id=k+'-'+cnt[k];});
 const CQ=QS.filter(q=>!q.slide&&!q.core), SQ=QS.filter(q=>q.slide), KQ=QS.filter(q=>q.core);
 SQ.forEach(q=>{ q.lecs=[...new Set((q.src.match(/M\d+ L\d+a?/g)||[]))]; });
+// Chronological order for the slide test: module → lecture → slide page (source order breaks ties).
+SQ.forEach((q,i)=>{ const p=q.src.match(/M(\d+) L(\d+)(a?) p(\d+)/)||[0,0,0,'',0]; q.ord=[+p[1],+p[2],p[3]?1:0,+p[4],i]; });
+const byOrd=(a,b)=>{ for(let k=0;k<5;k++){ if(a.ord[k]!==b.ord[k]) return a.ord[k]-b.ord[k]; } return 0; };
+SQ.sort(byOrd);
 const LECS=[...new Set(SQ.flatMap(q=>q.lecs))].sort((a,b)=>{const pa=a.match(/M(\d+) L(\d+)(a?)/), pb=b.match(/M(\d+) L(\d+)(a?)/); return (pa[1]-pb[1])||(pa[2]-pb[2])||pa[3].localeCompare(pb[3]);});
 const SLIDE_KEYS=MOD_KEYS.filter(k=>SQ.some(q=>q.m===k));
 const CORE_KEYS=MOD_KEYS.filter(k=>KQ.some(q=>q.m===k));
@@ -4948,7 +4952,7 @@ function renderExam(){
     <div class="chips" id="nchips">${[10,20,40,60,'all'].map(v=>`<button class="chip" data-n="${v}" aria-pressed="${setup.n===v}">${v==='all'?'All available':v}</button>`).join('')}</div>
     ${isS||isK?'':`<label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="disconly" ${setup.discOnly?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Only <span class="tag disc">professor's discussion topics</span> <span class="small">(${CQ.filter(q=>q.disc).length} questions)</span></span></label>`}
     <label style="display:flex;align-items:flex-start;margin-top:10px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(a wrong answer resets them)</span></span></label>
-    <div class="note">${av.length} questions available. Each exam is a fresh random draw, weighted toward ${pr.length?pr.join(', ')+', and ':''}tough questions (${toughNew} not yet tried). This exam: <b>${n} question${n===1?'':'s'}, ${n} minute${n===1?'':'s'}</b>.</div>
+    <div class="note">${av.length} questions available. ${isS&&av.length?`Questions go in lecture order, starting where you left off: <b>${av.slice().sort(byOrd)[0].src}</b>. Ones you've mastered are skipped; ones you missed come up again in their place.`:`Each exam is a fresh random draw, weighted toward ${pr.length?pr.join(', ')+', and ':''}tough questions (${toughNew} not yet tried).`} This exam: <b>${n} question${n===1?'':'s'}, ${n} minute${n===1?'':'s'}</b>.</div>
     <div class="actions"><button class="btn" id="go" ${n?'':'disabled'}>Start exam (${n} min)</button></div>
     ${av.length===0?`<p class="small">Nothing left in the selected modules for this session. Wrong answers come back the next time you open this page, or turn on "Include questions I've already mastered."</p>`:''}
   </section>
@@ -4975,8 +4979,8 @@ function startExam(n){
   const W={missed:8,retried:6,due:6,review:6,new:1,mastered:0.4};
   const weak={}; MOD_KEYS.forEach(m=>{const qq=QS.filter(q=>q.m===m && inPool(q)); weak[m]=qq.length?qq.filter(q=>['missed','review','due'].includes(qStatus(q))).length/qq.length:0;});
   const weight=q=>{const s=qStatus(q); let w=W[s]||1; if(s==='new'&&q.tough) w=3; return w*(1+2*weak[q.m])*(q.disc?2:1);};
-  const picked=av.map(q=>({q,k:Math.pow(Math.random(),1/weight(q))})).sort((a,b)=>b.k-a.k).slice(0,n).map(x=>x.q);
-  const list=shuffle(picked).map(q=>({q,st0:qStatus(q),order:shuffle(q.opts.map((_,i)=>i)),pick:null,submitted:false,correct:null}));
+  const picked=POOL==='slide'? av.slice().sort(byOrd).slice(0,n) : av.map(q=>({q,k:Math.pow(Math.random(),1/weight(q))})).sort((a,b)=>b.k-a.k).slice(0,n).map(x=>x.q);
+  const list=(POOL==='slide'?picked:shuffle(picked)).map(q=>({q,st0:qStatus(q),order:shuffle(q.opts.map((_,i)=>i)),pick:null,submitted:false,correct:null}));
   exam={active:true,done:false,pool:POOL,items:list,i:0,total:n*60,left:n*60,timed:true,started:Date.now()};
   exam.tick=setInterval(()=>{ if(!exam.timed) return; exam.left--; updateClock(); if(exam.left<=0){ exam.left=0; timeUp(); } },1000);
   renderQuestion();
