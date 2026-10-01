@@ -197,6 +197,14 @@ ol.steps{margin:8px 0 0; padding-left:22px} ol.steps li{margin-bottom:4px}
 .chip[aria-pressed="true"] .small{color:inherit;opacity:.85}
 .inline-start{flex-basis:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--muted-bg);border:1.5px solid var(--pen);border-radius:10px;padding:8px 10px 8px 14px;margin:2px 0 4px;font-size:.9rem}
 .inline-start .btn{min-height:40px;padding:8px 16px;flex:none}
+.picks{display:flex;flex-direction:column;gap:8px}
+.pick{display:block;width:100%;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:500 .98rem var(--sans)}
+button.pick,.pick-h{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 13px;cursor:pointer;background:transparent;border:0;color:inherit;font:inherit}
+button.pick{border:1px solid var(--line);background:var(--card)}
+.pick.sel{border:2px solid var(--pen);background:var(--muted-bg)}
+.pick-go{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px dashed var(--line);margin:0 13px;padding:10px 0 12px;font-size:.9rem}
+.pick-go .btn{min-height:40px;padding:8px 18px;flex:none}
+.pick .chk{color:var(--pen);font-weight:700;margin-right:4px}
 </style>
 </head>
 <body>
@@ -4438,6 +4446,9 @@ function renderMidSetup(){
   const mst=qq=>qq.filter(q=>qStatus(q)==='mastered').length;
   const scopeLbl=setup.sc?`Scenario ${setup.sc}: ${SCN[setup.sc].title}`:setup.sec==='all'?setLbl(setup.set):`${setLbl(setup.set)}, section ${setup.sec}`;
   const scList=[...new Set(MQ.filter(inSet).map(q=>q.sc))];
+  const pick=(attr,header,sel,right='')=>sel
+    ? `<div class="pick sel"><button class="pick-h" ${attr} aria-expanded="true"><span><span class="chk">✓</span>${header}</span>${right}</button><div class="pick-go"><span><b>${n} question${n===1?'':'s'}</b> · ${mins} min${setup.incMastered?'':' · unmastered only'}${setup.discOnly?' · discussion topics only':''}</span><button class="btn go-inline" ${n?'':'disabled'}>Start</button></div></div>`
+    : `<button class="pick" ${attr} aria-expanded="false"><span>${header}</span>${right}</button>`;
   const startBar=()=>`<div class="inline-start"><span><b>${n} question${n===1?'':'s'}</b> · ${mins} min${setup.incMastered?'':' · unmastered only'}</span><button class="btn go-inline" ${n?'':'disabled'}>Start</button></div>`;
   main.innerHTML=`<section class="panel"><h2>Midterm practice</h2>
     <p class="small" style="margin-top:0">${SETS.length} full practice midterms of ${MQ.length/SETS.length} questions each, written in the style of the sample quiz: a situation (often with a figure, table, or model output), then several parts that build on it. Each midterm covers Modules 1–10 (Module 10, advanced regression, is based on what general analytics courses teach: CART and random forests, logistic regression, confusion matrices, and other regression types, so check it against your lectures when they’re out). Paced like the real quiz: about 1.8 minutes per question.</p>
@@ -4455,7 +4466,7 @@ function renderMidSetup(){
     <div class="chips" id="setchips">${SETS.concat(['all']).map(k=>{const qq=MQ.filter(q=>k==='all'||q.set===k); return `<button class="chip" data-s="${k}" aria-pressed="${setup.set===k}">${setLbl(k)} <span class="small">· ${mst(qq)}/${qq.length}</span></button>`;}).join('')}</div>
     ${setup.set==='all'?'':`<h3>How much?</h3>
     <p class="small" style="margin:0 0 8px">Short on time? Take one section, about the size of the sample quiz. Sections never split a scenario.</p>
-    <div class="chips" id="secchips"><button class="chip" data-sec="all" aria-pressed="${setup.sec==='all'&&!setup.sc}">Full midterm <span class="small">· ${MQ.filter(inSet).length} q</span></button>${setup.sec==='all'&&!setup.sc?startBar():''}${secs.map(k=>{const qq=MQ.filter(q=>inSet(q)&&q.sec===k); const sc=[...new Set(qq.map(q=>q.sc))]; return `<button class="chip" data-sec="${k}" aria-pressed="${setup.sec===k&&!setup.sc}">Section ${k} <span class="small">· ${qq.length} q · ~${Math.round(qq.length*1.8)} min · ${mst(qq)} mastered</span></button>${setup.sec===k&&!setup.sc?startBar():''}`;}).join('')}</div>
+    <div class="picks" id="secchips">${pick('data-sec="all"',`Full midterm <span class="small">· ${MQ.filter(inSet).length} q · ~${Math.round(MQ.filter(inSet).length*1.8)} min</span>`,setup.sec==='all'&&!setup.sc)}${secs.map(k=>{const qq=MQ.filter(q=>inSet(q)&&q.sec===k); return pick(`data-sec="${k}"`,`Section ${k} <span class="small">· ${qq.length} q · ~${Math.round(qq.length*1.8)} min</span>`,setup.sec===k&&!setup.sc,`<span class="st ${mst(qq)===qq.length?'solid':'new'}">${mst(qq)}/${qq.length}</span>`);}).join('')}</div>
     ${setup.sc?`<p class="small" style="margin-top:8px">Selected: <b>${scopeLbl}</b> <button class="btn quiet" id="clrsc" style="min-height:32px;padding:4px 10px;margin-left:6px">Clear</button></p>`:''}`}
     <label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="disconly" ${setup.discOnly?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Only <span class="tag disc">professor's discussion topics</span> <span class="small">(${scopeQ.filter(q=>q.disc).length} in ${scopeLbl}; all 17 topics are covered across the three midterms)</span></span></label>
     <label style="display:flex;align-items:flex-start;margin-top:10px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(turn off to retake only the ones you haven't mastered: ${notM.length} left in ${scopeLbl})</span></span></label>
@@ -4463,11 +4474,11 @@ function renderMidSetup(){
     <div class="actions"><button class="btn" id="go" ${n?'':'disabled'}>Start (${mins} min)</button></div>
     ${n===0?'<p class="small">Nothing left here. Turn on “Include questions I’ve already mastered” to retake everything.</p>':''}
   </section>
-  ${setup.set==='all'?'':`<section class="panel"><h2>Scenarios in ${setLbl(setup.set)}</h2><p class="small" style="margin-top:0">Tap a scenario to practice just that one.</p><div class="clist">${scList.map(i=>{const qq=MQ.filter(q=>q.sc===i); const mods=[...new Set(qq.map(q=>q.m==='mix'?'Pick the tool':SHORT[q.m].split(' ')[0]))].join(', '); return `<button class="citem" data-sc="${i}" ${setup.sc===i?'aria-pressed="true" style="border-color:var(--pen)"':''}><span><span class="small">Section ${qq[0].sec} · Scenario ${i}</span><br>${SCN[i].title} <span class="small">· ${qq.length} parts · ${mods}</span></span><span class="st ${mst(qq)===qq.length?'solid':'new'}">${mst(qq)}/${qq.length}</span></button>${setup.sc===i?startBar():''}`;}).join('')}</div></section>`}`;
+  ${setup.set==='all'?'':`<section class="panel"><h2>Scenarios in ${setLbl(setup.set)}</h2><p class="small" style="margin-top:0">Tap a scenario to practice just that one.</p><div class="picks">${scList.map(i=>{const qq=MQ.filter(q=>q.sc===i); const mods=[...new Set(qq.map(q=>q.m==='mix'?'Pick the tool':SHORT[q.m].split(' ')[0]))].join(', '); return pick(`data-sc="${i}"`,`<span class="small">Section ${qq[0].sec} · Scenario ${i}</span><br>${SCN[i].title} <span class="small">· ${qq.length} parts · ${mods}</span>`,setup.sc===i,`<span class="st ${mst(qq)===qq.length?'solid':'new'}">${mst(qq)}/${qq.length}</span>`);}).join('')}</div></section>`}`;
   const keep=fn=>()=>{ const y=window.scrollY; fn(); renderMidSetup(); window.scrollTo(0,y); };
   document.querySelectorAll('#setchips .chip').forEach(c=>c.onclick=keep(()=>{const v=c.dataset.s; setup.set=v==='all'?'all':+v; setup.sec='all'; setup.sc=null;}));
-  document.querySelectorAll('#secchips .chip').forEach(c=>c.onclick=keep(()=>{const v=c.dataset.sec; setup.sec=v==='all'?'all':+v; setup.sc=null;}));
-  document.querySelectorAll('.citem[data-sc]').forEach(c=>c.onclick=keep(()=>{const v=+c.dataset.sc; setup.sc=setup.sc===v?null:v;}));
+  document.querySelectorAll('#secchips [data-sec]').forEach(c=>c.onclick=keep(()=>{const v=c.dataset.sec; setup.sec=v==='all'?'all':+v; setup.sc=null;}));
+  document.querySelectorAll('[data-sc]').forEach(c=>c.onclick=keep(()=>{const v=+c.dataset.sc; setup.sc=setup.sc===v?null:v;}));
   const cl=$('#clrsc'); if(cl) cl.onclick=keep(()=>{setup.sc=null;});
   $('#incm').onchange=e=>{ const y=window.scrollY; setup.incMastered=e.target.checked; renderMidSetup(); window.scrollTo(0,y); };
   $('#disconly').onchange=e=>{ const y=window.scrollY; setup.discOnly=e.target.checked; renderMidSetup(); window.scrollTo(0,y); };
