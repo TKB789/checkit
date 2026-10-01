@@ -194,14 +194,15 @@ ol.steps{margin:8px 0 0; padding-left:22px} ol.steps li{margin-bottom:4px}
 .partlbl{font:600 .8rem var(--sans); letter-spacing:.04em; text-transform:uppercase; color:var(--pen); margin:0 0 6px}
 .multi-hint{font:600 .85rem var(--sans); color:var(--warn); margin:-6px 0 10px}
 .opt .box{display:inline-block; width:1em; margin-right:6px}
+.chip[aria-pressed="true"] .small{color:inherit;opacity:.85}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
     <div class="titlerow"><div>
-      <h1>Midterm practice: Modules 1–9</h1>
-      <p class="sub">Critical-thinking questions, a full slide-coverage test, a 100-question core concepts test, three 50-question practice midterms, and explain-it-to-a-new-student practice. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
+      <h1>Midterm practice: Modules 1–10</h1>
+      <p class="sub">Critical-thinking questions, a full slide-coverage test, a 100-question core concepts test, three 60-question practice midterms (with shorter sections), and explain-it-to-a-new-student practice. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
     </div>
     <div class="theme" role="group" aria-label="Color theme"><button data-theme-set="auto">Auto</button><button data-theme-set="light">Light</button><button data-theme-set="dark">Dark</button></div>
     </div>
@@ -6129,6 +6130,16 @@ X(50,'e','m10',`Why might an analyst still check a forest’s “variable import
 const cnt={}; QS.forEach(q=>{const k=(q.slide?'s-':q.core?'c-':q.mid?'x-':'')+q.m; cnt[k]=(cnt[k]||0)+1; q.id=k+'-'+cnt[k];});
 const CQ=QS.filter(q=>!q.slide&&!q.core&&!q.mid), SQ=QS.filter(q=>q.slide), KQ=QS.filter(q=>q.core), MQ=QS.filter(q=>q.mid);
 MQ.forEach((q,i)=>q.seq=i);
+// Split each practice midterm into ~4 shorter sections, never splitting a scenario.
+const MID_NSEC=4;
+[...new Set(MQ.map(q=>q.set))].forEach(set=>{
+  const qq=MQ.filter(q=>q.set===set), scs=[...new Set(qq.map(q=>q.sc))], sz=scs.map(sc=>qq.filter(q=>q.sc===sc).length), target=qq.length/MID_NSEC;
+  // try every way to cut the scenario list into MID_NSEC contiguous groups; keep the most even one
+  let best=null;
+  (function cut(start,k,cuts){ if(k===MID_NSEC-1){ const c=cuts.concat(scs.length); let prev=0,err=0; for(const e of c){ const t=sz.slice(prev,e).reduce((a,b)=>a+b,0); err+=(t-target)**2; prev=e; } if(!best||err<best.err) best={err,c}; return; }
+    for(let i=start+1;i<scs.length-(MID_NSEC-2-k);i++) cut(i,k+1,cuts.concat(i)); })(0,0,[]);
+  let prev=0; best.c.forEach((e,si)=>{ scs.slice(prev,e).forEach(sc=>qq.filter(q=>q.sc===sc).forEach(q=>q.sec=si+1)); prev=e; });
+});
 const isRight=(q,oi)=>q.ok?q.ok.includes(oi):oi===0;
 SQ.forEach(q=>{ q.lecs=[...new Set((q.src.match(/M\d+ L\d+a?/g)||[]))]; });
 // Chronological order for the slide test: module → lecture → slide page (source order breaks ties).
@@ -6138,7 +6149,7 @@ SQ.sort(byOrd);
 const LECS=[...new Set(SQ.flatMap(q=>q.lecs))].sort((a,b)=>{const pa=a.match(/M(\d+) L(\d+)(a?)/), pb=b.match(/M(\d+) L(\d+)(a?)/); return (pa[1]-pb[1])||(pa[2]-pb[2])||pa[3].localeCompare(pb[3]);});
 const SLIDE_KEYS=MOD_KEYS.filter(k=>SQ.some(q=>q.m===k));
 const CORE_KEYS=MOD_KEYS.filter(k=>KQ.some(q=>q.m===k));
-const srcTag=q=>q.slide?`<span class="tag src">Slides: ${q.src}</span>`:q.core?`<span class="tag src">Core: ${esc(q.c)}</span>`:q.mid?`<span class="tag src">Midterm ${q.set} · Scenario ${q.sc} · Part ${q.part}${q.multi?' · Select all':''}</span>`:'';
+const srcTag=q=>q.slide?`<span class="tag src">Slides: ${q.src}</span>`:q.core?`<span class="tag src">Core: ${esc(q.c)}</span>`:q.mid?`<span class="tag src">Midterm ${q.set} · Section ${q.sec} · Scenario ${q.sc} · Part ${q.part}${q.multi?' · Select all':''}</span>`:'';
 const rcnt={}; RC.forEach(r=>{rcnt[r.m]=(rcnt[r.m]||0)+1; r.id='r-'+r.m+'-'+rcnt[r.m];});
 const DISC={1:'Why a bigger SVM margin?',2:'When to scale vs. standardize',3:'SVM vs. KNN',4:'Why scale before KNN?',5:'Does validation pick the truly best model?',6:'Test vs. validation; switching models',7:'Classification vs. clustering',8:'Hardest outlier to identify',9:'Bad, irrelevant, or relevant outliers',10:'Higher or lower C and T',11:'When to use change detection',12:'Examples of time-series data',13:'When to predict variance',14:'How far ahead smoothing is accurate',15:'Regression vs. SVM: near or far points',16:'R²: physical vs. human behavior',17:'Linear or nonlinear relationship?'};
 const DISC_Q={'m2-1':[1],'m2-3':[1],'m2-13':[1],'m2-16':[1],'who-4':[1],'m2-9':[2],'m2-10':[2],'m2-12':[3],'mix-4':[3],'m4-8':[4],'m3-1':[5,6],'m3-7':[5],'m3-8':[5],'m3-13':[5],'m3-3':[6],'m3-20':[6],'m4-9':[7],'m4-13':[7],'mix-3':[7],'m5-1':[8],'m5-2':[8],'m5-8':[8],'m5-14':[8],'m5-4':[9],'m5-6':[9],'m5-7':[9],'m5-10':[9],'m5-12':[9],'m6-2':[10],'m6-7':[10],'m6-8':[10],'m6-12':[10],'m6-13':[10],'m6-15':[10],'m6-11':[11],'m6-14':[11],'mix-2':[11],'m7-8':[13],'m7-20':[13],'m7-17':[14],'m8-9':[15],'m8-4':[17],'m8-19':[17]};
@@ -6207,11 +6218,11 @@ let exam=null; let POOL='concept';
 const setupC={mods:new Set(MOD_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
 const setupS={mods:new Set(SLIDE_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
 const setupK={mods:new Set(CORE_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
-const setupM={mods:new Set([...MOD_KEYS,'m10']),n:'all',incMastered:true,discOnly:false,lec:'',set:1};
+const setupM={mods:new Set([...MOD_KEYS,'m10']),n:'all',incMastered:true,discOnly:false,lec:'',set:1,sec:'all',sc:null};
 let setup=setupC;
 const inPool=q=>POOL==='slide'?!!q.slide:POOL==='core'?!!q.core:POOL==='mid'?!!q.mid:(!q.slide&&!q.core&&!q.mid);
 function available(){
-  return QS.filter(q=>inPool(q) && setup.mods.has(q.m) && (POOL!=='mid'||setup.set==='all'||q.set===setup.set) && (!setup.lec||(q.lecs||[]).includes(setup.lec)) && (!setup.discOnly||q.disc) && (!answeredNow(q) || (POOL==='mid'&&setup.incMastered)) && (setup.incMastered || qStatus(q)!=='mastered'));
+  return QS.filter(q=>inPool(q) && setup.mods.has(q.m) && (POOL!=='mid'||((setup.set==='all'||q.set===setup.set)&&(setup.sc?q.sc===setup.sc:(setup.sec==='all'||setup.set==='all'||q.sec===setup.sec)))) && (!setup.lec||(q.lecs||[]).includes(setup.lec)) && (!setup.discOnly||q.disc) && (!answeredNow(q) || (POOL==='mid'&&setup.incMastered)) && (setup.incMastered || qStatus(q)!=='mastered'));
 }
 function renderExam(){
   if(exam && exam.pool!==POOL && !exam.active) exam=null;
@@ -6261,32 +6272,44 @@ function renderExam(){
 }
 function renderMidSetup(){
   const SETS=[...new Set(MQ.map(q=>q.set))];
-  const inSet=q=>setup.set==='all'||q.set===setup.set;
-  const pool=MQ.filter(inSet), notM=pool.filter(q=>qStatus(q)!=='mastered');
-  const av=available(); const n=av.length; const mins=Math.round(n*1.8);
-  const scs=[...new Set(pool.map(q=>q.sc))];
   const setLbl=k=>k==='all'?`All ${MQ.length}`:`Midterm ${k}`;
+  const inSet=q=>setup.set==='all'||q.set===setup.set;
+  const secs=setup.set==='all'?[]:[...new Set(MQ.filter(inSet).map(q=>q.sec))];
+  if(setup.set==='all'){ setup.sec='all'; setup.sc=null; }
+  const scopeQ=MQ.filter(q=>inSet(q)&&(setup.sc?q.sc===setup.sc:(setup.sec==='all'||q.sec===setup.sec)));
+  const notM=scopeQ.filter(q=>qStatus(q)!=='mastered');
+  const av=available(); const n=av.length; const mins=Math.round(n*1.8);
+  const mst=qq=>qq.filter(q=>qStatus(q)==='mastered').length;
+  const scopeLbl=setup.sc?`Scenario ${setup.sc}: ${SCN[setup.sc].title}`:setup.sec==='all'?setLbl(setup.set):`${setLbl(setup.set)}, section ${setup.sec}`;
+  const scList=[...new Set(MQ.filter(inSet).map(q=>q.sc))];
   main.innerHTML=`<section class="panel"><h2>Midterm practice</h2>
-    <p class="small" style="margin-top:0">${SETS.length} full practice midterms of ${MQ.length/SETS.length} questions each, written in the style of the sample quiz: a situation (often with a figure, table, or model output), then several parts that build on it. Expect “which model fits” lists, select-all questions, matching, calculations, reading model output, and judgment calls. Each midterm covers Modules 1–10 (Module 10, advanced regression, is based on what general analytics courses teach: CART and random forests, logistic regression, confusion matrices, and other regression types, so check it against your lectures when they’re out). Paced like the real quiz: about 1.8 minutes per question.</p>
+    <p class="small" style="margin-top:0">${SETS.length} full practice midterms of ${MQ.length/SETS.length} questions each, written in the style of the sample quiz: a situation (often with a figure, table, or model output), then several parts that build on it. Each midterm covers Modules 1–10 (Module 10, advanced regression, is based on what general analytics courses teach: CART and random forests, logistic regression, confusion matrices, and other regression types, so check it against your lectures when they’re out). Paced like the real quiz: about 1.8 minutes per question.</p>
     <details class="scen" style="margin-top:12px"><summary>How to attack these questions</summary><div class="body"><ol class="steps">
      <li><b>Read the scenario for its decision.</b> Ask: what is the person trying to decide, and what kind of question is it (classify, predict an amount, a probability, detect a change, forecast, find groups)?</li>
      <li><b>Read the stem twice.</b> Circle the exact ask: “not important,” “most appropriate,” “select all,” “what can be concluded.” Many wrong answers answer a different question.</li>
      <li><b>Read every option before choosing.</b> The options show you what distinction is being tested (e.g., two options differ only by “because…”).</li>
      <li><b>Hunt for the clue in the setup.</b> Numbers like “1 out of 1,” “3% are spam,” “only 30 data points,” or “must be explained” are rarely decoration.</li>
-     <li><b>Watch for true-but-not-the-answer options.</b> A statement can be factually true (B misclassifies fewer points) and still not answer why one model is better.</li>
-     <li><b>Watch for causal add-ons.</b> “…because workers are adjusting” sounds smart, but models show patterns, not causes. Prefer the option that says only what the model shows.</li>
-     <li><b>For calculations, write the formula first,</b> then plug in. Check units (thousands? per 100 sq ft?) and signs.</li>
-     <li><b>For select-all, judge each option alone</b> as true/false for this situation; don’t aim for a “usual” count.</li>
+     <li><b>Watch for true-but-not-the-answer options.</b> A statement can be factually true and still not answer the question being asked.</li>
+     <li><b>Watch for causal add-ons.</b> “…because workers are adjusting” sounds smart, but models show patterns, not causes.</li>
+     <li><b>For numbers, reason about direction and size</b> (bigger or smaller? above or below 1? closer to which value?). You won’t need a calculator.</li>
+     <li><b>For select-all, judge each option alone</b> as true or false for this situation; don’t aim for a “usual” count.</li>
     </ol></div></details>
     <h3>Which midterm?</h3>
-    <div class="chips" id="setchips">${SETS.concat(['all']).map(k=>{const qq=MQ.filter(q=>k==='all'||q.set===k); const c=qq.filter(q=>qStatus(q)==='mastered').length; return `<button class="chip" data-s="${k}" aria-pressed="${setup.set===k}">${setLbl(k)} <span class="small">· ${c}/${qq.length}</span></button>`;}).join('')}</div>
-    <label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(turn off to retake only the ones you haven't mastered: ${notM.length} left in ${setLbl(setup.set)})</span></span></label>
-    <div class="note">This exam: <b>${n} question${n===1?'':'s'}, ${mins} minutes</b>, in scenario order. Select-all questions need exactly the right set for credit.</div>
-    <div class="actions"><button class="btn" id="go" ${n?'':'disabled'}>Start ${setLbl(setup.set).toLowerCase().startsWith('all')?'all midterms':setLbl(setup.set)} (${mins} min)</button></div>
+    <div class="chips" id="setchips">${SETS.concat(['all']).map(k=>{const qq=MQ.filter(q=>k==='all'||q.set===k); return `<button class="chip" data-s="${k}" aria-pressed="${setup.set===k}">${setLbl(k)} <span class="small">· ${mst(qq)}/${qq.length}</span></button>`;}).join('')}</div>
+    ${setup.set==='all'?'':`<h3>How much?</h3>
+    <p class="small" style="margin:0 0 8px">Short on time? Take one section, about the size of the sample quiz. Sections never split a scenario.</p>
+    <div class="chips" id="secchips"><button class="chip" data-sec="all" aria-pressed="${setup.sec==='all'&&!setup.sc}">Full midterm <span class="small">· ${MQ.filter(inSet).length} q</span></button>${secs.map(k=>{const qq=MQ.filter(q=>inSet(q)&&q.sec===k); const sc=[...new Set(qq.map(q=>q.sc))]; return `<button class="chip" data-sec="${k}" aria-pressed="${setup.sec===k&&!setup.sc}">Section ${k} <span class="small">· ${qq.length} q · ~${Math.round(qq.length*1.8)} min · ${mst(qq)} mastered</span></button>`;}).join('')}</div>
+    ${setup.sc?`<p class="small" style="margin-top:8px">Selected: <b>${scopeLbl}</b> <button class="btn quiet" id="clrsc" style="min-height:32px;padding:4px 10px;margin-left:6px">Clear</button></p>`:''}`}
+    <label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(turn off to retake only the ones you haven't mastered: ${notM.length} left in ${scopeLbl})</span></span></label>
+    <div class="note">This exam: <b>${scopeLbl}</b> · <b>${n} question${n===1?'':'s'}, ${mins} minute${mins===1?'':'s'}</b>, in scenario order. Select-all questions need exactly the right set for credit.</div>
+    <div class="actions"><button class="btn" id="go" ${n?'':'disabled'}>Start (${mins} min)</button></div>
     ${n===0?'<p class="small">Nothing left here. Turn on “Include questions I’ve already mastered” to retake everything.</p>':''}
   </section>
-  <section class="panel"><h2>Scenarios in ${setLbl(setup.set)}</h2><ol class="small" style="padding-left:20px;margin:0">${scs.map(i=>{const qq=MQ.filter(q=>q.sc===i); const c=qq.filter(q=>qStatus(q)==='mastered').length; const mods=[...new Set(qq.map(q=>SHORT[q.m].split(' ')[0]))].join(', '); return `<li value="${i}">${SCN[i].title} <span class="small">· ${qq.length} parts · ${mods} · ${c} mastered</span></li>`;}).join('')}</ol></section>`;
-  document.querySelectorAll('#setchips .chip').forEach(c=>c.onclick=()=>{const v=c.dataset.s; setup.set=v==='all'?'all':+v; renderMidSetup();});
+  ${setup.set==='all'?'':`<section class="panel"><h2>Scenarios in ${setLbl(setup.set)}</h2><p class="small" style="margin-top:0">Tap a scenario to practice just that one.</p><div class="clist">${scList.map(i=>{const qq=MQ.filter(q=>q.sc===i); const mods=[...new Set(qq.map(q=>q.m==='mix'?'Pick the tool':SHORT[q.m].split(' ')[0]))].join(', '); return `<button class="citem" data-sc="${i}" ${setup.sc===i?'aria-pressed="true" style="border-color:var(--pen)"':''}><span><span class="small">Section ${qq[0].sec} · Scenario ${i}</span><br>${SCN[i].title} <span class="small">· ${qq.length} parts · ${mods}</span></span><span class="st ${mst(qq)===qq.length?'solid':'new'}">${mst(qq)}/${qq.length}</span></button>`;}).join('')}</div></section>`}`;
+  document.querySelectorAll('#setchips .chip').forEach(c=>c.onclick=()=>{const v=c.dataset.s; setup.set=v==='all'?'all':+v; setup.sec='all'; setup.sc=null; renderMidSetup();});
+  document.querySelectorAll('#secchips .chip').forEach(c=>c.onclick=()=>{const v=c.dataset.sec; setup.sec=v==='all'?'all':+v; setup.sc=null; renderMidSetup();});
+  document.querySelectorAll('.citem[data-sc]').forEach(c=>c.onclick=()=>{setup.sc=+c.dataset.sc; renderMidSetup(); window.scrollTo(0,0);});
+  const cl=$('#clrsc'); if(cl) cl.onclick=()=>{setup.sc=null; renderMidSetup();};
   $('#incm').onchange=e=>{setup.incMastered=e.target.checked; renderMidSetup();};
   $('#go').onclick=()=>startExam(n);
 }
