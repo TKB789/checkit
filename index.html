@@ -175,6 +175,25 @@ dialog::backdrop{background:rgba(10,15,25,.55)}
 @media (max-width:480px){.greader-bar{margin:0 -12px;padding:8px 12px}.guide{padding:14px}}
 @media (prefers-reduced-motion: no-preference){ .opt{transition:background-color .15s, border-color .15s} .track>i{transition:width 1s linear} }
 @media (max-width:480px){ .wrap{padding:12px 12px 56px} .panel{padding:14px} .timerbar{margin:0 -12px; padding:10px 12px} }
+
+/* ---- midterm scenarios ---- */
+.scen{background:var(--muted-bg); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin:0 0 14px; font-size:.95rem; line-height:1.55}
+.scen summary{cursor:pointer; font:600 .9rem var(--sans); color:var(--ink); list-style:none}
+.scen summary::-webkit-details-marker{display:none}
+.scen summary::before{content:"▾ "; color:var(--ink-2)} .scen:not([open]) summary::before{content:"▸ "}
+.scen .body{margin-top:8px}
+.figs{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:10px 0 2px}
+.scen svg{max-width:100%; height:auto; background:var(--card); border:1px solid var(--line); border-radius:8px; display:block; margin:10px auto 2px}
+.figs svg{margin:0}
+.eq{font-family:var(--serif); background:var(--card); border:1px solid var(--line); border-radius:8px; padding:8px 12px; margin:8px 0; line-height:1.9; overflow-x:auto}
+.dtab{border-collapse:collapse; width:100%; margin:10px 0 4px; font-size:.88rem; background:var(--card)}
+.dtab th,.dtab td{border:1px solid var(--line); padding:5px 8px; text-align:left}
+.dtab th{background:var(--card); font-weight:600}
+.scen .tw{overflow-x:auto}
+ol.steps{margin:8px 0 0; padding-left:22px} ol.steps li{margin-bottom:4px}
+.partlbl{font:600 .8rem var(--sans); letter-spacing:.04em; text-transform:uppercase; color:var(--pen); margin:0 0 6px}
+.multi-hint{font:600 .85rem var(--sans); color:var(--warn); margin:-6px 0 10px}
+.opt .box{display:inline-block; width:1em; margin-right:6px}
 </style>
 </head>
 <body>
@@ -182,12 +201,13 @@ dialog::backdrop{background:rgba(10,15,25,.55)}
   <header class="top">
     <div class="titlerow"><div>
       <h1>Midterm practice: Modules 1–9</h1>
-      <p class="sub">Critical-thinking questions, a full slide-coverage test, a 100-question core concepts test, and explain-it-to-a-new-student practice. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
+      <p class="sub">Critical-thinking questions, a full slide-coverage test, a 100-question core concepts test, three 50-question practice midterms, and explain-it-to-a-new-student practice. Your progress saves automatically in this browser. <span class="sync" id="sync"></span></p>
     </div>
     <div class="theme" role="group" aria-label="Color theme"><button data-theme-set="auto">Auto</button><button data-theme-set="light">Light</button><button data-theme-set="dark">Dark</button></div>
     </div>
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-exam" aria-selected="true" data-tab="exam">Practice exam</button>
+      <button role="tab" id="tab-mid" aria-selected="false" data-tab="mid">Midterm practice</button>
       <button role="tab" id="tab-slides" aria-selected="false" data-tab="slides">Slide test</button>
       <button role="tab" id="tab-core" aria-selected="false" data-tab="core">Core concepts</button>
       <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall">New student</button>
@@ -4844,9 +4864,1077 @@ K('m9',`Correlation after PCA`,`Why does the problem of highly correlated predic
  [`PCA also rescales the response, which removes the overlap`,`PCA works on the predictors.`,`Confusing steps.`]
 ]);
 
+// ---- Midterm practice
+const FIG1=`<div class="figs"><svg viewBox="0 0 230 232" width="230" role="img" aria-label="Figure A"><text x="125" y="14" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">Figure A</text><line x1="34" y1="196" x2="220" y2="196" stroke="var(--ink-2)"/><line x1="34" y1="196" x2="34" y2="20" stroke="var(--ink-2)"/><text x="34" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">0</text><text x="64" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">1</text><text x="26" y="169" text-anchor="end" font-size="10" fill="var(--ink-2)">1</text><text x="94" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">2</text><text x="26" y="139" text-anchor="end" font-size="10" fill="var(--ink-2)">2</text><text x="124" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">3</text><text x="26" y="109" text-anchor="end" font-size="10" fill="var(--ink-2)">3</text><text x="154" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">4</text><text x="26" y="79" text-anchor="end" font-size="10" fill="var(--ink-2)">4</text><text x="184" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">5</text><text x="26" y="49" text-anchor="end" font-size="10" fill="var(--ink-2)">5</text><text x="214" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">6</text><text x="26" y="19" text-anchor="end" font-size="10" fill="var(--ink-2)">6</text><text x="127" y="226" text-anchor="middle" font-size="11" fill="var(--ink)">x₁</text><text x="8" y="108" font-size="11" fill="var(--ink)">x₂</text><line x1="139.0" y1="20" x2="139.0" y2="196" stroke="var(--pen)" stroke-width="2" stroke-dasharray="6 4"/><circle cx="58.0" cy="160.0" r="4.5" fill="var(--ink)"/><circle cx="70.0" cy="61.0" r="4.5" fill="var(--ink)"/><circle cx="79.0" cy="112.0" r="4.5" fill="var(--ink)"/><circle cx="94.0" cy="40.0" r="4.5" fill="var(--ink)"/><circle cx="106.0" cy="166.0" r="4.5" fill="var(--ink)"/><circle cx="115.0" cy="88.0" r="4.5" fill="var(--ink)"/><circle cx="124.0" cy="130.0" r="4.5" fill="var(--ink)"/><circle cx="64.0" cy="94.0" r="4.5" fill="var(--ink)"/><circle cx="100.0" cy="64.0" r="4.5" fill="var(--ink)"/><circle cx="130.0" cy="46.0" r="4.5" fill="var(--ink)"/><circle cx="154.0" cy="151.0" r="4.5" fill="var(--ink)"/><circle cx="166.0" cy="58.0" r="4.5" fill="var(--ink)"/><circle cx="160.0" cy="106.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="178.0" cy="166.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="184.0" cy="37.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="193.0" cy="124.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="172.0" cy="76.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="202.0" cy="82.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="148.0" cy="28.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="190.0" cy="178.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="157.0" cy="130.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="121.0" cy="181.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/></svg><svg viewBox="0 0 230 232" width="230" role="img" aria-label="Figure B"><text x="125" y="14" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">Figure B</text><line x1="34" y1="196" x2="220" y2="196" stroke="var(--ink-2)"/><line x1="34" y1="196" x2="34" y2="20" stroke="var(--ink-2)"/><text x="34" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">0</text><text x="64" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">1</text><text x="26" y="169" text-anchor="end" font-size="10" fill="var(--ink-2)">1</text><text x="94" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">2</text><text x="26" y="139" text-anchor="end" font-size="10" fill="var(--ink-2)">2</text><text x="124" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">3</text><text x="26" y="109" text-anchor="end" font-size="10" fill="var(--ink-2)">3</text><text x="154" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">4</text><text x="26" y="79" text-anchor="end" font-size="10" fill="var(--ink-2)">4</text><text x="184" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">5</text><text x="26" y="49" text-anchor="end" font-size="10" fill="var(--ink-2)">5</text><text x="214" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)">6</text><text x="26" y="19" text-anchor="end" font-size="10" fill="var(--ink-2)">6</text><text x="127" y="226" text-anchor="middle" font-size="11" fill="var(--ink)">x₁</text><text x="8" y="108" font-size="11" fill="var(--ink)">x₂</text><line x1="139.0" y1="20" x2="139.0" y2="196" stroke="var(--pen)" stroke-width="2" stroke-dasharray="6 4"/><circle cx="154.0" cy="151.0" r="11" fill="none" stroke="var(--pen)" stroke-width="2" stroke-dasharray="4 3"/><circle cx="166.0" cy="58.0" r="11" fill="none" stroke="var(--pen)" stroke-width="2" stroke-dasharray="4 3"/><circle cx="121.0" cy="181.0" r="11" fill="none" stroke="var(--pen)" stroke-width="2" stroke-dasharray="4 3"/><circle cx="58.0" cy="160.0" r="4.5" fill="var(--ink)"/><circle cx="70.0" cy="61.0" r="4.5" fill="var(--ink)"/><circle cx="79.0" cy="112.0" r="4.5" fill="var(--ink)"/><circle cx="94.0" cy="40.0" r="4.5" fill="var(--ink)"/><circle cx="106.0" cy="166.0" r="4.5" fill="var(--ink)"/><circle cx="115.0" cy="88.0" r="4.5" fill="var(--ink)"/><circle cx="124.0" cy="130.0" r="4.5" fill="var(--ink)"/><circle cx="64.0" cy="94.0" r="4.5" fill="var(--ink)"/><circle cx="100.0" cy="64.0" r="4.5" fill="var(--ink)"/><circle cx="130.0" cy="46.0" r="4.5" fill="var(--ink)"/><circle cx="154.0" cy="151.0" r="4.5" fill="var(--ink)"/><circle cx="166.0" cy="58.0" r="4.5" fill="var(--ink)"/><circle cx="160.0" cy="106.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="178.0" cy="166.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="184.0" cy="37.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="193.0" cy="124.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="172.0" cy="76.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="202.0" cy="82.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="148.0" cy="28.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="190.0" cy="178.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="157.0" cy="130.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="121.0" cy="181.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/></svg></div>`;
+const FIG_ELBOW=`<svg viewBox="0 0 270 205" width="270" role="img" aria-label="Elbow diagram"><line x1="40" y1="170" x2="255" y2="170" stroke="var(--ink-2)"/><line x1="40" y1="170" x2="40" y2="20" stroke="var(--ink-2)"/><text x="40" y="184" text-anchor="middle" font-size="10" fill="var(--ink-2)">1</text><text x="70" y="184" text-anchor="middle" font-size="10" fill="var(--ink-2)">2</text><text x="100" y="184" text-anchor="middle" font-size="10" fill="var(--ink-2)">3</text><text x="130" y="184" text-anchor="middle" font-size="10" fill="var(--ink-2)">4</text><text x="160" y="184" text-anchor="middle" font-size="10" fill="var(--ink-2)">5</text><text x="190" y="184" text-anchor="middle" font-size="10" fill="var(--ink-2)">6</text><text x="220" y="184" text-anchor="middle" font-size="10" fill="var(--ink-2)">7</text><text x="250" y="184" text-anchor="middle" font-size="10" fill="var(--ink-2)">8</text><text x="34" y="173.0" text-anchor="end" font-size="10" fill="var(--ink-2)">0</text><text x="34" y="103.0" text-anchor="end" font-size="10" fill="var(--ink-2)">50</text><text x="34" y="33.0" text-anchor="end" font-size="10" fill="var(--ink-2)">100</text><polyline fill="none" stroke="var(--pen)" stroke-width="2" points="40,30.0 70,93.0 100,125.2 130,132.2 160,136.4 190,139.2 220,141.3 250,142.7"/><circle cx="40" cy="30.0" r="3.5" fill="var(--pen)"/><circle cx="70" cy="93.0" r="3.5" fill="var(--pen)"/><circle cx="100" cy="125.2" r="3.5" fill="var(--pen)"/><circle cx="130" cy="132.2" r="3.5" fill="var(--pen)"/><circle cx="160" cy="136.4" r="3.5" fill="var(--pen)"/><circle cx="190" cy="139.2" r="3.5" fill="var(--pen)"/><circle cx="220" cy="141.3" r="3.5" fill="var(--pen)"/><circle cx="250" cy="142.7" r="3.5" fill="var(--pen)"/><text x="148" y="200" text-anchor="middle" font-size="11" fill="var(--ink)">k (number of depots)</text><text x="12" y="95" font-size="11" fill="var(--ink)" transform="rotate(-90 12 95)" text-anchor="middle">total distance</text></svg>`;
+
+const FIG_KNN=`<svg viewBox="0 0 230 232" width="230" role="img" aria-label="Nearest neighbors of a new point"><line x1="34" y1="196" x2="220" y2="196" stroke="var(--ink-2)"/><line x1="34" y1="196" x2="34" y2="20" stroke="var(--ink-2)"/><text x="34" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)" >0</text><text x="64" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)" >1</text><text x="26" y="169" text-anchor="end" font-size="10" fill="var(--ink-2)" >1</text><text x="94" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)" >2</text><text x="26" y="139" text-anchor="end" font-size="10" fill="var(--ink-2)" >2</text><text x="124" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)" >3</text><text x="26" y="109" text-anchor="end" font-size="10" fill="var(--ink-2)" >3</text><text x="154" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)" >4</text><text x="26" y="79" text-anchor="end" font-size="10" fill="var(--ink-2)" >4</text><text x="184" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)" >5</text><text x="26" y="49" text-anchor="end" font-size="10" fill="var(--ink-2)" >5</text><text x="214" y="210" text-anchor="middle" font-size="10" fill="var(--ink-2)" >6</text><text x="26" y="19" text-anchor="end" font-size="10" fill="var(--ink-2)" >6</text><text x="127" y="226" text-anchor="middle" font-size="11" fill="var(--ink)" >x₁ (scaled)</text><text x="10" y="108" text-anchor="middle" font-size="11" fill="var(--ink)" >x₂</text><circle cx="124" cy="106" r="18.6" fill="none" stroke="var(--pen)" stroke-dasharray="4 3" stroke-width="1.5"/><circle cx="124" cy="106" r="36.0" fill="none" stroke="var(--pen)" stroke-dasharray="7 4" stroke-width="1.5"/><circle cx="106.0" cy="91.0" r="4.5" fill="var(--ink)"/><circle cx="139.0" cy="130.0" r="4.5" fill="var(--ink)"/><circle cx="109.0" cy="124.0" r="4.5" fill="var(--ink)"/><circle cx="64" cy="166" r="4.5" fill="var(--ink)"/><circle cx="70.0" cy="58.0" r="4.5" fill="var(--ink)"/><circle cx="79.0" cy="136" r="4.5" fill="var(--ink)"/><circle cx="58.0" cy="100.0" r="4.5" fill="var(--ink)"/><circle cx="94.0" cy="37.0" r="4.5" fill="var(--ink)"/><circle cx="136.0" cy="100.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="151.0" cy="85.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="184" cy="46" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="190.0" cy="136" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="172.0" cy="52.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="199.0" cy="88.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="178.0" cy="166.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="142.0" cy="31.0" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><polygon points="124.0,99.0 122.2,103.6 117.3,103.8 121.1,106.9 119.9,111.7 124.0,109.0 128.1,111.7 126.9,106.9 130.7,103.8 125.8,103.6" fill="var(--pen)"/></svg>`;
+const FIG_BOX=`<svg viewBox="0 0 300 110" width="300" role="img" aria-label="Box plot"><line x1="30.0" y1="70" x2="290.0" y2="70" stroke="var(--ink-2)"/><line x1="30.0" y1="70" x2="30.0" y2="74" stroke="var(--ink-2)"/><text x="30.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >0</text><line x1="56.0" y1="70" x2="56.0" y2="74" stroke="var(--ink-2)"/><text x="56.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >10</text><line x1="82.0" y1="70" x2="82.0" y2="74" stroke="var(--ink-2)"/><text x="82.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >20</text><line x1="108.0" y1="70" x2="108.0" y2="74" stroke="var(--ink-2)"/><text x="108.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >30</text><line x1="134.0" y1="70" x2="134.0" y2="74" stroke="var(--ink-2)"/><text x="134.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >40</text><line x1="160.0" y1="70" x2="160.0" y2="74" stroke="var(--ink-2)"/><text x="160.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >50</text><line x1="186.0" y1="70" x2="186.0" y2="74" stroke="var(--ink-2)"/><text x="186.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >60</text><line x1="212.0" y1="70" x2="212.0" y2="74" stroke="var(--ink-2)"/><text x="212.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >70</text><line x1="238.0" y1="70" x2="238.0" y2="74" stroke="var(--ink-2)"/><text x="238.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >80</text><line x1="264.0" y1="70" x2="264.0" y2="74" stroke="var(--ink-2)"/><text x="264.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >90</text><line x1="290.0" y1="70" x2="290.0" y2="74" stroke="var(--ink-2)"/><text x="290.0" y="86" text-anchor="middle" font-size="10" fill="var(--ink-2)" >100</text><rect x="82.0" y="25" width="31.200000000000003" height="30" fill="var(--card)" stroke="var(--pen)" stroke-width="2"/><line x1="97.60000000000001" y1="25" x2="97.60000000000001" y2="55" stroke="var(--pen)" stroke-width="2"/><line x1="40.4" y1="40" x2="82.0" y2="40" stroke="var(--pen)" stroke-width="1.5"/><line x1="113.2" y1="40" x2="154.8" y2="40" stroke="var(--pen)" stroke-width="1.5"/><line x1="40.4" y1="32" x2="40.4" y2="48" stroke="var(--pen)" stroke-width="1.5"/><line x1="154.8" y1="32" x2="154.8" y2="48" stroke="var(--pen)" stroke-width="1.5"/><circle cx="173.0" cy="40" r="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/><circle cx="188.6" cy="40" r="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/><circle cx="264.0" cy="40" r="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="82.0" y="20" text-anchor="middle" font-size="9" fill="var(--ink-2)" >Q1 = 20</text><text x="117.2" y="20" text-anchor="middle" font-size="9" fill="var(--ink-2)" >Q3 = 32</text><text x="97.60000000000001" y="66" text-anchor="middle" font-size="9" fill="var(--ink-2)" >median 26</text><text x="175" y="102" text-anchor="middle" font-size="10" fill="var(--ink)" >Daily pharmacy refrigerator alarms (minutes above limit)</text></svg>`;
+const FIG_TS=`<svg viewBox="0 0 290 214" width="290" role="img" aria-label="Monthly sales over four years"><line x1="40" y1="180" x2="280" y2="180" stroke="var(--ink-2)"/><line x1="40" y1="180" x2="40" y2="20" stroke="var(--ink-2)"/><text x="40" y="194" text-anchor="start" font-size="9" fill="var(--ink-2)" >Yr 1</text><text x="100" y="194" text-anchor="start" font-size="9" fill="var(--ink-2)" >Yr 2</text><text x="160" y="194" text-anchor="start" font-size="9" fill="var(--ink-2)" >Yr 3</text><text x="220" y="194" text-anchor="start" font-size="9" fill="var(--ink-2)" >Yr 4</text><text x="280" y="194" text-anchor="start" font-size="9" fill="var(--ink-2)" ></text><polyline fill="none" stroke="var(--pen)" stroke-width="2" points="40.0,151.6 45.0,145.7 50.0,136.8 55.0,126.7 60.0,117.7 65.0,111.8 70.0,110.6 75.0,114.1 80.0,121.3 85.0,129.9 90.0,137.0 95.0,140.3 100.0,137.9 105.0,129.9 110.0,117.7 115.0,103.9 120.0,91.9 125.0,84.6 130.0,83.7 135.0,89.4 140.0,100.0 145.0,112.2 150.0,122.3 155.0,127.0 160.0,124.3 165.0,114.1 170.0,98.5 175.0,81.1 180.0,66.1 185.0,57.3 190.0,56.9 195.0,64.8 200.0,78.7 205.0,94.5 210.0,107.6 215.0,113.8 220.0,110.6 225.0,98.3 230.0,79.3 235.0,58.3 240.0,40.3 245.0,30.0 250.0,30.0 255.0,40.1 260.0,57.3 265.0,76.8 270.0,92.9 275.0,100.5"/><text x="160" y="208" text-anchor="middle" font-size="10" fill="var(--ink)" >Month</text><text x="14" y="100" font-size="10" fill="var(--ink)" transform="rotate(-90 14 100)" text-anchor="middle">monthly sales</text></svg>`;
+const FIG_RES=`<div class="figs"><svg viewBox="0 0 200 160" width="200" role="img" aria-label="Residual plot"><line x1="30" y1="80" x2="190" y2="80" stroke="var(--ink-2)" stroke-dasharray="3 3"/><line x1="30" y1="140" x2="190" y2="140" stroke="var(--ink-2)"/><line x1="30" y1="140" x2="30" y2="15" stroke="var(--ink-2)"/><circle cx="32.0" cy="43.0" r="2.8" fill="var(--ink)"/><circle cx="36.0" cy="46.8" r="2.8" fill="var(--ink)"/><circle cx="39.9" cy="55.7" r="2.8" fill="var(--ink)"/><circle cx="43.9" cy="57.4" r="2.8" fill="var(--ink)"/><circle cx="47.9" cy="59.7" r="2.8" fill="var(--ink)"/><circle cx="51.9" cy="66.1" r="2.8" fill="var(--ink)"/><circle cx="55.8" cy="65.5" r="2.8" fill="var(--ink)"/><circle cx="59.8" cy="79.1" r="2.8" fill="var(--ink)"/><circle cx="63.8" cy="78.8" r="2.8" fill="var(--ink)"/><circle cx="67.8" cy="85.0" r="2.8" fill="var(--ink)"/><circle cx="71.7" cy="88.2" r="2.8" fill="var(--ink)"/><circle cx="75.7" cy="88.4" r="2.8" fill="var(--ink)"/><circle cx="79.7" cy="89.1" r="2.8" fill="var(--ink)"/><circle cx="83.7" cy="90.4" r="2.8" fill="var(--ink)"/><circle cx="87.6" cy="91.7" r="2.8" fill="var(--ink)"/><circle cx="91.6" cy="86.3" r="2.8" fill="var(--ink)"/><circle cx="95.6" cy="92.9" r="2.8" fill="var(--ink)"/><circle cx="99.6" cy="103.6" r="2.8" fill="var(--ink)"/><circle cx="103.5" cy="97.0" r="2.8" fill="var(--ink)"/><circle cx="107.5" cy="100.6" r="2.8" fill="var(--ink)"/><circle cx="111.5" cy="100.2" r="2.8" fill="var(--ink)"/><circle cx="115.5" cy="92.6" r="2.8" fill="var(--ink)"/><circle cx="119.4" cy="98.1" r="2.8" fill="var(--ink)"/><circle cx="123.4" cy="104.2" r="2.8" fill="var(--ink)"/><circle cx="127.4" cy="94.0" r="2.8" fill="var(--ink)"/><circle cx="131.4" cy="94.9" r="2.8" fill="var(--ink)"/><circle cx="135.3" cy="96.7" r="2.8" fill="var(--ink)"/><circle cx="139.3" cy="93.7" r="2.8" fill="var(--ink)"/><circle cx="143.3" cy="90.2" r="2.8" fill="var(--ink)"/><circle cx="147.3" cy="85.2" r="2.8" fill="var(--ink)"/><circle cx="151.2" cy="83.9" r="2.8" fill="var(--ink)"/><circle cx="155.2" cy="78.7" r="2.8" fill="var(--ink)"/><circle cx="159.2" cy="68.2" r="2.8" fill="var(--ink)"/><circle cx="163.2" cy="75.0" r="2.8" fill="var(--ink)"/><circle cx="167.1" cy="71.0" r="2.8" fill="var(--ink)"/><circle cx="171.1" cy="64.4" r="2.8" fill="var(--ink)"/><circle cx="175.1" cy="54.4" r="2.8" fill="var(--ink)"/><circle cx="179.1" cy="56.7" r="2.8" fill="var(--ink)"/><circle cx="183.0" cy="42.9" r="2.8" fill="var(--ink)"/><circle cx="187.0" cy="48.4" r="2.8" fill="var(--ink)"/><text x="110" y="154" text-anchor="middle" font-size="10" fill="var(--ink)" >x (predictor)</text><text x="14" y="78" font-size="10" fill="var(--ink)" transform="rotate(-90 14 78)" text-anchor="middle">residual</text><text x="110" y="12" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Plot 1</text></svg><svg viewBox="0 0 200 160" width="200" role="img" aria-label="Residual plot"><line x1="30" y1="80" x2="190" y2="80" stroke="var(--ink-2)" stroke-dasharray="3 3"/><line x1="30" y1="140" x2="190" y2="140" stroke="var(--ink-2)"/><line x1="30" y1="140" x2="30" y2="15" stroke="var(--ink-2)"/><circle cx="32.0" cy="80.8" r="2.8" fill="var(--ink)"/><circle cx="36.0" cy="77.9" r="2.8" fill="var(--ink)"/><circle cx="39.9" cy="81.1" r="2.8" fill="var(--ink)"/><circle cx="43.9" cy="81.9" r="2.8" fill="var(--ink)"/><circle cx="47.9" cy="86.6" r="2.8" fill="var(--ink)"/><circle cx="51.9" cy="81.7" r="2.8" fill="var(--ink)"/><circle cx="55.8" cy="69.8" r="2.8" fill="var(--ink)"/><circle cx="59.8" cy="75.7" r="2.8" fill="var(--ink)"/><circle cx="63.8" cy="68.4" r="2.8" fill="var(--ink)"/><circle cx="67.8" cy="77.0" r="2.8" fill="var(--ink)"/><circle cx="71.7" cy="74.8" r="2.8" fill="var(--ink)"/><circle cx="75.7" cy="77.4" r="2.8" fill="var(--ink)"/><circle cx="79.7" cy="105.5" r="2.8" fill="var(--ink)"/><circle cx="83.7" cy="66.0" r="2.8" fill="var(--ink)"/><circle cx="87.6" cy="71.2" r="2.8" fill="var(--ink)"/><circle cx="91.6" cy="70.8" r="2.8" fill="var(--ink)"/><circle cx="95.6" cy="112.8" r="2.8" fill="var(--ink)"/><circle cx="99.6" cy="115.6" r="2.8" fill="var(--ink)"/><circle cx="103.5" cy="99.1" r="2.8" fill="var(--ink)"/><circle cx="107.5" cy="90.5" r="2.8" fill="var(--ink)"/><circle cx="111.5" cy="72.8" r="2.8" fill="var(--ink)"/><circle cx="115.5" cy="81.1" r="2.8" fill="var(--ink)"/><circle cx="119.4" cy="66.7" r="2.8" fill="var(--ink)"/><circle cx="123.4" cy="97.1" r="2.8" fill="var(--ink)"/><circle cx="127.4" cy="71.5" r="2.8" fill="var(--ink)"/><circle cx="131.4" cy="68.7" r="2.8" fill="var(--ink)"/><circle cx="135.3" cy="99.6" r="2.8" fill="var(--ink)"/><circle cx="139.3" cy="27.3" r="2.8" fill="var(--ink)"/><circle cx="143.3" cy="62.3" r="2.8" fill="var(--ink)"/><circle cx="147.3" cy="40.8" r="2.8" fill="var(--ink)"/><circle cx="151.2" cy="100.9" r="2.8" fill="var(--ink)"/><circle cx="155.2" cy="105.7" r="2.8" fill="var(--ink)"/><circle cx="159.2" cy="92.3" r="2.8" fill="var(--ink)"/><circle cx="163.2" cy="83.9" r="2.8" fill="var(--ink)"/><circle cx="167.1" cy="56.1" r="2.8" fill="var(--ink)"/><circle cx="171.1" cy="70.3" r="2.8" fill="var(--ink)"/><circle cx="175.1" cy="97.9" r="2.8" fill="var(--ink)"/><circle cx="179.1" cy="119.2" r="2.8" fill="var(--ink)"/><circle cx="183.0" cy="101.9" r="2.8" fill="var(--ink)"/><circle cx="187.0" cy="27.5" r="2.8" fill="var(--ink)"/><text x="110" y="154" text-anchor="middle" font-size="10" fill="var(--ink)" >fitted value</text><text x="14" y="78" font-size="10" fill="var(--ink)" transform="rotate(-90 14 78)" text-anchor="middle">residual</text><text x="110" y="12" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="600">Plot 2</text></svg></div>`;
+const FIG_PCA=`<svg viewBox="0 0 230 220" width="230" role="img" aria-label="PCA directions"><line x1="20" y1="200" x2="220" y2="200" stroke="var(--ink-2)"/><line x1="20" y1="200" x2="20" y2="10" stroke="var(--ink-2)"/><circle cx="107.3" cy="84.8" r="3.6" fill="var(--ink)"/><circle cx="68.8" cy="127.5" r="3.6" fill="var(--ink)"/><circle cx="118.2" cy="123.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="187.7" cy="22.2" r="3.6" fill="var(--ink)"/><circle cx="106.1" cy="94.5" r="3.6" fill="var(--ink)"/><circle cx="171.2" cy="66.9" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="157.5" cy="95.9" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="115.3" cy="129.4" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="85.8" cy="176.3" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="63.8" cy="177.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="122.1" cy="120.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="139.9" cy="119.4" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="108.6" cy="99.9" r="3.6" fill="var(--ink)"/><circle cx="162.9" cy="88.4" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="126.8" cy="143.5" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="124.1" cy="149.0" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="48.6" cy="146.0" r="3.6" fill="var(--ink)"/><circle cx="20.0" cy="179.4" r="3.6" fill="var(--ink)"/><circle cx="141.8" cy="100.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="127.6" cy="76.2" r="3.6" fill="var(--ink)"/><circle cx="169.6" cy="71.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="107.7" cy="139.6" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="87.6" cy="150.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="73.9" cy="121.2" r="3.6" fill="var(--ink)"/><circle cx="61.1" cy="194.2" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="105.5" cy="166.0" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="221.1" cy="55.5" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="119.3" cy="126.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="208.0" cy="61.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="174.7" cy="74.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="125.6" cy="122.9" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="160.9" cy="95.2" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="107.7" cy="99.0" r="3.6" fill="var(--ink)"/><circle cx="218.7" cy="57.9" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="166.4" cy="30.6" r="3.6" fill="var(--ink)"/><circle cx="92.1" cy="115.4" r="3.6" fill="var(--ink)"/><circle cx="81.9" cy="103.8" r="3.6" fill="var(--ink)"/><circle cx="136.3" cy="104.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="118.9" cy="122.0" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="126.4" cy="125.4" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="223.3" cy="45.3" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="-15.5" cy="255.1" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="104.9" cy="101.5" r="3.6" fill="var(--ink)"/><circle cx="119.4" cy="120.6" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="119.0" cy="77.7" r="3.6" fill="var(--ink)"/><circle cx="111.6" cy="132.1" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--pen)"/></marker></defs><line x1="120" y1="105" x2="188" y2="37" stroke="var(--pen)" stroke-width="2.5" marker-end="url(#ah)"/><text x="191.88225099390854" y="33.117749006091444" text-anchor="start" font-size="12" fill="var(--pen)" font-weight="700">D1</text><line x1="120" y1="105" x2="90" y2="75" stroke="var(--pen)" stroke-width="2.5" marker-end="url(#ah)"/><text x="86.301515190165" y="71.301515190165" text-anchor="end" font-size="12" fill="var(--pen)" font-weight="700">D2</text><text x="120" y="214" text-anchor="middle" font-size="10" fill="var(--ink)" >factor 1 (scaled)</text><text x="10" y="105" font-size="10" fill="var(--ink)" transform="rotate(-90 10 105)" text-anchor="middle">factor 2 (scaled)</text></svg>`;
+const FIG_QQ=`<svg viewBox="0 0 220 204" width="220" role="img" aria-label="Q-Q plot"><line x1="30" y1="180" x2="210" y2="180" stroke="var(--ink-2)"/><line x1="30" y1="180" x2="30" y2="15" stroke="var(--ink-2)"/><line x1="36.0" y1="167.2" x2="204.0" y2="32.8" stroke="var(--pen)" stroke-width="1.5" stroke-dasharray="5 4"/><circle cx="41.6" cy="128.7" r="3" fill="var(--ink)"/><circle cx="57.7" cy="126.9" r="3" fill="var(--ink)"/><circle cx="66.3" cy="125.6" r="3" fill="var(--ink)"/><circle cx="72.5" cy="124.5" r="3" fill="var(--ink)"/><circle cx="77.5" cy="123.6" r="3" fill="var(--ink)"/><circle cx="81.8" cy="122.6" r="3" fill="var(--ink)"/><circle cx="85.6" cy="121.7" r="3" fill="var(--ink)"/><circle cx="88.9" cy="120.8" r="3" fill="var(--ink)"/><circle cx="92.1" cy="120.0" r="3" fill="var(--ink)"/><circle cx="95.0" cy="119.1" r="3" fill="var(--ink)"/><circle cx="97.8" cy="118.2" r="3" fill="var(--ink)"/><circle cx="100.4" cy="117.3" r="3" fill="var(--ink)"/><circle cx="102.9" cy="116.4" r="3" fill="var(--ink)"/><circle cx="105.3" cy="115.5" r="3" fill="var(--ink)"/><circle cx="107.7" cy="114.5" r="3" fill="var(--ink)"/><circle cx="110.0" cy="113.5" r="3" fill="var(--ink)"/><circle cx="112.3" cy="112.5" r="3" fill="var(--ink)"/><circle cx="114.5" cy="111.4" r="3" fill="var(--ink)"/><circle cx="116.7" cy="110.3" r="3" fill="var(--ink)"/><circle cx="118.9" cy="109.2" r="3" fill="var(--ink)"/><circle cx="121.1" cy="108.0" r="3" fill="var(--ink)"/><circle cx="123.3" cy="106.7" r="3" fill="var(--ink)"/><circle cx="125.5" cy="105.4" r="3" fill="var(--ink)"/><circle cx="127.7" cy="103.9" r="3" fill="var(--ink)"/><circle cx="130.0" cy="102.4" r="3" fill="var(--ink)"/><circle cx="132.3" cy="100.8" r="3" fill="var(--ink)"/><circle cx="134.7" cy="99.0" r="3" fill="var(--ink)"/><circle cx="137.1" cy="97.1" r="3" fill="var(--ink)"/><circle cx="139.6" cy="95.0" r="3" fill="var(--ink)"/><circle cx="142.2" cy="92.6" r="3" fill="var(--ink)"/><circle cx="145.0" cy="90.0" r="3" fill="var(--ink)"/><circle cx="147.9" cy="87.1" r="3" fill="var(--ink)"/><circle cx="151.1" cy="83.7" r="3" fill="var(--ink)"/><circle cx="154.4" cy="79.7" r="3" fill="var(--ink)"/><circle cx="158.2" cy="75.0" r="3" fill="var(--ink)"/><circle cx="162.5" cy="69.1" r="3" fill="var(--ink)"/><circle cx="167.5" cy="61.4" r="3" fill="var(--ink)"/><circle cx="173.7" cy="50.5" r="3" fill="var(--ink)"/><circle cx="182.3" cy="32.6" r="3" fill="var(--ink)"/><circle cx="198.4" cy="18.0" r="3" fill="var(--ink)"/><text x="120" y="196" text-anchor="middle" font-size="10" fill="var(--ink)" >theoretical normal quantiles</text><text x="14" y="98" font-size="10" fill="var(--ink)" transform="rotate(-90 14 98)" text-anchor="middle">sample quantiles</text></svg>`;
+
+// ===== Midterm practice: scenario-based, multi-part questions in the style of the sample quiz =====
+// SCN(id, title, html) defines a shared scenario.
+// X(scenario, part, module, question, options, flags). Options: ['✓' or '✗', text, why, misconception].
+// flags: multi = select all that apply; fixed = keep the listed order (method lists, matching).
+const SCN={}; let MID_SET=1;
+function SCN_(id,title,html){ SCN[id]={title,html,set:MID_SET}; }
+function X(sc,part,m,q,opts,flags){ flags=flags||{};
+  QS.push({m,sc,part,q,mid:true,set:SCN[sc].set,multi:!!flags.multi,fixed:!!flags.fixed,
+    opts:opts.map(o=>[o[1],o[2],o[3]||'']), ok:opts.map((o,i)=>o[0]==='✓'?i:-1).filter(i=>i>=0)}); }
+const METHODS=['ARIMA','CUSUM','Cross-validation','Exponential smoothing','GARCH','k-means clustering','k-nearest-neighbor classification','Linear regression','Logistic regression','Principal component analysis','Support vector machine'];
+const MWHY={'ARIMA':'ARIMA forecasts a series’ future values from its own past values and errors.',
+ 'CUSUM':'CUSUM detects when the mean of a process has changed.',
+ 'Cross-validation':'Cross-validation evaluates and compares models; it isn’t a model that answers the question.',
+ 'Exponential smoothing':'Exponential smoothing smooths a time series and forecasts its level, trend, and seasonality.',
+ 'GARCH':'GARCH estimates and forecasts variance (how much values swing), not the value itself.',
+ 'k-means clustering':'k-means finds groups in unlabeled data; it doesn’t predict a response.',
+ 'k-nearest-neighbor classification':'KNN assigns a class from a point’s neighbors.',
+ 'Linear regression':'Linear regression predicts a continuous amount; its output isn’t limited to the 0–1 range a probability needs.',
+ 'Logistic regression':'Logistic regression predicts the probability of an outcome from a set of factors.',
+ 'Principal component analysis':'PCA transforms the predictors; it doesn’t make predictions on its own.',
+ 'Support vector machine':'An SVM assigns a class; it doesn’t directly give a probability.'};
+function mlist(correct,why,pool){ pool=pool||METHODS; correct=[].concat(correct);
+  return pool.map(n=>correct.includes(n)?['✓',n,why[n]||why]:['✗',n,MWHY[n],'Choosing a tool built for a different kind of question.']); }
+
+// ---------------------------------------------------------------- Scenario 1
+SCN_(1,'Two classifiers, same data',`Figure A shows a linear classifier (dashed line) separating black and white points using two predictors, x₁ and x₂. Figure B shows a 1-nearest-neighbor classifier on the same data: its boundary follows the same line, plus a small loop around each of the three points that Figure A gets wrong, so it classifies every training point correctly.${FIG1}`);
+X(1,'a','m2',`In Figure A, which predictor is <b>not</b> important for separating the black and white points?`,[
+ ['✓','x₂','The boundary is a vertical line at x₁ = 3.5, so only whether x₁ is above or below 3.5 matters. Changing x₂ never moves a point across the line.'],
+ ['✗','x₁','The line is defined entirely by x₁ = 3.5.','Mixing up which axis the line is parallel to.'],
+ ['✗','Neither; both are needed','A vertical line uses only x₁. That’s equivalent to a coefficient of 0 on x₂.','Assuming every plotted predictor is used.'],
+ ['✗','Both are unimportant','The classifier clearly depends on x₁.','Overgeneralizing.']
+]);
+X(1,'b','m3',`Figure A misclassifies 3 training points; Figure B misclassifies 0. Which model do you think is better, and why?`,[
+ ['✓','Figure A, because Figure B’s small loops around single points are fitting noise','Each loop exists to capture one point. That’s classic overfitting: the loops won’t generalize to new data.'],
+ ['✗','Figure B, because it misclassifies 0 points instead of 3','True on the training data, but the improvement comes from overfitting, so it doesn’t make B better.','Judging a model by its training accuracy.'],
+ ['✗','Figure B, because it uses both predictors','Using more predictors isn’t a virtue in itself; here x₂ only helps fit three noisy points.','Equating more inputs with a better model.'],
+ ['✗','Figure A, because it is a simpler model','Simpler is often a reasonable tiebreaker, but the decisive reason here is that B overfits.','Giving a generic reason instead of the specific one.']
+]);
+X(1,'c','m3',`A colleague reports that Figure B’s model will be 100% accurate on next month’s data. What’s the best response?`,[
+ ['✓','Training accuracy overstates it; estimate accuracy on validation or test data instead','Training data contains random patterns that the model fit. Only held-out data shows how much of the fit is real.'],
+ ['✗','Agree, since a model that fits all past data will fit future data','The loops around single points won’t match next month’s noise.','Assuming fit equals predictive power.'],
+ ['✗','Report 97%, since 1-NN always loses a little accuracy','There’s no fixed discount; you have to measure on held-out data.','Inventing a rule of thumb.'],
+ ['✗','Re-run it with k = 1 on more data to confirm 100%','k = 1 will always score 100% on its own training data.','Not seeing why training accuracy is meaningless for 1-NN.']
+]);
+
+// ---------------------------------------------------------------- Scenario 2
+SCN_(2,'Hospital readmissions',`A hospital wants to reduce 30-day readmissions. It has records of past discharged patients (age, diagnosis, length of stay, number of prior visits, and so on), each labeled with whether the patient was readmitted within 30 days.`);
+X(2,'a','mix',`Which model is most appropriate to predict the <b>probability</b> that a newly discharged patient will be readmitted?`,
+ mlist('Logistic regression',{'Logistic regression':'Logistic regression is the method for estimating the probability of an outcome from a set of factors.'}),{fixed:1});
+X(2,'b','m2',`Select <b>all</b> of the following models that could classify patients as “will be readmitted” or “won’t be readmitted.”`,[
+ ['✗','ARIMA','ARIMA forecasts a time series; it doesn’t classify patients by their attributes.','Treating any predictive model as a classifier.'],
+ ['✗','CUSUM','CUSUM detects a change in a process over time.','Mixing up change detection and classification.'],
+ ['✓','k-nearest-neighbor classification','KNN classifies a patient by the labels of the most similar past patients.'],
+ ['✓','Support vector machine','An SVM finds a boundary between the two labeled classes.'],
+ ['✗','k-means clustering','k-means ignores the labels; it’s unsupervised.','Confusing clustering with classification.']
+],{multi:1,fixed:1});
+X(2,'c','m2',`The hospital calls every patient whose predicted probability is 50% or more. A follow-up call is cheap; a readmission is very costly. Nurses can make at most 40 calls a week. Select <b>all</b> of the arguments below that use analytics reasoning correctly.`,[
+ ['✓','Lower the threshold: a missed readmission costs far more than an extra call, so flag more borderline patients','When one error is much more costly, move the cutoff so that error happens less often.'],
+ ['✓','Pick the threshold that keeps the weekly list within the 40 calls nurses can make','A real capacity limit is a legitimate constraint on the decision, which makes this a prescriptive choice.'],
+ ['✗','Keep 50%, because it’s always the right cutoff for a probability','50% is right only when both errors cost the same.','Treating 50% as universally correct.'],
+ ['✗','Lower the threshold, because a lower threshold makes the model more accurate','Moving the threshold trades one kind of error for the other; it doesn’t improve accuracy.','Confusing a cost trade-off with accuracy.']
+],{multi:1});
+X(2,'d','mix',`The hospital also tracks the average emergency-room wait each day. It wants to know as soon as the average wait has <b>increased</b>. Which model is most appropriate?`,
+ mlist('CUSUM',{'CUSUM':'CUSUM is the method for detecting that a process’s mean has changed, as quickly as the evidence allows.'}),{fixed:1});
+X(2,'e','mix',`Finally, the hospital wants to forecast how much its daily admissions will <b>vary</b> from day to day next month, to plan backup staffing. Which model is most appropriate?`,
+ mlist('GARCH',{'GARCH':'GARCH estimates and forecasts variance, which is exactly “how much it will swing.”'}),{fixed:1});
+
+// ---------------------------------------------------------------- Scenario 3
+SCN_(3,'Delivery depots',`A delivery company clusters 2,400 customer addresses (latitude and longitude) with k-means to choose locations for new depots, one at each cluster center. The elbow diagram is below. Each delivery van can only cover addresses within about 15 miles of its depot; with k = 3, several clusters have customers more than 25 miles from their center, while with k = 4 nearly every customer is within 15 miles.${FIG_ELBOW}`);
+X(3,'a','m4',`The elbow is at k = 3, but the company chose k = 4. Is that reasonable?`,[
+ ['✓','Yes; the van range is a real constraint, and the elbow is only a guide','The elbow shows where extra clusters stop paying off in distance. A hard operational limit can justify a larger k.'],
+ ['✗','No; the elbow always gives the correct number of clusters','The elbow is a heuristic, not a rule, and it doesn’t know about van range.','Treating a heuristic as a law.'],
+ ['✗','No; they should choose k = 8, where total distance is lowest','Total distance always falls as k grows, so the lowest value isn’t a reason to choose it.','Minimizing distance blindly.'],
+ ['✗','Yes, but only because larger k always gives a better clustering','More clusters isn’t automatically better; the reason is the range constraint.','Right answer, wrong reason.']
+]);
+X(3,'b','m4',`The company then learns that weekday deliveries are mostly to businesses downtown, while weekend deliveries are mostly to homes in the suburbs. It may run separate weekday and weekend van fleets. How should it change its analysis?`,[
+ ['✓','Cluster weekday and weekend deliveries separately, and place each fleet’s depots from its own solution','The two fleets serve different sets of points, so each needs its own clustering.'],
+ ['✗','Increase k until both patterns show up in a single clustering','One combined clustering mixes two different demand patterns.','Solving a data-definition problem with a parameter.'],
+ ['✗','Add day of week as a third clustering attribute alongside latitude and longitude','This mixes a category with distances and still produces one set of depots.','Forcing everything into one model.'],
+ ['✗','Keep the k = 4 solution, since addresses don’t change by day','The relevant set of addresses does change by day.','Ignoring the new information.']
+]);
+X(3,'c','m4',`In the final solution, one rural customer is 40 miles from the nearest depot. What should the company do first?`,[
+ ['✓','Find out who the customer is and whether serving them that way matters','Understand a far-away point before deciding whether to delete it, give it special handling, or change k.'],
+ ['✗','Delete the point and rerun, since it distorts the centers','That may be the right step, but only after you understand the point.','Treating outliers as disposable.'],
+ ['✗','Increase k until that customer gets a depot of its own','A whole depot for one customer usually doesn’t make sense.','Using a parameter to fix a judgment call.'],
+ ['✗','Nothing; k-means solutions are optimal, so this is acceptable','k-means is a heuristic, and the business question still needs an answer.','Overtrusting the algorithm.']
+]);
+X(3,'d','m4',`An analyst suggests also clustering on each customer’s average package volume (measured in cubic inches, typically 500–20,000), along with latitude and longitude in degrees, without scaling. What’s the most likely result?`,[
+ ['✓','Volume dominates the distances, so clusters form by package size rather than location','Volume differences are thousands of units; coordinate differences are fractions of a degree. Scale first.'],
+ ['✗','Location still dominates, since it uses two attributes','Two tiny numbers can’t outweigh one huge one.','Counting attributes instead of comparing their scales.'],
+ ['✗','The clusters stay the same, since k-means is unit-free','Distances depend on units.','Assuming scale doesn’t matter.'],
+ ['✗','k-means can’t run with three attributes','It works in any number of dimensions.','Inventing a limit.']
+]);
+
+// ---------------------------------------------------------------- Scenario 4
+SCN_(4,'Call-center handle times',`Recall triple exponential smoothing (Holt-Winters, multiplicative seasonality):
+<div class="eq">Sₜ = α·xₜ / C<sub>t−L</sub> + (1 − α)(Sₜ₋₁ + Tₜ₋₁)<br>Tₜ = β(Sₜ − Sₜ₋₁) + (1 − β)Tₜ₋₁<br>Cₜ = γ·xₜ / Sₜ + (1 − γ)C<sub>t−L</sub></div>
+A call center records every call: the hour of day it started (0–23), the day of the week, and its handle time in minutes. It averages the handle times for each day, giving one value per day for the last two years, and fits triple exponential smoothing to see whether handle time has patterns by <b>day of the week</b>.
+<table class="dtab"><tr><th>Date</th><th>Day of week</th><th>Calls</th><th>Avg handle time (min)</th></tr><tr><td>Mar 3</td><td>Mon</td><td>1,240</td><td>11.8</td></tr><tr><td>Mar 4</td><td>Tue</td><td>1,105</td><td>9.6</td></tr><tr><td>Mar 5</td><td>Wed</td><td>1,090</td><td>9.4</td></tr><tr><td colspan="4">…</td></tr></table>`);
+const MATCH4=[['24','24 is the number of hours in a day, a cycle you would use with hourly data, not daily averages.'],['7','7 is the number of days in a week, the cycle being studied.'],['365','365 would be a yearly cycle.'],['Hour of day','Hour of day was averaged away when the daily values were made.'],['Day of week','Day of week defines which part of the cycle each value is in; it’s not the value being smoothed.'],['Average handle time for the day','This is the observed value of the response each period.']];
+X(4,'a','m7',`Match the term <b>xₜ</b> to its meaning.`,MATCH4.map(([t,w])=>[t==='Average handle time for the day'?'✓':'✗',t,w,'Mixing up the observed value, the cycle, and the cycle length.']),{fixed:1});
+X(4,'b','m7',`Match the term <b>L</b> to its meaning.`,MATCH4.map(([t,w])=>[t==='7'?'✓':'✗',t,w,'Mixing up the cycle length with other numbers in the data.']),{fixed:1});
+X(4,'c','m7',`The fitted seasonal factors C are close to 1 for every day except Monday, where they’re about 1.25. What can be concluded?`,[
+ ['✓','Monday calls tend to take longer, about 25% above the baseline','A multiplicative factor of 1.25 means that day’s value runs about 25% above the baseline.'],
+ ['✗','Monday calls take longer because customers save up complicated problems over the weekend','That may be true, but the model only observes the pattern. It says nothing about why.','Reading a cause into a descriptive result.'],
+ ['✗','Monday calls tend to be about 25% shorter','A factor above 1 means above the baseline.','Flipping the meaning of C.'],
+ ['✗','There are 25% more calls on Mondays','The model is of handle time, not call volume.','Mixing up the response.']
+]);
+X(4,'d','m7',`The trend values T are slightly negative throughout. What can be concluded?`,[
+ ['✓','Average handle times have been slowly getting shorter over time','A negative trend means the baseline is drifting down.'],
+ ['✗','Average handle times have been slowly getting longer over time','That would be a positive trend.','Flipping the sign.'],
+ ['✗','Handle times are shorter late in each week','That’s a seasonal pattern, which C captures, not T.','Confusing trend with seasonality.'],
+ ['✗','The model is fitting poorly, since T should be 0','A trend near 0 is common but not required.','Expecting no trend.']
+]);
+X(4,'e','m7',`The fitted α is about 0.1. What does that say about the daily averages?`,[
+ ['✓','They contain a lot of day-to-day randomness, so the baseline should change slowly','A small α trusts the existing baseline more than each new, noisy reading.'],
+ ['✗','The baseline shifts a lot from day to day, so recent values should count most','That situation gives α near 1.','Reversing α’s meaning.'],
+ ['✗','The weekly pattern is weak','Seasonality is reflected in γ and C, not α.','Confusing parameters.'],
+ ['✗','Only 10% of the data was used to fit the model','α is a weight, not a sample share.','Misreading α.']
+]);
+X(4,'f','m7',`At the end of Sunday, S = 10.0, T = 0.1, and Monday’s seasonal factor is 1.25. What is the forecast for Monday’s average handle time?`,[
+ ['✓','About 12.6 minutes','Forecast = (S + T) × C = (10.0 + 0.1) × 1.25 = 12.625.'],
+ ['✗','12.5 minutes','That’s 10.0 × 1.25, which forgets the trend.','Dropping T.'],
+ ['✗','10.1 minutes','That forgets the Monday factor.','Dropping seasonality.'],
+ ['✗','11.35 minutes','That adds 1.25 as if seasonality were additive.','Using the wrong seasonality type.']
+]);
+
+// ---------------------------------------------------------------- Scenario 5
+SCN_(5,'Pump vibration',`A water utility monitors a pump’s vibration level every hour. Its normal mean is μ = 50. The utility runs an increase CUSUM:
+<div class="eq">Sₜ = max{0, Sₜ₋₁ + (xₜ − μ − C)}, alarm when Sₜ ≥ T</div>with C = 2 and T = 10, starting from S₀ = 0.`);
+X(5,'a','m6',`The next five readings are 53, 55, 51, 56, 58. At which reading does the alarm first go off?`,[
+ ['✓','The 5th reading','S goes 1, 4, 3, 7, then 13. Only the 5th reading pushes S past T = 10.'],
+ ['✗','The 2nd reading','S is only 4 after the 2nd reading.','Comparing a single reading to T.'],
+ ['✗','The 4th reading','S = 7 there, still below 10.','Arithmetic slip, or forgetting to subtract C.'],
+ ['✗','It never goes off','13 ≥ 10, so it does.','Arithmetic slip.']
+]);
+X(5,'b','m6',`A false alarm costs a $500 inspection. A missed failure costs about $2 million in damage. How should the utility adjust its settings?`,[
+ ['✓','Lower T (and possibly C) to catch changes sooner, accepting more inspections','When missing a change is the costly error, ask for less evidence before alarming.'],
+ ['✗','Raise T to avoid wasting money on inspections','That protects the cheap error at the expense of the expensive one.','Getting the cost trade-off backward.'],
+ ['✗','Raise C so that only large vibrations count','That slows detection too.','Reversing C’s effect.'],
+ ['✗','Leave C and T alone, since costs don’t affect CUSUM settings','Costs are exactly what should decide them.','Ignoring the decision context.']
+]);
+X(5,'c','m6',`The utility also wants to know if vibration drops sharply, which can mean a broken coupling. What should it do?`,[
+ ['✓','Run a second CUSUM using (μ − xₜ − C), alongside the first','A decrease CUSUM flips the deviation but keeps C subtracted and the floor at 0.'],
+ ['✗','Allow Sₜ to go negative and alarm when it reaches −T','CUSUM keeps the floor at 0; decreases get their own sum.','Thinking a decrease means everything becomes negative.'],
+ ['✗','Change C to −2 in the existing CUSUM','A negative allowance adds a push every period and causes false alarms.','Thinking C’s sign sets direction.'],
+ ['✗','Nothing; the increase CUSUM already detects decreases','It only accumulates evidence of an increase.','Assuming one side covers both.']
+]);
+X(5,'d','m6',`After an alarm at hour 300, an engineer says “the pump changed at hour 300.” What’s the most accurate correction?`,[
+ ['✓','The change probably began earlier; CUSUM needs time to build up evidence','The alarm marks when the evidence crossed T, not when the shift started.'],
+ ['✗','The change began after hour 300','An alarm can’t come before the change that causes it.','Reversing the timing.'],
+ ['✗','The statement is correct if T was chosen well','Every threshold involves some delay.','Expecting perfect timing.'],
+ ['✗','The alarm shows the change was caused by something at hour 300','CUSUM says nothing about causes.','Reading cause into a detection.']
+]);
+
+// ---------------------------------------------------------------- Scenario 6
+SCN_(6,'Home-price regression',`A real-estate firm fits a linear regression to 1,200 recent sales. The response is sale price in thousands of dollars.
+<table class="dtab"><tr><th>Predictor</th><th>Coefficient</th><th>p-value</th></tr>
+<tr><td>Intercept</td><td>42.0</td><td>&lt; 0.001</td></tr>
+<tr><td>Square feet (per 100 sq ft)</td><td>9.5</td><td>&lt; 0.001</td></tr>
+<tr><td>Bedrooms</td><td>−6.2</td><td>0.004</td></tr>
+<tr><td>Age of home (years)</td><td>−0.8</td><td>0.010</td></tr>
+<tr><td>Pool (1 = yes, 0 = no)</td><td>4.1</td><td>0.30</td></tr>
+<tr><td>Miles to downtown</td><td>−3.0</td><td>&lt; 0.001</td></tr></table>
+R² = 0.78, adjusted R² = 0.77.`);
+X(6,'a','m8',`Two homes are identical except that one is 300 sq ft larger. What does the model predict about their prices?`,[
+ ['✓','The larger home is about $28,500 more','3 units of 100 sq ft × 9.5 = 28.5 thousand dollars.'],
+ ['✗','The larger home is about $2,850 more','The response is in thousands, and sq ft is per 100.','Missing the units.'],
+ ['✗','The larger home is about $70,500 more','That adds the intercept, which doesn’t change between the homes.','Including a₀ in a difference.'],
+ ['✗','You can’t tell without knowing the other predictors’ values','They’re identical otherwise, so only sq ft differs.','Missing “holding others fixed.”']
+]);
+X(6,'b','m8',`The bedrooms coefficient is negative. Which interpretation is correct?`,[
+ ['✓','At the same square footage (and other factors), more bedrooms go with a lower price','Each coefficient is the effect with the other predictors held fixed. More bedrooms in the same space means smaller rooms.'],
+ ['✗','Homes with more bedrooms generally sell for less','Overall, more bedrooms usually go with bigger, more expensive homes.','Ignoring “holding others fixed.”'],
+ ['✗','The model must be wrong, since bedrooms add value','It’s answering a narrower question than it seems.','Assuming an error.'],
+ ['✗','Removing a bedroom would raise any home’s price by $6,200','The model shows an association, not the effect of remodeling.','Reading a cause into a coefficient.']
+]);
+X(6,'c','m8',`The pool coefficient is 4.1 with p = 0.30. What’s the best interpretation?`,[
+ ['✓','The data doesn’t show convincingly that a pool is associated with a higher price','A large p-value means an estimate this big could easily occur by chance if the true effect were 0. It doesn’t prove the effect is 0.'],
+ ['✗','A pool adds exactly $4,100 to a home’s price','The estimate is too uncertain to rely on.','Ignoring the p-value.'],
+ ['✗','There is a 30% chance that a pool affects price','p-values aren’t probabilities of hypotheses.','A common p-value misreading.'],
+ ['✗','Pools definitely have no effect on price','Not significant doesn’t mean zero.','Treating “not proven” as “disproven.”']
+]);
+X(6,'d','m8',`Predict the price of a 2,000 sq ft, 3-bedroom, 10-year-old home with no pool, 5 miles from downtown.`,[
+ ['✓','About $190,400','42 + 9.5(20) − 6.2(3) − 0.8(10) + 0 − 3.0(5) = 190.4 thousand.'],
+ ['✗','About $194,500','That includes the pool term, but this home has no pool.','Plugging in a dummy variable incorrectly.'],
+ ['✗','About $205,400','That forgets the distance term.','Dropping a predictor.'],
+ ['✗','About $232,000','That uses only the intercept and square feet.','Ignoring the other predictors.']
+]);
+X(6,'e','m8',`A manager concludes: “Homes closer to downtown sell for more, so moving a home closer would raise its price.” What’s the issue?`,[
+ ['✓','The coefficient shows an association; other factors linked to location may drive it','Regression on observational data shows correlation. Causal claims need more evidence.'],
+ ['✗','None; a tiny p-value proves causation','Significance isn’t causation.','Equating significance with cause.'],
+ ['✗','The coefficient is negative, so homes closer to downtown sell for less','A lower distance with a negative coefficient means a higher price.','Misreading the sign.'],
+ ['✗','R² is too low to say anything','0.78 is high; the issue is causation.','Blaming the wrong statistic.']
+]);
+X(6,'f','m8',`The firm suspects a pool adds more value to larger homes. What change to the model would test this?`,[
+ ['✓','Add an interaction term: square feet × pool','An interaction lets the pool effect depend on size, and its coefficient tests that idea.'],
+ ['✗','Add square feet squared','That lets size have a curved effect, not a pool effect that varies with size.','Confusing curvature with interaction.'],
+ ['✗','Remove the pool variable, since it isn’t significant','That removes the very thing you want to study.','Simplifying the question away.'],
+ ['✗','Fit separate models for every home size','That’s inefficient and splits the data thinly; an interaction does it in one model.','Overcomplicating.']
+]);
+
+// ---------------------------------------------------------------- Scenario 7
+SCN_(7,'Choosing among models',`On the same 50,000-row data set, an analyst fits three regression models:
+<table class="dtab"><tr><th>Model</th><th>Predictors</th><th>AIC</th></tr><tr><td>A</td><td>5</td><td>812</td></tr><tr><td>B</td><td>8</td><td>808</td></tr><tr><td>C</td><td>12</td><td>815</td></tr></table>`);
+X(7,'a','m8',`Based on AIC alone, which model is preferred?`,[
+ ['✓','Model B','Lower AIC is better, and 808 is the lowest.'],
+ ['✗','Model C, since it has the most predictors','AIC penalizes extra parameters, and C’s AIC is highest.','Equating more predictors with a better fit.'],
+ ['✗','Model A, since it’s the simplest','AIC already balances fit and simplicity, and it prefers B.','Applying simplicity separately from AIC.'],
+ ['✗','You can’t compare AIC across models with different numbers of predictors','That’s exactly what AIC is for, on the same data.','Misunderstanding AIC.']
+]);
+X(7,'b','m8',`Using e^((AIC_min − AIC_A)/2), how likely is Model A to be better than Model B?`,[
+ ['✓','About 13.5% as likely','e^((808 − 812)/2) = e^(−2) ≈ 0.135.'],
+ ['✗','About 4% as likely','AIC differences aren’t percentages.','Reading the gap as a percentage.'],
+ ['✗','About 50% as likely; they’re close','A gap of 4 is a meaningful difference.','Underrating the gap.'],
+ ['✗','About 2% as likely','That uses e^(−4), forgetting to divide by 2.','Dropping the /2.']
+]);
+X(7,'c','m8',`On this data, BIC prefers Model A while AIC prefers Model B. Why can this happen?`,[
+ ['✓','BIC’s penalty per parameter, ln(50,000) ≈ 10.8, is much bigger than AIC’s 2','With large n, BIC punishes extra predictors much harder, so it favors smaller models.'],
+ ['✗','One of the calculations must contain an error','The two criteria often disagree.','Expecting them to always agree.'],
+ ['✗','BIC ignores the number of parameters','It penalizes them more heavily, not less.','Reversing the penalty.'],
+ ['✗','AIC only works on small data sets','AIC works at any size; the penalties just differ.','Inventing a limit.']
+]);
+
+// ---------------------------------------------------------------- Scenario 8
+SCN_(8,'A validation process',`An analyst building a churn classifier on 10,000 customers does the following:
+<ol class="steps"><li>Standardizes every attribute using the mean and SD of all 10,000 rows.</li><li>Randomly splits the data 70% training / 15% validation / 15% test.</li><li>Trains 20 different models and picks the one with the best validation accuracy (91%).</li><li>Runs that model on the test set: 88%.</li><li>Tries three more tweaks, checks each on the test set, and keeps the best one (90%).</li><li>Reports 90% as the expected accuracy.</li></ol>`);
+X(8,'a','m3',`Select <b>all</b> of the steps that are mistakes.`,[
+ ['✓','Step 1: standardizing with all 10,000 rows','The test data’s mean and SD leak into training. Compute the scaling from the training data only.'],
+ ['✗','Step 2: a 70/15/15 random split','That’s a reasonable split for this kind of data.','Thinking there’s one correct split.'],
+ ['✗','Step 3: picking the model with the best validation score','That’s what the validation set is for.','Mistaking correct practice for a mistake.'],
+ ['✓','Steps 5–6: tuning on the test set and reporting the best test score','Once you choose based on the test set, it becomes a validation set, and its score is optimistic.']
+],{multi:1,fixed:1});
+X(8,'b','m3',`Ignoring the leakage in step 1, which number is the best estimate of the step-3 model’s real accuracy?`,[
+ ['✓','88%','The first test score, before the test set was used for any choices, is the unbiased estimate.'],
+ ['✗','91%','That’s the winner’s validation score, inflated by choosing the best of 20.','Reporting a selection-biased score.'],
+ ['✗','90%','That score was chosen as the best of several looks at the test set.','Reusing the test set.'],
+ ['✗','89.7%, the average of all three','Averaging biased and unbiased scores doesn’t fix the bias.','Splitting the difference.']
+]);
+X(8,'c','m3',`Suppose the same analyst were instead forecasting next quarter’s churn rate from three years of monthly data. How should the hold-out data change?`,[
+ ['✓','Hold out the most recent months, not a random sample','Forecasts must be tested on later data than they were trained on, otherwise the future leaks in.'],
+ ['✗','Keep the random 70/15/15 split','Random splits let the model train on months after the ones it’s tested on.','Ignoring time order.'],
+ ['✗','Use the oldest months as the test set','That tests the model on the past.','Getting the direction wrong.'],
+ ['✗','Skip validation, since time series can’t be validated','They can, with a time-ordered hold-out.','Overgeneralizing.']
+]);
+
+// ---------------------------------------------------------------- Scenario 9
+SCN_(9,'Medicine delivery times',`A distributor wants a regression model to estimate delivery time for medicine shipments. A box-and-whisker plot of 4,000 past delivery times flags 14 points beyond the whiskers. On investigation, 3 have negative delivery times (data-entry errors), and 11 are real shipments delayed by major storms, which hit the region a few times a year.`);
+X(9,'a','m5',`What should be done with the 3 negative delivery times?`,[
+ ['✓','Remove or impute them, since they’re bad data','Impossible values are errors and shouldn’t train the model.'],
+ ['✗','Keep them, since all real-world data should stay in','They aren’t real observations.','Treating errors as data.'],
+ ['✗','Model them separately as a third kind of delivery','They aren’t a phenomenon to model.','Treating errors as real events.'],
+ ['✗','Take their absolute values and keep them','There’s no reason to think the sign is the only error.','Guessing at corrections.']
+]);
+X(9,'b','m5',`What’s the best way to handle the 11 storm delays?`,[
+ ['✓','Model normal deliveries without them, and separately model the chance of a storm delay (e.g., with logistic regression)','The delays are real and will recur. Two models capture both normal times and disruption risk.'],
+ ['✗','Delete them, since they’re outliers','The model would underestimate how long deliveries can take.','Removing real, recurring events.'],
+ ['✗','Keep them in one regression with everything else','A few huge values would distort the normal-conditions estimates.','Ignoring their outsized pull.'],
+ ['✗','Replace them with the median delivery time','That hides real risk.','Imputing real values away.']
+]);
+X(9,'c','m5',`If the box-plot whiskers were extended from 1.5 × IQR to 3 × IQR, what would happen?`,[
+ ['✓','Fewer points would be flagged, only the more extreme ones','Longer whiskers cover more of the data.'],
+ ['✗','More points would be flagged','Wider whiskers flag fewer.','Reversing the effect.'],
+ ['✗','The storm delays would no longer exist in the data','Changing the flag rule doesn’t change the data.','Confusing detection with the data.'],
+ ['✗','The box (the quartiles) would get wider','The box doesn’t depend on the whiskers.','Mixing up parts of the plot.']
+]);
+
+// ---------------------------------------------------------------- Scenario 10
+SCN_(10,'Salary model with PCA',`An HR team wants to predict employee salary using three predictors: age, years of experience, and years since highest degree. In their data, the three predictors are highly correlated with each other.`);
+X(10,'a','m9',`If the team runs principal component analysis on the three predictors, what would you expect?`,[
+ ['✓','The first component is much more important than the others','Highly correlated predictors share most of their variance, so it loads onto the first component and the others capture little.'],
+ ['✗','The three components are about equally important','That happens when predictors are uncorrelated.','Missing the role of correlation.'],
+ ['✗','The last component is the most important','Components are ordered by variance, largest first.','Reversing the order.'],
+ ['✗','PCA can’t be used with correlated predictors','Correlated predictors are exactly where PCA helps.','Reversing PCA’s purpose.']
+]);
+X(10,'b','m9',`The eigenvalues are 2.79, 0.15, and 0.06. What share of the total variance does the first component capture?`,[
+ ['✓','About 93%','2.79 / (2.79 + 0.15 + 0.06) = 2.79 / 3.00 = 0.93.'],
+ ['✗','About 33%, one third','That assumes equal components.','Ignoring the eigenvalues.'],
+ ['✗','2.79%','Eigenvalues aren’t percentages.','Misreading the values.'],
+ ['✗','About 79%','That reads the decimals of 2.79 as a percentage.','Misreading the values.']
+]);
+X(10,'c','m9',`They regress salary on only the first principal component. In terms of the original predictors, what does the model depend on?`,[
+ ['✓','All three original predictors, through the component’s weights','The component is a weighted combination of all three, so each gets an implied coefficient.'],
+ ['✗','Only age, the first predictor','Components aren’t single original predictors.','Confusing components with factors.'],
+ ['✗','None of the original predictors','The component is built from them.','Missing the connection.'],
+ ['✗','Only the predictor with the largest variance','All three contribute through their weights.','Oversimplifying.']
+]);
+X(10,'d','m9',`The regression’s errors are small for low salaries and much larger for high salaries. What’s a reasonable remedy?`,[
+ ['✓','Apply a Box-Cox transformation to salary (the response)','Box-Cox stretches small values and compresses large ones to even out the spread.'],
+ ['✗','Detrend salary over time','The issue is unequal spread, not a trend over time.','Picking the wrong data-prep tool.'],
+ ['✗','Remove all employees with high salaries','That throws away real data.','Deleting the hard cases.'],
+ ['✗','Add more principal components','That doesn’t address unequal error spread.','Wrong fix.']
+]);
+
+// ---------------------------------------------------------------- Scenario 11
+SCN_(11,'Loan approval SVM',`A bank fits a soft-margin SVM to approve or reject loan applicants, after scaling every attribute to 0–1. The classifier is
+<div class="eq">1.9·(credit score) + 1.4·(income) − 1.1·(debt ratio) + 0.03·(years at address) + a₀</div>
+Applicants with a value above 0 are approved.`);
+X(11,'a','m2',`Which attribute could most likely be removed with little effect on the classifier?`,[
+ ['✓','Years at address','With all attributes on the same 0–1 scale, a coefficient of 0.03 means it barely moves the score.'],
+ ['✗','Debt ratio, because its coefficient is negative','A negative coefficient still matters; −1.1 has a large magnitude.','Confusing sign with importance.'],
+ ['✗','Income, because credit score already captures it','Its coefficient of 1.4 is large.','Assuming redundancy without evidence.'],
+ ['✗','None; every attribute in an SVM matters equally','Coefficient size shows importance once the data is scaled.','Ignoring the coefficients.']
+]);
+X(11,'b','m2',`The bank decides that approving a loan that defaults costs five times as much as rejecting a good applicant. How should it change the classifier?`,[
+ ['✓','Shift the boundary so fewer borderline applicants are approved','Move the line away from the costly mistake, so borderline cases land on the reject side.'],
+ ['✗','Shift the boundary so more borderline applicants are approved','That increases the costly mistake.','Getting the direction backward.'],
+ ['✗','Keep the line centered; costs don’t affect the boundary','A centered line assumes both errors cost the same.','Ignoring costs.'],
+ ['✗','Multiply every coefficient by 5','Scaling all coefficients doesn’t move which side applicants fall on.','Misunderstanding the boundary.']
+]);
+X(11,'c','m2',`The SVM minimizes error + λ·Σaⱼ². If the bank greatly increases λ, what happens?`,[
+ ['✓','The margin widens and the model accepts more training errors','A larger λ weights the margin term more heavily.'],
+ ['✗','The margin narrows and training errors fall','That’s what decreasing λ does.','Reversing λ.'],
+ ['✗','Nothing changes once the data is scaled','λ always changes the trade-off.','Confusing scaling with λ.'],
+ ['✗','The boundary becomes curved','Only a kernel makes it curved.','Confusing λ with kernels.']
+]);
+X(11,'d','m2',`Had the bank <b>not</b> scaled the data, with income in dollars (around 60,000) and credit score around 700, what would be true?`,[
+ ['✓','Income’s coefficient would be tiny, but you couldn’t conclude income doesn’t matter','Coefficient size depends on units. Only after scaling can sizes be compared.'],
+ ['✗','Income’s coefficient would be tiny, so income could be removed','The small size comes from the units, not from irrelevance.','Comparing unscaled coefficients.'],
+ ['✗','The coefficients would be exactly the same','Units change the coefficients.','Assuming the method is unit-free.'],
+ ['✗','Income’s coefficient would be huge','Large values tend to get small coefficients.','Reversing the effect.']
+]);
+
+// ---------------------------------------------------------------- Scenario 12
+SCN_(12,'Commodity prices',`An analyst studies the monthly price of copper over 25 years. The price has a steady upward trend, with calm stretches and turbulent stretches.`);
+X(12,'a','m7',`She fits ARIMA(2, 1, 1). What does the “1” in the middle do?`,[
+ ['✓','Differences the series once, removing a straight-line trend','d = 1 models month-to-month changes, which removes a linear trend.'],
+ ['✗','Uses one past forecast error as a predictor','That’s the q = 1 at the end.','Confusing d and q.'],
+ ['✗','Uses one past value as a predictor','That’s the p term, which is 2 here.','Confusing d and p.'],
+ ['✗','Sets the forecast horizon to one month','None of ARIMA’s three numbers is the horizon.','Inventing a meaning.']
+]);
+X(12,'b','mix',`A hedge fund wants a forecast of how much copper’s price will <b>fluctuate</b> next month. Which model is most appropriate?`,
+ mlist('GARCH',{'GARCH':'GARCH forecasts variance, and it handles the calm and turbulent stretches (volatility clustering).'}),{fixed:1});
+X(12,'c','m9',`A colleague regresses copper prices on world GDP and population over the same 25 years, and the relationship looks very strong. What should she consider first?`,[
+ ['✓','Detrending all the series, since shared upward trends can create a misleading relationship','When everything rises over time, a regression can look strong just from the common trend.'],
+ ['✗','Applying a Box-Cox transformation to GDP','The concern is the shared trend, not unequal spread.','Choosing the wrong tool.'],
+ ['✗','Nothing; a strong relationship over 25 years must be real','Shared trends can produce strong but spurious fits.','Trusting a trend-driven fit.'],
+ ['✗','Clustering the years before running the regression','That doesn’t address the trend.','Wrong tool.']
+]);
+
+// ---------------------------------------------------------------- Scenario 13
+SCN_(13,'Types of analytics questions',`A grocery chain’s leadership asks three questions:<ol class="steps"><li>“What were the top-selling products in each store last quarter?”</li><li>“How many customers will visit each store next Saturday?”</li><li>“How many cashiers should each store schedule on Saturday to keep waits under 5 minutes at minimum cost?”</li></ol>`);
+X(13,'a','m1',`Which labels match questions 1, 2, and 3, in order?`,[
+ ['✓','Descriptive, predictive, prescriptive','Q1 summarizes what happened, Q2 forecasts what will happen, and Q3 decides what to do under constraints.'],
+ ['✗','Predictive, descriptive, prescriptive','Q1 looks back, so it isn’t predictive.','Mixing up the first two types.'],
+ ['✗','Descriptive, prescriptive, predictive','Q3 asks what to do, which makes it prescriptive.','Swapping the last two types.'],
+ ['✗','Descriptive, predictive, predictive','Q3 asks for a decision, not a forecast.','Missing the decision.']
+]);
+X(13,'b','m1',`To answer question 3, the answer to question 2 is most likely used as…`,[
+ ['✓','An input: the visit forecast feeds into the staffing decision','Prescriptive models often take predictive outputs as inputs.'],
+ ['✗','A replacement: question 2 answers question 3 directly','Knowing the visits doesn’t decide the staffing level by itself.','Equating a forecast with a decision.'],
+ ['✗','Nothing; the two questions are unrelated','Expected demand is central to staffing.','Missing the connection.'],
+ ['✗','A validation set for the staffing model','A forecast isn’t validation data.','Confusing roles.']
+]);
+
+// ===================== Practice midterm 2 =====================
+MID_SET=2;
+// ---------------------------------------------------------------- Scenario 14
+SCN_(14,'Spam filter',`An email provider is building a classifier to label incoming email as spam or not spam. For each past email it has these attributes, plus a label saying whether a user marked it as spam:
+<ul class="steps"><li>Sender’s email domain (gmail.com, company.com, …)</li><li>Number of links in the message</li><li>Contains the word “free” (yes/no)</li><li>Message length in characters</li><li>Language of the message (English, Spanish, other)</li></ul>About 3% of past emails are spam.`);
+X(14,'a','m2',`Select <b>all</b> of the attributes that are categorical.`,[
+ ['✓','Sender’s email domain','Domains are names. There’s no meaningful order or arithmetic on them.'],
+ ['✗','Number of links','A count is quantitative: 6 links is twice as many as 3.','Treating whole numbers as categories.'],
+ ['✓','Contains the word “free” (yes/no)','A yes/no flag is categorical (binary), even when it’s coded as 1/0.'],
+ ['✗','Message length in characters','A length is quantitative.','Treating a measurement as a label.'],
+ ['✓','Language of the message','Languages are categories with no natural order.']
+],{multi:1,fixed:1});
+X(14,'b','m2',`Users say that losing a real email to the spam folder is much worse than seeing an occasional spam message. How should the classifier’s boundary move?`,[
+ ['✓','So fewer emails get labeled spam, accepting that more spam reaches the inbox','Move the line away from the costly error: only clear-cut spam gets filtered.'],
+ ['✗','So more emails get labeled spam, to keep the inbox clean','That increases the costly error.','Moving toward the expensive mistake.'],
+ ['✗','It should stay centered in the margin','A centered line treats both errors as equally costly.','Ignoring unequal costs.'],
+ ['✗','Switch to a hard-margin SVM so there are no errors','The classes overlap, so a hard margin may not even be possible, and it doesn’t address costs.','Thinking hard margins remove errors.']
+]);
+X(14,'c','m2',`A first model reports 97% accuracy on held-out data. What should the team check before celebrating?`,[
+ ['✓','Whether it catches any spam at all, since labeling everything “not spam” also scores 97%','With 3% spam, the trivial model gets 97%. Look at how it does on the spam emails specifically.'],
+ ['✗','Nothing; 97% on held-out data is excellent','Accuracy can hide a model that ignores the rare class.','Trusting one overall number.'],
+ ['✗','Whether the model is overfitting, since 97% is suspiciously high','The issue here is class imbalance, not overfitting.','Naming the wrong problem.'],
+ ['✗','Whether 97% beats the training accuracy','That compares the wrong things.','Wrong check.']
+]);
+X(14,'d','m2',`The provider scores 50 million emails a day using a training set of 20 million emails. Why would KNN be much slower than a linear SVM at prediction time?`,[
+ ['✓','KNN must compare each new email to the stored training emails; an SVM just evaluates one equation','KNN keeps all the training data and searches it for every prediction. An SVM keeps only its coefficients.'],
+ ['✗','KNN has to retrain for every new email','It doesn’t retrain; it searches.','Confusing searching with training.'],
+ ['✗','SVMs skip the categorical attributes','Both use the same attributes.','Inventing a difference.'],
+ ['✗','KNN can only handle two attributes at a time','It works in any number of dimensions.','Inventing a limit.']
+]);
+
+// ---------------------------------------------------------------- Scenario 15
+SCN_(15,'Nearest neighbors',`The figure shows scaled training data (black and white points) and a new point (★) to classify with KNN. The inner dashed circle contains the new point’s single nearest neighbor; the outer dashed circle contains its 5 nearest neighbors.${FIG_KNN}`);
+X(15,'a','m2',`How does KNN classify the new point with k = 1, and with k = 5?`,[
+ ['✓','k = 1: white. k = 5: black','The single nearest neighbor is white. Among the 5 nearest, 3 are black and 2 are white, so the majority is black.'],
+ ['✗','k = 1: black. k = 5: black','The closest point (inside the inner circle) is white.','Misreading the nearest neighbor.'],
+ ['✗','k = 1: white. k = 5: white','Within the outer circle, black outnumbers white 3 to 2.','Miscounting the vote.'],
+ ['✗','k = 1: black. k = 5: white','Both are reversed.','Reversing both.']
+]);
+X(15,'b','m2',`The two values of k disagree. What’s the best way to choose k?`,[
+ ['✓','Compare several values of k on validation data or with cross-validation','k is a setting to tune by how well the model does on data it didn’t train on.'],
+ ['✗','Always use k = 1, since the closest point is the most similar','k = 1 is the most sensitive to noisy points.','Assuming closest is always best.'],
+ ['✗','Use the k that gives the best training accuracy','k = 1 always wins on training data.','Choosing by training fit.'],
+ ['✗','Use the largest possible k to be safe','Very large k just predicts the majority class.','Overcorrecting.']
+]);
+X(15,'c','m2',`Suppose x₁ were <b>not</b> scaled and ranged from 0 to 60,000, while x₂ ranged from 0 to 6. What would happen to the neighbors?`,[
+ ['✓','They’d be chosen almost entirely by x₁; x₂ would barely matter','Differences in x₁ would be thousands of times larger, so they’d dominate the distance.'],
+ ['✗','Nothing, since KNN is unaffected by units','KNN’s distances depend directly on units.','Assuming the method is unit-free.'],
+ ['✗','They’d be chosen almost entirely by x₂','The larger-scale attribute dominates.','Reversing the effect.'],
+ ['✗','KNN would stop working','It works; it just weighs the attributes badly.','Overstating it.']
+]);
+X(15,'d','m2',`You decide that x₂ is three times as important as x₁ for this problem. How can KNN reflect that?`,[
+ ['✓','Use a weighted distance with a larger weight on x₂','Weights make differences in x₂ count more when finding neighbors.'],
+ ['✗','Use k = 3','k sets how many neighbors vote, not how attributes are weighted.','Confusing k with weights.'],
+ ['✗','Drop x₁ entirely','That makes x₁ count for nothing, not one-third as much.','Overcorrecting.'],
+ ['✗','Multiply the predicted class by 3','Classes aren’t numbers to scale.','Misunderstanding the output.']
+]);
+
+// ---------------------------------------------------------------- Scenario 16
+SCN_(16,'Choosing polynomial degree',`An analyst fits polynomial regressions of degree 1 through 6 to predict fuel use from engine size, using a training set, and measures prediction error (RMSE, lower is better) on a separate validation set.
+<table class="dtab"><tr><th>Degree</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
+<tr><td>Training RMSE</td><td>9.1</td><td>6.2</td><td>4.0</td><td>3.6</td><td>3.1</td><td>2.5</td></tr>
+<tr><td>Validation RMSE</td><td>9.5</td><td>6.8</td><td>4.6</td><td>4.9</td><td>5.8</td><td>7.4</td></tr></table>`);
+X(16,'a','m3',`Which degree should the analyst choose?`,[
+ ['✓','Degree 3','It has the lowest validation error. Beyond it, validation error rises even though training error keeps falling.'],
+ ['✗','Degree 6','Its low training error comes from overfitting; its validation error is the second worst.','Choosing by training fit.'],
+ ['✗','Degree 1','It underfits; both errors are high.','Over-preferring simplicity.'],
+ ['✗','Degree 4','Its validation error is higher than degree 3’s.','Misreading the table.']
+]);
+X(16,'b','m3',`Why does training RMSE keep falling all the way to degree 6?`,[
+ ['✓','More flexible models can always fit the training data more closely, including its noise','Training error rewards flexibility whether or not the patterns are real.'],
+ ['✗','Higher degrees really are better models','Validation error shows they aren’t.','Equating training fit with quality.'],
+ ['✗','The validation set is too small','That doesn’t explain the training trend.','Wrong diagnosis.'],
+ ['✗','The training data has no noise','Then validation error wouldn’t rise.','Contradicting the evidence.']
+]);
+X(16,'c','m3',`Is 4.6 a good estimate of degree 3’s error on brand-new data?`,[
+ ['✓','It’s likely a bit optimistic, since degree 3 was chosen for having the lowest validation error; check on a test set','The winner of a comparison tends to have gotten lucky on the validation data.'],
+ ['✗','Yes, validation error is always unbiased','It’s unbiased for each model alone, not for the one you picked as best.','Missing selection bias.'],
+ ['✗','No, the real error will be 4.0, the training error','Training error is the most optimistic of all.','Trusting training fit.'],
+ ['✗','No, it will be 9.5, degree 1’s error','That’s a different model’s error.','Mixing up models.']
+]);
+X(16,'d','m3',`The data set has only 60 cars. Which change to the validation approach is most helpful?`,[
+ ['✓','Use k-fold cross-validation so every car is used for both training and validation','With little data, one fixed split wastes points and depends heavily on which cars landed where.'],
+ ['✗','Put 90% of the data in validation','That leaves almost nothing to train on.','Overcorrecting.'],
+ ['✗','Skip validation and pick the lowest training error','That always picks the most overfit model.','Abandoning validation.'],
+ ['✗','Use the same 60 cars for training and validation','Then validation measures training fit.','Reusing data.']
+]);
+
+// ---------------------------------------------------------------- Scenario 17
+SCN_(17,'Distance in the real world',`A logistics company needs travel-time estimates for three kinds of vehicles. Each must get from one point to another that differs by 6 units in one direction and 8 units in the other.
+<ul class="steps"><li>A warehouse robot moves along an aisle and raises its lift at the same time; both motors run at the same speed.</li><li>A delivery van drives on a rectangular street grid.</li><li>A drone flies in a straight line.</li></ul>`);
+X(17,'a','m4',`Which distance matches the <b>robot’s</b> travel time?`,[
+ ['✗','1-norm (rectilinear)','The moves happen at the same time, so their times don’t add.','Adding simultaneous moves.'],
+ ['✗','2-norm (Euclidean)','The robot doesn’t travel diagonally in a straight line.','Picking the default distance.'],
+ ['✓','∞-norm (largest difference)','Both motors run at once, so the trip takes as long as the longer move.']
+],{fixed:1});
+X(17,'b','m4',`Which distance matches the <b>van’s</b> travel?`,[
+ ['✓','1-norm (rectilinear)','On a grid, the van covers the full horizontal and full vertical distance: 6 + 8.'],
+ ['✗','2-norm (Euclidean)','It can’t cut diagonally through blocks.','Assuming straight-line travel.'],
+ ['✗','∞-norm (largest difference)','The two directions happen one after another, not at the same time.','Treating sequential moves as simultaneous.']
+],{fixed:1});
+X(17,'c','m4',`What are the three distances (1-norm, 2-norm, ∞-norm) for a trip that differs by 6 and 8?`,[
+ ['✓','14, 10, and 8','6 + 8 = 14. √(36 + 64) = 10. max(6, 8) = 8.'],
+ ['✗','8, 10, and 14','The order is reversed; the 1-norm is the largest.','Flipping the ordering.'],
+ ['✗','14, 100, and 8','The 2-norm takes the square root of 100.','Forgetting the root.'],
+ ['✗','14, 10, and 6','The ∞-norm takes the largest difference, not the smallest.','Using min instead of max.']
+]);
+X(17,'d','m4',`The robot’s lift motor is upgraded to run twice as fast; the aisle motor stays the same. For this 6-and-8 trip, when does the upgrade shorten the trip?`,[
+ ['✓','Only if the lift move was the one taking longer','Trip time is the maximum of the two move times, so only speeding up the slower move helps.'],
+ ['✗','Always, by half the lift time','Times don’t add when the moves are simultaneous.','Using the sum instead of the max.'],
+ ['✗','Never, since only the aisle move matters','The lift matters when it’s the slower move.','Ignoring one dimension.'],
+ ['✗','Always, by exactly half the total trip','Only the slower move limits the trip.','Overstating it.']
+]);
+
+// ---------------------------------------------------------------- Scenario 18
+SCN_(18,'Inside k-means',`A marketing analyst runs k-means with k = 5 on 30,000 customers described by scaled annual spend, visits per month, and average basket size.`);
+X(18,'a','m4',`k-means alternates between two steps until it stops. Which step is the “expectation” step in the EM view of k-means?`,[
+ ['✓','Assigning each customer to its nearest current center','The E-step computes cluster memberships given the current centers.'],
+ ['✗','Moving each center to the average of its assigned customers','That’s the maximization step.','Swapping E and M.'],
+ ['✗','Choosing k','You choose k before the loop starts.','Confusing setup with the loop.'],
+ ['✗','Scaling the attributes','That’s data prep before clustering.','Confusing prep with the algorithm.']
+]);
+X(18,'b','m4',`When does the loop stop?`,[
+ ['✓','When no customer changes cluster from one round to the next','Then the centers stop moving too, so further rounds change nothing.'],
+ ['✗','When the total distance reaches 0','That only happens when k equals the number of points.','Expecting a perfect fit.'],
+ ['✗','After exactly k rounds','The number of rounds isn’t tied to k.','Inventing a rule.'],
+ ['✗','When every cluster has the same number of customers','k-means doesn’t balance cluster sizes.','Inventing a goal.']
+]);
+X(18,'c','m4',`The analyst’s manager names the clusters (“bargain hunters,” “loyal regulars,” …), and a teammate then trains an SVM to predict those names for new customers. What happened?`,[
+ ['✓','An unsupervised result became the labels for a supervised model','Clustering found groups without labels; once named, the groups can serve as labels for classification.'],
+ ['✗','The SVM is now doing clustering','It classifies into labels it was given.','Confusing the two methods.'],
+ ['✗','This is invalid, because clusters can never be used as labels','It’s a common and legitimate workflow.','Inventing a rule.'],
+ ['✗','The SVM will find better clusters than k-means','It doesn’t find clusters; it learns the given labels.','Misunderstanding the roles.']
+]);
+
+// ---------------------------------------------------------------- Scenario 19
+SCN_(19,'Three kinds of outliers',`A bank’s data team reviews three unusual findings:
+<ol class="steps"><li>A customer’s card shows 40 small, ordinary-looking purchases at 40 different gas stations within two hours.</li><li>A branch’s daily cash withdrawals are $8,000 on a Tuesday in July; that’s a normal amount for December but far above any other July day.</li><li>One account’s age field says 214 years.</li></ol>`);
+X(19,'a','m5',`Which type of outlier is finding 1?`,[
+ ['✓','Collective outlier','No single purchase is unusual; the group of them together is.'],
+ ['✗','Point outlier','Each purchase alone looks ordinary.','Looking for one extreme value.'],
+ ['✗','Contextual outlier','The issue isn’t a single value in the wrong context but a pattern across many values.','Confusing collective and contextual.'],
+ ['✗','Not an outlier','The pattern is clearly abnormal.','Missing the pattern.']
+]);
+X(19,'b','m5',`Which type of outlier is finding 2?`,[
+ ['✓','Contextual outlier','$8,000 is normal in general but abnormal for July.'],
+ ['✗','Point outlier','The value isn’t extreme compared with the whole year.','Ignoring context.'],
+ ['✗','Collective outlier','It’s a single value, not a group.','Mixing up types.'],
+ ['✗','Bad data','Nothing suggests an error; it’s just unusual for the season.','Assuming every outlier is an error.']
+]);
+X(19,'c','m5',`What’s the best handling of finding 3?`,[
+ ['✓','Treat it as bad data: remove or impute the age after checking the record','No one is 214. It’s an entry error, not a real phenomenon.'],
+ ['✗','Keep it, since outliers should never be removed','Impossible values are errors.','Applying a blanket rule.'],
+ ['✗','Model very old customers separately','There are no 214-year-old customers to model.','Treating an error as a real group.'],
+ ['✗','Delete the whole customer from every table','Usually unnecessary; other fields may be fine.','Overreacting.']
+]);
+X(19,'d','m5',`Which of the three is generally hardest to detect, and why?`,[
+ ['✓','Finding 1, because each value looks normal; only the pattern is unusual','Simple value-based checks (box plots, SD rules) can’t see a pattern across many normal values.'],
+ ['✗','Finding 3, because it’s extreme','Extreme values are the easiest to catch.','Reversing difficulty.'],
+ ['✗','Finding 2, because it’s a large amount','It’s large but normal for the year, so you need context, which is moderately hard.','Picking the wrong one.'],
+ ['✗','They’re all equally easy with a box plot','A box plot catches only finding 3.','Overtrusting one tool.']
+]);
+
+// ---------------------------------------------------------------- Scenario 20
+SCN_(20,'Refrigerator alarms',`A hospital pharmacy records, each day, how many minutes its medicine refrigerator was above its safe temperature limit. A box-and-whisker plot of a year of data is below; whiskers extend to the most extreme points within 1.5 × IQR of the box.${FIG_BOX}`);
+X(20,'a','m5',`What is the upper limit beyond which points are flagged?`,[
+ ['✓','50 minutes','IQR = 32 − 20 = 12, and Q3 + 1.5 × 12 = 32 + 18 = 50.'],
+ ['✗','48 minutes','That’s where the whisker ends (the largest point inside the limit), not the limit itself.','Confusing the whisker end with the fence.'],
+ ['✗','44 minutes','That uses 1 × IQR instead of 1.5.','Wrong multiplier.'],
+ ['✗','38 minutes','That adds 1.5 × IQR to the median.','Starting from the wrong quartile.']
+]);
+X(20,'b','m5',`Three days are flagged (55, 61, and 90 minutes). The 90 occurred when a technician confirmed the door was left open overnight. What should happen to that point if the goal is to model normal refrigerator performance?`,[
+ ['✓','It’s real but caused by an unusual event outside normal operations, so it can be excluded from a normal-conditions model','Real but not relevant to the question being asked, as long as you know why it happened.'],
+ ['✗','It must be bad data, so delete it','It actually happened; it’s not an error.','Assuming every outlier is an error.'],
+ ['✗','Keep it, since every real point belongs in every model','Relevance depends on the question.','Using a blanket rule.'],
+ ['✗','Replace it with the median, 26','That invents a value for a day that really was abnormal.','Imputing a real event away.']
+]);
+X(20,'c','m5',`If the pharmacy cared about the risk of spoiled medicine instead, what should happen to the 90-minute day?`,[
+ ['✓','Keep it; events like an open door are exactly the risk being studied','When the question is about rare harmful events, those outliers are the signal.'],
+ ['✗','Remove it, since it’s still an outlier','Whether to keep a point depends on the question, not the label “outlier.”','Treating “outlier” as “remove.”'],
+ ['✗','Cap it at 50, the flagging limit','That understates the real risk.','Hiding extremes.'],
+ ['✗','It doesn’t matter either way','It matters a lot for a risk question.','Ignoring context.']
+]);
+
+// ---------------------------------------------------------------- Scenario 21
+SCN_(21,'Restaurant traffic',`A restaurant averages μ = 200 customers a day. The owner runs a <b>decrease</b> CUSUM:
+<div class="eq">Sₜ = max{0, Sₜ₋₁ + (μ − xₜ − C)}, alarm when Sₜ ≥ T</div>with C = 10 and T = 60, starting from S₀ = 0.`);
+X(21,'a','m6',`The next four days have 185, 178, 205, and 170 customers. What is S after the fourth day?`,[
+ ['✓','22','S: 200 − 185 − 10 = 5. Then 5 + 12 = 17. Then 17 + (200 − 205 − 10) = 2. Then 2 + 20 = 22.'],
+ ['✗','47','That forgets to subtract C each day.','Dropping C.'],
+ ['✗','37','That skips the drop from the 205-customer day.','Ignoring an above-average day.'],
+ ['✗','0','Only a very good day pushes S down to 0.','Misapplying the floor.']
+]);
+X(21,'b','m6',`Day-to-day counts naturally swing by ±30, and the owner only cares about large, lasting drops. Which adjustment fits?`,[
+ ['✓','Raise C (and possibly T) so ordinary swings don’t build up','A larger allowance ignores normal variation; a larger threshold demands more total evidence.'],
+ ['✗','Lower C and T to catch every dip','That causes constant false alarms from normal swings.','Maximizing sensitivity.'],
+ ['✗','Set C = 0 so every customer counts','Then noise builds up into false alarms.','Ignoring noise.'],
+ ['✗','Switch to an increase CUSUM','The owner cares about decreases.','Wrong direction.']
+]);
+X(21,'c','m6',`The owner wants to show that a new competitor hurt business. After seeing the data, he tries many C and T values and reports the one pair that shows a drop right after the competitor opened. What’s the problem?`,[
+ ['✓','Choosing settings after looking for a desired result is cherry-picking; set them before analyzing','Results that depend on hand-picked settings aren’t reliable evidence.'],
+ ['✗','Nothing; trying many values is thorough','Picking the one that fits your story isn’t thoroughness.','Confusing search with rigor.'],
+ ['✗','He should have used a decrease CUSUM','He did; the issue is how he chose the settings.','Missing the point.'],
+ ['✗','CUSUM can’t detect competitor effects','It can detect the drop; it can’t prove the cause.','Wrong objection.']
+]);
+X(21,'d','m6',`Which data should the owner use to set μ?`,[
+ ['✓','A stable period of normal operation before any suspected change','μ should describe “normal,” not include the change you’re trying to detect.'],
+ ['✗','All the data, including the period after the competitor opened','A μ dragged down by the drop makes the drop harder to detect.','Contaminating the baseline.'],
+ ['✗','The single best week ever','That sets an unrealistically high normal.','Choosing an extreme.'],
+ ['✗','Whatever value makes the alarm go off soonest','That’s tuning to a conclusion.','Cherry-picking.']
+]);
+
+// ---------------------------------------------------------------- Scenario 22
+SCN_(22,'Smoothing web traffic',`A website tracks daily visits and uses single exponential smoothing:
+<div class="eq">Sₜ = α·xₜ + (1 − α)·Sₜ₋₁</div>`);
+X(22,'a','m7',`With α = 0.3, yesterday’s baseline was 100 and today’s count is 120. What is today’s baseline?`,[
+ ['✓','106','0.3 × 120 + 0.7 × 100 = 36 + 70 = 106.'],
+ ['✗','114','That uses α = 0.7 by mistake.','Swapping α and 1 − α.'],
+ ['✗','120','That’s α = 1: the baseline just copies today’s count.','Ignoring the old baseline.'],
+ ['✗','110','That’s a simple average of the two.','Using equal weights.']
+]);
+X(22,'b','m7',`What is the forecast for each of the next three days?`,[
+ ['✓','106 for all three days','Simple exponential smoothing forecasts a flat line at the current baseline.'],
+ ['✗','106, 112, 118','That assumes a trend, which simple smoothing doesn’t have.','Adding a trend term.'],
+ ['✗','120 for all three days','The forecast is the smoothed baseline, not the last count.','Forecasting with the raw value.'],
+ ['✗','It can’t forecast more than one day ahead','It can; the forecast is just flat.','Inventing a limit.']
+]);
+X(22,'c','m7',`Traffic permanently jumps from about 100 to about 150 a day after a news story. How does α affect how quickly the baseline catches up?`,[
+ ['✓','A larger α catches up faster, but it also reacts more to ordinary noise','A larger α gives new readings more weight, which helps after real shifts and hurts with random spikes.'],
+ ['✗','A smaller α catches up faster','A smaller α trusts the old baseline more, so it adapts slowly.','Reversing α.'],
+ ['✗','α doesn’t affect how fast it adapts','That’s exactly what α controls.','Ignoring α’s role.'],
+ ['✗','The baseline never reaches 150 with any α','With any α above 0 it gets there gradually.','Overstating the lag.']
+]);
+X(22,'d','m7',`Why is this method called “exponential” smoothing?`,[
+ ['✓','A reading’s weight shrinks by a factor of (1 − α) for each period it ages','Expanding Sₜ gives weights α, α(1 − α), α(1 − α)², …, which decay geometrically (exponentially).'],
+ ['✗','It fits an exponential growth curve to the data','It doesn’t assume growth.','Taking the name literally.'],
+ ['✗','It raises each reading to the power α','α is a weight, not an exponent on the data.','Misreading the formula.'],
+ ['✗','Its errors grow exponentially over time','The name refers to the weights.','Misattributing the name.']
+]);
+
+// ---------------------------------------------------------------- Scenario 23
+SCN_(23,'Monthly sales pattern',`A retailer plots four years of monthly sales (below). The overall level grows steadily, and the size of the yearly peaks and dips grows along with it.${FIG_TS}`);
+X(23,'a','m7',`Which smoothing approach fits this series best?`,[
+ ['✓','Holt-Winters with a trend and multiplicative seasonality','There’s a trend, a yearly cycle, and seasonal swings that grow with the level.'],
+ ['✗','Holt-Winters with a trend and additive seasonality','Additive seasonality assumes the swings stay the same size.','Missing the growing swings.'],
+ ['✗','Single exponential smoothing','That has no trend or seasonal terms.','Ignoring visible structure.'],
+ ['✗','Double (trend) smoothing without seasonality','That misses the yearly cycle.','Ignoring seasonality.']
+]);
+X(23,'b','m7',`For this monthly data, what is the season length L?`,[
+ ['✓','12','The pattern repeats every 12 months.'],
+ ['✗','4','That’s the number of years shown.','Counting cycles instead of their length.'],
+ ['✗','48','That’s the total number of months.','Using all the data as one cycle.'],
+ ['✗','7','That would be a weekly cycle in daily data.','Using the wrong cycle.']
+]);
+X(23,'c','m7',`How many years of data are generally needed to estimate the seasonal factors well?`,[
+ ['✓','Several full years, since each month’s factor is estimated once per cycle','Each seasonal factor gets only one new observation per year.'],
+ ['✗','A single month','You can’t see a yearly cycle in one month.','Ignoring the cycle length.'],
+ ['✗','Exactly one year','One year gives each factor a single data point.','Underestimating noise.'],
+ ['✗','None; the seasonal factors are entered by hand','They’re estimated from the data.','Misunderstanding fitting.']
+]);
+
+X(23,'d','m7',`If the retailer used single exponential smoothing anyway, what would its forecast for the next 12 months look like?`,[
+ ['✓','A flat line at the current baseline, missing both the growth and the yearly peaks','Single smoothing has no trend or seasonal terms, so every future month gets the same forecast.'],
+ ['✗','A rising line that follows the trend','That needs a trend term.','Assuming a trend is built in.'],
+ ['✗','A repeating yearly pattern','That needs seasonal factors.','Assuming seasonality is built in.'],
+ ['✗','An exact copy of last year’s 12 months','Smoothing doesn’t replay past values.','Confusing it with a naive seasonal forecast.']
+]);
+
+// ---------------------------------------------------------------- Scenario 24
+SCN_(24,'Reading residual plots',`An analyst fits linear regressions and checks the residuals. Plot 1 is from a model of crop yield on fertilizer amount; Plot 2 is from a model of home price on home features.${FIG_RES}`);
+X(24,'a','m8',`What does Plot 1 suggest, and what’s the fix?`,[
+ ['✓','The relationship is curved; add a squared term (x²)','A U-shape in the residuals means a straight line is systematically wrong at both ends and in the middle.'],
+ ['✗','Unequal spread; apply a Box-Cox transformation','The spread looks steady; the problem is the curve.','Mixing up the two patterns.'],
+ ['✗','The model fits well, since residuals average to 0','They average to 0 but follow a clear pattern.','Ignoring structure in the residuals.'],
+ ['✗','There are outliers; remove the points at both ends','The ends follow the curve; they aren’t outliers.','Deleting signal.']
+]);
+X(24,'b','m9',`What does Plot 2 suggest, and what’s a common fix?`,[
+ ['✓','Errors grow with the fitted value (heteroscedasticity); consider Box-Cox on the response','A fan shape means unequal variance, which a variance-stabilizing transformation addresses.'],
+ ['✗','The relationship is curved; add a squared term','There’s no curve, just widening spread.','Mixing up the two patterns.'],
+ ['✗','The data needs detrending over time','Nothing here involves time.','Wrong tool.'],
+ ['✗','Nothing is wrong with it','A fan shape breaks the constant-variance assumption.','Missing the pattern.']
+]);
+X(24,'c','m8',`Select <b>all</b> of the models that still count as linear regression.`,[
+ ['✓','y = a₀ + a₁x + a₂x²','It’s linear in the coefficients, even though x is squared.'],
+ ['✓','log(y) = a₀ + a₁x₁ + a₂x₂','The response is transformed, but the model is linear in the coefficients.'],
+ ['✓','y = a₀ + a₁x₁ + a₂x₂ + a₃x₁x₂','An interaction is just another term with its own coefficient.'],
+ ['✗','y = a₀ + x^(a₁)','The coefficient is in an exponent, so the model isn’t linear in its coefficients.','Thinking any formula with x counts.']
+],{multi:1,fixed:1});
+
+// ---------------------------------------------------------------- Scenario 25
+SCN_(25,'Uses of regression',`A national coffee chain has five years of weekly data for each store: sales, ad spending, price, local temperature, and promotions.`);
+X(25,'a','mix',`Leadership asks, “How much additional sales is each extra $1,000 of advertising associated with, holding price and promotions constant?” Which model is most appropriate?`,
+ mlist('Linear regression',{'Linear regression':'Regression estimates how the response changes with each predictor while holding the others constant.'}),{fixed:1});
+X(25,'b','m8',`Is that a descriptive or a predictive use of regression?`,[
+ ['✓','Descriptive: it explains how the system works','It asks what the relationship is, not what a specific future value will be.'],
+ ['✗','Predictive: it forecasts next week’s sales','The question is about the size of an effect, not a forecast.','Equating any regression with prediction.'],
+ ['✗','Prescriptive: it decides the ad budget','Deciding the budget would be a further step.','Jumping to the decision.'],
+ ['✗','Neither; regression can’t answer it','It’s a textbook regression question.','Underrating regression.']
+]);
+X(25,'c','m8',`The ad coefficient is 40 (units per $1,000). In practice, ads and promotions usually happen together. What does 40 describe?`,[
+ ['✓','The association of ads with sales when promotions (and price) are held fixed','Each coefficient is a “holding the others constant” effect, even if that combination is rare in practice.'],
+ ['✗','The total effect of a typical campaign, including the promotions that come with it','Promotions have their own coefficient.','Ignoring “holding others fixed.”'],
+ ['✗','Proof that each $1,000 of ads causes 40 extra sales','Observational data shows association, not proof of cause.','Reading cause into a coefficient.'],
+ ['✗','Nothing, since the predictors are correlated','Correlated predictors make coefficients less precise, not meaningless.','Overreacting.']
+]);
+
+// ---------------------------------------------------------------- Scenario 26
+SCN_(26,'Small data, many parameters',`A biotech lab has results from only 30 experiments and is comparing two regression models: Model 1 with 4 parameters and Model 2 with 9 parameters.`);
+X(26,'a','m8',`Which version of AIC is recommended here, and why?`,[
+ ['✓','Corrected AIC (AICc), since the number of parameters isn’t small relative to the number of data points','AICc adds an extra penalty that matters when n is small compared with k.'],
+ ['✗','Regular AIC, since it works at any data size','With n = 30 and k = 9, AIC under-penalizes complexity.','Ignoring the small-sample issue.'],
+ ['✗','BIC, since it’s always better for small data','BIC is the stricter penalty for large data; AICc is the small-sample fix.','Mixing up the criteria.'],
+ ['✗','None; you can’t compare models on 30 points','You can; you just need the correction.','Overstating the limit.']
+]);
+X(26,'b','m8',`The AICc correction is 2k(k + 1)/(n − k − 1). With 30 points, how does it compare for the two models?`,[
+ ['✓','About 1.6 for Model 1 and 9.0 for Model 2, so the bigger model is penalized much more','Model 1: 2·4·5/25 = 1.6. Model 2: 2·9·10/20 = 9. The correction grows quickly with k.'],
+ ['✗','The same for both models','It depends on k.','Ignoring the formula.'],
+ ['✗','Larger for Model 1','The model with more parameters gets the bigger correction.','Reversing the effect.'],
+ ['✗','Zero for both, since n is above 20','The correction is never exactly zero.','Inventing a rule.']
+]);
+X(26,'c','m8',`In Model 2, one coefficient’s 95% confidence interval is [−0.4, 1.2]. What can you say?`,[
+ ['✓','Zero is plausible, so the p-value is above 0.05; the data doesn’t clearly show an effect','An interval that includes 0 means the effect isn’t significant at the 5% level.'],
+ ['✗','The effect is 0.4','The interval is a range of plausible values, not a point.','Misreading the interval.'],
+ ['✗','The effect is definitely positive, since most of the interval is above 0','Zero is still inside the interval.','Eyeballing instead of checking 0.'],
+ ['✗','The p-value must be below 0.05','An interval containing 0 means it’s above 0.05.','Reversing the link.']
+]);
+
+// ---------------------------------------------------------------- Scenario 27
+SCN_(27,'Detrending gold',`An analyst wants to model the yearly price of gold using several economic factors. She first fits a linear trend to gold prices over time and computes detrended values (actual price − fitted trend).
+<table class="dtab"><tr><th>Year</th><th>Actual price</th><th>Fitted trend</th></tr><tr><td>2015</td><td>1,160</td><td>1,240</td></tr><tr><td>2016</td><td>1,250</td><td>1,270</td></tr><tr><td>2017</td><td>1,260</td><td>1,300</td></tr></table>`);
+X(27,'a','m9',`What is the detrended value for 2015, and what does it mean?`,[
+ ['✓','−80: gold was $80 below where the trend says it should be that year','Detrended = 1,160 − 1,240 = −80.'],
+ ['✗','+80: gold was $80 above the trend','The actual price is below the trend.','Subtracting in the wrong order.'],
+ ['✗','−90: gold fell $90 from the year before','That’s a change between years, which isn’t detrending.','Confusing detrending with differencing.'],
+ ['✗','1,160: detrending doesn’t change the values','Detrending subtracts the trend.','Misunderstanding detrending.']
+]);
+X(27,'b','m9',`If the fitted trend line were steeper, what would happen to the detrended values in the most recent years?`,[
+ ['✓','They’d be lower, since the trend predicts higher recent prices to subtract','A steeper line rises faster, so later actual prices sit further below it.'],
+ ['✗','They’d be higher','More is subtracted, so they go down.','Reversing the effect.'],
+ ['✗','They’d be unchanged','The trend value is what’s subtracted, so they change.','Missing the dependence.'],
+ ['✗','They’d all become 0','Only a perfect fit would do that.','Overstating it.']
+]);
+X(27,'c','m9',`Why detrend before regressing gold prices on factors like inflation and GDP?`,[
+ ['✓','If everything rises over time, the shared trend alone can make unrelated factors look predictive','Removing the trend leaves the year-to-year movements the model should explain.'],
+ ['✗','Detrending makes the data normally distributed','That’s not its purpose.','Confusing it with Box-Cox.'],
+ ['✗','Regression can’t use data from more than 10 years','There’s no such limit.','Inventing a rule.'],
+ ['✗','Detrending removes outliers','It removes a trend, not outliers.','Wrong purpose.']
+]);
+
+// ===================== Practice midterm 3 =====================
+MID_SET=3;
+// ---------------------------------------------------------------- Scenario 28
+SCN_(28,'Card-fraud analytics',`A credit-card company has years of transaction data. Past transactions are labeled “fraud” or “legitimate,” and each has attributes such as amount, merchant type, distance from home, and time since the previous purchase.`);
+X(28,'a','mix',`The company wants to know as soon as a customer’s typical daily spending has <b>shifted upward</b> from its usual level. Which model is most appropriate?`,
+ mlist('CUSUM',{'CUSUM':'CUSUM detects a change in a process’s mean as quickly as the evidence allows.'}),{fixed:1});
+X(28,'b','m2',`Select <b>all</b> of the models that could classify a new transaction as fraud or legitimate, using the labeled history.`,[
+ ['✓','Support vector machine','It learns a boundary between the two labeled classes.'],
+ ['✓','k-nearest-neighbor classification','It labels a transaction by its most similar past transactions.'],
+ ['✗','k-means clustering','It ignores the labels.','Confusing clustering with classification.'],
+ ['✗','Exponential smoothing','It smooths a time series; it doesn’t classify.','Mixing up tasks.'],
+ ['✓','Logistic regression (with a probability cutoff)','It estimates a probability of fraud; applying a cutoff turns that into a classification.']
+],{multi:1,fixed:1});
+X(28,'c','mix',`The company wants to group its 50,000 merchants into types based on their sales patterns. There are no existing labels. Which model is most appropriate?`,
+ mlist('k-means clustering',{'k-means clustering':'k-means finds natural groups in unlabeled data.'}),{fixed:1});
+X(28,'d','m7',`Select <b>all</b> of the models that could forecast next week’s daily transaction volume, which has a strong weekly pattern and a slow upward trend.`,[
+ ['✓','Exponential smoothing (Holt-Winters)','Trend and seasonal terms handle both features.'],
+ ['✓','ARIMA (with suitable differencing)','Differencing can remove the trend and seasonality so the remaining series can be modeled.'],
+ ['✗','GARCH','GARCH forecasts variance, not volume.','Confusing variance with level.'],
+ ['✗','CUSUM','CUSUM detects changes; it doesn’t forecast.','Mixing up detection and forecasting.'],
+ ['✗','k-means clustering','Clustering doesn’t forecast.','Wrong tool.']
+],{multi:1,fixed:1});
+
+// ---------------------------------------------------------------- Scenario 29
+SCN_(29,'SVM by the numbers',`A hard-margin SVM requires (Σⱼ aⱼxᵢⱼ + a₀)·yᵢ ≥ 1 for every training point, where yᵢ is +1 or −1. A soft-margin SVM allows violations, charging each point an error of max{0, 1 − (Σⱼ aⱼxᵢⱼ + a₀)·yᵢ}. For four points, the value of (Σⱼ aⱼxᵢⱼ + a₀)·yᵢ is:
+<table class="dtab"><tr><th>Point</th><th>P</th><th>Q</th><th>R</th><th>S</th></tr><tr><td>(Σ aⱼxᵢⱼ + a₀)·yᵢ</td><td>2.7</td><td>1.0</td><td>0.4</td><td>−0.5</td></tr></table>`);
+X(29,'a','m2',`Which point lies exactly on its margin line?`,[
+ ['✓','Q','A value of exactly 1 means the point sits on its margin line, so it’s a support vector.'],
+ ['✗','P','2.7 is well past the margin, on the correct side.','Thinking larger means closer.'],
+ ['✗','R','0.4 is between the boundary and the margin.','Mixing up 0 and 1.'],
+ ['✗','S','−0.5 is on the wrong side.','Misreading the sign.']
+]);
+X(29,'b','m2',`What are the soft-margin errors for points R and S?`,[
+ ['✓','R: 0.6. S: 1.5','R: 1 − 0.4 = 0.6. S: 1 − (−0.5) = 1.5. The further a point is on the wrong side, the larger its error.'],
+ ['✗','R: 0. S: 1','R is on the correct side but inside the margin, so it still has some error; S’s error grows with distance.','Thinking errors are just 0 or 1.'],
+ ['✗','R: 0.4. S: 0.5','The error is 1 minus the value, not the value itself.','Misapplying the formula.'],
+ ['✗','R: 0. S: 0','Both violate the margin.','Ignoring the margin.']
+]);
+X(29,'d','m2',`If Σaⱼ² = 0.25, what is the margin width 2/√(Σaⱼ²)? And what if every coefficient doubled?`,[
+ ['✓','4; it would shrink to 2','√0.25 = 0.5, so the width is 2/0.5 = 4. Doubling the coefficients multiplies Σaⱼ² by 4, which halves the margin.'],
+ ['✗','8; it would grow to 16','The square root of 0.25 is 0.5, not 0.25.','Forgetting the root.'],
+ ['✗','4; it would stay 4','The margin depends on the coefficient sizes.','Ignoring the formula.'],
+ ['✗','4; it would shrink to 1','Doubling the coefficients halves the margin; it doesn’t quarter it.','Squaring the effect twice.']
+]);
+
+// ---------------------------------------------------------------- Scenario 30
+SCN_(30,'Scaling credit scores',`A lender’s credit scores range from a minimum of 300 to a maximum of 850 in its training data, with a mean of 700 and a standard deviation of 50.`);
+X(30,'a','m2',`Using min-max scaling to [0, 1], what is the scaled value of a 740 score?`,[
+ ['✓','0.8','(740 − 300) / (850 − 300) = 440 / 550 = 0.8.'],
+ ['✗','0.87','That divides 740 by 850.','Skipping the minimum.'],
+ ['✗','0.8 with the training mean subtracted first','Min-max uses the min and max, not the mean.','Mixing the two methods.'],
+ ['✗','0.44','That forgets to divide by the range (550).','Arithmetic slip.']
+]);
+X(30,'b','m2',`A new applicant has a score of 860, above the training maximum. Using the training min and max, what happens?`,[
+ ['✓','The scaled value is slightly above 1 (about 1.02), outside the training range','New data can fall outside [0, 1]. The model sees a value it never saw in training.'],
+ ['✗','It’s capped at exactly 1 automatically','The formula doesn’t cap anything.','Assuming built-in clipping.'],
+ ['✗','Everyone else’s scaled scores change','They change only if you refit the scaling on the new data.','Mixing up refitting with applying.'],
+ ['✗','The formula breaks and can’t be used','It still produces a number.','Overstating it.']
+]);
+X(30,'c','m2',`With standardization instead, what is a score of 600, and what does it mean?`,[
+ ['✓','−2: two standard deviations below the mean','(600 − 700) / 50 = −2.'],
+ ['✗','0.55: the min-max value','That’s a different method.','Mixing the two methods.'],
+ ['✗','+2: two standard deviations above the mean','600 is below the mean.','Flipping the sign.'],
+ ['✗','−100: 100 points below the mean','Standardization divides by the SD.','Forgetting to divide.']
+]);
+
+// ---------------------------------------------------------------- Scenario 31
+SCN_(31,'Picking the winner',`A team compares 5 SVM models and 5 KNN models for loan default on the same validation set.
+<table class="dtab"><tr><th>Model</th><th>SVM-1</th><th>SVM-2</th><th>SVM-3</th><th>SVM-4</th><th>SVM-5</th></tr><tr><td>Validation accuracy (%)</td><td>93</td><td>88</td><td>96</td><td>97</td><td>95</td></tr>
+<tr><th>Model</th><th>KNN-1</th><th>KNN-2</th><th>KNN-3</th><th>KNN-4</th><th>KNN-5</th></tr><tr><td>Validation accuracy (%)</td><td>94</td><td>94</td><td>90</td><td>95</td><td>82</td></tr></table>`);
+X(31,'a','m3',`The team picks SVM-4 (97%). What accuracy should they expect on new data?`,[
+ ['✓','Probably somewhat below 97%; measure it on a separate test set','The top validation score includes some luck from being the best of ten. Test data gives an unbiased estimate.'],
+ ['✗','Exactly 97%','The winner’s score is optimistically biased.','Ignoring selection bias.'],
+ ['✗','Above 97%, since it was the best','Selection pushes the estimate up, not the true accuracy.','Reversing the bias.'],
+ ['✗','The average of all ten models, about 92%','That mixes in other models’ performance.','Averaging unrelated scores.']
+]);
+X(31,'b','m3',`Suppose all ten models truly have 93% accuracy, and SVM-4 scored 97% purely by luck. What does this show?`,[
+ ['✓','Picking the highest score tends to pick a model whose random error happened to be positive','With equally good models, the winner is whichever one got the luckiest split.'],
+ ['✗','SVMs are better than KNN','Here they’re all equal by assumption.','Reading signal into noise.'],
+ ['✗','The validation set was built incorrectly','Random variation is normal.','Blaming the data.'],
+ ['✗','Each model’s validation score is biased','Each is unbiased on its own; the bias comes from choosing the max.','Misplacing the bias.']
+]);
+X(31,'c','m3',`On the test set, SVM-4 scores 92% and KNN-4 (which was not chosen) scores 94%. Should the team switch to KNN-4?`,[
+ ['✓','No; using the test set to choose turns it into a validation set and biases the final estimate','The test set’s job is a final, untouched estimate, not another round of selection.'],
+ ['✗','Yes; the test set shows KNN-4 is better','Choosing by test score reintroduces selection bias.','Reusing the test set.'],
+ ['✗','Yes, and report 94% as KNN-4’s expected accuracy','That number would be optimistically biased.','Reporting a selected score.'],
+ ['✗','No, because test sets are never accurate','They’re accurate when used once.','Overgeneralizing.']
+]);
+
+// ---------------------------------------------------------------- Scenario 32
+SCN_(32,'Cross-validation mechanics',`An analyst has 1,000 data points (after setting aside a separate test set) and uses 10-fold cross-validation to compare KNN with k = 3, 5, 7, and 9.`);
+X(32,'a','m3',`In each fold, how many points does the model train on, and how many are used to validate it?`,[
+ ['✓','900 for training, 100 for validation','The data is split into 10 parts of 100. Each fold holds out one part.'],
+ ['✗','100 for training, 900 for validation','That’s reversed.','Flipping the roles.'],
+ ['✗','1,000 for both training and validation','That’s training error, not cross-validation.','Reusing data.'],
+ ['✗','500 for each','That would be 2-fold.','Wrong fold size.']
+]);
+X(32,'b','m3',`How many times is each data point used for training and for validation?`,[
+ ['✓','Training 9 times, validation once','Each point sits in exactly one held-out part, and in the training data of the other 9 folds.'],
+ ['✗','Training once, validation 9 times','That’s reversed.','Flipping the counts.'],
+ ['✗','Training 10 times, validation 10 times','A point is never used for training and validation in the same fold.','Double counting.'],
+ ['✗','It varies at random','Every point is held out exactly once.','Misunderstanding the folds.']
+]);
+X(32,'c','m3',`How many models are fit in total, including the final model?`,[
+ ['✓','41: 10 folds × 4 values of k, plus 1 final model on all 1,000 points','Each candidate is fit once per fold. Then the winner is refit on all the data.'],
+ ['✗','4: one per value of k','Each candidate is fit once per fold.','Ignoring the folds.'],
+ ['✗','10: one per fold','Every candidate needs its own fold fits.','Ignoring the candidates.'],
+ ['✗','40, with no final model; use the best fold’s model','The final model is refit on all the data.','Skipping the refit.']
+]);
+X(32,'d','m3',`Only 2% of the points are positive cases. What’s a sensible tweak to the folds?`,[
+ ['✓','Stratify the folds so each has about 2% positives','Otherwise some folds might have almost no positives, making their scores unreliable.'],
+ ['✗','Use fewer folds so each has more positives','That helps a little but doesn’t guarantee balance.','A weaker fix.'],
+ ['✗','Put all the positives in the training folds','Then validation never checks the positives.','Breaking the evaluation.'],
+ ['✗','Nothing; random folds always balance perfectly','With rare classes they often don’t.','Overtrusting randomness.']
+]);
+
+// ---------------------------------------------------------------- Scenario 33
+SCN_(33,'Supervised or unsupervised?',`A health-insurance analytics team lists projects for next year.`);
+X(33,'a','m4',`Select <b>all</b> of the projects that are supervised learning.`,[
+ ['✓','Predict whether a claim is fraudulent, using past claims labeled by investigators','Known labels are what make it supervised.'],
+ ['✗','Find natural groups of members based on how they use care, with no predefined groups','No labels, so it’s unsupervised (clustering).','Confusing clustering with classification.'],
+ ['✓','Predict next year’s cost for each member, using past members’ actual costs','Regression on a known response is supervised.'],
+ ['✗','Discover which combinations of diagnoses tend to occur together','Discovering structure without a response is unsupervised.','Assuming any analysis is supervised.']
+],{multi:1,fixed:1});
+X(33,'b','m4',`The team clusters patients for personalized medicine. What’s the main value of the clusters?`,[
+ ['✓','Treatments that worked for similar patients may guide care for new patients in the same group','Clusters group similar patients, so results within a group can be shared.'],
+ ['✗','They tell each patient their exact diagnosis','Clustering doesn’t diagnose.','Overstating clustering.'],
+ ['✗','They prove which treatment causes recovery','They show similarity, not causation.','Reading cause into groups.'],
+ ['✗','They replace the need for any medical data','They’re built from medical data.','Misunderstanding the method.']
+]);
+X(33,'c','m4',`The elbow diagram for the patient clusters falls smoothly with no clear bend. How should the team choose k?`,[
+ ['✓','Use practical considerations: how many groups clinicians can act on and whether the groups are interpretable','When the elbow is unclear, real-world usefulness has to guide k.'],
+ ['✗','Choose the k with the lowest total distance','That always picks the largest k.','Minimizing blindly.'],
+ ['✗','Conclude the data has no clusters, so stop','A smooth curve doesn’t prove there are no useful groups.','Overreading the diagram.'],
+ ['✗','Always use k = 3 as a default','There’s no universal default.','Inventing a rule.']
+]);
+
+// ---------------------------------------------------------------- Scenario 34
+SCN_(34,'How many outliers is normal?',`A sensor produces 10,000 readings that are roughly normally distributed. About 95.4% of normal data lies within 2 standard deviations of the mean, and about 99.73% lies within 3.`);
+X(34,'a','m5',`About how many readings would you expect beyond 3 standard deviations, even if nothing is wrong?`,[
+ ['✓','About 27','0.27% of 10,000 ≈ 27.'],
+ ['✗','0, since normal data has no extreme values','Normal data always has some extremes.','Expecting none.'],
+ ['✗','About 460','That’s the count beyond 2 SDs.','Mixing up the cutoffs.'],
+ ['✗','About 3','That’s 0.03%, not 0.27%.','Arithmetic slip.']
+]);
+X(34,'b','m5',`A colleague switches the rule to flag readings beyond 2 SDs and finds about 460. What should you conclude?`,[
+ ['✓','That’s about what normal data produces; most of the 460 are probably ordinary readings','4.6% of 10,000 ≈ 460, so a 2-SD rule flags many perfectly normal points.'],
+ ['✗','The sensor is badly malfunctioning','The count matches what normal data predicts.','Treating expected tails as errors.'],
+ ['✗','All 460 should be deleted','That removes real data.','Deleting by rule.'],
+ ['✗','The data must not be normal','The count is exactly what normal data predicts.','Misreading the evidence.']
+]);
+X(34,'c','m5',`Instead, 600 readings fall beyond 3 SDs. What does that suggest?`,[
+ ['✓','Far more extremes than a normal distribution predicts: heavy tails, or a real problem worth investigating','600 vs. an expected ~27 is a big gap. Either the data isn’t normal or something is generating extreme values.'],
+ ['✗','Nothing unusual; 600 is close to 27','It’s more than 20 times what you’d expect.','Ignoring the size of the gap.'],
+ ['✗','The sensor is perfect','Extra extremes point the other way.','Misreading.'],
+ ['✗','Switch to a 2-SD rule','That flags even more points and doesn’t explain anything.','Changing the rule instead of investigating.']
+]);
+
+// ---------------------------------------------------------------- Scenario 35
+SCN_(35,'Updating a seasonal factor',`A burger chain uses Holt-Winters with multiplicative weekly seasonality on daily sales. The seasonal update is
+<div class="eq">Cₜ = γ·(xₜ / Sₜ) + (1 − γ)·C<sub>t−L</sub></div>`);
+X(35,'a','m7',`On a Saturday, xₜ = 150, the baseline Sₜ = 100, last Saturday’s factor C<sub>t−L</sub> = 1.3, and γ = 0.2. What is the new Saturday factor?`,[
+ ['✓','1.34','0.2 × (150/100) + 0.8 × 1.3 = 0.30 + 1.04 = 1.34.'],
+ ['✗','1.50','That’s γ = 1: only today’s ratio counts.','Ignoring the old factor.'],
+ ['✗','1.30','That’s γ = 0: no update.','Ignoring today’s data.'],
+ ['✗','1.40','That’s an equal-weight average.','Using the wrong weights.']
+]);
+X(35,'b','m7',`What happens if γ = 0?`,[
+ ['✓','The seasonal factors never change from their starting values','With γ = 0, Cₜ always equals C<sub>t−L</sub>.'],
+ ['✗','There’s no seasonality at all','The initial factors are still used; they just never update.','Confusing “frozen” with “none.”'],
+ ['✗','The baseline stops updating','The baseline is controlled by α.','Confusing parameters.'],
+ ['✗','The factors react instantly to each new week','That’s γ = 1.','Reversing γ.']
+]);
+X(35,'c','m7',`Every day’s sales rise by 10% for a month, but the weekly pattern keeps the same shape. In a multiplicative model, what happens to the seasonal factors?`,[
+ ['✓','They stay about the same; the baseline rises instead','Multiplicative factors are ratios to the baseline, so a uniform rise shows up in S, not C.'],
+ ['✗','They all rise by 10%','The baseline absorbs the uniform increase.','Putting the change in the wrong component.'],
+ ['✗','They all fall','Nothing pushes them down.','Wrong direction.'],
+ ['✗','Only Saturday’s factor rises','The shape is unchanged.','Misreading the scenario.']
+]);
+
+// ---------------------------------------------------------------- Scenario 36
+SCN_(36,'ARIMA choices',`An energy analyst is choosing ARIMA(p, d, q) models for several monthly series.`);
+X(36,'a','m7',`Which ARIMA model is equivalent to basic (single) exponential smoothing?`,[
+ ['✓','ARIMA(0, 1, 1)','One difference plus one moving-average term reproduces simple exponential smoothing.'],
+ ['✗','ARIMA(0, 1, 0)','That’s a random walk: the forecast is the last value.','Mixing up the special cases.'],
+ ['✗','ARIMA(1, 0, 0)','That’s a simple autoregression on one lag.','Mixing up the special cases.'],
+ ['✗','ARIMA(0, 0, 0)','That’s just a constant mean plus noise.','Mixing up the special cases.']
+]);
+X(36,'b','m7',`Which series is most likely already stationary (d = 0)?`,[
+ ['✓','Monthly forecast errors of a well-calibrated model','Their mean and variance should stay constant over time.'],
+ ['✗','A city’s population over 30 years','It has a trend.','Ignoring the trend.'],
+ ['✗','Monthly ice-cream sales','They have strong seasonality.','Ignoring seasonality.'],
+ ['✗','A stock price','Prices wander like a random walk.','Ignoring the drift.']
+]);
+X(36,'c','m7',`The analyst differences a series that was already stationary. What’s the likely effect?`,[
+ ['✓','It adds unnecessary noise and structure, which can hurt the forecasts','Over-differencing creates artificial patterns that the model then has to fit.'],
+ ['✗','Nothing; extra differencing is harmless','It changes the series and usually adds noise.','Assuming it’s free.'],
+ ['✗','It makes the forecasts perfect','No.','Overclaiming.'],
+ ['✗','It turns the series into a trend','Differencing removes trends; it doesn’t create them.','Reversing the effect.']
+]);
+X(36,'d','m7',`One series has only 18 monthly observations and a few spikes. Which approach is generally more sensible?`,[
+ ['✓','Exponential smoothing, since ARIMA usually needs about 40 or more points to estimate reliably','With short, noisy data, a simpler model is less likely to overfit.'],
+ ['✗','ARIMA, since it always forecasts better','More parameters need more data.','Assuming more complexity always wins.'],
+ ['✗','GARCH, since the data is noisy','GARCH models variance, not the level.','Confusing noise with variance forecasting.'],
+ ['✗','No forecast is possible with 18 points','Simple methods still work.','Overstating the limit.']
+]);
+
+// ---------------------------------------------------------------- Scenario 37
+SCN_(37,'Interactions and logs',`A retailer fits two regressions:
+<div class="eq">Model 1: spend = 20 + 3·discount + 4·(discount × member)<br>Model 2: log(salary) = 9.8 + 0.06·(years of education)</div>In Model 1, member = 1 for loyalty members and 0 otherwise; discount is in percentage points.`);
+X(37,'a','m8',`In Model 1, how much does a 1-point bigger discount change predicted spend for a non-member, and for a member?`,[
+ ['✓','Non-member: +3. Member: +7','The discount’s effect is 3 + 4 × member, so 3 when member = 0 and 7 when member = 1.'],
+ ['✗','+3 for both','That ignores the interaction term.','Dropping the interaction.'],
+ ['✗','Non-member: +3. Member: +4','The member effect adds to the base 3.','Using the interaction term alone.'],
+ ['✗','+7 for both','Non-members don’t get the interaction.','Applying the interaction to everyone.']
+]);
+X(37,'b','m8',`In Model 2, what does one more year of education do to predicted salary?`,[
+ ['✓','Multiplies it by about e^0.06 ≈ 1.06, roughly a 6% increase','Adding 0.06 on the log scale multiplies salary by e^0.06.'],
+ ['✗','Adds $0.06 to salary','That’s the change in log(salary), not salary.','Forgetting the transform.'],
+ ['✗','Adds $6,000 to salary','A log model gives percentage effects.','Treating it as linear in dollars.'],
+ ['✗','Multiplies salary by 0.06','That would cut salary by 94%.','Wrong operation.']
+]);
+X(37,'c','m8',`Why might the analyst have used log(salary) as the response?`,[
+ ['✓','Salaries are right-skewed, and effects like education plausibly work in percentages','Logs reduce skew and turn multiplicative effects into additive ones.'],
+ ['✗','Logs make every relationship linear','Only some relationships.','Overclaiming.'],
+ ['✗','Regression can’t handle dollar amounts','It can; the log is a modeling choice.','Inventing a limit.'],
+ ['✗','To make the p-values smaller','That’s not a reason to transform.','Gaming significance.']
+]);
+
+// ---------------------------------------------------------------- Scenario 38
+SCN_(38,'Diet study',`A nutrition researcher regresses heart-health scores of 5,000 people on how often they eat each of 100 different foods, testing each food’s coefficient at the 0.05 level. Six foods come out significant.`);
+X(38,'a','m8',`If none of the 100 foods truly mattered, about how many would you still expect to look significant?`,[
+ ['✓','About 5','5% of 100 tests give false positives by chance.'],
+ ['✗','0','Chance alone produces some small p-values.','Ignoring false positives.'],
+ ['✗','About 50','That would be a 50% false-positive rate.','Arithmetic slip.'],
+ ['✗','Exactly 6','The expected number under no effects is 5.','Confusing what was observed with what’s expected.']
+]);
+X(38,'b','m8',`Given that, how should the six significant foods be viewed?`,[
+ ['✓','As candidates to test on new data, since several may be false positives','With many tests, a handful of “significant” results is expected by chance alone.'],
+ ['✗','As proven to affect heart health','Multiple testing makes some of them likely flukes.','Trusting each p-value in isolation.'],
+ ['✗','As definitely all false positives','Some could be real; you need new data to tell.','Overcorrecting.'],
+ ['✗','As important because of the large sample size','A large sample doesn’t fix multiple testing.','Confusing n with validity.']
+]);
+X(38,'c','m8',`One food, walnuts, is significant. Select <b>all</b> of the findings that would strengthen a causal claim that walnuts improve heart health.`,[
+ ['✓','Heart health improved after people started eating walnuts, not before','The cause must come before the effect.'],
+ ['✓','There’s a plausible biological mechanism for the effect','A sensible “why” supports causation.'],
+ ['✓','The effect remains after controlling for exercise, income, and overall diet quality','Ruling out confounders removes alternative explanations.'],
+ ['✗','The p-value is extremely small','A small p-value shows association, not causation.','Equating significance with cause.']
+],{multi:1,fixed:1});
+
+// ---------------------------------------------------------------- Scenario 39
+SCN_(39,'Two factors, one component',`An analyst runs PCA on two scaled factors and plans to keep only one component for a classifier. The figure shows the data (black and white are the two classes) and the two principal directions, D1 and D2.${FIG_PCA}`);
+X(39,'a','m9',`Why is D1 the first principal component?`,[
+ ['✓','It’s the direction along which the data varies the most','PCA orders directions by variance, and D1 runs along the long axis of the cloud.'],
+ ['✗','It separates the two classes best','PCA doesn’t look at the classes at all.','Thinking PCA is supervised.'],
+ ['✗','It’s parallel to factor 1','It’s diagonal, a combination of both factors.','Confusing components with factors.'],
+ ['✗','It’s the shortest direction across the data','That’s the last component.','Reversing the order.']
+]);
+X(39,'b','m9',`If the analyst keeps only D1, what happens to the classifier?`,[
+ ['✓','It does poorly, since the classes are separated along D2, the direction that was dropped','High variance isn’t the same as usefulness for the response.'],
+ ['✗','It does better, since D1 holds the most information','It holds the most variance, but not the class information.','Equating variance with usefulness.'],
+ ['✗','Nothing changes, since PCA keeps all the information','Dropping D2 loses information.','Thinking reduction is free.'],
+ ['✗','PCA automatically keeps D2 instead','PCA always keeps components in order of variance.','Thinking PCA adapts to the classes.']
+]);
+X(39,'c','m9',`Given this risk, why use PCA at all?`,[
+ ['✓','It often helps, by removing correlation and reducing many factors to a few, but check its effect on validation data','It’s a tool, not a guarantee. Compare models with and without it.'],
+ ['✗','It always improves prediction','This example shows it doesn’t.','Overtrusting PCA.'],
+ ['✗','It should never be used for classification','It’s often useful; just validate it.','Overcorrecting.'],
+ ['✗','It turns unsupervised data into labels','It doesn’t create labels.','Misunderstanding PCA.']
+]);
+X(39,'d','m9',`For a square matrix A, what does it mean for v to be an eigenvector with eigenvalue λ?`,[
+ ['✓','A·v = λ·v: multiplying by A only stretches v by λ, without changing its direction','That’s the definition used to find the principal directions.'],
+ ['✗','A·v = 0','That only describes eigenvalue 0.','Special case only.'],
+ ['✗','v is the largest column of A','Eigenvectors aren’t columns of A.','Misunderstanding the term.'],
+ ['✗','A·λ = v','The roles are wrong.','Mixing up the equation.']
+]);
+
+// ---------------------------------------------------------------- Scenario 40
+SCN_(40,'Checking the response’s shape',`An analyst modeling insurance claim amounts makes a Q-Q plot of the response (below). Points on the dashed line would mean the data matches a normal distribution.${FIG_QQ}`);
+X(40,'a','m9',`What does this Q-Q plot show?`,[
+ ['✓','The response is right-skewed: the largest values sit far above the line','Points bend upward at the top, meaning bigger extremes than a normal distribution would have.'],
+ ['✗','The response is perfectly normal','The points curve away from the line.','Misreading the plot.'],
+ ['✗','The response has a linear trend over time','A Q-Q plot doesn’t involve time.','Confusing plot types.'],
+ ['✗','The response is left-skewed','The long tail is on the high end.','Flipping the direction.']
+]);
+X(40,'b','m9',`The analyst applies a Box-Cox transformation. Who chooses λ, and what will it likely be?`,[
+ ['✓','The software picks λ; for right-skewed data it’s likely below 1 (for example, a log or square root)','λ below 1 compresses large values more than small ones, reducing right skew.'],
+ ['✗','The analyst must pick λ = 1 by hand','λ = 1 changes nothing; software optimizes λ.','Misunderstanding who picks.'],
+ ['✗','The software picks λ, and it will be above 1','λ above 1 would make right skew worse.','Reversing the direction.'],
+ ['✗','λ isn’t needed for Box-Cox','λ is the transformation’s parameter.','Missing the idea.']
+]);
+X(40,'c','m9',`Some claims in the data are exactly $0. Why is that a problem for Box-Cox?`,[
+ ['✓','Box-Cox requires positive values, so zeros (and negatives) must be shifted or handled first','The transformation, including the log case, is defined only for positive numbers.'],
+ ['✗','It isn’t a problem; Box-Cox handles any value','Logs and fractional powers of 0 or negatives fail.','Missing the domain restriction.'],
+ ['✗','Zeros make λ equal 0','λ is chosen by fit, not by the values.','Confusing ideas.'],
+ ['✗','Zeros must always be deleted','Shifting is often better than deleting.','Using a blanket rule.']
+]);
+
+// ---------------------------------------------------------------- Scenario 41
+SCN_(41,'From model to decision',`A grocery delivery service builds a regression to estimate delivery time. For one order, the model predicts 42 minutes. The dispatcher is told to tell the customer “about 45 minutes.”`);
+X(41,'a','m1',`Which step of the modeling cycle (real situation → math model → analysis → real-world answer) is “tell the customer 45 minutes”?`,[
+ ['✓','Turning the analysis into a real-world answer','The model’s 42 minutes is translated into a practical decision with a buffer.'],
+ ['✗','Building the math model','The model was already built.','Wrong stage.'],
+ ['✗','Running the analysis','The analysis produced the 42.','Wrong stage.'],
+ ['✗','Describing the real situation','That comes first.','Wrong stage.']
+]);
+X(41,'b','m1',`A consultant’s report for this service says only “we used a regression model.” Why can’t the client reproduce the estimates from that?`,[
+ ['✓','“Model” could mean the method, the equation’s structure, or the specific fitted coefficients; the report gives only the method','Reproducing the estimates requires the actual predictors and fitted numbers.'],
+ ['✗','Regression models can’t be reproduced','They can, with the details.','Overstating it.'],
+ ['✗','The client needs the consultant’s software','Any software works with the specification.','Wrong barrier.'],
+ ['✗','Regression results are random each time','Least squares gives the same answer on the same data.','Misunderstanding regression.']
+]);
+
+// ---------------------------------------------------------------- Scenario 42
+SCN_(42,'Who chooses what?',`Some values in a model are calculated by the software; others are choices the analyst makes, often guided by validation.`);
+X(42,'a','who',`Select <b>all</b> of the values that are usually <b>chosen by the analyst</b> rather than calculated by the algorithm.`,[
+ ['✓','k in k-means','You choose the number of clusters using the elbow and real-world needs.'],
+ ['✗','The coefficients in a linear regression','The software computes them by least squares.','Thinking coefficients are set by hand.'],
+ ['✓','k in KNN','You tune the number of neighbors, typically with validation.'],
+ ['✓','C and T in CUSUM','You set them based on the costs of false alarms and late detection.'],
+ ['✗','The cluster centers in k-means','The algorithm calculates them as averages.','Thinking centers are placed by hand.']
+],{multi:1,fixed:1});
+X(42,'b','who',`R’s HoltWinters() returns α = 0.31 even though you never supplied α. Where did it come from?`,[
+ ['✓','The software chose the α that minimized forecast error on the past data','When you don’t fix α, it’s fit by optimization.'],
+ ['✗','0.31 is the built-in default for every series','It depends on the data.','Assuming a constant default.'],
+ ['✗','It was chosen at random','It’s optimized, not random.','Misunderstanding fitting.'],
+ ['✗','It’s the share of the data used for training','α is a smoothing weight.','Confusing α with a split.']
+]);
+X(42,'c','who',`In a soft-margin SVM, how is the trade-off weight λ (or the software’s C) usually chosen?`,[
+ ['✓','By the analyst, comparing values with validation or cross-validation','It’s a tuning setting; different values give different models to compare.'],
+ ['✗','The software calculates the single correct value','It needs to be tuned.','Thinking it’s fit automatically.'],
+ ['✗','It’s always set to 1','There’s no universal value.','Assuming a default is optimal.'],
+ ['✗','It equals the number of attributes','It isn’t tied to the attribute count.','Inventing a rule.']
+]);
+
+// ---------------------------------------------------------------- Scenario 43
+SCN_(43,'Monitoring a patient',`An ICU monitors each patient’s heart rate every minute. A heart rate that drifts too high <b>or</b> too low is dangerous. The team uses CUSUM with the patient’s normal mean μ, an allowance C, and a threshold T.`);
+X(43,'a','m6',`How should CUSUM be set up for this patient?`,[
+ ['✓','Run an increase CUSUM and a decrease CUSUM side by side','Both directions matter, so each gets its own running sum with the floor at 0.'],
+ ['✗','Run only an increase CUSUM, since high heart rates are more common','A dangerous drop would go unnoticed.','Watching only one direction.'],
+ ['✗','Use one sum of raw deviations from μ, without the max with 0','Highs and lows would cancel out, hiding a real drift.','Letting directions cancel.'],
+ ['✗','Set C = 0 so that any change is caught','That causes constant false alarms from normal variation.','Ignoring noise.']
+]);
+X(43,'b','m6',`In the increase CUSUM, a reading comes in above μ but below μ + C. What happens to Sₜ?`,[
+ ['✓','It goes down (or stays at 0), since xₜ − μ − C is negative','Readings only add to the sum when they exceed μ + C, so a mildly high reading is treated as normal.'],
+ ['✗','It goes up, since the reading is above the mean','The allowance C must be exceeded first.','Ignoring C.'],
+ ['✗','It resets to 0 immediately, whatever its current value','It only drops by the shortfall; it hits 0 only if that’s enough.','Overstating the reset.'],
+ ['✗','The alarm goes off','A single mild reading can’t push the sum up.','Overreacting.']
+]);
+
+
 // stable ids
-const cnt={}; QS.forEach(q=>{const k=(q.slide?'s-':q.core?'c-':'')+q.m; cnt[k]=(cnt[k]||0)+1; q.id=k+'-'+cnt[k];});
-const CQ=QS.filter(q=>!q.slide&&!q.core), SQ=QS.filter(q=>q.slide), KQ=QS.filter(q=>q.core);
+const cnt={}; QS.forEach(q=>{const k=(q.slide?'s-':q.core?'c-':q.mid?'x-':'')+q.m; cnt[k]=(cnt[k]||0)+1; q.id=k+'-'+cnt[k];});
+const CQ=QS.filter(q=>!q.slide&&!q.core&&!q.mid), SQ=QS.filter(q=>q.slide), KQ=QS.filter(q=>q.core), MQ=QS.filter(q=>q.mid);
+MQ.forEach((q,i)=>q.seq=i);
+const isRight=(q,oi)=>q.ok?q.ok.includes(oi):oi===0;
 SQ.forEach(q=>{ q.lecs=[...new Set((q.src.match(/M\d+ L\d+a?/g)||[]))]; });
 // Chronological order for the slide test: module → lecture → slide page (source order breaks ties).
 SQ.forEach((q,i)=>{ const p=q.src.match(/M(\d+) L(\d+)(a?) p(\d+)/)||[0,0,0,'',0]; q.ord=[+p[1],+p[2],p[3]?1:0,+p[4],i]; });
@@ -4855,7 +5943,7 @@ SQ.sort(byOrd);
 const LECS=[...new Set(SQ.flatMap(q=>q.lecs))].sort((a,b)=>{const pa=a.match(/M(\d+) L(\d+)(a?)/), pb=b.match(/M(\d+) L(\d+)(a?)/); return (pa[1]-pb[1])||(pa[2]-pb[2])||pa[3].localeCompare(pb[3]);});
 const SLIDE_KEYS=MOD_KEYS.filter(k=>SQ.some(q=>q.m===k));
 const CORE_KEYS=MOD_KEYS.filter(k=>KQ.some(q=>q.m===k));
-const srcTag=q=>q.slide?`<span class="tag src">Slides: ${q.src}</span>`:q.core?`<span class="tag src">Core: ${esc(q.c)}</span>`:'';
+const srcTag=q=>q.slide?`<span class="tag src">Slides: ${q.src}</span>`:q.core?`<span class="tag src">Core: ${esc(q.c)}</span>`:q.mid?`<span class="tag src">Midterm ${q.set} · Scenario ${q.sc} · Part ${q.part}${q.multi?' · Select all':''}</span>`:'';
 const rcnt={}; RC.forEach(r=>{rcnt[r.m]=(rcnt[r.m]||0)+1; r.id='r-'+r.m+'-'+rcnt[r.m];});
 const DISC={1:'Why a bigger SVM margin?',2:'When to scale vs. standardize',3:'SVM vs. KNN',4:'Why scale before KNN?',5:'Does validation pick the truly best model?',6:'Test vs. validation; switching models',7:'Classification vs. clustering',8:'Hardest outlier to identify',9:'Bad, irrelevant, or relevant outliers',10:'Higher or lower C and T',11:'When to use change detection',12:'Examples of time-series data',13:'When to predict variance',14:'How far ahead smoothing is accurate',15:'Regression vs. SVM: near or far points',16:'R²: physical vs. human behavior',17:'Linear or nonlinear relationship?'};
 const DISC_Q={'m2-1':[1],'m2-3':[1],'m2-13':[1],'m2-16':[1],'who-4':[1],'m2-9':[2],'m2-10':[2],'m2-12':[3],'mix-4':[3],'m4-8':[4],'m3-1':[5,6],'m3-7':[5],'m3-8':[5],'m3-13':[5],'m3-3':[6],'m3-20':[6],'m4-9':[7],'m4-13':[7],'mix-3':[7],'m5-1':[8],'m5-2':[8],'m5-8':[8],'m5-14':[8],'m5-4':[9],'m5-6':[9],'m5-7':[9],'m5-10':[9],'m5-12':[9],'m6-2':[10],'m6-7':[10],'m6-8':[10],'m6-12':[10],'m6-13':[10],'m6-15':[10],'m6-11':[11],'m6-14':[11],'mix-2':[11],'m7-8':[13],'m7-20':[13],'m7-17':[14],'m8-9':[15],'m8-4':[17],'m8-19':[17]};
@@ -4910,7 +5998,7 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('clic
   switchTab(b.dataset.tab);
 }));
 function switchTab(t){ tab=t; document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t))); render(); window.scrollTo(0,0); }
-function render(){ if(tab==='exam'||tab==='slides'||tab==='core'){ POOL=tab==='slides'?'slide':tab==='core'?'core':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else renderProgress(); }
+function render(){ if(tab==='exam'||tab==='slides'||tab==='core'||tab==='mid'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else renderProgress(); }
 // ---------- dialog
 function confirmDlg(msg,okLabel,onOk,cancelLabel='Cancel'){
   const d=$('#dlg'); $('#dlg-msg').textContent=msg; const a=$('#dlg-actions'); a.innerHTML='';
@@ -4924,15 +6012,17 @@ let exam=null; let POOL='concept';
 const setupC={mods:new Set(MOD_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
 const setupS={mods:new Set(SLIDE_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
 const setupK={mods:new Set(CORE_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
+const setupM={mods:new Set(MOD_KEYS),n:'all',incMastered:true,discOnly:false,lec:'',set:1};
 let setup=setupC;
-const inPool=q=>POOL==='slide'?!!q.slide:POOL==='core'?!!q.core:(!q.slide&&!q.core);
+const inPool=q=>POOL==='slide'?!!q.slide:POOL==='core'?!!q.core:POOL==='mid'?!!q.mid:(!q.slide&&!q.core&&!q.mid);
 function available(){
-  return QS.filter(q=>inPool(q) && setup.mods.has(q.m) && (!setup.lec||(q.lecs||[]).includes(setup.lec)) && (!setup.discOnly||q.disc) && !answeredNow(q) && (setup.incMastered || qStatus(q)!=='mastered'));
+  return QS.filter(q=>inPool(q) && setup.mods.has(q.m) && (POOL!=='mid'||setup.set==='all'||q.set===setup.set) && (!setup.lec||(q.lecs||[]).includes(setup.lec)) && (!setup.discOnly||q.disc) && (!answeredNow(q) || (POOL==='mid'&&setup.incMastered)) && (setup.incMastered || qStatus(q)!=='mastered'));
 }
 function renderExam(){
   if(exam && exam.pool!==POOL && !exam.active) exam=null;
   if(exam && exam.active) return renderQuestion();
   if(exam && exam.done) return renderSummary();
+  if(POOL==='mid') return renderMidSetup();
   const av=available(); const cntS=s=>av.filter(q=>qStatus(q)===s).length;
   const missed=cntS('missed'), retried=cntS('retried'), due=cntS('review')+cntS('due'), toughNew=av.filter(q=>q.tough&&qStatus(q)==='new').length;
   const pr=[missed?`${missed} you missed before`:'',retried?`${retried} you asked to retry`:'',due?`${due} tough question${due>1?'s':''} due for another round`:''].filter(Boolean);
@@ -4974,14 +6064,36 @@ function renderExam(){
   const dc=$('#disconly'); if(dc) dc.onchange=e=>{setup.discOnly=e.target.checked; renderExam();};
   $('#go').onclick=()=>startExam(n);
 }
+function renderMidSetup(){
+  const SETS=[...new Set(MQ.map(q=>q.set))];
+  const inSet=q=>setup.set==='all'||q.set===setup.set;
+  const pool=MQ.filter(inSet), notM=pool.filter(q=>qStatus(q)!=='mastered');
+  const av=available(); const n=av.length; const mins=Math.round(n*1.8);
+  const scs=[...new Set(pool.map(q=>q.sc))];
+  const setLbl=k=>k==='all'?`All ${MQ.length}`:`Midterm ${k}`;
+  main.innerHTML=`<section class="panel"><h2>Midterm practice</h2>
+    <p class="small" style="margin-top:0">${SETS.length} full practice midterms of ${MQ.length/SETS.length} questions each, written in the style of the sample quiz: a situation (often with a figure, table, or model output), then several parts that build on it. Expect “which model fits” lists, select-all questions, matching, calculations, reading model output, and judgment calls. Each midterm covers Modules 1–9 and is timed like the real quiz: 90 minutes for 50 questions.</p>
+    <h3>Which midterm?</h3>
+    <div class="chips" id="setchips">${SETS.concat(['all']).map(k=>{const qq=MQ.filter(q=>k==='all'||q.set===k); const c=qq.filter(q=>qStatus(q)==='mastered').length; return `<button class="chip" data-s="${k}" aria-pressed="${setup.set===k}">${setLbl(k)} <span class="small">· ${c}/${qq.length}</span></button>`;}).join('')}</div>
+    <label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(turn off to retake only the ones you haven't mastered: ${notM.length} left in ${setLbl(setup.set)})</span></span></label>
+    <div class="note">This exam: <b>${n} question${n===1?'':'s'}, ${mins} minutes</b>, in scenario order. Select-all questions need exactly the right set for credit.</div>
+    <div class="actions"><button class="btn" id="go" ${n?'':'disabled'}>Start ${setLbl(setup.set).toLowerCase().startsWith('all')?'all midterms':setLbl(setup.set)} (${mins} min)</button></div>
+    ${n===0?'<p class="small">Nothing left here. Turn on “Include questions I’ve already mastered” to retake everything.</p>':''}
+  </section>
+  <section class="panel"><h2>Scenarios in ${setLbl(setup.set)}</h2><ol class="small" style="padding-left:20px;margin:0">${scs.map(i=>{const qq=MQ.filter(q=>q.sc===i); const c=qq.filter(q=>qStatus(q)==='mastered').length; const mods=[...new Set(qq.map(q=>SHORT[q.m].split(' ')[0]))].join(', '); return `<li value="${i}">${SCN[i].title} <span class="small">· ${qq.length} parts · ${mods} · ${c} mastered</span></li>`;}).join('')}</ol></section>`;
+  document.querySelectorAll('#setchips .chip').forEach(c=>c.onclick=()=>{const v=c.dataset.s; setup.set=v==='all'?'all':+v; renderMidSetup();});
+  $('#incm').onchange=e=>{setup.incMastered=e.target.checked; renderMidSetup();};
+  $('#go').onclick=()=>startExam(n);
+}
 function startExam(n){
   const av=available();
   const W={missed:8,retried:6,due:6,review:6,new:1,mastered:0.4};
   const weak={}; MOD_KEYS.forEach(m=>{const qq=QS.filter(q=>q.m===m && inPool(q)); weak[m]=qq.length?qq.filter(q=>['missed','review','due'].includes(qStatus(q))).length/qq.length:0;});
   const weight=q=>{const s=qStatus(q); let w=W[s]||1; if(s==='new'&&q.tough) w=3; return w*(1+2*weak[q.m])*(q.disc?2:1);};
-  const picked=POOL==='slide'? av.slice().sort(byOrd).slice(0,n) : av.map(q=>({q,k:Math.pow(Math.random(),1/weight(q))})).sort((a,b)=>b.k-a.k).slice(0,n).map(x=>x.q);
-  const list=(POOL==='slide'?picked:shuffle(picked)).map(q=>({q,st0:qStatus(q),order:shuffle(q.opts.map((_,i)=>i)),pick:null,submitted:false,correct:null}));
-  exam={active:true,done:false,pool:POOL,items:list,i:0,total:n*60,left:n*60,timed:true,started:Date.now()};
+  const picked=POOL==='mid'? av.slice().sort((a,b)=>a.seq-b.seq).slice(0,n) : POOL==='slide'? av.slice().sort(byOrd).slice(0,n) : av.map(q=>({q,k:Math.pow(Math.random(),1/weight(q))})).sort((a,b)=>b.k-a.k).slice(0,n).map(x=>x.q);
+  const list=((POOL==='slide'||POOL==='mid')?picked:shuffle(picked)).map(q=>({q,st0:qStatus(q),order:q.fixed?q.opts.map((_,i)=>i):shuffle(q.opts.map((_,i)=>i)),pick:null,picks:[],submitted:false,correct:null}));
+  const secs=POOL==='mid'?Math.round(n*108):n*60;
+  exam={active:true,done:false,pool:POOL,items:list,i:0,total:secs,left:secs,timed:true,started:Date.now()};
   exam.tick=setInterval(()=>{ if(!exam.timed) return; exam.left--; updateClock(); if(exam.left<=0){ exam.left=0; timeUp(); } },1000);
   renderQuestion();
 }
@@ -5000,31 +6112,37 @@ function timeUp(){
   const a=$('#dlg-actions'); const k=document.createElement('button'); k.className='btn quiet'; k.textContent='Keep going without the clock'; k.onclick=()=>{$('#dlg').close(); updateClock();}; a.appendChild(k);
 }
 function endExam(silent){ if(!exam) return; clearInterval(exam.tick); exam.active=false; exam.done=!silent; exam.used=Math.round((Date.now()-exam.started)/1000); if(silent) exam=null; render(); }
+const LET='ABCDEFGHIJKLMNOP';
+const picked=(it,oi)=>it.q.multi?it.picks.includes(oi):it.pick===oi;
+function scenHTML(q,open){ if(!q.sc) return ''; const S=SCN[q.sc];
+  return `<details class="scen" ${open?'open':''}><summary>Scenario ${q.sc}: ${S.title}</summary><div class="body">${S.html}</div></details>`; }
+function fbHTML(q,it,oi){ const o=q.opts[oi], r=isRight(q,oi), p=picked(it,oi);
+  if(r) return `<div class="fb"><b class="k">✓ ${q.multi?'Should be selected':'Correct answer'}${p?' (your pick)':q.multi?' (you missed this one)':''}</b>${o[1]}</div>`;
+  return `<div class="fb"><b class="k">✗ ${p?'Your pick: why it\'s wrong':'Why it\'s wrong'}</b>${o[1]}${o[2]?`<span class="mis"><b>Misconception behind it:</b> ${o[2]}</span>`:''}</div>`; }
 function renderQuestion(){
-  const it=exam.items[exam.i], q=it.q; const L='ABCD';
+  const it=exam.items[exam.i], q=it.q;
   const answered=exam.items.filter(x=>x.submitted).length;
-  const correctIdx=0;
+  const hasPick=q.multi?it.picks.length>0:it.pick!==null;
   let html=`<div class="timerbar"><div class="timerrow"><div><span class="clock" id="clock"></span> <span class="small">left</span></div>
     <div class="small">Question ${exam.i+1} of ${exam.items.length} · ${answered} answered</div>
     <button class="btn quiet" id="endbtn" style="min-height:36px;padding:6px 12px">End exam</button></div><div class="track"><i id="trk"></i></div></div>
   <section class="panel">
     <div class="qmeta"><span class="tag">${MODS[q.m]}</span>${srcTag(q)}${q.tough?'<span class="tag tough">Tough: needs 2 sessions</span>':''}${discTag(q.disc)}${{missed:'<span class="tag" style="background:var(--bad-bg);color:var(--bad)">Missed last time</span>',retried:'<span class="tag">You asked to retry this</span>',review:'<span class="tag">Second round</span>',due:'<span class="tag">5-day check</span>'}[it.st0]||''}</div>
-    <p class="qtext">${q.q}</p><div class="opts">`;
+    ${scenHTML(q,true)}${q.sc?`<p class="partlbl">Part ${q.part}</p>`:''}
+    <p class="qtext">${q.q}</p>${q.multi&&!it.submitted?'<p class="multi-hint">Select all that apply.</p>':''}<div class="opts">`;
   it.order.forEach((oi,pos)=>{
-    const o=q.opts[oi]; let cls='opt'; if(it.submitted){cls+=' locked'; if(oi===correctIdx) cls+=' right'; else if(oi===it.pick) cls+=' wrong';}
-    html+=`<button class="${cls}" data-oi="${oi}" aria-pressed="${it.pick===oi}" ${it.submitted?'aria-disabled="true"':''}><span class="lbl">${L[pos]}.</span>${o[0]}`;
-    if(it.submitted){
-      if(oi===correctIdx) html+=`<div class="fb"><b class="k">✓ Correct answer${oi===it.pick?' (your pick)':''}</b>${o[1]}</div>`;
-      else html+=`<div class="fb"><b class="k">✗ ${oi===it.pick?'Your pick: why it\'s wrong':'Why it\'s wrong'}</b>${o[1]}<span class="mis"><b>Misconception behind it:</b> ${o[2]||''}</span></div>`;
-    }
+    const o=q.opts[oi]; let cls='opt'; if(it.submitted){cls+=' locked'; if(isRight(q,oi)) cls+=' right'; else if(picked(it,oi)) cls+=' wrong';}
+    const box=q.multi?`<span class="box">${picked(it,oi)?'☑':'☐'}</span>`:'';
+    html+=`<button class="${cls}" data-oi="${oi}" aria-pressed="${picked(it,oi)}" ${it.submitted?'aria-disabled="true"':''}>${box}<span class="lbl">${LET[pos]}.</span>${o[0]}`;
+    if(it.submitted) html+=fbHTML(q,it,oi);
     html+=`</button>`;
   });
   html+=`</div>`;
   if(!it.submitted){
-    html+=`<div class="actions"><button class="btn" id="submit" ${it.pick===null?'disabled':''}>Submit final answer</button><button class="btn quiet" id="skip">Skip for now</button></div>`;
+    html+=`<div class="actions"><button class="btn" id="submit" ${hasPick?'':'disabled'}>Submit final answer</button><button class="btn quiet" id="skip">Skip for now</button></div>`;
   } else {
     const e=st.q[q.id]||{};
-    html+=`<p class="verdict ${it.correct?'ok':'no'}">${it.correct?'Correct.':'Not quite. This question will come back next time you open the page.'}</p>`;
+    html+=`<p class="verdict ${it.correct?'ok':'no'}">${it.correct?'Correct.':q.multi?'Not quite. Full credit needs exactly the right set; see which ones to select above.':'Not quite. This question will come back next time you open the page.'}</p>`;
     if(it.correct){
       if(e.s==='retry') html+=`<p class="small">Reset: this question will be asked again next time.</p>`;
       else if(e.s==='review') html+=`<p class="small">Tough question: answer it correctly again in a future session to master it.</p>`;
@@ -5036,8 +6154,12 @@ function renderQuestion(){
   main.innerHTML=html; updateClock();
   $('#endbtn').onclick=()=>confirmDlg('End the exam now? Unanswered questions stay available for later.','End exam',()=>endExam());
   if(!it.submitted){
-    document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{it.pick=+b.dataset.oi; renderQuestion();});
-    $('#submit').onclick=()=>{ if(it.pick===null) return; it.submitted=true; it.correct=(it.pick===correctIdx); recordAnswer(q,it.correct); renderQuestion(); };
+    document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ const oi=+b.dataset.oi;
+      if(q.multi){ it.picks=it.picks.includes(oi)?it.picks.filter(x=>x!==oi):it.picks.concat(oi); } else it.pick=oi;
+      const y=window.scrollY; renderQuestion(); window.scrollTo(0,y); });
+    $('#submit').onclick=()=>{ if(!(q.multi?it.picks.length:it.pick!==null)) return; it.submitted=true;
+      it.correct=q.multi? (it.picks.length===q.ok.length && it.picks.every(i=>q.ok.includes(i))) : isRight(q,it.pick);
+      recordAnswer(q,it.correct); const y=window.scrollY; renderQuestion(); window.scrollTo(0,y); };
     $('#skip').onclick=()=>{ const x=exam.items.splice(exam.i,1)[0]; exam.items.push(x); if(exam.items[exam.i].submitted) goNext(); else renderQuestion(); };
   } else {
     $('#next').onclick=goNext;
@@ -5050,13 +6172,10 @@ function goNext(){
   endExam();
 }
 function optsHTML(it,locked){
-  const q=it.q, L='ABCD'; let h='<div class="opts">';
+  const q=it.q; let h='<div class="opts">';
   it.order.forEach((oi,pos)=>{
-    const o=q.opts[oi]; let cls='opt locked'; if(oi===0) cls+=' right'; else if(oi===it.pick) cls+=' wrong';
-    h+=`<div class="${cls}"><span class="lbl">${L[pos]}.</span>${o[0]}`;
-    if(oi===0) h+=`<div class="fb"><b class="k">✓ Correct answer${oi===it.pick?' (your pick)':''}</b>${o[1]}</div>`;
-    else h+=`<div class="fb"><b class="k">✗ ${oi===it.pick?'Your pick: why it\'s wrong':'Why it\'s wrong'}</b>${o[1]}<span class="mis"><b>Misconception behind it:</b> ${o[2]||''}</span></div>`;
-    h+='</div>';
+    const o=q.opts[oi]; let cls='opt locked'; if(isRight(q,oi)) cls+=' right'; else if(picked(it,oi)) cls+=' wrong';
+    h+=`<div class="${cls}">${q.multi?`<span class="box">${picked(it,oi)?'☑':'☐'}</span>`:''}<span class="lbl">${LET[pos]}.</span>${o[0]}${fbHTML(q,it,oi)}</div>`;
   });
   return h+'</div>';
 }
@@ -5080,10 +6199,10 @@ function renderSummary(){
   shown.forEach(x=>{
     const st=!x.submitted?'<span class="st new">Not answered</span>':x.correct?'<span class="st solid">Correct</span>':'<span class="st locked">Missed</span>';
     const open=!x.submitted||!x.correct;
-    const plain=x.q.q.replace(/<[^>]+>/g,'');
+    const plain=(x.q.sc?`Scenario ${x.q.sc}${x.q.part}: `:'')+x.q.q.replace(/<[^>]+>/g,'');
     html+=`<details class="rev" ${open?'open':''}><summary><span class="revn">${x.n}.</span><span class="revq">${esc(plain.length>110?plain.slice(0,110)+'…':plain)}</span>${st}</summary>
       <div class="revbody"><div class="qmeta"><span class="tag">${MODS[x.q.m]}</span>${srcTag(x.q)}${x.q.tough?'<span class="tag tough">Tough</span>':''}${discTag(x.q.disc)}</div>
-      <p class="qtext">${x.q.q}</p>${optsHTML(x)}</div></details>`;
+      ${scenHTML(x.q,false)}${x.q.sc?`<p class="partlbl">Part ${x.q.part}</p>`:''}<p class="qtext">${x.q.q}</p>${optsHTML(x)}</div></details>`;
   });
   html+=`</div>${btns}</section>`;
   main.innerHTML=html;
@@ -5200,6 +6319,7 @@ function renderProgress(){
    <section class="panel"><h2>Slide test coverage</h2>
    <p class="small" style="margin-top:0">${SQ.filter(q=>qStatus(q)==='mastered').length} of ${SQ.length} slide questions mastered. Each box is one lecture; tap <b>Slide test</b> and pick a lecture to drill it.</p>
    <div class="cov">${LECS.map(l=>{const qq=SQ.filter(q=>q.lecs.includes(l)); const c=qq.filter(q=>qStatus(q)==='mastered').length; const miss=qq.filter(q=>['review','due','missed'].includes(qStatus(q))).length; return `<div><b>${l}</b>${c}/${qq.length} mastered${miss?` · ${miss} to redo`:''}<i style="--w:${qq.length?Math.round(100*c/qq.length):0}%"></i></div>`;}).join('')}</div></section>
+   <section class="panel"><h2>Midterm practice</h2><p class="small" style="margin-top:0">${MQ.filter(q=>qStatus(q)==='mastered').length} of ${MQ.length} midterm questions mastered.</p><div class="cov">${[...new Set(MQ.map(q=>q.set))].map(k=>{const qq=MQ.filter(q=>q.set===k); const c=qq.filter(q=>qStatus(q)==='mastered').length; const miss=qq.filter(q=>['review','due','missed'].includes(qStatus(q))).length; return `<div><b>Midterm ${k}</b>${c}/${qq.length} mastered${miss?` · ${miss} to redo`:''}<i style="--w:${Math.round(100*c/qq.length)}%"></i></div>`;}).join('')}</div></section>
    <section class="panel"><h2>Core concepts coverage</h2>
    <p class="small" style="margin-top:0">${KQ.filter(q=>qStatus(q)==='mastered').length} of ${KQ.length} core questions mastered. Tap <b>Core concepts</b> to drill them.</p>
    <div class="cov">${CORE_KEYS.map(m=>{const qq=KQ.filter(q=>q.m===m); const c=qq.filter(q=>qStatus(q)==='mastered').length; const miss=qq.filter(q=>['review','due','missed'].includes(qStatus(q))).length; return `<div><b>${SHORT[m]}</b>${c}/${qq.length} mastered${miss?` · ${miss} to redo`:''}<i style="--w:${qq.length?Math.round(100*c/qq.length):0}%"></i></div>`;}).join('')}</div></section>
