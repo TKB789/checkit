@@ -4240,6 +4240,7 @@ S('m9','M9 L3 p11–15 · M9 L6 p3 · applied',`Why are principal components unc
 const MODS={m1:'Module 1 · Foundations',m2:'Module 2 · Classification',m3:'Module 3 · Validation',m4:'Module 4 · Clustering',m5:'Module 5 · Preparing data',m6:'Module 6 · Change detection',m7:'Module 7 · Time series',m8:'Module 8 · Regression',m9:'Module 9 · Advanced data prep',who:'Who picks the numbers',mix:'Pick the right tool'};
 const SHORT={m1:'M1 Foundations',m2:'M2 Classification',m3:'M3 Validation',m4:'M4 Clustering',m5:'M5 Data prep',m6:'M6 Change detection',m7:'M7 Time series',m8:'M8 Regression',m9:'M9 Adv. data prep',who:'Who picks',mix:'Right tool'};
 const MOD_KEYS=Object.keys(MODS);
+MODS.m10='Module 10 · Advanced regression'; SHORT.m10='M10 Adv. regression';
 const DAY=864e5, TOUGH_GAP=5*DAY;
 // ---- Core concepts
 function K(m,c,q,opts){ QS.push({m,c,q,opts,core:true}); }
@@ -4875,6 +4876,8 @@ const FIG_RES=`<div class="figs"><svg viewBox="0 0 200 160" width="200" role="im
 const FIG_PCA=`<svg viewBox="0 0 230 220" width="230" role="img" aria-label="PCA directions"><line x1="20" y1="200" x2="220" y2="200" stroke="var(--ink-2)"/><line x1="20" y1="200" x2="20" y2="10" stroke="var(--ink-2)"/><circle cx="107.3" cy="84.8" r="3.6" fill="var(--ink)"/><circle cx="68.8" cy="127.5" r="3.6" fill="var(--ink)"/><circle cx="118.2" cy="123.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="187.7" cy="22.2" r="3.6" fill="var(--ink)"/><circle cx="106.1" cy="94.5" r="3.6" fill="var(--ink)"/><circle cx="171.2" cy="66.9" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="157.5" cy="95.9" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="115.3" cy="129.4" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="85.8" cy="176.3" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="63.8" cy="177.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="122.1" cy="120.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="139.9" cy="119.4" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="108.6" cy="99.9" r="3.6" fill="var(--ink)"/><circle cx="162.9" cy="88.4" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="126.8" cy="143.5" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="124.1" cy="149.0" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="48.6" cy="146.0" r="3.6" fill="var(--ink)"/><circle cx="20.0" cy="179.4" r="3.6" fill="var(--ink)"/><circle cx="141.8" cy="100.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="127.6" cy="76.2" r="3.6" fill="var(--ink)"/><circle cx="169.6" cy="71.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="107.7" cy="139.6" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="87.6" cy="150.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="73.9" cy="121.2" r="3.6" fill="var(--ink)"/><circle cx="61.1" cy="194.2" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="105.5" cy="166.0" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="221.1" cy="55.5" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="119.3" cy="126.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="208.0" cy="61.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="174.7" cy="74.8" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="125.6" cy="122.9" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="160.9" cy="95.2" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="107.7" cy="99.0" r="3.6" fill="var(--ink)"/><circle cx="218.7" cy="57.9" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="166.4" cy="30.6" r="3.6" fill="var(--ink)"/><circle cx="92.1" cy="115.4" r="3.6" fill="var(--ink)"/><circle cx="81.9" cy="103.8" r="3.6" fill="var(--ink)"/><circle cx="136.3" cy="104.7" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="118.9" cy="122.0" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="126.4" cy="125.4" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="223.3" cy="45.3" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="-15.5" cy="255.1" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="104.9" cy="101.5" r="3.6" fill="var(--ink)"/><circle cx="119.4" cy="120.6" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><circle cx="119.0" cy="77.7" r="3.6" fill="var(--ink)"/><circle cx="111.6" cy="132.1" r="3.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.4"/><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--pen)"/></marker></defs><line x1="120" y1="105" x2="188" y2="37" stroke="var(--pen)" stroke-width="2.5" marker-end="url(#ah)"/><text x="191.88225099390854" y="33.117749006091444" text-anchor="start" font-size="12" fill="var(--pen)" font-weight="700">D1</text><line x1="120" y1="105" x2="90" y2="75" stroke="var(--pen)" stroke-width="2.5" marker-end="url(#ah)"/><text x="86.301515190165" y="71.301515190165" text-anchor="end" font-size="12" fill="var(--pen)" font-weight="700">D2</text><text x="120" y="214" text-anchor="middle" font-size="10" fill="var(--ink)" >factor 1 (scaled)</text><text x="10" y="105" font-size="10" fill="var(--ink)" transform="rotate(-90 10 105)" text-anchor="middle">factor 2 (scaled)</text></svg>`;
 const FIG_QQ=`<svg viewBox="0 0 220 204" width="220" role="img" aria-label="Q-Q plot"><line x1="30" y1="180" x2="210" y2="180" stroke="var(--ink-2)"/><line x1="30" y1="180" x2="30" y2="15" stroke="var(--ink-2)"/><line x1="36.0" y1="167.2" x2="204.0" y2="32.8" stroke="var(--pen)" stroke-width="1.5" stroke-dasharray="5 4"/><circle cx="41.6" cy="128.7" r="3" fill="var(--ink)"/><circle cx="57.7" cy="126.9" r="3" fill="var(--ink)"/><circle cx="66.3" cy="125.6" r="3" fill="var(--ink)"/><circle cx="72.5" cy="124.5" r="3" fill="var(--ink)"/><circle cx="77.5" cy="123.6" r="3" fill="var(--ink)"/><circle cx="81.8" cy="122.6" r="3" fill="var(--ink)"/><circle cx="85.6" cy="121.7" r="3" fill="var(--ink)"/><circle cx="88.9" cy="120.8" r="3" fill="var(--ink)"/><circle cx="92.1" cy="120.0" r="3" fill="var(--ink)"/><circle cx="95.0" cy="119.1" r="3" fill="var(--ink)"/><circle cx="97.8" cy="118.2" r="3" fill="var(--ink)"/><circle cx="100.4" cy="117.3" r="3" fill="var(--ink)"/><circle cx="102.9" cy="116.4" r="3" fill="var(--ink)"/><circle cx="105.3" cy="115.5" r="3" fill="var(--ink)"/><circle cx="107.7" cy="114.5" r="3" fill="var(--ink)"/><circle cx="110.0" cy="113.5" r="3" fill="var(--ink)"/><circle cx="112.3" cy="112.5" r="3" fill="var(--ink)"/><circle cx="114.5" cy="111.4" r="3" fill="var(--ink)"/><circle cx="116.7" cy="110.3" r="3" fill="var(--ink)"/><circle cx="118.9" cy="109.2" r="3" fill="var(--ink)"/><circle cx="121.1" cy="108.0" r="3" fill="var(--ink)"/><circle cx="123.3" cy="106.7" r="3" fill="var(--ink)"/><circle cx="125.5" cy="105.4" r="3" fill="var(--ink)"/><circle cx="127.7" cy="103.9" r="3" fill="var(--ink)"/><circle cx="130.0" cy="102.4" r="3" fill="var(--ink)"/><circle cx="132.3" cy="100.8" r="3" fill="var(--ink)"/><circle cx="134.7" cy="99.0" r="3" fill="var(--ink)"/><circle cx="137.1" cy="97.1" r="3" fill="var(--ink)"/><circle cx="139.6" cy="95.0" r="3" fill="var(--ink)"/><circle cx="142.2" cy="92.6" r="3" fill="var(--ink)"/><circle cx="145.0" cy="90.0" r="3" fill="var(--ink)"/><circle cx="147.9" cy="87.1" r="3" fill="var(--ink)"/><circle cx="151.1" cy="83.7" r="3" fill="var(--ink)"/><circle cx="154.4" cy="79.7" r="3" fill="var(--ink)"/><circle cx="158.2" cy="75.0" r="3" fill="var(--ink)"/><circle cx="162.5" cy="69.1" r="3" fill="var(--ink)"/><circle cx="167.5" cy="61.4" r="3" fill="var(--ink)"/><circle cx="173.7" cy="50.5" r="3" fill="var(--ink)"/><circle cx="182.3" cy="32.6" r="3" fill="var(--ink)"/><circle cx="198.4" cy="18.0" r="3" fill="var(--ink)"/><text x="120" y="196" text-anchor="middle" font-size="10" fill="var(--ink)" >theoretical normal quantiles</text><text x="14" y="98" font-size="10" fill="var(--ink)" transform="rotate(-90 14 98)" text-anchor="middle">sample quantiles</text></svg>`;
 
+const FIG_TREE=`<svg viewBox="0 0 380 292" width="380" role="img" aria-label="Classification tree"><line x1="170" y1="44" x2="80" y2="90" stroke="var(--ink-2)" stroke-width="1.3"/><text x="117.0" y="67.0" text-anchor="end" font-size="10" fill="var(--ink-2)">yes</text><line x1="170" y1="44" x2="255" y2="90" stroke="var(--ink-2)" stroke-width="1.3"/><text x="220.5" y="67.0" text-anchor="start" font-size="10" fill="var(--ink-2)">no</text><line x1="255" y1="124" x2="175" y2="170" stroke="var(--ink-2)" stroke-width="1.3"/><text x="207.0" y="147.0" text-anchor="end" font-size="10" fill="var(--ink-2)">yes</text><line x1="255" y1="124" x2="320" y2="170" stroke="var(--ink-2)" stroke-width="1.3"/><text x="295.5" y="147.0" text-anchor="start" font-size="10" fill="var(--ink-2)">no</text><line x1="175" y1="204" x2="110" y2="250" stroke="var(--ink-2)" stroke-width="1.3"/><text x="134.5" y="227.0" text-anchor="end" font-size="10" fill="var(--ink-2)">yes</text><line x1="175" y1="204" x2="235" y2="250" stroke="var(--ink-2)" stroke-width="1.3"/><text x="213.0" y="227.0" text-anchor="start" font-size="10" fill="var(--ink-2)">no</text><rect x="95.0" y="10" width="150" height="34" rx="6" fill="var(--card)" stroke="var(--pen)" stroke-width="1.5"/><text x="170" y="31" text-anchor="middle" font-size="10.5" fill="var(--ink)">Credit score < 640?</text><rect x="20.0" y="90" width="120" height="34" rx="6" fill="var(--muted-bg)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="80" y="104" text-anchor="middle" font-size="10.5" fill="var(--ink)">Default</text><text x="80" y="117" text-anchor="middle" font-size="10.5" fill="var(--ink)">41 out of 52</text><rect x="190.0" y="90" width="130" height="34" rx="6" fill="var(--card)" stroke="var(--pen)" stroke-width="1.5"/><text x="255" y="111" text-anchor="middle" font-size="10.5" fill="var(--ink)">Income < $45K?</text><rect x="110.0" y="170" width="130" height="34" rx="6" fill="var(--card)" stroke="var(--pen)" stroke-width="1.5"/><text x="175" y="191" text-anchor="middle" font-size="10.5" fill="var(--ink)">Debt ratio < 0.35?</text><rect x="265.0" y="170" width="110" height="34" rx="6" fill="var(--muted-bg)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="320" y="184" text-anchor="middle" font-size="10.5" fill="var(--ink)">Repaid</text><text x="320" y="197" text-anchor="middle" font-size="10.5" fill="var(--ink)">290 out of 309</text><rect x="55.0" y="250" width="110" height="34" rx="6" fill="var(--muted-bg)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="110" y="264" text-anchor="middle" font-size="10.5" fill="var(--ink)">Repaid</text><text x="110" y="277" text-anchor="middle" font-size="10.5" fill="var(--ink)">30 out of 38</text><rect x="180.0" y="250" width="110" height="34" rx="6" fill="var(--muted-bg)" stroke="var(--ink-2)" stroke-width="1.5"/><text x="235" y="264" text-anchor="middle" font-size="10.5" fill="var(--ink)">Default</text><text x="235" y="277" text-anchor="middle" font-size="10.5" fill="var(--ink)">1 out of 1</text></svg>`;
+
 // ===== Midterm practice: scenario-based, multi-part questions in the style of the sample quiz =====
 // SCN(id, title, html) defines a shared scenario.
 // X(scenario, part, module, question, options, flags). Options: ['✓' or '✗', text, why, misconception].
@@ -4884,8 +4887,9 @@ function SCN_(id,title,html){ SCN[id]={title,html,set:MID_SET}; }
 function X(sc,part,m,q,opts,flags){ flags=flags||{};
   QS.push({m,sc,part,q,mid:true,set:SCN[sc].set,multi:!!flags.multi,fixed:!!flags.fixed,
     opts:opts.map(o=>[o[1],o[2],o[3]||'']), ok:opts.map((o,i)=>o[0]==='✓'?i:-1).filter(i=>i>=0)}); }
-const METHODS=['ARIMA','CUSUM','Cross-validation','Exponential smoothing','GARCH','k-means clustering','k-nearest-neighbor classification','Linear regression','Logistic regression','Principal component analysis','Support vector machine'];
+const METHODS=['ARIMA','CART (classification and regression trees)','CUSUM','Cross-validation','Exponential smoothing','GARCH','k-means clustering','k-nearest-neighbor classification','Linear regression','Logistic regression','Principal component analysis','Support vector machine'];
 const MWHY={'ARIMA':'ARIMA forecasts a series’ future values from its own past values and errors.',
+ 'CART (classification and regression trees)':'CART splits the data into if-then branches to classify or predict; it isn’t the most direct tool for this question.',
  'CUSUM':'CUSUM detects when the mean of a process has changed.',
  'Cross-validation':'Cross-validation evaluates and compares models; it isn’t a model that answers the question.',
  'Exponential smoothing':'Exponential smoothing smooths a time series and forecasts its level, trend, and seasonality.',
@@ -4900,24 +4904,24 @@ function mlist(correct,why,pool){ pool=pool||METHODS; correct=[].concat(correct)
   return pool.map(n=>correct.includes(n)?['✓',n,why[n]||why]:['✗',n,MWHY[n],'Choosing a tool built for a different kind of question.']); }
 
 // ---------------------------------------------------------------- Scenario 1
-SCN_(1,'Two classifiers, same data',`Figure A shows a linear classifier (dashed line) separating black and white points using two predictors, x₁ and x₂. Figure B shows a 1-nearest-neighbor classifier on the same data: its boundary follows the same line, plus a small loop around each of the three points that Figure A gets wrong, so it classifies every training point correctly.${FIG1}`);
+SCN_(1,'Two classifiers, same data',`Figure A shows a linear classifier (dashed line) separating black and white points using two predictors, x₁ and x₂. Figure B shows a 1-nearest-neighbor classifier on the same data: its boundary roughly follows the same line, plus a small loop around each of the three points that Figure A gets wrong, so it classifies every training point correctly.${FIG1}`);
 X(1,'a','m2',`In Figure A, which predictor is <b>not</b> important for separating the black and white points?`,[
- ['✓','x₂','The boundary is a vertical line at x₁ = 3.5, so only whether x₁ is above or below 3.5 matters. Changing x₂ never moves a point across the line.'],
- ['✗','x₁','The line is defined entirely by x₁ = 3.5.','Mixing up which axis the line is parallel to.'],
- ['✗','Neither; both are needed','A vertical line uses only x₁. That’s equivalent to a coefficient of 0 on x₂.','Assuming every plotted predictor is used.'],
- ['✗','Both are unimportant','The classifier clearly depends on x₁.','Overgeneralizing.']
+ ['✓','x₂','The boundary is the vertical line x₁ = 3.5, so a point’s class depends only on whether x₁ is above or below 3.5. Moving a point up or down (changing x₂) never moves it across the line.'],
+ ['✗','x₁, because the line is vertical, so x₁ doesn’t change along it','Backwards: x₁ is fixed along the line, which is exactly why x₁ is what decides the side. It’s x₂ that varies along the line without changing the class.','Mixing up “constant along the line” with “unimportant.”'],
+ ['✗','Both matter, since the three misclassified points sit at different heights (x₂ values)','Where the errors sit doesn’t change the rule the classifier uses; the dashed line ignores x₂.','Reading the errors instead of the boundary.'],
+ ['✗','You can’t tell without seeing the classifier’s coefficients','The picture is enough: a vertical line means the coefficient on x₂ is 0.','Not trusting what the figure shows.']
 ]);
 X(1,'b','m3',`Figure A misclassifies 3 training points; Figure B misclassifies 0. Which model do you think is better, and why?`,[
  ['✓','Figure A, because Figure B’s small loops around single points are fitting noise','Each loop exists to capture one point. That’s classic overfitting: the loops won’t generalize to new data.'],
  ['✗','Figure B, because it misclassifies 0 points instead of 3','True on the training data, but the improvement comes from overfitting, so it doesn’t make B better.','Judging a model by its training accuracy.'],
- ['✗','Figure B, because it uses both predictors','Using more predictors isn’t a virtue in itself; here x₂ only helps fit three noisy points.','Equating more inputs with a better model.'],
- ['✗','Figure A, because it is a simpler model','Simpler is often a reasonable tiebreaker, but the decisive reason here is that B overfits.','Giving a generic reason instead of the specific one.']
+ ['✗','Figure B, because it uses both predictors to separate the classes','Using more predictors isn’t a virtue in itself; here x₂ only helps fit three noisy points.','Equating more inputs with a better model.'],
+ ['✗','Figure A, because a simpler model is always preferable','Simpler is often a reasonable tiebreaker, but the decisive reason here is that B overfits.','Giving a generic reason instead of the specific one.']
 ]);
 X(1,'c','m3',`A colleague reports that Figure B’s model will be 100% accurate on next month’s data. What’s the best response?`,[
- ['✓','Training accuracy overstates it; estimate accuracy on validation or test data instead','Training data contains random patterns that the model fit. Only held-out data shows how much of the fit is real.'],
+ ['✓','Disagree; 100% is training accuracy, so check held-out data','Training data contains random patterns that the model fit. Only held-out data shows how much of the fit is real.'],
  ['✗','Agree, since a model that fits all past data will fit future data','The loops around single points won’t match next month’s noise.','Assuming fit equals predictive power.'],
- ['✗','Report 97%, since 1-NN always loses a little accuracy','There’s no fixed discount; you have to measure on held-out data.','Inventing a rule of thumb.'],
- ['✗','Re-run it with k = 1 on more data to confirm 100%','k = 1 will always score 100% on its own training data.','Not seeing why training accuracy is meaningless for 1-NN.']
+ ['✗','Report about 97%, since 1-NN typically loses a little on new data','There’s no fixed discount; you have to measure on held-out data.','Inventing a rule of thumb.'],
+ ['✗','Rerun 1-NN on more data first to confirm the 100% holds','k = 1 will always score 100% on its own training data.','Not seeing why training accuracy is meaningless for 1-NN.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 2
@@ -4929,6 +4933,7 @@ X(2,'b','m2',`Select <b>all</b> of the following models that could classify pati
  ['✗','CUSUM','CUSUM detects a change in a process over time.','Mixing up change detection and classification.'],
  ['✓','k-nearest-neighbor classification','KNN classifies a patient by the labels of the most similar past patients.'],
  ['✓','Support vector machine','An SVM finds a boundary between the two labeled classes.'],
+ ['✓','CART (classification tree)','A classification tree splits the patients into branches that end in “readmitted” or “not.”'],
  ['✗','k-means clustering','k-means ignores the labels; it’s unsupervised.','Confusing clustering with classification.']
 ],{multi:1,fixed:1});
 X(2,'c','m2',`The hospital calls every patient whose predicted probability is 50% or more. A follow-up call is cheap; a readmission is very costly. Nurses can make at most 40 calls a week. Select <b>all</b> of the arguments below that use analytics reasoning correctly.`,[
@@ -4951,10 +4956,10 @@ X(3,'a','m4',`The elbow is at k = 3, but the company chose k = 4. Is that reason
  ['✗','Yes, but only because larger k always gives a better clustering','More clusters isn’t automatically better; the reason is the range constraint.','Right answer, wrong reason.']
 ]);
 X(3,'b','m4',`The company then learns that weekday deliveries are mostly to businesses downtown, while weekend deliveries are mostly to homes in the suburbs. It may run separate weekday and weekend van fleets. How should it change its analysis?`,[
- ['✓','Cluster weekday and weekend deliveries separately, and place each fleet’s depots from its own solution','The two fleets serve different sets of points, so each needs its own clustering.'],
- ['✗','Increase k until both patterns show up in a single clustering','One combined clustering mixes two different demand patterns.','Solving a data-definition problem with a parameter.'],
+ ['✓','Cluster weekday and weekend deliveries separately, one solution per fleet','The two fleets serve different sets of points, so each needs its own clustering.'],
+ ['✗','Increase k until both the weekday and weekend patterns show up in one clustering','One combined clustering mixes two different demand patterns.','Solving a data-definition problem with a parameter.'],
  ['✗','Add day of week as a third clustering attribute alongside latitude and longitude','This mixes a category with distances and still produces one set of depots.','Forcing everything into one model.'],
- ['✗','Keep the k = 4 solution, since addresses don’t change by day','The relevant set of addresses does change by day.','Ignoring the new information.']
+ ['✗','Keep the k = 4 solution, since customer addresses don’t change by day of week','The relevant set of addresses does change by day.','Ignoring the new information.']
 ]);
 X(3,'c','m4',`In the final solution, one rural customer is 40 miles from the nearest depot. What should the company do first?`,[
  ['✓','Find out who the customer is and whether serving them that way matters','Understand a far-away point before deciding whether to delete it, give it special handling, or change k.'],
@@ -4964,9 +4969,9 @@ X(3,'c','m4',`In the final solution, one rural customer is 40 miles from the nea
 ]);
 X(3,'d','m4',`An analyst suggests also clustering on each customer’s average package volume (measured in cubic inches, typically 500–20,000), along with latitude and longitude in degrees, without scaling. What’s the most likely result?`,[
  ['✓','Volume dominates the distances, so clusters form by package size rather than location','Volume differences are thousands of units; coordinate differences are fractions of a degree. Scale first.'],
- ['✗','Location still dominates, since it uses two attributes','Two tiny numbers can’t outweigh one huge one.','Counting attributes instead of comparing their scales.'],
- ['✗','The clusters stay the same, since k-means is unit-free','Distances depend on units.','Assuming scale doesn’t matter.'],
- ['✗','k-means can’t run with three attributes','It works in any number of dimensions.','Inventing a limit.']
+ ['✗','Location still dominates, since two location attributes outweigh one volume attribute','The number of attributes doesn’t matter nearly as much as their scale: one attribute with differences in the thousands swamps two with differences below 1.','Counting attributes instead of comparing their scales.'],
+ ['✗','The clusters improve, since adding relevant information always helps k-means','Extra information helps only if it’s on a comparable scale; unscaled, it overwhelms the location data the depots depend on.','Assuming more data always helps.'],
+ ['✗','Volume is effectively ignored, since its values are far from the coordinate values','It’s the reverse: the attribute with the biggest differences counts the most in distance.','Reversing which attribute dominates.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 4
@@ -4995,27 +5000,27 @@ X(4,'e','m7',`The fitted α is about 0.1. What does that say about the daily ave
  ['✗','The weekly pattern is weak','Seasonality is reflected in γ and C, not α.','Confusing parameters.'],
  ['✗','Only 10% of the data was used to fit the model','α is a weight, not a sample share.','Misreading α.']
 ]);
-X(4,'f','m7',`At the end of Sunday, S = 10.0, T = 0.1, and Monday’s seasonal factor is 1.25. What is the forecast for Monday’s average handle time?`,[
- ['✓','About 12.6 minutes','Forecast = (S + T) × C = (10.0 + 0.1) × 1.25 = 12.625.'],
- ['✗','12.5 minutes','That’s 10.0 × 1.25, which forgets the trend.','Dropping T.'],
- ['✗','10.1 minutes','That forgets the Monday factor.','Dropping seasonality.'],
- ['✗','11.35 minutes','That adds 1.25 as if seasonality were additive.','Using the wrong seasonality type.']
+X(4,'f','m7',`Going into a Monday, the baseline S is about 10 minutes, the trend T is slightly positive, and Monday’s seasonal factor is 1.25. What will the model’s forecast for Monday look like?`,[
+ ['✓','About 25% above the baseline (plus the small trend), so roughly 12½ minutes','Multiplicative forecast = (S + T) × C. A factor of 1.25 scales the baseline-plus-trend up by about a quarter.'],
+ ['✗','The baseline plus 1.25 minutes, about 11¼ minutes','That treats the factor as additive. In a multiplicative model, 1.25 is a ratio, not minutes.','Using the wrong seasonality type.'],
+ ['✗','About 10 minutes, since the seasonal factor only affects the baseline update, not the forecast','The seasonal factor is applied to the forecast too; that’s how Mondays get forecast differently from other days.','Thinking seasonality only appears in the update equations.'],
+ ['✗','About 25% above last Monday’s actual value','The forecast scales the current baseline, not last Monday’s raw value.','Confusing the forecast with a naive seasonal copy.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 5
 SCN_(5,'Pump vibration',`A water utility monitors a pump’s vibration level every hour. Its normal mean is μ = 50. The utility runs an increase CUSUM:
 <div class="eq">Sₜ = max{0, Sₜ₋₁ + (xₜ − μ − C)}, alarm when Sₜ ≥ T</div>with C = 2 and T = 10, starting from S₀ = 0.`);
-X(5,'a','m6',`The next five readings are 53, 55, 51, 56, 58. At which reading does the alarm first go off?`,[
- ['✓','The 5th reading','S goes 1, 4, 3, 7, then 13. Only the 5th reading pushes S past T = 10.'],
- ['✗','The 2nd reading','S is only 4 after the 2nd reading.','Comparing a single reading to T.'],
- ['✗','The 4th reading','S = 7 there, still below 10.','Arithmetic slip, or forgetting to subtract C.'],
- ['✗','It never goes off','13 ≥ 10, so it does.','Arithmetic slip.']
+X(5,'a','m6',`Over the next several hours, which pattern of readings would make this CUSUM raise an alarm soonest?`,[
+ ['✓','Readings that stay steadily about 4 above μ','Each reading adds 4 − 2 = 2 to S, so S climbs steadily and reaches T = 10 after about 5 hours.'],
+ ['✗','Readings that stay steadily about 1.5 above μ','Each reading is below μ + C, so it subtracts from S: the sum never grows, no matter how long it lasts.','Forgetting that readings must beat μ + C to count.'],
+ ['✗','One reading 9 above μ, then readings right at μ','The spike adds 7, but each normal reading then subtracts 2, so S drifts back down without reaching 10.','Thinking one big spike is enough.'],
+ ['✗','Readings alternating 6 above and 6 below μ','The high readings add 4, the low ones subtract 8, so S keeps getting pulled back to 0.','Ignoring how low readings reduce S.']
 ]);
 X(5,'b','m6',`A false alarm costs a $500 inspection. A missed failure costs about $2 million in damage. How should the utility adjust its settings?`,[
- ['✓','Lower T (and possibly C) to catch changes sooner, accepting more inspections','When missing a change is the costly error, ask for less evidence before alarming.'],
- ['✗','Raise T to avoid wasting money on inspections','That protects the cheap error at the expense of the expensive one.','Getting the cost trade-off backward.'],
- ['✗','Raise C so that only large vibrations count','That slows detection too.','Reversing C’s effect.'],
- ['✗','Leave C and T alone, since costs don’t affect CUSUM settings','Costs are exactly what should decide them.','Ignoring the decision context.']
+ ['✓','Lower T (and possibly C) to catch changes sooner','When missing a change is the costly error, ask for less evidence before alarming.'],
+ ['✗','Raise T, so fewer $500 inspections are wasted','That protects the cheap error at the expense of the expensive one.','Getting the cost trade-off backward.'],
+ ['✗','Raise C, so only large vibrations count as evidence','That slows detection too.','Reversing C’s effect.'],
+ ['✗','Leave C and T alone; costs don’t enter the CUSUM formula','Costs are exactly what should decide them.','Ignoring the decision context.']
 ]);
 X(5,'c','m6',`The utility also wants to know if vibration drops sharply, which can mean a broken coupling. What should it do?`,[
  ['✓','Run a second CUSUM using (μ − xₜ − C), alongside the first','A decrease CUSUM flips the deviation but keeps C subtracted and the floor at 0.'],
@@ -5024,10 +5029,10 @@ X(5,'c','m6',`The utility also wants to know if vibration drops sharply, which c
  ['✗','Nothing; the increase CUSUM already detects decreases','It only accumulates evidence of an increase.','Assuming one side covers both.']
 ]);
 X(5,'d','m6',`After an alarm at hour 300, an engineer says “the pump changed at hour 300.” What’s the most accurate correction?`,[
- ['✓','The change probably began earlier; CUSUM needs time to build up evidence','The alarm marks when the evidence crossed T, not when the shift started.'],
- ['✗','The change began after hour 300','An alarm can’t come before the change that causes it.','Reversing the timing.'],
- ['✗','The statement is correct if T was chosen well','Every threshold involves some delay.','Expecting perfect timing.'],
- ['✗','The alarm shows the change was caused by something at hour 300','CUSUM says nothing about causes.','Reading cause into a detection.']
+ ['✓','The shift likely began earlier; evidence takes time to build','The alarm marks when the evidence crossed T, not when the shift started.'],
+ ['✗','The shift likely began after hour 300, once the alarm was raised','An alarm can’t come before the change that causes it.','Reversing the timing.'],
+ ['✗','The statement is correct as long as T was chosen well','Every threshold involves some delay.','Expecting perfect timing.'],
+ ['✗','The alarm shows something at hour 300 caused the change','CUSUM says nothing about causes.','Reading cause into a detection.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 6
@@ -5047,28 +5052,28 @@ X(6,'a','m8',`Two homes are identical except that one is 300 sq ft larger. What 
  ['✗','You can’t tell without knowing the other predictors’ values','They’re identical otherwise, so only sq ft differs.','Missing “holding others fixed.”']
 ]);
 X(6,'b','m8',`The bedrooms coefficient is negative. Which interpretation is correct?`,[
- ['✓','At the same square footage (and other factors), more bedrooms go with a lower price','Each coefficient is the effect with the other predictors held fixed. More bedrooms in the same space means smaller rooms.'],
- ['✗','Homes with more bedrooms generally sell for less','Overall, more bedrooms usually go with bigger, more expensive homes.','Ignoring “holding others fixed.”'],
- ['✗','The model must be wrong, since bedrooms add value','It’s answering a narrower question than it seems.','Assuming an error.'],
- ['✗','Removing a bedroom would raise any home’s price by $6,200','The model shows an association, not the effect of remodeling.','Reading a cause into a coefficient.']
+ ['✓','Among homes of the same size, more bedrooms go with a lower price','Each coefficient is the effect with the other predictors held fixed. More bedrooms in the same space means smaller rooms.'],
+ ['✗','Homes with more bedrooms generally sell for less than homes with fewer','Overall, more bedrooms usually go with bigger, more expensive homes.','Ignoring “holding others fixed.”'],
+ ['✗','The model must be wrong, since extra bedrooms add value to a home','It’s answering a narrower question than it seems.','Assuming an error.'],
+ ['✗','Removing a bedroom would raise any home’s price by about $6,200','The model shows an association, not the effect of remodeling.','Reading a cause into a coefficient.']
 ]);
 X(6,'c','m8',`The pool coefficient is 4.1 with p = 0.30. What’s the best interpretation?`,[
- ['✓','The data doesn’t show convincingly that a pool is associated with a higher price','A large p-value means an estimate this big could easily occur by chance if the true effect were 0. It doesn’t prove the effect is 0.'],
- ['✗','A pool adds exactly $4,100 to a home’s price','The estimate is too uncertain to rely on.','Ignoring the p-value.'],
- ['✗','There is a 30% chance that a pool affects price','p-values aren’t probabilities of hypotheses.','A common p-value misreading.'],
- ['✗','Pools definitely have no effect on price','Not significant doesn’t mean zero.','Treating “not proven” as “disproven.”']
+ ['✓','The data doesn’t clearly show that a pool affects price','A large p-value means an estimate this big could easily occur by chance if the true effect were 0. It doesn’t prove the effect is 0.'],
+ ['✗','A pool adds about $4,100 to a home’s price, on average','The estimate is too uncertain to rely on.','Ignoring the p-value.'],
+ ['✗','There is a 30% chance that a pool affects the price','p-values aren’t probabilities of hypotheses.','A common p-value misreading.'],
+ ['✗','Pools have no effect on price, since p is above 0.05','Not significant doesn’t mean zero.','Treating “not proven” as “disproven.”']
 ]);
-X(6,'d','m8',`Predict the price of a 2,000 sq ft, 3-bedroom, 10-year-old home with no pool, 5 miles from downtown.`,[
- ['✓','About $190,400','42 + 9.5(20) − 6.2(3) − 0.8(10) + 0 − 3.0(5) = 190.4 thousand.'],
- ['✗','About $194,500','That includes the pool term, but this home has no pool.','Plugging in a dummy variable incorrectly.'],
- ['✗','About $205,400','That forgets the distance term.','Dropping a predictor.'],
- ['✗','About $232,000','That uses only the intercept and square feet.','Ignoring the other predictors.']
+X(6,'d','m8',`Home A is 5 miles closer to downtown than Home B but 10 years older; otherwise they are identical. Which does the model predict to be worth more?`,[
+ ['✓','Home A, by roughly $7,000','Being 5 miles closer adds about 5 × 3.0 = 15 thousand; being 10 years older subtracts about 10 × 0.8 = 8 thousand. Net: A is about 7 thousand higher.'],
+ ['✗','Home B, since a 10-year age gap matters more than 5 miles','Compare the sizes of the effects, not the sizes of the gaps: 15 thousand for distance vs. 8 thousand for age.','Comparing the raw differences instead of their effects.'],
+ ['✗','They’re worth the same, since one advantage cancels the other','The two effects have different sizes, so they don’t cancel.','Assuming offsetting factors are equal.'],
+ ['✗','You can’t compare them without each home’s square footage','They’re identical on every other factor, so those terms cancel out.','Missing “holding other factors fixed.”']
 ]);
 X(6,'e','m8',`A manager concludes: “Homes closer to downtown sell for more, so moving a home closer would raise its price.” What’s the issue?`,[
- ['✓','The coefficient shows an association; other factors linked to location may drive it','Regression on observational data shows correlation. Causal claims need more evidence.'],
- ['✗','None; a tiny p-value proves causation','Significance isn’t causation.','Equating significance with cause.'],
+ ['✓','It shows association; something tied to location may drive it','Regression on observational data shows correlation. Causal claims need more evidence.'],
+ ['✗','Nothing is wrong; a p-value below 0.001 shows the effect is causal','Significance isn’t causation.','Equating significance with cause.'],
  ['✗','The coefficient is negative, so homes closer to downtown sell for less','A lower distance with a negative coefficient means a higher price.','Misreading the sign.'],
- ['✗','R² is too low to say anything','0.78 is high; the issue is causation.','Blaming the wrong statistic.']
+ ['✗','R² of 0.78 is too low to support any conclusion about location','0.78 is high; the issue is causation.','Blaming the wrong statistic.']
 ]);
 X(6,'f','m8',`The firm suspects a pool adds more value to larger homes. What change to the model would test this?`,[
  ['✓','Add an interaction term: square feet × pool','An interaction lets the pool effect depend on size, and its coefficient tests that idea.'],
@@ -5086,17 +5091,17 @@ X(7,'a','m8',`Based on AIC alone, which model is preferred?`,[
  ['✗','Model A, since it’s the simplest','AIC already balances fit and simplicity, and it prefers B.','Applying simplicity separately from AIC.'],
  ['✗','You can’t compare AIC across models with different numbers of predictors','That’s exactly what AIC is for, on the same data.','Misunderstanding AIC.']
 ]);
-X(7,'b','m8',`Using e^((AIC_min − AIC_A)/2), how likely is Model A to be better than Model B?`,[
- ['✓','About 13.5% as likely','e^((808 − 812)/2) = e^(−2) ≈ 0.135.'],
- ['✗','About 4% as likely','AIC differences aren’t percentages.','Reading the gap as a percentage.'],
- ['✗','About 50% as likely; they’re close','A gap of 4 is a meaningful difference.','Underrating the gap.'],
- ['✗','About 2% as likely','That uses e^(−4), forgetting to divide by 2.','Dropping the /2.']
+X(7,'b','m8',`How should the analyst interpret the 4-point AIC gap between Model A (812) and Model B (808)?`,[
+ ['✓','B is preferred, but A is still about one-seventh as likely','The relative likelihood is e^((808 − 812)/2) = e^(−2), roughly 0.14. That’s a meaningful preference, not certainty.'],
+ ['✗','A is about 4% worse than B, a minor difference','AIC differences aren’t percentages; they enter through e^(ΔAIC/2).','Reading the gap as a percentage.'],
+ ['✗','The gap is too small to matter; they’re essentially tied','A gap of 4 gives a relative likelihood around 0.14, a real preference for B.','Underrating the gap.'],
+ ['✗','A is ruled out, since B has the lower AIC','A lower AIC is a preference, not proof; A still has some chance of being the better model.','Treating AIC as a verdict.']
 ]);
 X(7,'c','m8',`On this data, BIC prefers Model A while AIC prefers Model B. Why can this happen?`,[
- ['✓','BIC’s penalty per parameter, ln(50,000) ≈ 10.8, is much bigger than AIC’s 2','With large n, BIC punishes extra predictors much harder, so it favors smaller models.'],
- ['✗','One of the calculations must contain an error','The two criteria often disagree.','Expecting them to always agree.'],
- ['✗','BIC ignores the number of parameters','It penalizes them more heavily, not less.','Reversing the penalty.'],
- ['✗','AIC only works on small data sets','AIC works at any size; the penalties just differ.','Inventing a limit.']
+ ['✓','BIC’s per-parameter penalty (ln n ≈ 10.8) far exceeds AIC’s 2','With large n, BIC punishes extra predictors much harder, so it favors smaller models.'],
+ ['✗','One of the two calculations must contain an error','The two criteria often disagree.','Expecting them to always agree.'],
+ ['✗','BIC rewards extra parameters when the data set is large','It penalizes them more heavily, not less.','Reversing the penalty.'],
+ ['✗','AIC overfits with large data, so it should be ignored here','AIC is still valid with large data; it just penalizes extra parameters less than BIC does, so the two can disagree.','Thinking one criterion is wrong whenever they disagree.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 8
@@ -5130,10 +5135,10 @@ X(9,'a','m5',`What should be done with the 3 negative delivery times?`,[
  ['✗','Take their absolute values and keep them','There’s no reason to think the sign is the only error.','Guessing at corrections.']
 ]);
 X(9,'b','m5',`What’s the best way to handle the 11 storm delays?`,[
- ['✓','Model normal deliveries without them, and separately model the chance of a storm delay (e.g., with logistic regression)','The delays are real and will recur. Two models capture both normal times and disruption risk.'],
- ['✗','Delete them, since they’re outliers','The model would underestimate how long deliveries can take.','Removing real, recurring events.'],
- ['✗','Keep them in one regression with everything else','A few huge values would distort the normal-conditions estimates.','Ignoring their outsized pull.'],
- ['✗','Replace them with the median delivery time','That hides real risk.','Imputing real values away.']
+ ['✓','Model normal times without them; model storm risk separately','The delays are real and will recur. Two models capture both normal times and disruption risk.'],
+ ['✗','Delete them, since they’re outliers that distort the fit','The model would underestimate how long deliveries can take.','Removing real, recurring events.'],
+ ['✗','Keep them in a single regression along with everything else','A few huge values would distort the normal-conditions estimates.','Ignoring their outsized pull.'],
+ ['✗','Replace them with the median delivery time, then refit','That hides real risk.','Imputing real values away.']
 ]);
 X(9,'c','m5',`If the box-plot whiskers were extended from 1.5 × IQR to 3 × IQR, what would happen?`,[
  ['✓','Fewer points would be flagged, only the more extreme ones','Longer whiskers cover more of the data.'],
@@ -5148,25 +5153,25 @@ X(10,'a','m9',`If the team runs principal component analysis on the three predic
  ['✓','The first component is much more important than the others','Highly correlated predictors share most of their variance, so it loads onto the first component and the others capture little.'],
  ['✗','The three components are about equally important','That happens when predictors are uncorrelated.','Missing the role of correlation.'],
  ['✗','The last component is the most important','Components are ordered by variance, largest first.','Reversing the order.'],
- ['✗','PCA can’t be used with correlated predictors','Correlated predictors are exactly where PCA helps.','Reversing PCA’s purpose.']
+ ['✗','The first component will mostly capture salary, since that’s what the team wants to predict','PCA uses only the predictors; it never looks at the response, so components reflect the predictors’ shared variation, not salary.','Thinking PCA is supervised.']
 ]);
-X(10,'b','m9',`The eigenvalues are 2.79, 0.15, and 0.06. What share of the total variance does the first component capture?`,[
- ['✓','About 93%','2.79 / (2.79 + 0.15 + 0.06) = 2.79 / 3.00 = 0.93.'],
- ['✗','About 33%, one third','That assumes equal components.','Ignoring the eigenvalues.'],
- ['✗','2.79%','Eigenvalues aren’t percentages.','Misreading the values.'],
- ['✗','About 79%','That reads the decimals of 2.79 as a percentage.','Misreading the values.']
+X(10,'b','m9',`The eigenvalues are 2.79, 0.15, and 0.06. What does that tell you?`,[
+ ['✓','The three predictors mostly carry the same information','The first eigenvalue is almost the whole total (about 2.8 out of 3), which is what highly correlated predictors produce.'],
+ ['✗','Age, the first predictor, matters most for predicting salary','Eigenvalues belong to components (blends of all three), not to original predictors, and PCA never looks at salary.','Confusing components with original predictors.'],
+ ['✗','The third component predicts salary best, since it has least noise','A small eigenvalue means little variation along that direction, not less noise or more predictive value.','Misreading small eigenvalues.'],
+ ['✗','PCA failed, since eigenvalues should be roughly equal','Unequal eigenvalues are the normal and useful result when predictors are correlated.','Expecting equal components.']
 ]);
 X(10,'c','m9',`They regress salary on only the first principal component. In terms of the original predictors, what does the model depend on?`,[
- ['✓','All three original predictors, through the component’s weights','The component is a weighted combination of all three, so each gets an implied coefficient.'],
- ['✗','Only age, the first predictor','Components aren’t single original predictors.','Confusing components with factors.'],
- ['✗','None of the original predictors','The component is built from them.','Missing the connection.'],
+ ['✓','All three predictors, through the component’s weights','The component is a weighted combination of all three, so each gets an implied coefficient.'],
+ ['✗','Only age, since it’s listed first and loads first','Components aren’t single original predictors.','Confusing components with factors.'],
+ ['✗','None of them, since components replace the predictors','The component is built from them.','Missing the connection.'],
  ['✗','Only the predictor with the largest variance','All three contribute through their weights.','Oversimplifying.']
 ]);
 X(10,'d','m9',`The regression’s errors are small for low salaries and much larger for high salaries. What’s a reasonable remedy?`,[
- ['✓','Apply a Box-Cox transformation to salary (the response)','Box-Cox stretches small values and compresses large ones to even out the spread.'],
- ['✗','Detrend salary over time','The issue is unequal spread, not a trend over time.','Picking the wrong data-prep tool.'],
- ['✗','Remove all employees with high salaries','That throws away real data.','Deleting the hard cases.'],
- ['✗','Add more principal components','That doesn’t address unequal error spread.','Wrong fix.']
+ ['✓','Apply a Box-Cox transformation to salary','Box-Cox stretches small values and compresses large ones to even out the spread.'],
+ ['✗','Detrend salary over the years in the data','The issue is unequal spread, not a trend over time.','Picking the wrong data-prep tool.'],
+ ['✗','Remove the employees with the highest salaries','That throws away real data.','Deleting the hard cases.'],
+ ['✗','Keep more principal components in the model','That doesn’t address unequal error spread.','Wrong fix.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 11
@@ -5186,33 +5191,33 @@ X(11,'b','m2',`The bank decides that approving a loan that defaults costs five t
  ['✗','Multiply every coefficient by 5','Scaling all coefficients doesn’t move which side applicants fall on.','Misunderstanding the boundary.']
 ]);
 X(11,'c','m2',`The SVM minimizes error + λ·Σaⱼ². If the bank greatly increases λ, what happens?`,[
- ['✓','The margin widens and the model accepts more training errors','A larger λ weights the margin term more heavily.'],
+ ['✓','The margin widens and more training errors are accepted','A larger λ weights the margin term more heavily.'],
  ['✗','The margin narrows and training errors fall','That’s what decreasing λ does.','Reversing λ.'],
- ['✗','Nothing changes once the data is scaled','λ always changes the trade-off.','Confusing scaling with λ.'],
- ['✗','The boundary becomes curved','Only a kernel makes it curved.','Confusing λ with kernels.']
+ ['✗','Nothing changes, since the data has already been scaled','λ always changes the trade-off.','Confusing scaling with λ.'],
+ ['✗','The boundary becomes curved to fit the training data','Only a kernel makes it curved.','Confusing λ with kernels.']
 ]);
 X(11,'d','m2',`Had the bank <b>not</b> scaled the data, with income in dollars (around 60,000) and credit score around 700, what would be true?`,[
- ['✓','Income’s coefficient would be tiny, but you couldn’t conclude income doesn’t matter','Coefficient size depends on units. Only after scaling can sizes be compared.'],
- ['✗','Income’s coefficient would be tiny, so income could be removed','The small size comes from the units, not from irrelevance.','Comparing unscaled coefficients.'],
- ['✗','The coefficients would be exactly the same','Units change the coefficients.','Assuming the method is unit-free.'],
- ['✗','Income’s coefficient would be huge','Large values tend to get small coefficients.','Reversing the effect.']
+ ['✓','Income’s coefficient would be tiny, but that wouldn’t mean it’s unimportant','Coefficient size depends on units. Only after scaling can sizes be compared.'],
+ ['✗','Income’s coefficient would be tiny, so income could safely be removed','The small size comes from the units, not from irrelevance.','Comparing unscaled coefficients.'],
+ ['✗','The coefficients would be the same, since SVM rescales internally','Units change the coefficients.','Assuming the method is unit-free.'],
+ ['✗','Income’s coefficient would be huge, since incomes are large numbers','Large values tend to get small coefficients.','Reversing the effect.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 12
 SCN_(12,'Commodity prices',`An analyst studies the monthly price of copper over 25 years. The price has a steady upward trend, with calm stretches and turbulent stretches.`);
 X(12,'a','m7',`She fits ARIMA(2, 1, 1). What does the “1” in the middle do?`,[
- ['✓','Differences the series once, removing a straight-line trend','d = 1 models month-to-month changes, which removes a linear trend.'],
+ ['✓','Differences the series once to remove the trend','d = 1 models month-to-month changes, which removes a linear trend.'],
  ['✗','Uses one past forecast error as a predictor','That’s the q = 1 at the end.','Confusing d and q.'],
- ['✗','Uses one past value as a predictor','That’s the p term, which is 2 here.','Confusing d and p.'],
- ['✗','Sets the forecast horizon to one month','None of ARIMA’s three numbers is the horizon.','Inventing a meaning.']
+ ['✗','Uses one past value of the series as a predictor','That’s the p term, which is 2 here.','Confusing d and p.'],
+ ['✗','Sets the forecast horizon to one month ahead','None of ARIMA’s three numbers is the horizon.','Inventing a meaning.']
 ]);
 X(12,'b','mix',`A hedge fund wants a forecast of how much copper’s price will <b>fluctuate</b> next month. Which model is most appropriate?`,
  mlist('GARCH',{'GARCH':'GARCH forecasts variance, and it handles the calm and turbulent stretches (volatility clustering).'}),{fixed:1});
 X(12,'c','m9',`A colleague regresses copper prices on world GDP and population over the same 25 years, and the relationship looks very strong. What should she consider first?`,[
- ['✓','Detrending all the series, since shared upward trends can create a misleading relationship','When everything rises over time, a regression can look strong just from the common trend.'],
- ['✗','Applying a Box-Cox transformation to GDP','The concern is the shared trend, not unequal spread.','Choosing the wrong tool.'],
- ['✗','Nothing; a strong relationship over 25 years must be real','Shared trends can produce strong but spurious fits.','Trusting a trend-driven fit.'],
- ['✗','Clustering the years before running the regression','That doesn’t address the trend.','Wrong tool.']
+ ['✓','Detrending the series first, since shared trends mislead','When everything rises over time, a regression can look strong just from the common trend.'],
+ ['✗','Applying a Box-Cox transformation to GDP first','The concern is the shared trend, not unequal spread.','Choosing the wrong tool.'],
+ ['✗','Nothing; 25 years of strong fit shows a real relationship','Shared trends can produce strong but spurious fits.','Trusting a trend-driven fit.'],
+ ['✗','Clustering the years first, then regressing within clusters','That doesn’t address the trend.','Wrong tool.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 13
@@ -5230,6 +5235,74 @@ X(13,'b','m1',`To answer question 3, the answer to question 2 is most likely use
  ['✗','A validation set for the staffing model','A forecast isn’t validation data.','Confusing roles.']
 ]);
 
+
+// ---------------------------------------------------------------- Scenario 44 (Module 10)
+SCN_(44,'Loan default tree',`A bank fits a classification tree (CART) to 400 past loans to predict default. In each leaf, “a out of b” means the leaf contains b training loans, and a of them are classified correctly by the leaf’s answer.${FIG_TREE}`);
+X(44,'a','m10',`A common rule of thumb is that each leaf should contain at least 5% of the data. Which leaf breaks this rule, and what does that suggest?`,[
+ ['✓','“Default, 1 out of 1”: it fits a single loan','5% of 400 is 20 loans. A one-loan leaf fits that loan’s quirks, not a pattern that will repeat.'],
+ ['✗','“Repaid, 290 out of 309”: it holds far too much of the data','Large leaves aren’t a problem under this rule; tiny ones are.','Reading the rule backward.'],
+ ['✗','“Default, 41 out of 52”: it misclassifies 11 of its loans','Misclassifications aren’t what the 5% rule checks.','Mixing up leaf size with accuracy.'],
+ ['✗','None, since every leaf classifies most of its loans correctly','The one-loan leaf is “100% correct” only because it fits one point.','Trusting perfect training fit.']
+]);
+X(44,'b','m10',`The bank considers pruning the debt-ratio split, merging its two leaves into one “Repaid” leaf of 39 loans. What happens?`,[
+ ['✓','One more training error, but no leaf fit to a single loan','The merged leaf gets 30 of 39 right (the one-loan “Default” leaf’s loan is now misclassified). One more training error buys a simpler tree without an overfit leaf.'],
+ ['✗','Fewer training errors, since a bigger leaf is more accurate','Merging can only keep or raise training errors; here it raises them by one.','Thinking pruning improves training fit.'],
+ ['✗','The tree can no longer predict any defaults at all','The top-left leaf still predicts default for low credit scores.','Overstating the change.'],
+ ['✗','Nothing changes, since the merged leaf is still “Repaid”','Its loan count and errors change, and the tree’s structure changes.','Ignoring the merge.']
+]);
+X(44,'c','m10',`An applicant has a credit score of 700 and income of $60K. What does the tree predict, and what does the leaf suggest about the risk?`,[
+ ['✓','Repaid; about 6% (19 of 309) of similar past loans defaulted','Score ≥ 640 → income ≥ $45K → the “Repaid, 290 out of 309” leaf. The leaf’s mix gives a rough risk estimate.'],
+ ['✗','Default, since the first question is about credit score','700 isn’t below 640, so the applicant goes right.','Misreading the branch.'],
+ ['✗','Repaid, with 0% chance of default','19 loans in that leaf did default.','Ignoring the leaf’s errors.'],
+ ['✗','You can’t tell without the debt ratio','The debt-ratio question applies only to incomes below $45K.','Not following the path.']
+]);
+X(44,'d','m10',`A regulator requires the bank to explain to each rejected applicant why they were denied. Compared with a random forest of 500 trees, why is this single tree attractive?`,[
+ ['✓','Its path is a short list of if-then rules','A single tree (like linear or logistic regression) is explainable. A forest averages hundreds of trees, so no single path explains the decision.'],
+ ['✗','It is always more accurate than a random forest','Forests usually predict better; the trade-off is explainability.','Assuming simple means accurate.'],
+ ['✗','Random forests can only predict numbers, not classes','They classify by majority vote across trees.','Underrating forests.'],
+ ['✗','A single tree can’t overfit, unlike a forest','This tree already has an overfit leaf.','Ignoring the evidence.']
+]);
+X(44,'e','m10',`The bank also builds a random forest for internal risk scoring. Which description of how it works is correct?`,[
+ ['✓','Bootstrap samples, random factors at each split, then vote/average','The randomness makes the trees different, and averaging many different trees reduces overfitting.'],
+ ['✗','One tree is grown, then averaged with 499 copies of itself','Identical trees would add nothing.','Missing the randomness.'],
+ ['✗','Every tree uses all data and factors, and the best tree is kept','A forest combines all its trees rather than choosing one.','Confusing a forest with model selection.'],
+ ['✗','Trees are grown in sequence, each fixing the previous one’s errors','That describes boosting, a different method.','Mixing up ensemble methods.']
+]);
+X(44,'f','m10',`Suppose the bank grew a regression tree to predict the <b>dollar loss</b> on defaulted loans. What does a leaf typically predict?`,[
+ ['✓','The average loss of the training loans in that leaf','A regression tree splits the data into groups, then predicts within each group.'],
+ ['✗','The most common loss value across all defaulted loans','Leaves predict from their own points.','Ignoring the split.'],
+ ['✗','Whether the loan in question will default or not','That’s a classification tree.','Mixing up tree types.'],
+ ['✗','A yes/no answer: is the loss above the overall average?','Regression trees predict a number; yes/no answers come from classification trees.','Mixing up tree types.']
+]);
+
+// ---------------------------------------------------------------- Scenario 45 (Module 10)
+SCN_(45,'Fraud confusion matrix',`A fraud model is tested on 10,000 transactions (100 of them actually fraud):
+<table class="dtab"><tr><th></th><th>Predicted fraud</th><th>Predicted legitimate</th></tr><tr><th>Actually fraud</th><td>80 (true positives)</td><td>20 (false negatives)</td></tr><tr><th>Actually legitimate</th><td>400 (false positives)</td><td>9,500 (true negatives)</td></tr></table>`);
+X(45,'a','m10',`What share of the actual fraud cases does the model catch (its sensitivity)?`,[
+ ['✓','80%','80 caught out of 100 actual fraud cases.'],
+ ['✗','16.7%','That’s 80 / 480: the share of flagged transactions that really are fraud.','Using the wrong denominator.'],
+ ['✗','95.8%','That’s overall accuracy.','Mixing up measures.'],
+ ['✗','96%','That’s 9,500 / 9,900: the share of legitimate transactions correctly cleared (specificity).','Mixing up sensitivity and specificity.']
+]);
+X(45,'b','m10',`The model’s accuracy is 95.8%. Why isn’t that impressive here?`,[
+ ['✓','Calling everything legitimate would score 99%','With only 1% fraud, accuracy is dominated by the easy legitimate cases.'],
+ ['✗','It is impressive; anything above 95% is excellent','The baseline here is 99%.','Ignoring the baseline.'],
+ ['✗','It’s about right; accuracy is the standard measure','Accuracy is standard, but with only 1% fraud it’s dominated by the easy legitimate cases; compare it to the 99% you’d get by flagging nothing.','Trusting accuracy without a baseline.'],
+ ['✗','95.8% this high on test data suggests overfitting','Overfitting needs a training-vs-test comparison.','Wrong diagnosis.']
+]);
+X(45,'c','m10',`A missed fraud costs $1,000; investigating a false alarm costs $10. A second cutoff gives 10 false negatives and 1,500 false positives. Which cutoff is cheaper?`,[
+ ['✓','The current one: $24,000 vs. $25,000','Current: 20 × 1,000 + 400 × 10 = 24,000. Second: 10 × 1,000 + 1,500 × 10 = 25,000.'],
+ ['✗','The second one, since it misses half as much fraud','Its extra false alarms cost more than the fraud it saves.','Weighing only one error type.'],
+ ['✗','The second one, since it has more true positives','You need the full cost calculation.','Ignoring false alarms.'],
+ ['✗','They cost the same','They differ by $1,000.','Arithmetic slip.']
+]);
+X(45,'d','m10',`If the bank lowers the probability cutoff for flagging fraud, what happens?`,[
+ ['✓','True and false positives rise; false negatives fall','Flagging more transactions catches more fraud and also more legitimate ones.'],
+ ['✗','All three error counts fall together','Moving a cutoff trades one error type for the other.','Expecting a free improvement.'],
+ ['✗','False positives fall, since flags are more selective','A lower cutoff flags more, so false positives rise.','Reversing the effect.'],
+ ['✗','Nothing changes, since the model itself is the same','Same model, different decisions.','Ignoring the cutoff.']
+]);
+
 // ===================== Practice midterm 2 =====================
 MID_SET=2;
 // ---------------------------------------------------------------- Scenario 14
@@ -5243,22 +5316,22 @@ X(14,'a','m2',`Select <b>all</b> of the attributes that are categorical.`,[
  ['✓','Language of the message','Languages are categories with no natural order.']
 ],{multi:1,fixed:1});
 X(14,'b','m2',`Users say that losing a real email to the spam folder is much worse than seeing an occasional spam message. How should the classifier’s boundary move?`,[
- ['✓','So fewer emails get labeled spam, accepting that more spam reaches the inbox','Move the line away from the costly error: only clear-cut spam gets filtered.'],
- ['✗','So more emails get labeled spam, to keep the inbox clean','That increases the costly error.','Moving toward the expensive mistake.'],
- ['✗','It should stay centered in the margin','A centered line treats both errors as equally costly.','Ignoring unequal costs.'],
- ['✗','Switch to a hard-margin SVM so there are no errors','The classes overlap, so a hard margin may not even be possible, and it doesn’t address costs.','Thinking hard margins remove errors.']
+ ['✓','Fewer emails labeled spam, accepting more spam in the inbox','Move the line away from the costly error: only clear-cut spam gets filtered.'],
+ ['✗','More emails labeled spam, so the inbox stays as clean as possible','That increases the costly error.','Moving toward the expensive mistake.'],
+ ['✗','Keep the boundary centered in the margin between the two classes','A centered line treats both errors as equally costly.','Ignoring unequal costs.'],
+ ['✗','Switch to a hard-margin SVM so the filter makes no errors at all','The classes overlap, so a hard margin may not even be possible, and it doesn’t address costs.','Thinking hard margins remove errors.']
 ]);
 X(14,'c','m2',`A first model reports 97% accuracy on held-out data. What should the team check before celebrating?`,[
- ['✓','Whether it catches any spam at all, since labeling everything “not spam” also scores 97%','With 3% spam, the trivial model gets 97%. Look at how it does on the spam emails specifically.'],
- ['✗','Nothing; 97% on held-out data is excellent','Accuracy can hide a model that ignores the rare class.','Trusting one overall number.'],
- ['✗','Whether the model is overfitting, since 97% is suspiciously high','The issue here is class imbalance, not overfitting.','Naming the wrong problem.'],
- ['✗','Whether 97% beats the training accuracy','That compares the wrong things.','Wrong check.']
+ ['✓','Whether it catches spam at all; “never spam” also scores 97%','With 3% spam, the trivial model gets 97%. Look at how it does on the spam emails specifically.'],
+ ['✗','Nothing more; 97% on held-out data is already excellent','Accuracy can hide a model that ignores the rare class.','Trusting one overall number.'],
+ ['✗','Whether it’s overfitting, since 97% is suspiciously high','The issue here is class imbalance, not overfitting.','Naming the wrong problem.'],
+ ['✗','Whether the 97% beats the model’s training accuracy','That compares the wrong things.','Wrong check.']
 ]);
 X(14,'d','m2',`The provider scores 50 million emails a day using a training set of 20 million emails. Why would KNN be much slower than a linear SVM at prediction time?`,[
- ['✓','KNN must compare each new email to the stored training emails; an SVM just evaluates one equation','KNN keeps all the training data and searches it for every prediction. An SVM keeps only its coefficients.'],
- ['✗','KNN has to retrain for every new email','It doesn’t retrain; it searches.','Confusing searching with training.'],
- ['✗','SVMs skip the categorical attributes','Both use the same attributes.','Inventing a difference.'],
- ['✗','KNN can only handle two attributes at a time','It works in any number of dimensions.','Inventing a limit.']
+ ['✓','KNN searches stored emails each time; an SVM evaluates one equation','KNN keeps all the training data and searches it for every prediction. An SVM keeps only its coefficients.'],
+ ['✗','KNN has to recompute its coefficients for every new email','It doesn’t retrain; it searches.','Confusing searching with training.'],
+ ['✗','KNN must retrain on all 20 million emails for each new email','KNN doesn’t retrain at all; the cost is the search through stored emails for every prediction.','Confusing searching with retraining.'],
+ ['✗','The SVM was trained on fewer emails, so it has less to process','Both can be trained on the same data; once trained, the SVM keeps only its coefficients, while KNN keeps every training email.','Thinking training size, not stored data, drives prediction time.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 15
@@ -5270,22 +5343,22 @@ X(15,'a','m2',`How does KNN classify the new point with k = 1, and with k = 5?`,
  ['✗','k = 1: black. k = 5: white','Both are reversed.','Reversing both.']
 ]);
 X(15,'b','m2',`The two values of k disagree. What’s the best way to choose k?`,[
- ['✓','Compare several values of k on validation data or with cross-validation','k is a setting to tune by how well the model does on data it didn’t train on.'],
- ['✗','Always use k = 1, since the closest point is the most similar','k = 1 is the most sensitive to noisy points.','Assuming closest is always best.'],
+ ['✓','Compare several values of k on validation data','k is a setting to tune by how well the model does on data it didn’t train on.'],
+ ['✗','Use k = 1, since the closest point is the most similar','k = 1 is the most sensitive to noisy points.','Assuming closest is always best.'],
  ['✗','Use the k that gives the best training accuracy','k = 1 always wins on training data.','Choosing by training fit.'],
- ['✗','Use the largest possible k to be safe','Very large k just predicts the majority class.','Overcorrecting.']
+ ['✗','Use the largest k possible, to smooth out noise','Very large k just predicts the majority class.','Overcorrecting.']
 ]);
 X(15,'c','m2',`Suppose x₁ were <b>not</b> scaled and ranged from 0 to 60,000, while x₂ ranged from 0 to 6. What would happen to the neighbors?`,[
  ['✓','They’d be chosen almost entirely by x₁; x₂ would barely matter','Differences in x₁ would be thousands of times larger, so they’d dominate the distance.'],
  ['✗','Nothing, since KNN is unaffected by units','KNN’s distances depend directly on units.','Assuming the method is unit-free.'],
  ['✗','They’d be chosen almost entirely by x₂','The larger-scale attribute dominates.','Reversing the effect.'],
- ['✗','KNN would stop working','It works; it just weighs the attributes badly.','Overstating it.']
+ ['✗','Both attributes would still count equally, since KNN compares points rather than raw values','KNN compares points by distance, and distance is computed from the raw values, so the larger-scale attribute dominates.','Thinking KNN is unit-free.']
 ]);
 X(15,'d','m2',`You decide that x₂ is three times as important as x₁ for this problem. How can KNN reflect that?`,[
- ['✓','Use a weighted distance with a larger weight on x₂','Weights make differences in x₂ count more when finding neighbors.'],
- ['✗','Use k = 3','k sets how many neighbors vote, not how attributes are weighted.','Confusing k with weights.'],
- ['✗','Drop x₁ entirely','That makes x₁ count for nothing, not one-third as much.','Overcorrecting.'],
- ['✗','Multiply the predicted class by 3','Classes aren’t numbers to scale.','Misunderstanding the output.']
+ ['✓','Use a weighted distance with more weight on x₂','Weights make differences in x₂ count more when finding neighbors.'],
+ ['✗','Use k = 3 so each neighbor counts three times','k sets how many neighbors vote, not how attributes are weighted.','Confusing k with weights.'],
+ ['✗','Drop x₁ from the distance calculation entirely','That makes x₁ count for nothing, not one-third as much.','Overcorrecting.'],
+ ['✗','Count x₂’s neighbors’ votes three times as much','Votes come from neighbors, not from attributes. An attribute’s importance is set in the distance calculation.','Mixing up attributes and neighbors.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 16
@@ -5300,22 +5373,22 @@ X(16,'a','m3',`Which degree should the analyst choose?`,[
  ['✗','Degree 4','Its validation error is higher than degree 3’s.','Misreading the table.']
 ]);
 X(16,'b','m3',`Why does training RMSE keep falling all the way to degree 6?`,[
- ['✓','More flexible models can always fit the training data more closely, including its noise','Training error rewards flexibility whether or not the patterns are real.'],
- ['✗','Higher degrees really are better models','Validation error shows they aren’t.','Equating training fit with quality.'],
- ['✗','The validation set is too small','That doesn’t explain the training trend.','Wrong diagnosis.'],
- ['✗','The training data has no noise','Then validation error wouldn’t rise.','Contradicting the evidence.']
+ ['✓','More flexible models can always fit the training data, noise included','Training error rewards flexibility whether or not the patterns are real.'],
+ ['✗','Higher-degree polynomials really are better models of fuel use','Validation error shows they aren’t.','Equating training fit with quality.'],
+ ['✗','The validation set is too small to show the improvement','That doesn’t explain the training trend.','Wrong diagnosis.'],
+ ['✗','The training data has little noise, so flexibility keeps helping','Then validation error wouldn’t rise.','Contradicting the evidence.']
 ]);
 X(16,'c','m3',`Is 4.6 a good estimate of degree 3’s error on brand-new data?`,[
- ['✓','It’s likely a bit optimistic, since degree 3 was chosen for having the lowest validation error; check on a test set','The winner of a comparison tends to have gotten lucky on the validation data.'],
- ['✗','Yes, validation error is always unbiased','It’s unbiased for each model alone, not for the one you picked as best.','Missing selection bias.'],
- ['✗','No, the real error will be 4.0, the training error','Training error is the most optimistic of all.','Trusting training fit.'],
- ['✗','No, it will be 9.5, degree 1’s error','That’s a different model’s error.','Mixing up models.']
+ ['✓','Probably a bit optimistic, since it won a comparison; use a test set','The winner of a comparison tends to have gotten lucky on the validation data.'],
+ ['✗','Yes; each model’s validation error is unbiased, so 4.6 is accurate','It’s unbiased for each model alone, not for the one you picked as best.','Missing selection bias.'],
+ ['✗','No; the real error will be closer to 4.0, its training error','Training error is the most optimistic of all.','Trusting training fit.'],
+ ['✗','No; the real error will be closer to 9.5, the simplest model’s','That’s a different model’s error.','Mixing up models.']
 ]);
 X(16,'d','m3',`The data set has only 60 cars. Which change to the validation approach is most helpful?`,[
- ['✓','Use k-fold cross-validation so every car is used for both training and validation','With little data, one fixed split wastes points and depends heavily on which cars landed where.'],
- ['✗','Put 90% of the data in validation','That leaves almost nothing to train on.','Overcorrecting.'],
- ['✗','Skip validation and pick the lowest training error','That always picks the most overfit model.','Abandoning validation.'],
- ['✗','Use the same 60 cars for training and validation','Then validation measures training fit.','Reusing data.']
+ ['✓','Use k-fold cross-validation to use every car more fully','With little data, one fixed split wastes points and depends heavily on which cars landed where.'],
+ ['✗','Put 90% of the data in validation for a precise estimate','That leaves almost nothing to train on.','Overcorrecting.'],
+ ['✗','Skip validation and pick the degree with lowest training error','That always picks the most overfit model.','Abandoning validation.'],
+ ['✗','Train and validate on all 60 cars to use every data point','Then validation measures training fit.','Reusing data.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 17
@@ -5331,17 +5404,17 @@ X(17,'b','m4',`Which distance matches the <b>van’s</b> travel?`,[
  ['✗','2-norm (Euclidean)','It can’t cut diagonally through blocks.','Assuming straight-line travel.'],
  ['✗','∞-norm (largest difference)','The two directions happen one after another, not at the same time.','Treating sequential moves as simultaneous.']
 ],{fixed:1});
-X(17,'c','m4',`What are the three distances (1-norm, 2-norm, ∞-norm) for a trip that differs by 6 and 8?`,[
- ['✓','14, 10, and 8','6 + 8 = 14. √(36 + 64) = 10. max(6, 8) = 8.'],
- ['✗','8, 10, and 14','The order is reversed; the 1-norm is the largest.','Flipping the ordering.'],
- ['✗','14, 100, and 8','The 2-norm takes the square root of 100.','Forgetting the root.'],
- ['✗','14, 10, and 6','The ∞-norm takes the largest difference, not the smallest.','Using min instead of max.']
+X(17,'c','m4',`For this 6-and-8 trip, how do the three distances compare, and which is the longest?`,[
+ ['✓','1-norm (14) ≥ 2-norm (10) ≥ ∞-norm (8); the van’s grid distance is longest','Adding both legs (14) is longest, the straight line (10) is shorter, and the largest single leg (8) is shortest. This ordering holds for any two points.'],
+ ['✗','∞-norm ≥ 2-norm ≥ 1-norm; the robot’s distance is longest, since it’s the “infinity” norm','“∞” refers to the power p, not the size. As p grows, the largest leg dominates and the distance shrinks toward it.','Reading “∞” as “biggest.”'],
+ ['✗','All three are equal, since the endpoints are the same','They’re equal only when the points differ in just one direction.','Overgeneralizing a special case.'],
+ ['✗','The 2-norm is longest, since straight-line distance is the true distance','The straight line is the shortest path in the plane, so it’s never longer than the grid route.','Treating Euclidean as the largest.']
 ]);
 X(17,'d','m4',`The robot’s lift motor is upgraded to run twice as fast; the aisle motor stays the same. For this 6-and-8 trip, when does the upgrade shorten the trip?`,[
- ['✓','Only if the lift move was the one taking longer','Trip time is the maximum of the two move times, so only speeding up the slower move helps.'],
- ['✗','Always, by half the lift time','Times don’t add when the moves are simultaneous.','Using the sum instead of the max.'],
- ['✗','Never, since only the aisle move matters','The lift matters when it’s the slower move.','Ignoring one dimension.'],
- ['✗','Always, by exactly half the total trip','Only the slower move limits the trip.','Overstating it.']
+ ['✓','Only if the lift move was the slower of the two','Trip time is the maximum of the two move times, so only speeding up the slower move helps.'],
+ ['✗','Always, by half the time of the lift move','Times don’t add when the moves are simultaneous.','Using the sum instead of the max.'],
+ ['✗','Never, since only the aisle move limits the trip','The lift matters when it’s the slower move.','Ignoring one dimension.'],
+ ['✗','Always, by exactly half the total trip time','Only the slower move limits the trip.','Overstating it.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 18
@@ -5355,14 +5428,14 @@ X(18,'a','m4',`k-means alternates between two steps until it stops. Which step i
 X(18,'b','m4',`When does the loop stop?`,[
  ['✓','When no customer changes cluster from one round to the next','Then the centers stop moving too, so further rounds change nothing.'],
  ['✗','When the total distance reaches 0','That only happens when k equals the number of points.','Expecting a perfect fit.'],
- ['✗','After exactly k rounds','The number of rounds isn’t tied to k.','Inventing a rule.'],
- ['✗','When every cluster has the same number of customers','k-means doesn’t balance cluster sizes.','Inventing a goal.']
+ ['✗','When the total distance to centers stops getting smaller, even if some customers are still switching','If customers are still switching clusters, the centers are still moving; the loop continues until assignments settle.','Confusing a slowdown with convergence.'],
+ ['✗','When it has found the best possible clustering for this k','k-means stops at a local solution; it can’t guarantee the best one, which is why you run several random starts.','Thinking the heuristic is guaranteed optimal.']
 ]);
 X(18,'c','m4',`The analyst’s manager names the clusters (“bargain hunters,” “loyal regulars,” …), and a teammate then trains an SVM to predict those names for new customers. What happened?`,[
- ['✓','An unsupervised result became the labels for a supervised model','Clustering found groups without labels; once named, the groups can serve as labels for classification.'],
- ['✗','The SVM is now doing clustering','It classifies into labels it was given.','Confusing the two methods.'],
- ['✗','This is invalid, because clusters can never be used as labels','It’s a common and legitimate workflow.','Inventing a rule.'],
- ['✗','The SVM will find better clusters than k-means','It doesn’t find clusters; it learns the given labels.','Misunderstanding the roles.']
+ ['✓','A clustering result became labels for a classifier','Clustering found groups without labels; once named, the groups can serve as labels for classification.'],
+ ['✗','The SVM is now doing clustering instead of classifying','It classifies into labels it was given.','Confusing the two methods.'],
+ ['✗','The SVM has been turned into an unsupervised method','The SVM still learns from labels it was given; where the labels came from doesn’t change what it does.','Confusing the two methods.'],
+ ['✗','The SVM will find better clusters than k-means did','It doesn’t find clusters; it learns the given labels.','Misunderstanding the roles.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 19
@@ -5381,16 +5454,16 @@ X(19,'b','m5',`Which type of outlier is finding 2?`,[
  ['✗','Bad data','Nothing suggests an error; it’s just unusual for the season.','Assuming every outlier is an error.']
 ]);
 X(19,'c','m5',`What’s the best handling of finding 3?`,[
- ['✓','Treat it as bad data: remove or impute the age after checking the record','No one is 214. It’s an entry error, not a real phenomenon.'],
+ ['✓','Treat it as bad data: remove or impute the age','No one is 214. It’s an entry error, not a real phenomenon.'],
  ['✗','Keep it, since outliers should never be removed','Impossible values are errors.','Applying a blanket rule.'],
- ['✗','Model very old customers separately','There are no 214-year-old customers to model.','Treating an error as a real group.'],
+ ['✗','Model very old customers as a separate segment','There are no 214-year-old customers to model.','Treating an error as a real group.'],
  ['✗','Delete the whole customer from every table','Usually unnecessary; other fields may be fine.','Overreacting.']
 ]);
 X(19,'d','m5',`Which of the three is generally hardest to detect, and why?`,[
- ['✓','Finding 1, because each value looks normal; only the pattern is unusual','Simple value-based checks (box plots, SD rules) can’t see a pattern across many normal values.'],
- ['✗','Finding 3, because it’s extreme','Extreme values are the easiest to catch.','Reversing difficulty.'],
- ['✗','Finding 2, because it’s a large amount','It’s large but normal for the year, so you need context, which is moderately hard.','Picking the wrong one.'],
- ['✗','They’re all equally easy with a box plot','A box plot catches only finding 3.','Overtrusting one tool.']
+ ['✓','Finding 1, since each value alone looks normal','Simple value-based checks (box plots, SD rules) can’t see a pattern across many normal values.'],
+ ['✗','Finding 3, since it’s the most extreme value','Extreme values are the easiest to catch.','Reversing difficulty.'],
+ ['✗','Finding 2, since it’s a very large amount','It’s large but normal for the year, so you need context, which is moderately hard.','Picking the wrong one.'],
+ ['✗','All equally easy, since a box plot flags them all','A box plot catches only finding 3.','Overtrusting one tool.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 20
@@ -5402,38 +5475,38 @@ X(20,'a','m5',`What is the upper limit beyond which points are flagged?`,[
  ['✗','38 minutes','That adds 1.5 × IQR to the median.','Starting from the wrong quartile.']
 ]);
 X(20,'b','m5',`Three days are flagged (55, 61, and 90 minutes). The 90 occurred when a technician confirmed the door was left open overnight. What should happen to that point if the goal is to model normal refrigerator performance?`,[
- ['✓','It’s real but caused by an unusual event outside normal operations, so it can be excluded from a normal-conditions model','Real but not relevant to the question being asked, as long as you know why it happened.'],
- ['✗','It must be bad data, so delete it','It actually happened; it’s not an error.','Assuming every outlier is an error.'],
- ['✗','Keep it, since every real point belongs in every model','Relevance depends on the question.','Using a blanket rule.'],
- ['✗','Replace it with the median, 26','That invents a value for a day that really was abnormal.','Imputing a real event away.']
+ ['✓','It’s real but not part of normal operations, so it can be excluded','Real but not relevant to the question being asked, as long as you know why it happened.'],
+ ['✗','It must be bad data, so delete it from every analysis','It actually happened; it’s not an error.','Assuming every outlier is an error.'],
+ ['✗','Keep it, since every real data point belongs in every model','Relevance depends on the question.','Using a blanket rule.'],
+ ['✗','Replace it with the median, 26, to reduce its influence','That invents a value for a day that really was abnormal.','Imputing a real event away.']
 ]);
 X(20,'c','m5',`If the pharmacy cared about the risk of spoiled medicine instead, what should happen to the 90-minute day?`,[
- ['✓','Keep it; events like an open door are exactly the risk being studied','When the question is about rare harmful events, those outliers are the signal.'],
- ['✗','Remove it, since it’s still an outlier','Whether to keep a point depends on the question, not the label “outlier.”','Treating “outlier” as “remove.”'],
- ['✗','Cap it at 50, the flagging limit','That understates the real risk.','Hiding extremes.'],
- ['✗','It doesn’t matter either way','It matters a lot for a risk question.','Ignoring context.']
+ ['✓','Keep it; such events are exactly the risk being studied','When the question is about rare harmful events, those outliers are the signal.'],
+ ['✗','Remove it, since it’s still flagged as an outlier','Whether to keep a point depends on the question, not the label “outlier.”','Treating “outlier” as “remove.”'],
+ ['✗','Cap it at 50, the flagging limit, then keep it','That understates the real risk.','Hiding extremes.'],
+ ['✗','It doesn’t matter, since it’s only one of 365 days','It matters a lot for a risk question.','Ignoring context.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 21
 SCN_(21,'Restaurant traffic',`A restaurant averages μ = 200 customers a day. The owner runs a <b>decrease</b> CUSUM:
 <div class="eq">Sₜ = max{0, Sₜ₋₁ + (μ − xₜ − C)}, alarm when Sₜ ≥ T</div>with C = 10 and T = 60, starting from S₀ = 0.`);
-X(21,'a','m6',`The next four days have 185, 178, 205, and 170 customers. What is S after the fourth day?`,[
- ['✓','22','S: 200 − 185 − 10 = 5. Then 5 + 12 = 17. Then 17 + (200 − 205 − 10) = 2. Then 2 + 20 = 22.'],
- ['✗','47','That forgets to subtract C each day.','Dropping C.'],
- ['✗','37','That skips the drop from the 205-customer day.','Ignoring an above-average day.'],
- ['✗','0','Only a very good day pushes S down to 0.','Misapplying the floor.']
+X(21,'a','m6',`On the third day, 205 customers come in, above μ. What does that day do to S in this decrease CUSUM?`,[
+ ['✓','It reduces S, partly erasing the evidence of a drop','In the decrease CUSUM, μ − xₜ − C = 200 − 205 − 10 is negative, so a good day pulls S down (but never below 0).'],
+ ['✗','Nothing; a decrease CUSUM ignores days above the mean','Days above the mean count against the evidence of a drop; they’re not ignored.','Thinking only one side of the data matters.'],
+ ['✗','It raises S, since the count is far from μ','The decrease CUSUM measures how far below μ a day is; being above μ works the other way.','Treating any deviation as evidence.'],
+ ['✗','It resets S to 0, wiping out all evidence of a drop','It lowers S by the shortfall; S hits 0 only if that’s enough to use up all of S.','Overstating the reset.']
 ]);
 X(21,'b','m6',`Day-to-day counts naturally swing by ±30, and the owner only cares about large, lasting drops. Which adjustment fits?`,[
- ['✓','Raise C (and possibly T) so ordinary swings don’t build up','A larger allowance ignores normal variation; a larger threshold demands more total evidence.'],
- ['✗','Lower C and T to catch every dip','That causes constant false alarms from normal swings.','Maximizing sensitivity.'],
- ['✗','Set C = 0 so every customer counts','Then noise builds up into false alarms.','Ignoring noise.'],
- ['✗','Switch to an increase CUSUM','The owner cares about decreases.','Wrong direction.']
+ ['✓','Raise C (and possibly T) to ignore normal swings','A larger allowance ignores normal variation; a larger threshold demands more total evidence.'],
+ ['✗','Lower C and T so that every dip is caught early','That causes constant false alarms from normal swings.','Maximizing sensitivity.'],
+ ['✗','Set C = 0 so that every lost customer counts','Then noise builds up into false alarms.','Ignoring noise.'],
+ ['✗','Switch to an increase CUSUM to track good days','The owner cares about decreases.','Wrong direction.']
 ]);
 X(21,'c','m6',`The owner wants to show that a new competitor hurt business. After seeing the data, he tries many C and T values and reports the one pair that shows a drop right after the competitor opened. What’s the problem?`,[
- ['✓','Choosing settings after looking for a desired result is cherry-picking; set them before analyzing','Results that depend on hand-picked settings aren’t reliable evidence.'],
- ['✗','Nothing; trying many values is thorough','Picking the one that fits your story isn’t thoroughness.','Confusing search with rigor.'],
- ['✗','He should have used a decrease CUSUM','He did; the issue is how he chose the settings.','Missing the point.'],
- ['✗','CUSUM can’t detect competitor effects','It can detect the drop; it can’t prove the cause.','Wrong objection.']
+ ['✓','Picking settings to fit the desired result is cherry-picking','Results that depend on hand-picked settings aren’t reliable evidence.'],
+ ['✗','Nothing; trying many settings is a thorough analysis','Picking the one that fits your story isn’t thoroughness.','Confusing search with rigor.'],
+ ['✗','He should have used an increase CUSUM instead','A decrease CUSUM is the right tool for a drop; the problem is how he chose C and T.','Missing the point.'],
+ ['✗','CUSUM can’t detect drops caused by competitors','It can detect the drop; it can’t prove the cause.','Wrong objection.']
 ]);
 X(21,'d','m6',`Which data should the owner use to set μ?`,[
  ['✓','A stable period of normal operation before any suspected change','μ should describe “normal,” not include the change you’re trying to detect.'],
@@ -5445,29 +5518,29 @@ X(21,'d','m6',`Which data should the owner use to set μ?`,[
 // ---------------------------------------------------------------- Scenario 22
 SCN_(22,'Smoothing web traffic',`A website tracks daily visits and uses single exponential smoothing:
 <div class="eq">Sₜ = α·xₜ + (1 − α)·Sₜ₋₁</div>`);
-X(22,'a','m7',`With α = 0.3, yesterday’s baseline was 100 and today’s count is 120. What is today’s baseline?`,[
- ['✓','106','0.3 × 120 + 0.7 × 100 = 36 + 70 = 106.'],
- ['✗','114','That uses α = 0.7 by mistake.','Swapping α and 1 − α.'],
- ['✗','120','That’s α = 1: the baseline just copies today’s count.','Ignoring the old baseline.'],
- ['✗','110','That’s a simple average of the two.','Using equal weights.']
+X(22,'a','m7',`With α = 0.3, yesterday’s baseline was 100 and today’s count is 120. Where does today’s baseline land?`,[
+ ['✓','Between 100 and 120, closer to 100','With α = 0.3, 30% of the weight goes to today’s count and 70% to the old baseline: 0.3 × 120 + 0.7 × 100 = 106.'],
+ ['✗','Between 100 and 120, closer to 120','That would need α above 0.5.','Swapping α and 1 − α.'],
+ ['✗','Exactly 120, since the newest reading is the best information','That’s α = 1, which ignores the history entirely.','Ignoring the old baseline.'],
+ ['✗','Exactly 100, since one reading isn’t enough to move it','Any α above 0 moves the baseline toward the new reading.','Treating α as 0.']
 ]);
-X(22,'b','m7',`What is the forecast for each of the next three days?`,[
- ['✓','106 for all three days','Simple exponential smoothing forecasts a flat line at the current baseline.'],
- ['✗','106, 112, 118','That assumes a trend, which simple smoothing doesn’t have.','Adding a trend term.'],
- ['✗','120 for all three days','The forecast is the smoothed baseline, not the last count.','Forecasting with the raw value.'],
- ['✗','It can’t forecast more than one day ahead','It can; the forecast is just flat.','Inventing a limit.']
+X(22,'b','m7',`What will the forecasts for each of the next three days look like?`,[
+ ['✓','All three equal to today’s baseline (about 106)','Simple exponential smoothing has no trend or seasonal term, so every future day gets the current baseline.'],
+ ['✗','Rising each day, continuing the jump from 100 toward 120','That assumes a trend, which simple smoothing doesn’t have.','Adding a trend term.'],
+ ['✗','All three equal to 120, today’s count','The forecast is the smoothed baseline, not the last raw count.','Forecasting with the raw value.'],
+ ['✗','Drifting back toward 100, since the jump is probably noise','Simple smoothing doesn’t forecast a return; it projects the current baseline flat.','Building in mean reversion.']
 ]);
 X(22,'c','m7',`Traffic permanently jumps from about 100 to about 150 a day after a news story. How does α affect how quickly the baseline catches up?`,[
- ['✓','A larger α catches up faster, but it also reacts more to ordinary noise','A larger α gives new readings more weight, which helps after real shifts and hurts with random spikes.'],
- ['✗','A smaller α catches up faster','A smaller α trusts the old baseline more, so it adapts slowly.','Reversing α.'],
- ['✗','α doesn’t affect how fast it adapts','That’s exactly what α controls.','Ignoring α’s role.'],
- ['✗','The baseline never reaches 150 with any α','With any α above 0 it gets there gradually.','Overstating the lag.']
+ ['✓','A larger α catches up faster but reacts more to noise','A larger α gives new readings more weight, which helps after real shifts and hurts with random spikes.'],
+ ['✗','A smaller α catches up faster, since it’s more stable','A smaller α trusts the old baseline more, so it adapts slowly.','Reversing α.'],
+ ['✗','α doesn’t affect speed; only the size of the jump does','That’s exactly what α controls.','Ignoring α’s role.'],
+ ['✗','No α ever fully reaches 150, so the choice doesn’t matter','With any α above 0 it gets there gradually.','Overstating the lag.']
 ]);
 X(22,'d','m7',`Why is this method called “exponential” smoothing?`,[
- ['✓','A reading’s weight shrinks by a factor of (1 − α) for each period it ages','Expanding Sₜ gives weights α, α(1 − α), α(1 − α)², …, which decay geometrically (exponentially).'],
+ ['✓','A reading’s weight shrinks by (1 − α) each period','Expanding Sₜ gives weights α, α(1 − α), α(1 − α)², …, which decay geometrically (exponentially).'],
  ['✗','It fits an exponential growth curve to the data','It doesn’t assume growth.','Taking the name literally.'],
- ['✗','It raises each reading to the power α','α is a weight, not an exponent on the data.','Misreading the formula.'],
- ['✗','Its errors grow exponentially over time','The name refers to the weights.','Misattributing the name.']
+ ['✗','It raises each reading to the power α before averaging','α is a weight, not an exponent on the data.','Misreading the formula.'],
+ ['✗','Its forecast errors grow exponentially with the horizon','The name refers to the weights.','Misattributing the name.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 23
@@ -5485,17 +5558,17 @@ X(23,'b','m7',`For this monthly data, what is the season length L?`,[
  ['✗','7','That would be a weekly cycle in daily data.','Using the wrong cycle.']
 ]);
 X(23,'c','m7',`How many years of data are generally needed to estimate the seasonal factors well?`,[
- ['✓','Several full years, since each month’s factor is estimated once per cycle','Each seasonal factor gets only one new observation per year.'],
- ['✗','A single month','You can’t see a yearly cycle in one month.','Ignoring the cycle length.'],
- ['✗','Exactly one year','One year gives each factor a single data point.','Underestimating noise.'],
- ['✗','None; the seasonal factors are entered by hand','They’re estimated from the data.','Misunderstanding fitting.']
+ ['✓','Several full years, since each factor updates once a year','Each seasonal factor gets only one new observation per year.'],
+ ['✗','A single month, since each month has 30 days of data','You can’t see a yearly cycle in one month.','Ignoring the cycle length.'],
+ ['✗','Exactly one year, since that covers every month once','One year gives each factor a single data point.','Underestimating noise.'],
+ ['✗','None, since the factors are set by hand before fitting','They’re estimated from the data.','Misunderstanding fitting.']
 ]);
 
 X(23,'d','m7',`If the retailer used single exponential smoothing anyway, what would its forecast for the next 12 months look like?`,[
- ['✓','A flat line at the current baseline, missing both the growth and the yearly peaks','Single smoothing has no trend or seasonal terms, so every future month gets the same forecast.'],
- ['✗','A rising line that follows the trend','That needs a trend term.','Assuming a trend is built in.'],
- ['✗','A repeating yearly pattern','That needs seasonal factors.','Assuming seasonality is built in.'],
- ['✗','An exact copy of last year’s 12 months','Smoothing doesn’t replay past values.','Confusing it with a naive seasonal forecast.']
+ ['✓','A flat line, missing both the growth and the yearly peaks','Single smoothing has no trend or seasonal terms, so every future month gets the same forecast.'],
+ ['✗','A rising line that continues the trend in the data','That needs a trend term.','Assuming a trend is built in.'],
+ ['✗','A repeating yearly pattern around the current level','That needs seasonal factors.','Assuming seasonality is built in.'],
+ ['✗','An exact copy of the last 12 months of sales','Smoothing doesn’t replay past values.','Confusing it with a naive seasonal forecast.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 24
@@ -5507,10 +5580,10 @@ X(24,'a','m8',`What does Plot 1 suggest, and what’s the fix?`,[
  ['✗','There are outliers; remove the points at both ends','The ends follow the curve; they aren’t outliers.','Deleting signal.']
 ]);
 X(24,'b','m9',`What does Plot 2 suggest, and what’s a common fix?`,[
- ['✓','Errors grow with the fitted value (heteroscedasticity); consider Box-Cox on the response','A fan shape means unequal variance, which a variance-stabilizing transformation addresses.'],
+ ['✓','Unequal spread (heteroscedasticity); try Box-Cox on y','A fan shape means unequal variance, which a variance-stabilizing transformation addresses.'],
  ['✗','The relationship is curved; add a squared term','There’s no curve, just widening spread.','Mixing up the two patterns.'],
- ['✗','The data needs detrending over time','Nothing here involves time.','Wrong tool.'],
- ['✗','Nothing is wrong with it','A fan shape breaks the constant-variance assumption.','Missing the pattern.']
+ ['✗','The data has a time trend; detrend it first','Nothing here involves time.','Wrong tool.'],
+ ['✗','Nothing is wrong; residuals average out to 0','A fan shape breaks the constant-variance assumption.','Missing the pattern.']
 ]);
 X(24,'c','m8',`Select <b>all</b> of the models that still count as linear regression.`,[
  ['✓','y = a₀ + a₁x + a₂x²','It’s linear in the coefficients, even though x is squared.'],
@@ -5539,44 +5612,113 @@ X(25,'c','m8',`The ad coefficient is 40 (units per $1,000). In practice, ads and
 // ---------------------------------------------------------------- Scenario 26
 SCN_(26,'Small data, many parameters',`A biotech lab has results from only 30 experiments and is comparing two regression models: Model 1 with 4 parameters and Model 2 with 9 parameters.`);
 X(26,'a','m8',`Which version of AIC is recommended here, and why?`,[
- ['✓','Corrected AIC (AICc), since the number of parameters isn’t small relative to the number of data points','AICc adds an extra penalty that matters when n is small compared with k.'],
+ ['✓','AICc, since there are few data points per parameter','AICc adds an extra penalty that matters when n is small compared with k.'],
  ['✗','Regular AIC, since it works at any data size','With n = 30 and k = 9, AIC under-penalizes complexity.','Ignoring the small-sample issue.'],
- ['✗','BIC, since it’s always better for small data','BIC is the stricter penalty for large data; AICc is the small-sample fix.','Mixing up the criteria.'],
- ['✗','None; you can’t compare models on 30 points','You can; you just need the correction.','Overstating the limit.']
+ ['✗','BIC, since its penalty suits small samples best','BIC is the stricter penalty for large data; AICc is the small-sample fix.','Mixing up the criteria.'],
+ ['✗','None, since models can’t be compared on 30 points','You can; you just need the correction.','Overstating the limit.']
 ]);
-X(26,'b','m8',`The AICc correction is 2k(k + 1)/(n − k − 1). With 30 points, how does it compare for the two models?`,[
- ['✓','About 1.6 for Model 1 and 9.0 for Model 2, so the bigger model is penalized much more','Model 1: 2·4·5/25 = 1.6. Model 2: 2·9·10/20 = 9. The correction grows quickly with k.'],
- ['✗','The same for both models','It depends on k.','Ignoring the formula.'],
- ['✗','Larger for Model 1','The model with more parameters gets the bigger correction.','Reversing the effect.'],
- ['✗','Zero for both, since n is above 20','The correction is never exactly zero.','Inventing a rule.']
+X(26,'b','m8',`The AICc correction, 2k(k + 1)/(n − k − 1), is added to AIC. With n = 30, how does it treat the two models?`,[
+ ['✓','It penalizes the 9-parameter model much more than the 4-parameter one','The correction grows quickly as k gets closer to n: about 1.6 for k = 4, but 9 for k = 9.'],
+ ['✗','It adds the same amount to both, so the comparison doesn’t change','The correction depends on k, so it widens the gap between them.','Ignoring the formula’s dependence on k.'],
+ ['✗','It favors the bigger model, since more parameters fit small data better','The correction exists to stop small samples from rewarding extra parameters.','Reversing the purpose.'],
+ ['✗','It barely matters, since n = 30 counts as large','With k = 9, n − k − 1 is only 20, so the correction is substantial.','Misjudging “small” relative to k.']
 ]);
 X(26,'c','m8',`In Model 2, one coefficient’s 95% confidence interval is [−0.4, 1.2]. What can you say?`,[
- ['✓','Zero is plausible, so the p-value is above 0.05; the data doesn’t clearly show an effect','An interval that includes 0 means the effect isn’t significant at the 5% level.'],
- ['✗','The effect is 0.4','The interval is a range of plausible values, not a point.','Misreading the interval.'],
- ['✗','The effect is definitely positive, since most of the interval is above 0','Zero is still inside the interval.','Eyeballing instead of checking 0.'],
- ['✗','The p-value must be below 0.05','An interval containing 0 means it’s above 0.05.','Reversing the link.']
+ ['✓','Zero is plausible, so p > 0.05; no clear effect','An interval that includes 0 means the effect isn’t significant at the 5% level.'],
+ ['✗','The effect is 0.4, the distance from 0 to the low end','The interval is a range of plausible values, not a point.','Misreading the interval.'],
+ ['✗','The effect is positive, since most of the interval is above 0','Zero is still inside the interval.','Eyeballing instead of checking 0.'],
+ ['✗','The p-value must be below 0.05, since the interval is narrow','An interval containing 0 means it’s above 0.05.','Reversing the link.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 27
 SCN_(27,'Detrending gold',`An analyst wants to model the yearly price of gold using several economic factors. She first fits a linear trend to gold prices over time and computes detrended values (actual price − fitted trend).
 <table class="dtab"><tr><th>Year</th><th>Actual price</th><th>Fitted trend</th></tr><tr><td>2015</td><td>1,160</td><td>1,240</td></tr><tr><td>2016</td><td>1,250</td><td>1,270</td></tr><tr><td>2017</td><td>1,260</td><td>1,300</td></tr></table>`);
 X(27,'a','m9',`What is the detrended value for 2015, and what does it mean?`,[
- ['✓','−80: gold was $80 below where the trend says it should be that year','Detrended = 1,160 − 1,240 = −80.'],
- ['✗','+80: gold was $80 above the trend','The actual price is below the trend.','Subtracting in the wrong order.'],
- ['✗','−90: gold fell $90 from the year before','That’s a change between years, which isn’t detrending.','Confusing detrending with differencing.'],
- ['✗','1,160: detrending doesn’t change the values','Detrending subtracts the trend.','Misunderstanding detrending.']
+ ['✓','−80: gold was $80 below its trend that year','Detrended = 1,160 − 1,240 = −80.'],
+ ['✗','+80: gold was $80 above its trend that year','The actual price is below the trend.','Subtracting in the wrong order.'],
+ ['✗','−90: gold fell $90 from the previous year','That’s a change between years, which isn’t detrending.','Confusing detrending with differencing.'],
+ ['✗','1,160: detrending leaves actual prices unchanged','Detrending subtracts the trend.','Misunderstanding detrending.']
 ]);
 X(27,'b','m9',`If the fitted trend line were steeper, what would happen to the detrended values in the most recent years?`,[
- ['✓','They’d be lower, since the trend predicts higher recent prices to subtract','A steeper line rises faster, so later actual prices sit further below it.'],
- ['✗','They’d be higher','More is subtracted, so they go down.','Reversing the effect.'],
- ['✗','They’d be unchanged','The trend value is what’s subtracted, so they change.','Missing the dependence.'],
- ['✗','They’d all become 0','Only a perfect fit would do that.','Overstating it.']
+ ['✓','They’d be lower, since more is subtracted','A steeper line rises faster, so later actual prices sit further below it.'],
+ ['✗','They’d be higher, since prices grow faster','More is subtracted, so they go down.','Reversing the effect.'],
+ ['✗','They’d be unchanged, since prices are the same','The trend value is what’s subtracted, so they change.','Missing the dependence.'],
+ ['✗','They’d all be 0, since the trend fits better','Only a perfect fit would do that.','Overstating it.']
 ]);
 X(27,'c','m9',`Why detrend before regressing gold prices on factors like inflation and GDP?`,[
- ['✓','If everything rises over time, the shared trend alone can make unrelated factors look predictive','Removing the trend leaves the year-to-year movements the model should explain.'],
+ ['✓','A shared trend can make unrelated factors look predictive','Removing the trend leaves the year-to-year movements the model should explain.'],
  ['✗','Detrending makes the data normally distributed','That’s not its purpose.','Confusing it with Box-Cox.'],
- ['✗','Regression can’t use data from more than 10 years','There’s no such limit.','Inventing a rule.'],
- ['✗','Detrending removes outliers','It removes a trend, not outliers.','Wrong purpose.']
+ ['✗','To make the residuals normally distributed','That’s the job of a transformation like Box-Cox; detrending removes a time pattern.','Confusing detrending with Box-Cox.'],
+ ['✗','Detrending removes outliers from each series','It removes a trend, not outliers.','Wrong purpose.']
+]);
+
+
+// ---------------------------------------------------------------- Scenario 46 (Module 10)
+SCN_(46,'Who will respond?',`A retailer fits a logistic regression to predict whether a customer responds to a mailed catalog:
+<div class="eq">log( p / (1 − p) ) = −3 + 0.8·(prior purchases) + 1.2·(opened last email: 1 = yes)</div>
+where p is the probability of responding.`);
+X(46,'a','m10',`For one customer, the model’s log-odds come out to −0.2. Roughly what is that customer’s probability of responding?`,[
+ ['✓','A bit under 50%','Log-odds of 0 means even odds (50%). A small negative value means odds slightly below 1, so the probability is slightly below 50% (about 45%).'],
+ ['✗','−20%','Log-odds aren’t probabilities; the logistic form always turns them into a value between 0 and 1.','Reading log-odds as a probability.'],
+ ['✗','About 20%','A log-odds of −0.2 is close to 0, which is close to 50%, not 20%.','Misreading the scale.'],
+ ['✗','A bit over 50%','Negative log-odds mean the odds are below 1, so the probability is below 50%.','Getting the sign backward.']
+]);
+X(46,'b','m10',`What does the coefficient 1.2 on “opened last email” mean?`,[
+ ['✓','Opening multiplies the odds of responding by about 3.3','Logistic coefficients act on the log-odds, so their exponent is an odds multiplier.'],
+ ['✗','Opening raises the response probability by 1.2 points','Coefficients act on log-odds, not directly on probability.','Reading it as a linear effect.'],
+ ['✗','Opening raises the probability of responding by 120%','It multiplies the odds, not the probability, and by about 3.3.','Mixing up odds and probability.'],
+ ['✗','Opening causes about 1.2 more purchases per customer','It’s about response odds, and it shows association, not cause.','Misreading the response.']
+]);
+X(46,'c','m10',`Why use logistic regression here rather than linear regression on a 0/1 response?`,[
+ ['✓','Linear predictions can fall below 0 or above 1','The logistic form always keeps predictions between 0 and 1.'],
+ ['✗','Linear regression can’t use a 0/1 predictor like “opened email”','It can; yes/no predictors work fine in linear regression. The problem is the 0/1 response.','Confusing a binary predictor with a binary response.'],
+ ['✗','Logistic regression needs less data than linear regression','Data needs aren’t the reason; the issue is that probabilities must stay between 0 and 1.','Naming the wrong reason.'],
+ ['✗','Linear regression always overfits binary data','The issue is the output range, not overfitting.','Wrong reason.']
+]);
+X(46,'d','m10',`The model’s area under the ROC curve (AUC) is 0.85. What does that mean?`,[
+ ['✓','A random responder outscores a random non-responder 85% of the time','AUC measures how well the model ranks positives above negatives, across all cutoffs.'],
+ ['✗','85% of the model’s predictions are correct at the 50% cutoff','That’s accuracy at one cutoff, not AUC.','Mixing up AUC and accuracy.'],
+ ['✗','85% of the customers it targets will respond to the catalog','AUC isn’t a response rate.','Misreading the measure.'],
+ ['✗','It’s only slightly better than guessing, which gives 0.8','Guessing gives an AUC of 0.5; 0.85 is good.','Misjudging the scale.']
+]);
+X(46,'e','m10',`Mailing a catalog costs $2, and a response is worth $50 in profit. Above what probability should the retailer mail a customer?`,[
+ ['✓','4%','Mail when p × 50 > 2, which means p > 0.04.'],
+ ['✗','50%','That ignores the costs and rewards.','Using the default cutoff.'],
+ ['✗','96%','That reverses the calculation.','Flipping the ratio.'],
+ ['✗','25%','That’s 50 / 2 turned into a percentage incorrectly.','Arithmetic slip.']
+]);
+
+// ---------------------------------------------------------------- Scenario 47 (Module 10)
+SCN_(47,'Growing trees and forests',`A utility predicts each household’s monthly electricity use from 40 factors (home size, age, appliances, local temperature, …) using regression trees and random forests.`);
+X(47,'a','m10',`When growing a regression tree, how is each split chosen?`,[
+ ['✓','The split that most reduces error within the branches','The tree greedily picks the split that makes the resulting groups most similar inside.'],
+ ['✗','A random factor and split point, chosen each time','Random choices are a forest idea, and even there the best split among the sampled factors is used.','Confusing trees with forests.'],
+ ['✗','The factor with the largest values or widest range','Units don’t decide splits.','Confusing scale with usefulness.'],
+ ['✗','Splits chosen by the analyst, one level at a time','The algorithm chooses the splits.','Misunderstanding who decides.']
+]);
+X(47,'b','m10',`As the tree grows deeper, training error keeps falling, but validation error starts rising. What should be done?`,[
+ ['✓','Prune branches that don’t help validation error','Deep trees overfit. Pruning keeps only splits that help on new data.'],
+ ['✗','Keep growing until every leaf holds a single household','That’s maximum overfitting.','Chasing training error.'],
+ ['✗','Switch to a hard-margin SVM to stop the overfitting','That doesn’t address the tree’s depth.','Wrong fix.'],
+ ['✗','Ignore validation error, since training error is what counts','Validation error measures performance on new data.','Trusting training fit.']
+]);
+X(47,'c','m10',`Why does a random forest consider only a random subset of the factors at each split?`,[
+ ['✓','So the trees differ, which makes averaging them more effective','If every tree could use the strongest factor at the top, they’d all look alike.'],
+ ['✗','To make each individual tree as accurate as possible','Individual trees get slightly worse; the ensemble gets better.','Confusing a single tree with the forest.'],
+ ['✗','To speed up training, with no effect on accuracy','It does speed things up, but the main purpose is making the trees different so averaging helps.','Missing the main reason.'],
+ ['✗','To make the forest’s predictions easier to explain','Forests are harder to explain.','Reversing the trade-off.']
+]);
+X(47,'d','m10',`The forest has 500 trees. How does it predict a household’s usage?`,[
+ ['✓','It averages the 500 trees’ predictions','For regression, forests average. For classification, they take a majority vote.'],
+ ['✗','It uses the single best tree','Forests combine all their trees.','Confusing a forest with selection.'],
+ ['✗','It uses the median of the training data','That ignores the household’s factors.','Ignoring the model.'],
+ ['✗','It takes a majority vote over usage categories','Voting is for classification; usage is a number.','Mixing up tasks.']
+]);
+X(47,'e','m10',`Which is the main <b>disadvantage</b> of the random forest compared with a single regression tree?`,[
+ ['✓','It’s much harder to explain any single prediction','Hundreds of averaged trees don’t give a single readable rule.'],
+ ['✗','It usually predicts worse than one well-pruned tree','It usually predicts better.','Reversing the trade-off.'],
+ ['✗','It overfits more, since it has hundreds of trees','Averaging many varied trees usually reduces overfitting.','Thinking more trees means more overfitting.'],
+ ['✗','It needs more labeled data than a single tree','Both are trained on the same data; the real trade-off is explainability.','Naming the wrong trade-off.']
 ]);
 
 // ===================== Practice midterm 3 =====================
@@ -5590,7 +5732,8 @@ X(28,'b','m2',`Select <b>all</b> of the models that could classify a new transac
  ['✓','k-nearest-neighbor classification','It labels a transaction by its most similar past transactions.'],
  ['✗','k-means clustering','It ignores the labels.','Confusing clustering with classification.'],
  ['✗','Exponential smoothing','It smooths a time series; it doesn’t classify.','Mixing up tasks.'],
- ['✓','Logistic regression (with a probability cutoff)','It estimates a probability of fraud; applying a cutoff turns that into a classification.']
+ ['✓','Logistic regression (with a probability cutoff)','It estimates a probability of fraud; applying a cutoff turns that into a classification.'],
+ ['✓','CART (classification tree)','A classification tree splits the labeled data into branches that end in fraud or legitimate.']
 ],{multi:1,fixed:1});
 X(28,'c','mix',`The company wants to group its 50,000 merchants into types based on their sales patterns. There are no existing labels. Which model is most appropriate?`,
  mlist('k-means clustering',{'k-means clustering':'k-means finds natural groups in unlabeled data.'}),{fixed:1});
@@ -5626,17 +5769,17 @@ X(29,'d','m2',`If Σaⱼ² = 0.25, what is the margin width 2/√(Σaⱼ²)? And
 
 // ---------------------------------------------------------------- Scenario 30
 SCN_(30,'Scaling credit scores',`A lender’s credit scores range from a minimum of 300 to a maximum of 850 in its training data, with a mean of 700 and a standard deviation of 50.`);
-X(30,'a','m2',`Using min-max scaling to [0, 1], what is the scaled value of a 740 score?`,[
- ['✓','0.8','(740 − 300) / (850 − 300) = 440 / 550 = 0.8.'],
- ['✗','0.87','That divides 740 by 850.','Skipping the minimum.'],
- ['✗','0.8 with the training mean subtracted first','Min-max uses the min and max, not the mean.','Mixing the two methods.'],
- ['✗','0.44','That forgets to divide by the range (550).','Arithmetic slip.']
+X(30,'a','m2',`With min-max scaling to [0, 1], a score of 740 becomes 0.8. What does 0.8 mean?`,[
+ ['✓','740 is 80% of the way from the lowest to the highest score','Min-max scaling measures position within the range, not rank.'],
+ ['✗','The applicant scored higher than 80% of other applicants','That’s a percentile. Min-max says nothing about how many people are below a score.','Confusing range position with rank.'],
+ ['✗','The applicant has an 80% chance of being approved for a loan','Scaled values aren’t probabilities.','Reading a scaled value as a probability.'],
+ ['✗','740 is 0.8 standard deviations above the mean score','That’s standardization, a different scaling.','Mixing up the two methods.']
 ]);
 X(30,'b','m2',`A new applicant has a score of 860, above the training maximum. Using the training min and max, what happens?`,[
  ['✓','The scaled value is slightly above 1 (about 1.02), outside the training range','New data can fall outside [0, 1]. The model sees a value it never saw in training.'],
  ['✗','It’s capped at exactly 1 automatically','The formula doesn’t cap anything.','Assuming built-in clipping.'],
  ['✗','Everyone else’s scaled scores change','They change only if you refit the scaling on the new data.','Mixing up refitting with applying.'],
- ['✗','The formula breaks and can’t be used','It still produces a number.','Overstating it.']
+ ['✗','It scales to a negative value, since it’s outside the training range','Above the max gives a value above 1; only values below the min go negative.','Getting the direction wrong.']
 ]);
 X(30,'c','m2',`With standardization instead, what is a score of 600, and what does it mean?`,[
  ['✓','−2: two standard deviations below the mean','(600 − 700) / 50 = −2.'],
@@ -5650,22 +5793,22 @@ SCN_(31,'Picking the winner',`A team compares 5 SVM models and 5 KNN models for 
 <table class="dtab"><tr><th>Model</th><th>SVM-1</th><th>SVM-2</th><th>SVM-3</th><th>SVM-4</th><th>SVM-5</th></tr><tr><td>Validation accuracy (%)</td><td>93</td><td>88</td><td>96</td><td>97</td><td>95</td></tr>
 <tr><th>Model</th><th>KNN-1</th><th>KNN-2</th><th>KNN-3</th><th>KNN-4</th><th>KNN-5</th></tr><tr><td>Validation accuracy (%)</td><td>94</td><td>94</td><td>90</td><td>95</td><td>82</td></tr></table>`);
 X(31,'a','m3',`The team picks SVM-4 (97%). What accuracy should they expect on new data?`,[
- ['✓','Probably somewhat below 97%; measure it on a separate test set','The top validation score includes some luck from being the best of ten. Test data gives an unbiased estimate.'],
- ['✗','Exactly 97%','The winner’s score is optimistically biased.','Ignoring selection bias.'],
- ['✗','Above 97%, since it was the best','Selection pushes the estimate up, not the true accuracy.','Reversing the bias.'],
- ['✗','The average of all ten models, about 92%','That mixes in other models’ performance.','Averaging unrelated scores.']
+ ['✓','Probably below 97%; check on a separate test set','The top validation score includes some luck from being the best of ten. Test data gives an unbiased estimate.'],
+ ['✗','Exactly 97%, since validation data is held out','The winner’s score is optimistically biased.','Ignoring selection bias.'],
+ ['✗','Above 97%, since it beat nine other models','Selection pushes the estimate up, not the true accuracy.','Reversing the bias.'],
+ ['✗','About 92%, the average across all ten models','That mixes in other models’ performance.','Averaging unrelated scores.']
 ]);
 X(31,'b','m3',`Suppose all ten models truly have 93% accuracy, and SVM-4 scored 97% purely by luck. What does this show?`,[
- ['✓','Picking the highest score tends to pick a model whose random error happened to be positive','With equally good models, the winner is whichever one got the luckiest split.'],
- ['✗','SVMs are better than KNN','Here they’re all equal by assumption.','Reading signal into noise.'],
- ['✗','The validation set was built incorrectly','Random variation is normal.','Blaming the data.'],
- ['✗','Each model’s validation score is biased','Each is unbiased on its own; the bias comes from choosing the max.','Misplacing the bias.']
+ ['✓','The top score likely includes some lucky random error','With equally good models, the winner is whichever one got the luckiest split.'],
+ ['✗','SVMs are better than KNN for this problem','Here they’re all equal by assumption.','Reading signal into noise.'],
+ ['✗','The validation set must have been built incorrectly','Random variation is normal.','Blaming the data.'],
+ ['✗','Each model’s validation score is biased on its own','Each is unbiased on its own; the bias comes from choosing the max.','Misplacing the bias.']
 ]);
 X(31,'c','m3',`On the test set, SVM-4 scores 92% and KNN-4 (which was not chosen) scores 94%. Should the team switch to KNN-4?`,[
- ['✓','No; using the test set to choose turns it into a validation set and biases the final estimate','The test set’s job is a final, untouched estimate, not another round of selection.'],
- ['✗','Yes; the test set shows KNN-4 is better','Choosing by test score reintroduces selection bias.','Reusing the test set.'],
+ ['✓','No; choosing by test score biases the final estimate','The test set’s job is a final, untouched estimate, not another round of selection.'],
+ ['✗','Yes; the test set shows KNN-4 is the better model','Choosing by test score reintroduces selection bias.','Reusing the test set.'],
  ['✗','Yes, and report 94% as KNN-4’s expected accuracy','That number would be optimistically biased.','Reporting a selected score.'],
- ['✗','No, because test sets are never accurate','They’re accurate when used once.','Overgeneralizing.']
+ ['✗','No, because test scores are never accurate','They’re accurate when used once.','Overgeneralizing.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 32
@@ -5683,10 +5826,10 @@ X(32,'b','m3',`How many times is each data point used for training and for valid
  ['✗','It varies at random','Every point is held out exactly once.','Misunderstanding the folds.']
 ]);
 X(32,'c','m3',`How many models are fit in total, including the final model?`,[
- ['✓','41: 10 folds × 4 values of k, plus 1 final model on all 1,000 points','Each candidate is fit once per fold. Then the winner is refit on all the data.'],
- ['✗','4: one per value of k','Each candidate is fit once per fold.','Ignoring the folds.'],
- ['✗','10: one per fold','Every candidate needs its own fold fits.','Ignoring the candidates.'],
- ['✗','40, with no final model; use the best fold’s model','The final model is refit on all the data.','Skipping the refit.']
+ ['✓','41: 10 folds × 4 values of k, plus 1 final refit','Each candidate is fit once per fold. Then the winner is refit on all the data.'],
+ ['✗','4: one model for each value of k','Each candidate is fit once per fold.','Ignoring the folds.'],
+ ['✗','10: one model for each fold','Every candidate needs its own fold fits.','Ignoring the candidates.'],
+ ['✗','40, then deploy the best fold’s model','The final model is refit on all the data.','Skipping the refit.']
 ]);
 X(32,'d','m3',`Only 2% of the points are positive cases. What’s a sensible tweak to the folds?`,[
  ['✓','Stratify the folds so each has about 2% positives','Otherwise some folds might have almost no positives, making their scores unreliable.'],
@@ -5704,16 +5847,16 @@ X(33,'a','m4',`Select <b>all</b> of the projects that are supervised learning.`,
  ['✗','Discover which combinations of diagnoses tend to occur together','Discovering structure without a response is unsupervised.','Assuming any analysis is supervised.']
 ],{multi:1,fixed:1});
 X(33,'b','m4',`The team clusters patients for personalized medicine. What’s the main value of the clusters?`,[
- ['✓','Treatments that worked for similar patients may guide care for new patients in the same group','Clusters group similar patients, so results within a group can be shared.'],
+ ['✓','Similar patients’ outcomes can guide care in each group','Clusters group similar patients, so results within a group can be shared.'],
  ['✗','They tell each patient their exact diagnosis','Clustering doesn’t diagnose.','Overstating clustering.'],
  ['✗','They prove which treatment causes recovery','They show similarity, not causation.','Reading cause into groups.'],
- ['✗','They replace the need for any medical data','They’re built from medical data.','Misunderstanding the method.']
+ ['✗','They replace the need for patient medical data','They’re built from medical data.','Misunderstanding the method.']
 ]);
 X(33,'c','m4',`The elbow diagram for the patient clusters falls smoothly with no clear bend. How should the team choose k?`,[
- ['✓','Use practical considerations: how many groups clinicians can act on and whether the groups are interpretable','When the elbow is unclear, real-world usefulness has to guide k.'],
- ['✗','Choose the k with the lowest total distance','That always picks the largest k.','Minimizing blindly.'],
- ['✗','Conclude the data has no clusters, so stop','A smooth curve doesn’t prove there are no useful groups.','Overreading the diagram.'],
- ['✗','Always use k = 3 as a default','There’s no universal default.','Inventing a rule.']
+ ['✓','Choose based on how many groups clinicians can actually use','When the elbow is unclear, real-world usefulness has to guide k.'],
+ ['✗','Choose the k with the lowest total distance to centers','That always picks the largest k.','Minimizing blindly.'],
+ ['✗','Conclude the data has no real clusters, and stop','A smooth curve doesn’t prove there are no useful groups.','Overreading the diagram.'],
+ ['✗','Use cross-validation accuracy to choose the best k','With no labels, there’s no accuracy to cross-validate; clustering has to be judged by usefulness and interpretability.','Treating clustering like classification.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 34
@@ -5725,10 +5868,10 @@ X(34,'a','m5',`About how many readings would you expect beyond 3 standard deviat
  ['✗','About 3','That’s 0.03%, not 0.27%.','Arithmetic slip.']
 ]);
 X(34,'b','m5',`A colleague switches the rule to flag readings beyond 2 SDs and finds about 460. What should you conclude?`,[
- ['✓','That’s about what normal data produces; most of the 460 are probably ordinary readings','4.6% of 10,000 ≈ 460, so a 2-SD rule flags many perfectly normal points.'],
- ['✗','The sensor is badly malfunctioning','The count matches what normal data predicts.','Treating expected tails as errors.'],
- ['✗','All 460 should be deleted','That removes real data.','Deleting by rule.'],
- ['✗','The data must not be normal','The count is exactly what normal data predicts.','Misreading the evidence.']
+ ['✓','That’s about normal; most are probably ordinary readings','4.6% of 10,000 ≈ 460, so a 2-SD rule flags many perfectly normal points.'],
+ ['✗','The sensor is badly malfunctioning and needs repair','The count matches what normal data predicts.','Treating expected tails as errors.'],
+ ['✗','All 460 readings should be deleted before modeling','That removes real data.','Deleting by rule.'],
+ ['✗','The data must not be normally distributed after all','The count is exactly what normal data predicts.','Misreading the evidence.']
 ]);
 X(34,'c','m5',`Instead, 600 readings fall beyond 3 SDs. What does that suggest?`,[
  ['✓','Far more extremes than a normal distribution predicts: heavy tails, or a real problem worth investigating','600 vs. an expected ~27 is a big gap. Either the data isn’t normal or something is generating extreme values.'],
@@ -5740,23 +5883,23 @@ X(34,'c','m5',`Instead, 600 readings fall beyond 3 SDs. What does that suggest?`
 // ---------------------------------------------------------------- Scenario 35
 SCN_(35,'Updating a seasonal factor',`A burger chain uses Holt-Winters with multiplicative weekly seasonality on daily sales. The seasonal update is
 <div class="eq">Cₜ = γ·(xₜ / Sₜ) + (1 − γ)·C<sub>t−L</sub></div>`);
-X(35,'a','m7',`On a Saturday, xₜ = 150, the baseline Sₜ = 100, last Saturday’s factor C<sub>t−L</sub> = 1.3, and γ = 0.2. What is the new Saturday factor?`,[
- ['✓','1.34','0.2 × (150/100) + 0.8 × 1.3 = 0.30 + 1.04 = 1.34.'],
- ['✗','1.50','That’s γ = 1: only today’s ratio counts.','Ignoring the old factor.'],
- ['✗','1.30','That’s γ = 0: no update.','Ignoring today’s data.'],
- ['✗','1.40','That’s an equal-weight average.','Using the wrong weights.']
+X(35,'a','m7',`This Saturday, sales were 1.5 times the baseline. Last Saturday’s factor was 1.3, and γ = 0.2. Where does the new Saturday factor land?`,[
+ ['✓','A little above 1.3, moving only slightly toward 1.5','With γ = 0.2, the new factor is 20% today’s ratio and 80% the old factor: 0.2 × 1.5 + 0.8 × 1.3 = 1.34.'],
+ ['✗','1.5, since this week’s data is the most current','That’s γ = 1, which throws away the history.','Ignoring the old factor.'],
+ ['✗','Exactly 1.3, since one week isn’t enough to change a seasonal factor','Any γ above 0 moves it at least a little.','Treating γ as 0.'],
+ ['✗','Between 1.3 and 1.5, closer to 1.5','That would need γ above 0.5.','Swapping γ and 1 − γ.']
 ]);
 X(35,'b','m7',`What happens if γ = 0?`,[
  ['✓','The seasonal factors never change from their starting values','With γ = 0, Cₜ always equals C<sub>t−L</sub>.'],
- ['✗','There’s no seasonality at all','The initial factors are still used; they just never update.','Confusing “frozen” with “none.”'],
- ['✗','The baseline stops updating','The baseline is controlled by α.','Confusing parameters.'],
- ['✗','The factors react instantly to each new week','That’s γ = 1.','Reversing γ.']
+ ['✗','The model ends up with no seasonality at all','The initial factors are still used; they just never update.','Confusing “frozen” with “none.”'],
+ ['✗','The baseline stops updating along with the factors','The baseline is controlled by α.','Confusing parameters.'],
+ ['✗','The factors react instantly to each new week’s data','That’s γ = 1.','Reversing γ.']
 ]);
 X(35,'c','m7',`Every day’s sales rise by 10% for a month, but the weekly pattern keeps the same shape. In a multiplicative model, what happens to the seasonal factors?`,[
- ['✓','They stay about the same; the baseline rises instead','Multiplicative factors are ratios to the baseline, so a uniform rise shows up in S, not C.'],
- ['✗','They all rise by 10%','The baseline absorbs the uniform increase.','Putting the change in the wrong component.'],
- ['✗','They all fall','Nothing pushes them down.','Wrong direction.'],
- ['✗','Only Saturday’s factor rises','The shape is unchanged.','Misreading the scenario.']
+ ['✓','They stay about the same; the baseline rises','Multiplicative factors are ratios to the baseline, so a uniform rise shows up in S, not C.'],
+ ['✗','They all rise by about 10%','The baseline absorbs the uniform increase.','Putting the change in the wrong component.'],
+ ['✗','They all fall to make room for the trend','Nothing pushes them down.','Wrong direction.'],
+ ['✗','Only the weekend factors rise','The shape is unchanged.','Misreading the scenario.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 36
@@ -5768,22 +5911,22 @@ X(36,'a','m7',`Which ARIMA model is equivalent to basic (single) exponential smo
  ['✗','ARIMA(0, 0, 0)','That’s just a constant mean plus noise.','Mixing up the special cases.']
 ]);
 X(36,'b','m7',`Which series is most likely already stationary (d = 0)?`,[
- ['✓','Monthly forecast errors of a well-calibrated model','Their mean and variance should stay constant over time.'],
+ ['✓','Forecast errors of a well-calibrated model','Their mean and variance should stay constant over time.'],
  ['✗','A city’s population over 30 years','It has a trend.','Ignoring the trend.'],
- ['✗','Monthly ice-cream sales','They have strong seasonality.','Ignoring seasonality.'],
- ['✗','A stock price','Prices wander like a random walk.','Ignoring the drift.']
+ ['✗','Monthly ice-cream sales over a decade','They have strong seasonality.','Ignoring seasonality.'],
+ ['✗','A stock’s daily closing price','Prices wander like a random walk.','Ignoring the drift.']
 ]);
 X(36,'c','m7',`The analyst differences a series that was already stationary. What’s the likely effect?`,[
  ['✓','It adds unnecessary noise and structure, which can hurt the forecasts','Over-differencing creates artificial patterns that the model then has to fit.'],
  ['✗','Nothing; extra differencing is harmless','It changes the series and usually adds noise.','Assuming it’s free.'],
- ['✗','It makes the forecasts perfect','No.','Overclaiming.'],
+ ['✗','It makes the series stationary twice over, which improves the fit','There’s no benefit to removing a trend that isn’t there; the extra differencing just adds noise.','Assuming more differencing is safer.'],
  ['✗','It turns the series into a trend','Differencing removes trends; it doesn’t create them.','Reversing the effect.']
 ]);
 X(36,'d','m7',`One series has only 18 monthly observations and a few spikes. Which approach is generally more sensible?`,[
- ['✓','Exponential smoothing, since ARIMA usually needs about 40 or more points to estimate reliably','With short, noisy data, a simpler model is less likely to overfit.'],
- ['✗','ARIMA, since it always forecasts better','More parameters need more data.','Assuming more complexity always wins.'],
- ['✗','GARCH, since the data is noisy','GARCH models variance, not the level.','Confusing noise with variance forecasting.'],
- ['✗','No forecast is possible with 18 points','Simple methods still work.','Overstating the limit.']
+ ['✓','Exponential smoothing; ARIMA typically needs about 40+ points','With short, noisy data, a simpler model is less likely to overfit.'],
+ ['✗','ARIMA, since it generally forecasts better than smoothing','More parameters need more data.','Assuming more complexity always wins.'],
+ ['✗','GARCH, since the spikes make the data noisy','GARCH models variance, not the level.','Confusing noise with variance forecasting.'],
+ ['✗','None; 18 points is too few for any forecast','Simple methods still work.','Overstating the limit.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 37
@@ -5796,16 +5939,16 @@ X(37,'a','m8',`In Model 1, how much does a 1-point bigger discount change predic
  ['✗','+7 for both','Non-members don’t get the interaction.','Applying the interaction to everyone.']
 ]);
 X(37,'b','m8',`In Model 2, what does one more year of education do to predicted salary?`,[
- ['✓','Multiplies it by about e^0.06 ≈ 1.06, roughly a 6% increase','Adding 0.06 on the log scale multiplies salary by e^0.06.'],
- ['✗','Adds $0.06 to salary','That’s the change in log(salary), not salary.','Forgetting the transform.'],
- ['✗','Adds $6,000 to salary','A log model gives percentage effects.','Treating it as linear in dollars.'],
- ['✗','Multiplies salary by 0.06','That would cut salary by 94%.','Wrong operation.']
+ ['✓','Raises it by roughly 6% (a multiplier of e^0.06)','Adding 0.06 on the log scale multiplies salary by e^0.06.'],
+ ['✗','Adds $0.06 to salary per year','That’s the change in log(salary), not salary.','Forgetting the transform.'],
+ ['✗','Adds $6,000 to salary per year','A log model gives percentage effects.','Treating it as linear in dollars.'],
+ ['✗','Multiplies salary by 0.06 per year','That would cut salary by 94%.','Wrong operation.']
 ]);
 X(37,'c','m8',`Why might the analyst have used log(salary) as the response?`,[
- ['✓','Salaries are right-skewed, and effects like education plausibly work in percentages','Logs reduce skew and turn multiplicative effects into additive ones.'],
- ['✗','Logs make every relationship linear','Only some relationships.','Overclaiming.'],
- ['✗','Regression can’t handle dollar amounts','It can; the log is a modeling choice.','Inventing a limit.'],
- ['✗','To make the p-values smaller','That’s not a reason to transform.','Gaming significance.']
+ ['✓','Salaries are skewed, and effects likely act in percentages','Logs reduce skew and turn multiplicative effects into additive ones.'],
+ ['✗','To make the coefficient on education easier to compute','The software computes coefficients either way; the log is about the data’s shape and the kind of effect.','Confusing modeling choices with computation.'],
+ ['✗','To reduce the size of education’s effect on salary','A log changes the scale on which effects are measured, not their strength.','Thinking transforms shrink effects.'],
+ ['✗','To make the p-values of the coefficients smaller','That’s not a reason to transform.','Gaming significance.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 38
@@ -5817,10 +5960,10 @@ X(38,'a','m8',`If none of the 100 foods truly mattered, about how many would you
  ['✗','Exactly 6','The expected number under no effects is 5.','Confusing what was observed with what’s expected.']
 ]);
 X(38,'b','m8',`Given that, how should the six significant foods be viewed?`,[
- ['✓','As candidates to test on new data, since several may be false positives','With many tests, a handful of “significant” results is expected by chance alone.'],
+ ['✓','As candidates to retest, since some may be flukes','With many tests, a handful of “significant” results is expected by chance alone.'],
  ['✗','As proven to affect heart health','Multiple testing makes some of them likely flukes.','Trusting each p-value in isolation.'],
  ['✗','As definitely all false positives','Some could be real; you need new data to tell.','Overcorrecting.'],
- ['✗','As important because of the large sample size','A large sample doesn’t fix multiple testing.','Confusing n with validity.']
+ ['✗','As reliable, given the large sample size','A large sample doesn’t fix multiple testing.','Confusing n with validity.']
 ]);
 X(38,'c','m8',`One food, walnuts, is significant. Select <b>all</b> of the findings that would strengthen a causal claim that walnuts improve heart health.`,[
  ['✓','Heart health improved after people started eating walnuts, not before','The cause must come before the effect.'],
@@ -5832,86 +5975,64 @@ X(38,'c','m8',`One food, walnuts, is significant. Select <b>all</b> of the findi
 // ---------------------------------------------------------------- Scenario 39
 SCN_(39,'Two factors, one component',`An analyst runs PCA on two scaled factors and plans to keep only one component for a classifier. The figure shows the data (black and white are the two classes) and the two principal directions, D1 and D2.${FIG_PCA}`);
 X(39,'a','m9',`Why is D1 the first principal component?`,[
- ['✓','It’s the direction along which the data varies the most','PCA orders directions by variance, and D1 runs along the long axis of the cloud.'],
- ['✗','It separates the two classes best','PCA doesn’t look at the classes at all.','Thinking PCA is supervised.'],
- ['✗','It’s parallel to factor 1','It’s diagonal, a combination of both factors.','Confusing components with factors.'],
- ['✗','It’s the shortest direction across the data','That’s the last component.','Reversing the order.']
+ ['✓','It’s the direction of greatest variation in the data','PCA orders directions by variance, and D1 runs along the long axis of the cloud.'],
+ ['✗','It’s the direction that best separates the two classes','PCA doesn’t look at the classes at all.','Thinking PCA is supervised.'],
+ ['✗','It’s parallel to factor 1, the first variable','It’s diagonal, a combination of both factors.','Confusing components with factors.'],
+ ['✗','It’s the shortest direction across the data cloud','That’s the last component.','Reversing the order.']
 ]);
 X(39,'b','m9',`If the analyst keeps only D1, what happens to the classifier?`,[
- ['✓','It does poorly, since the classes are separated along D2, the direction that was dropped','High variance isn’t the same as usefulness for the response.'],
+ ['✓','It does poorly; the classes differ only along D2','High variance isn’t the same as usefulness for the response.'],
  ['✗','It does better, since D1 holds the most information','It holds the most variance, but not the class information.','Equating variance with usefulness.'],
  ['✗','Nothing changes, since PCA keeps all the information','Dropping D2 loses information.','Thinking reduction is free.'],
- ['✗','PCA automatically keeps D2 instead','PCA always keeps components in order of variance.','Thinking PCA adapts to the classes.']
+ ['✗','It’s fine, since PCA automatically keeps D2 instead','PCA always keeps components in order of variance.','Thinking PCA adapts to the classes.']
 ]);
 X(39,'c','m9',`Given this risk, why use PCA at all?`,[
- ['✓','It often helps, by removing correlation and reducing many factors to a few, but check its effect on validation data','It’s a tool, not a guarantee. Compare models with and without it.'],
+ ['✓','It often helps, but check it against validation data','It’s a tool, not a guarantee. Compare models with and without it.'],
  ['✗','It always improves prediction','This example shows it doesn’t.','Overtrusting PCA.'],
- ['✗','It should never be used for classification','It’s often useful; just validate it.','Overcorrecting.'],
- ['✗','It turns unsupervised data into labels','It doesn’t create labels.','Misunderstanding PCA.']
+ ['✗','It always keeps the components that separate the classes best','It keeps the highest-variance components, which this example shows aren’t always the most useful.','Thinking PCA is supervised.'],
+ ['✗','It turns unlabeled data into labeled data','It doesn’t create labels.','Misunderstanding PCA.']
 ]);
 X(39,'d','m9',`For a square matrix A, what does it mean for v to be an eigenvector with eigenvalue λ?`,[
- ['✓','A·v = λ·v: multiplying by A only stretches v by λ, without changing its direction','That’s the definition used to find the principal directions.'],
- ['✗','A·v = 0','That only describes eigenvalue 0.','Special case only.'],
+ ['✓','A·v = λ·v: A only stretches v, without turning it','That’s the definition used to find the principal directions.'],
+ ['✗','A·v = 0: A sends v to zero','That only describes eigenvalue 0.','Special case only.'],
  ['✗','v is the largest column of A','Eigenvectors aren’t columns of A.','Misunderstanding the term.'],
- ['✗','A·λ = v','The roles are wrong.','Mixing up the equation.']
+ ['✗','A·λ = v: λ is transformed by A','The roles are wrong.','Mixing up the equation.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 40
 SCN_(40,'Checking the response’s shape',`An analyst modeling insurance claim amounts makes a Q-Q plot of the response (below). Points on the dashed line would mean the data matches a normal distribution.${FIG_QQ}`);
 X(40,'a','m9',`What does this Q-Q plot show?`,[
- ['✓','The response is right-skewed: the largest values sit far above the line','Points bend upward at the top, meaning bigger extremes than a normal distribution would have.'],
- ['✗','The response is perfectly normal','The points curve away from the line.','Misreading the plot.'],
+ ['✓','Right skew: the largest values sit far above the line','Points bend upward at the top, meaning bigger extremes than a normal distribution would have.'],
+ ['✗','The response is normal, since most points are near the line','The points curve away from the line.','Misreading the plot.'],
  ['✗','The response has a linear trend over time','A Q-Q plot doesn’t involve time.','Confusing plot types.'],
- ['✗','The response is left-skewed','The long tail is on the high end.','Flipping the direction.']
+ ['✗','Left skew: the smallest values sit far below the line','The long tail is on the high end.','Flipping the direction.']
 ]);
 X(40,'b','m9',`The analyst applies a Box-Cox transformation. Who chooses λ, and what will it likely be?`,[
- ['✓','The software picks λ; for right-skewed data it’s likely below 1 (for example, a log or square root)','λ below 1 compresses large values more than small ones, reducing right skew.'],
- ['✗','The analyst must pick λ = 1 by hand','λ = 1 changes nothing; software optimizes λ.','Misunderstanding who picks.'],
- ['✗','The software picks λ, and it will be above 1','λ above 1 would make right skew worse.','Reversing the direction.'],
- ['✗','λ isn’t needed for Box-Cox','λ is the transformation’s parameter.','Missing the idea.']
+ ['✓','Software picks λ; likely below 1 (e.g., log or square root)','λ below 1 compresses large values more than small ones, reducing right skew.'],
+ ['✗','The analyst picks λ, and λ = 1 is the standard choice','λ = 1 changes nothing; software optimizes λ.','Misunderstanding who picks.'],
+ ['✗','Software picks λ, and for right skew it will be above 1','λ above 1 would make right skew worse.','Reversing the direction.'],
+ ['✗','No λ is needed, since Box-Cox is always a log transform','λ is the transformation’s parameter.','Missing the idea.']
 ]);
 X(40,'c','m9',`Some claims in the data are exactly $0. Why is that a problem for Box-Cox?`,[
- ['✓','Box-Cox requires positive values, so zeros (and negatives) must be shifted or handled first','The transformation, including the log case, is defined only for positive numbers.'],
- ['✗','It isn’t a problem; Box-Cox handles any value','Logs and fractional powers of 0 or negatives fail.','Missing the domain restriction.'],
- ['✗','Zeros make λ equal 0','λ is chosen by fit, not by the values.','Confusing ideas.'],
- ['✗','Zeros must always be deleted','Shifting is often better than deleting.','Using a blanket rule.']
+ ['✓','Box-Cox needs positive values, so zeros must be handled first','The transformation, including the log case, is defined only for positive numbers.'],
+ ['✗','It isn’t a problem; Box-Cox works on any value','Logs and fractional powers of 0 or negatives fail.','Missing the domain restriction.'],
+ ['✗','Zeros force λ to equal 0, so it becomes a log transform','λ is chosen by fit, not by the values.','Confusing ideas.'],
+ ['✗','Zeros must always be deleted before any modeling','Shifting is often better than deleting.','Using a blanket rule.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 41
 SCN_(41,'From model to decision',`A grocery delivery service builds a regression to estimate delivery time. For one order, the model predicts 42 minutes. The dispatcher is told to tell the customer “about 45 minutes.”`);
 X(41,'a','m1',`Which step of the modeling cycle (real situation → math model → analysis → real-world answer) is “tell the customer 45 minutes”?`,[
  ['✓','Turning the analysis into a real-world answer','The model’s 42 minutes is translated into a practical decision with a buffer.'],
- ['✗','Building the math model','The model was already built.','Wrong stage.'],
- ['✗','Running the analysis','The analysis produced the 42.','Wrong stage.'],
- ['✗','Describing the real situation','That comes first.','Wrong stage.']
+ ['✗','Building the mathematical model of the situation','The model was already built.','Wrong stage.'],
+ ['✗','Running the analysis on the mathematical model','The analysis produced the 42.','Wrong stage.'],
+ ['✗','Describing the real situation that needs a decision','That comes first.','Wrong stage.']
 ]);
 X(41,'b','m1',`A consultant’s report for this service says only “we used a regression model.” Why can’t the client reproduce the estimates from that?`,[
- ['✓','“Model” could mean the method, the equation’s structure, or the specific fitted coefficients; the report gives only the method','Reproducing the estimates requires the actual predictors and fitted numbers.'],
- ['✗','Regression models can’t be reproduced','They can, with the details.','Overstating it.'],
- ['✗','The client needs the consultant’s software','Any software works with the specification.','Wrong barrier.'],
- ['✗','Regression results are random each time','Least squares gives the same answer on the same data.','Misunderstanding regression.']
-]);
-
-// ---------------------------------------------------------------- Scenario 42
-SCN_(42,'Who chooses what?',`Some values in a model are calculated by the software; others are choices the analyst makes, often guided by validation.`);
-X(42,'a','who',`Select <b>all</b> of the values that are usually <b>chosen by the analyst</b> rather than calculated by the algorithm.`,[
- ['✓','k in k-means','You choose the number of clusters using the elbow and real-world needs.'],
- ['✗','The coefficients in a linear regression','The software computes them by least squares.','Thinking coefficients are set by hand.'],
- ['✓','k in KNN','You tune the number of neighbors, typically with validation.'],
- ['✓','C and T in CUSUM','You set them based on the costs of false alarms and late detection.'],
- ['✗','The cluster centers in k-means','The algorithm calculates them as averages.','Thinking centers are placed by hand.']
-],{multi:1,fixed:1});
-X(42,'b','who',`R’s HoltWinters() returns α = 0.31 even though you never supplied α. Where did it come from?`,[
- ['✓','The software chose the α that minimized forecast error on the past data','When you don’t fix α, it’s fit by optimization.'],
- ['✗','0.31 is the built-in default for every series','It depends on the data.','Assuming a constant default.'],
- ['✗','It was chosen at random','It’s optimized, not random.','Misunderstanding fitting.'],
- ['✗','It’s the share of the data used for training','α is a smoothing weight.','Confusing α with a split.']
-]);
-X(42,'c','who',`In a soft-margin SVM, how is the trade-off weight λ (or the software’s C) usually chosen?`,[
- ['✓','By the analyst, comparing values with validation or cross-validation','It’s a tuning setting; different values give different models to compare.'],
- ['✗','The software calculates the single correct value','It needs to be tuned.','Thinking it’s fit automatically.'],
- ['✗','It’s always set to 1','There’s no universal value.','Assuming a default is optimal.'],
- ['✗','It equals the number of attributes','It isn’t tied to the attribute count.','Inventing a rule.']
+ ['✓','“Model” could mean the method, structure, or fitted numbers','Reproducing the estimates requires the actual predictors and fitted numbers.'],
+ ['✗','Regression models can’t be reproduced by anyone else','They can, with the details.','Overstating it.'],
+ ['✗','The client needs the consultant’s exact software','Any software works with the specification.','Wrong barrier.'],
+ ['✗','Regression gives different results each time it runs','Least squares gives the same answer on the same data.','Misunderstanding regression.']
 ]);
 
 // ---------------------------------------------------------------- Scenario 43
@@ -5927,6 +6048,80 @@ X(43,'b','m6',`In the increase CUSUM, a reading comes in above μ but below μ +
  ['✗','It goes up, since the reading is above the mean','The allowance C must be exceeded first.','Ignoring C.'],
  ['✗','It resets to 0 immediately, whatever its current value','It only drops by the shortfall; it hits 0 only if that’s enough.','Overstating the reset.'],
  ['✗','The alarm goes off','A single mild reading can’t push the sum up.','Overreacting.']
+]);
+
+
+// ---------------------------------------------------------------- Scenario 48 (Module 10)
+SCN_(48,'Picking a regression type',`Beyond linear and logistic regression, a team is considering four other regression approaches: <b>Poisson regression</b>, <b>regression splines</b>, <b>Bayesian regression</b>, and <b>KNN regression</b>. For each situation below, choose the best fit.`);
+const ADV=[['Poisson regression','Poisson regression models counts of events (like arrivals per hour), which are whole numbers and can’t be negative.'],
+ ['Regression splines','Splines fit separate polynomial pieces joined at “knots,” so the relationship can bend or change slope at certain points.'],
+ ['Bayesian regression','Bayesian regression combines a prior belief (for example, from experts or similar products) with the data, which helps when data is scarce.'],
+ ['KNN regression','KNN regression predicts by averaging the responses of the most similar past data points.']];
+const advQ=(sc,part,q,ans)=>X(sc,part,'m10',q,ADV.map(([n,w])=>[n===ans?'✓':'✗',n,w,'Matching the situation to the wrong regression type.']),{fixed:1});
+advQ(48,'a',`A call center wants to predict the <b>number of calls arriving</b> each hour from day, time, and promotions.`,'Poisson regression');
+advQ(48,'b',`Energy use falls as temperature rises up to about 65°F, then rises again as air conditioning kicks in.`,'Regression splines');
+advQ(48,'c',`A new drink has only 6 weeks of sales, but experts have a good sense of its likely effect from similar launches.`,'Bayesian regression');
+advQ(48,'d',`An appraiser wants to estimate a home’s value as the average sale price of the 5 most similar recently sold homes.`,'KNN regression');
+
+// ---------------------------------------------------------------- Scenario 49 (Module 10)
+SCN_(49,'Disease screening',`A logistic regression flags patients for a follow-up test for a disease. In a test group of 1,000 patients, 50 have the disease.
+<table class="dtab"><tr><th></th><th>Flagged</th><th>Not flagged</th></tr><tr><th>Has disease</th><td>45</td><td>5</td></tr><tr><th>Healthy</th><td>95</td><td>855</td></tr></table>`);
+X(49,'a','m10',`What share of healthy patients are correctly <b>not</b> flagged (the specificity)?`,[
+ ['✓','90%','855 / (855 + 95) = 855 / 950 = 0.90.'],
+ ['✗','95%','That’s 45 / 50: the share of diseased patients caught (sensitivity).','Mixing up sensitivity and specificity.'],
+ ['✗','32%','That’s 45 / 140: the share of flagged patients who are sick.','Wrong denominator.'],
+ ['✗','85.5%','That’s 855 / 1,000.','Using all patients as the denominator.']
+]);
+X(49,'b','m10',`Of the patients who are flagged, what share actually have the disease, and why is it so low?`,[
+ ['✓','About a third; the disease is rare, so false alarms outnumber cases','45 / (45 + 95) ≈ 0.32. Out of 950 healthy patients, 95 false alarms outnumber the 45 true cases.'],
+ ['✗','95%, the same as the share of sick patients caught','Sensitivity uses the sick patients as the denominator, not the flagged ones.','Mixing up the denominators.'],
+ ['✗','About a third, which shows the model is useless','It catches 90% of cases; the low share comes from rarity.','Blaming the model for the base rate.'],
+ ['✗','About 4.5%, the share of all patients who were flagged sick','That’s 45 / 1,000.','Wrong denominator.']
+]);
+X(49,'c','m10',`Missing the disease is very dangerous, while a follow-up test is cheap and safe. How should the probability cutoff change?`,[
+ ['✓','Lower it, so fewer cases are missed','When false negatives are costly, accept more false positives.'],
+ ['✗','Raise it, to cut unnecessary follow-ups','That increases the dangerous error.','Protecting the cheap error.'],
+ ['✗','Keep 50%, since it’s the standard cutoff','50% assumes equal costs.','Using a default blindly.'],
+ ['✗','Leave it; the cutoff doesn’t affect misses','It directly trades misses for false alarms.','Ignoring the cutoff.']
+]);
+X(49,'d','m10',`In the model, the coefficient on hours of exercise per week is −0.15. What does that mean?`,[
+ ['✓','More exercise goes with lower odds of disease, other factors fixed','A negative coefficient lowers the log-odds; e^(−0.15) ≈ 0.86 per extra hour.'],
+ ['✗','Each hour of exercise lowers the probability by 15 percentage points','Coefficients act on log-odds, not directly on probability.','Reading it as linear.'],
+ ['✗','Exercise prevents the disease, since the coefficient is significant','That’s a causal claim the model can’t make.','Reading cause into a coefficient.'],
+ ['✗','Exercise raises the odds of the disease, since the term is subtracted','A negative sign lowers them.','Flipping the sign.']
+]);
+
+// ---------------------------------------------------------------- Scenario 50 (Module 10)
+SCN_(50,'Which advanced model?',`An insurer is choosing models for several projects, using thousands of past claims with about 200 factors each.`);
+X(50,'a','mix',`For an internal fraud score where prediction accuracy matters most and no explanation is needed, which model is most appropriate?`,[
+ ['✓','Random forest','Forests usually predict very well with many factors, at the cost of explainability, which isn’t needed here.'],
+ ['✗','A single small classification tree','It’s easier to explain but usually less accurate.','Prioritizing the wrong goal.'],
+ ['✗','k-means clustering','It ignores the fraud labels.','Confusing clustering with classification.'],
+ ['✗','Exponential smoothing','It forecasts a time series.','Wrong tool.']
+]);
+X(50,'b','mix',`For premium decisions that must be explained to customers and regulators, which models are most appropriate? Select <b>all</b> that apply.`,[
+ ['✓','Logistic or linear regression','Coefficients show how each factor affects the result.'],
+ ['✓','A single, pruned CART tree','Its if-then path explains each decision.'],
+ ['✗','A random forest of 1,000 trees','Too many averaged trees to give a readable explanation.','Ignoring explainability.'],
+ ['✗','A 1-nearest-neighbor model','“You resemble one past customer” is a weak and unstable explanation.','Mistaking similarity for explanation.']
+],{multi:1,fixed:1});
+X(50,'c','m10',`A regression tree for claim size ends with a leaf containing 3 of the 6,000 claims, and that leaf predicts its 3 claims perfectly. What should the insurer do?`,[
+ ['✓','Prune it or require larger leaves; it’s fitting noise','Tiny leaves overfit. Perfect accuracy on 3 points tells you nothing about new claims.'],
+ ['✗','Keep it, since it predicts its claims perfectly','Its accuracy is on its own training points.','Trusting training fit.'],
+ ['✗','Split it further, to make its predictions even better','That makes overfitting worse.','Going the wrong way.'],
+ ['✗','Delete the 3 claims, since they distort the tree','They may be real; the issue is the tree’s structure.','Deleting data to fix a model.']
+]);
+X(50,'d','m10',`Each tree in a random forest is trained on a bootstrap sample. What is that?`,[
+ ['✓','A same-size sample drawn with replacement','Different bootstrap samples make the trees differ, which is what lets averaging help.'],
+ ['✗','The first 10% of the rows in the data','Bootstrap samples are random, not the first rows.','Misunderstanding the term.'],
+ ['✗','The full data set, unchanged, for every tree','Then the trees would differ only through factor sampling.','Missing the resampling.'],
+ ['✗','A random half of the data, drawn without replacement','Bootstrap samples are drawn with replacement and are the same size as the data.','Confusing bootstrapping with subsampling.']
+]);
+X(50,'e','m10',`Why might an analyst still check a forest’s “variable importance” scores?`,[
+ ['✓','They roughly show which factors drive predictions','Importance scores summarize how much each factor helps across the trees, though not how it affects a single prediction.'],
+ ['✗','They prove which factors cause fraud','They measure predictive usefulness, not cause.','Reading cause into importance.'],
+ ['✗','They give each factor’s exact coefficient','Forests don’t have coefficients.','Confusing forests with regression.'],
+ ['✗','They’re required for the forest to predict','Prediction doesn’t require them.','Misunderstanding the tool.']
 ]);
 
 
@@ -6012,7 +6207,7 @@ let exam=null; let POOL='concept';
 const setupC={mods:new Set(MOD_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
 const setupS={mods:new Set(SLIDE_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
 const setupK={mods:new Set(CORE_KEYS),n:20,incMastered:false,discOnly:false,lec:''};
-const setupM={mods:new Set(MOD_KEYS),n:'all',incMastered:true,discOnly:false,lec:'',set:1};
+const setupM={mods:new Set([...MOD_KEYS,'m10']),n:'all',incMastered:true,discOnly:false,lec:'',set:1};
 let setup=setupC;
 const inPool=q=>POOL==='slide'?!!q.slide:POOL==='core'?!!q.core:POOL==='mid'?!!q.mid:(!q.slide&&!q.core&&!q.mid);
 function available(){
@@ -6072,7 +6267,17 @@ function renderMidSetup(){
   const scs=[...new Set(pool.map(q=>q.sc))];
   const setLbl=k=>k==='all'?`All ${MQ.length}`:`Midterm ${k}`;
   main.innerHTML=`<section class="panel"><h2>Midterm practice</h2>
-    <p class="small" style="margin-top:0">${SETS.length} full practice midterms of ${MQ.length/SETS.length} questions each, written in the style of the sample quiz: a situation (often with a figure, table, or model output), then several parts that build on it. Expect “which model fits” lists, select-all questions, matching, calculations, reading model output, and judgment calls. Each midterm covers Modules 1–9 and is timed like the real quiz: 90 minutes for 50 questions.</p>
+    <p class="small" style="margin-top:0">${SETS.length} full practice midterms of ${MQ.length/SETS.length} questions each, written in the style of the sample quiz: a situation (often with a figure, table, or model output), then several parts that build on it. Expect “which model fits” lists, select-all questions, matching, calculations, reading model output, and judgment calls. Each midterm covers Modules 1–10 (Module 10, advanced regression, is based on what general analytics courses teach: CART and random forests, logistic regression, confusion matrices, and other regression types, so check it against your lectures when they’re out). Paced like the real quiz: about 1.8 minutes per question.</p>
+    <details class="scen" style="margin-top:12px"><summary>How to attack these questions</summary><div class="body"><ol class="steps">
+     <li><b>Read the scenario for its decision.</b> Ask: what is the person trying to decide, and what kind of question is it (classify, predict an amount, a probability, detect a change, forecast, find groups)?</li>
+     <li><b>Read the stem twice.</b> Circle the exact ask: “not important,” “most appropriate,” “select all,” “what can be concluded.” Many wrong answers answer a different question.</li>
+     <li><b>Read every option before choosing.</b> The options show you what distinction is being tested (e.g., two options differ only by “because…”).</li>
+     <li><b>Hunt for the clue in the setup.</b> Numbers like “1 out of 1,” “3% are spam,” “only 30 data points,” or “must be explained” are rarely decoration.</li>
+     <li><b>Watch for true-but-not-the-answer options.</b> A statement can be factually true (B misclassifies fewer points) and still not answer why one model is better.</li>
+     <li><b>Watch for causal add-ons.</b> “…because workers are adjusting” sounds smart, but models show patterns, not causes. Prefer the option that says only what the model shows.</li>
+     <li><b>For calculations, write the formula first,</b> then plug in. Check units (thousands? per 100 sq ft?) and signs.</li>
+     <li><b>For select-all, judge each option alone</b> as true/false for this situation; don’t aim for a “usual” count.</li>
+    </ol></div></details>
     <h3>Which midterm?</h3>
     <div class="chips" id="setchips">${SETS.concat(['all']).map(k=>{const qq=MQ.filter(q=>k==='all'||q.set===k); const c=qq.filter(q=>qStatus(q)==='mastered').length; return `<button class="chip" data-s="${k}" aria-pressed="${setup.set===k}">${setLbl(k)} <span class="small">· ${c}/${qq.length}</span></button>`;}).join('')}</div>
     <label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(turn off to retake only the ones you haven't mastered: ${notM.length} left in ${setLbl(setup.set)})</span></span></label>
