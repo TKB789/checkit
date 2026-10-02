@@ -205,6 +205,18 @@ button.pick{border:1px solid var(--line);background:var(--card)}
 .pick-go{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px dashed var(--line);margin:0 13px;padding:10px 0 12px;font-size:.9rem}
 .pick-go .btn{min-height:40px;padding:8px 18px;flex:none}
 .pick .chk{color:var(--pen);font-weight:700;margin-right:4px}
+.sq{width:100%;font:500 1rem var(--sans);padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.sq:focus{outline:3px solid var(--pen);outline-offset:1px}
+.srlist{display:flex;flex-direction:column;gap:10px}
+.sr{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:11px 13px;font:inherit}
+.srbtn{cursor:pointer} .srbtn:disabled{opacity:.6;cursor:not-allowed}
+.sr-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:2px}
+.sr-s{font-size:.88rem;color:var(--ink-2);margin:6px 0 8px;line-height:1.5}
+.sr mark,.sr-s mark{background:var(--hl);color:var(--hl-ink);border-radius:3px;padding:0 1px}
+.toplist{margin:8px 0 0;padding-left:18px} .toplist li{margin-bottom:6px}
+.toplist a{color:var(--pen)}
+.flash{animation:flash 2.2s ease-out}
+@keyframes flash{0%,40%{background:var(--hl);color:var(--hl-ink)}100%{background:transparent}}
 </style>
 </head>
 <body>
@@ -221,6 +233,7 @@ button.pick{border:1px solid var(--line);background:var(--card)}
       <button role="tab" id="tab-slides" aria-selected="false" data-tab="slides">Slide test</button>
       <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall">New student</button>
       <button role="tab" id="tab-guides" aria-selected="false" data-tab="guides">Study guides</button>
+      <button role="tab" id="tab-search" aria-selected="false" data-tab="search">Search</button>
       <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress">Progress</button>
     </nav>
   </header>
@@ -4368,7 +4381,7 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('clic
   switchTab(b.dataset.tab);
 }));
 function switchTab(t){ tab=t; document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t))); render(); window.scrollTo(0,0); }
-function render(){ if(tab==='exam'||tab==='slides'||tab==='core'||tab==='mid'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else renderProgress(); }
+function render(){ if(tab==='exam'||tab==='slides'||tab==='core'||tab==='mid'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else if(tab==='search') renderSearch(); else renderProgress(); }
 // ---------- dialog
 function confirmDlg(msg,okLabel,onOk,cancelLabel='Cancel'){
   const d=$('#dlg'); $('#dlg-msg').textContent=msg; const a=$('#dlg-actions'); a.innerHTML='';
@@ -4698,6 +4711,94 @@ function renderReader(){
   const sel=$('#gtoc'); if(sel) sel.onchange=()=>{ const el=document.getElementById(sel.value); if(el) el.scrollIntoView({behavior:'smooth'}); sel.value=''; };
   const cp=$('#gcopy'); if(cp) cp.onclick=async()=>{ const pre=document.querySelector('.guide pre'); try{ await navigator.clipboard.writeText(pre.textContent); cp.textContent='Copied'; }catch(e){ const r=document.createRange(); r.selectNodeContents(pre); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); cp.textContent='Selected: copy it'; } };
   if(gview.a){ const el=document.getElementById(gview.a); if(el) setTimeout(()=>el.scrollIntoView(),30); } else window.scrollTo(0,0);
+}
+// ---------- search
+let searchQ='', SIDX=null, searchMore={};
+const SYN=[['svm','support vector'],['knn','nearest neighbor','nearest-neighbor','k-nearest'],['pca','principal component'],['cv','cross-validation','cross validation'],['holt-winters','holt winters','triple exponential','winters'],['exponential smoothing','smoothing'],['cart','classification tree','regression tree','decision tree'],['random forest','forest'],['logistic','logit','log-odds'],['r2','r²','r-squared','r squared'],['aic','akaike'],['bic','bayesian information'],['cusum','change detection'],['arima','autoregressive'],['garch','volatility','variance forecast'],['box-cox','box cox'],['k-means','kmeans','k means','clustering'],['outlier','outliers','anomaly'],['p-value','p value','significance'],['heteroscedasticity','unequal spread','unequal variance'],['roc','auc','area under'],['confusion matrix','sensitivity','specificity','false positive','false negative']];
+function expandTok(t){ const out=new Set([t]); SYN.forEach(g=>{ if(g.some(x=>x===t||(t.length>2&&x.startsWith(t)))) g.forEach(x=>out.add(x)); }); return [...out]; }
+function qTerms(q){ q=q.toLowerCase().trim(); if(!q) return [];
+  const phrases=[]; SYN.flat().filter(p=>p.includes(' ')||p.includes('-')).forEach(p=>{ if(q.includes(p)){ phrases.push(p); q=q.replace(p,' '); } });
+  return phrases.map(p=>expandTok(p)).concat(q.split(/[^a-z0-9²α-ωµ.-]+/).filter(t=>t.length>1||/[a-zα-ω]/.test(t)).filter(Boolean).map(expandTok)); }
+function matches(text,terms){ return terms.every(alts=>alts.some(a=>text.includes(a))); }
+function scoreOf(title,text,terms){ let s=0; terms.forEach(alts=>{ if(alts.some(a=>title.includes(a))) s+=5; alts.forEach(a=>{ let i=-1,c=0; while((i=text.indexOf(a,i+1))>=0&&c<20) c++; s+=c; }); }); return s; }
+function snippet(raw,terms){ const low=raw.toLowerCase(); let pos=-1;
+  for(const alts of terms){ for(const a of alts){ const i=low.indexOf(a); if(i>=0&&(pos<0||i<pos)) pos=i; } }
+  const st=Math.max(0,pos-70), en=Math.min(raw.length,(pos<0?0:pos)+150);
+  let s=(st>0?'…':'')+raw.slice(st,en).trim()+(en<raw.length?'…':''); s=esc(s);
+  const all=[...new Set(terms.flat())].filter(a=>a.length>1).sort((a,b)=>b.length-a.length);
+  if(all.length){ const re=new RegExp('('+all.map(a=>esc(a).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','gi'); s=s.replace(re,'<mark>$1</mark>'); }
+  return s; }
+function buildIndex(){
+  if(SIDX) return SIDX;
+  const G=loadGuides(), gs=[];
+  G.forEach(g=>{ if(!g.html) return;
+    const box=document.createElement('div'); box.innerHTML=g.html; let k=0, top=null, cur=null;
+    const w=document.createTreeWalker(box,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);
+    let n; while((n=w.nextNode())){
+      if(n.nodeType===1 && /^H[1-4]$/.test(n.tagName)){
+        if(n.classList.contains('g-title')) continue;
+        if(!n.id) n.id=g.id+'-h'+(++k);
+        const tocE=(g.toc||[]).find(t=>t.id===n.id); if(tocE) top=(tocE.kicker?tocE.kicker.charAt(0)+tocE.kicker.slice(1).toLowerCase()+' · ':'')+tocE.title;
+        cur={kind:'guide',g:g.id,gt:g.title,id:n.id,title:n.textContent.trim(),top:tocE?null:top,raw:''}; gs.push(cur);
+      } else if(n.nodeType===3 && cur && !(n.parentElement&&/^H[1-4]$/.test(n.parentElement.tagName))) cur.raw+=n.textContent+' ';
+    }
+    g.html=box.innerHTML; // headings now carry ids the reader can jump to
+  });
+  gs.forEach(x=>{ x.raw=x.raw.replace(/\s+/g,' ').trim(); x.low=(x.title+' '+x.raw).toLowerCase(); x.tlow=x.title.toLowerCase(); });
+  const strip=h=>{ const d=document.createElement('div'); d.innerHTML=h; d.querySelectorAll('svg').forEach(e=>e.remove()); return d.textContent.replace(/\s+/g,' ').trim(); };
+  const scs=[...new Set(MQ.map(q=>q.sc))].map(sc=>{ const qq=MQ.filter(q=>q.sc===sc); const S=SCN[sc];
+    const raw=strip(S.html)+' '+qq.map(q=>strip(q.q)+' '+(q.opts.length>=11?q.ok.map(i=>q.opts[i][0]+' '+q.opts[i][1]).join(' '):q.opts.map(o=>o[0]+' '+o[1]).join(' '))).join(' ');
+    return {kind:'mid',sc,set:qq[0].set,sec:qq[0].sec,title:S.title,mods:[...new Set(qq.map(q=>q.m))],n:qq.length,raw,low:(S.title+' '+raw).toLowerCase(),tlow:S.title.toLowerCase()}; });
+  const lecs=LECS.map(l=>{ const qq=SQ.filter(q=>q.lecs.includes(l)); const raw=qq.map(q=>strip(q.q)+' '+q.opts.map(o=>o[0]).join(' ')).join(' ');
+    return {kind:'slide',lec:l,m:qq[0]?qq[0].m:'',n:qq.length,title:l,raw,low:raw.toLowerCase(),tlow:''}; });
+  const rcs=RC.map(r=>{ const raw=strip(r.prompt)+' '+(r.points||[]).map(p=>Array.isArray(p)?p[0]:p).join(' ');
+    return {kind:'rc',r,title:r.title,raw,low:(r.title+' '+raw).toLowerCase(),tlow:r.title.toLowerCase()}; });
+  SIDX={gs,scs,lecs,rcs}; return SIDX;
+}
+function goMid(set,sec,sc){ setupM.set=set; setupM.sec=sec==null?'all':sec; setupM.sc=sc||null; setupM.discOnly=false; switchTab('mid');
+  setTimeout(()=>{ const el=document.querySelector('.pick.sel'); if(el) el.scrollIntoView({block:'center'}); },30); }
+function goGuide(g,id){ gview={g,a:id}; switchTab('guides');
+  setTimeout(()=>{ const el=document.getElementById(id); if(el){ el.scrollIntoView({block:'start'}); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),2200);} },60); }
+function goSlides(lec,m){ setupS.mods=new Set([m]); setupS.lec=lec; switchTab('slides'); }
+function renderSearch(){
+  main.innerHTML=`<section class="panel"><h2>Search everything</h2>
+    <p class="small" style="margin-top:0">Find a topic in the study guides, the practice-midterm scenarios that test it, slide-test lectures, and explain-it concepts.</p>
+    <input type="search" id="sq" class="sq" placeholder="e.g. CUSUM threshold, Box-Cox, overfitting" value="${esc(searchQ)}" autocomplete="off" aria-label="Search topics">
+    <div class="chips" style="margin-top:10px">${['CUSUM','SVM margin','k-means','cross-validation','outliers','Holt-Winters','ARIMA','AIC','p-value','PCA','Box-Cox','logistic','random forest','confusion matrix'].map(t=>`<button class="chip sugg" data-t="${t}">${t}</button>`).join('')}</div>
+  </section><div id="sres"></div>`;
+  const inp=$('#sq'); let tmr=null;
+  inp.oninput=()=>{ clearTimeout(tmr); tmr=setTimeout(()=>{ searchQ=inp.value; searchMore={}; renderResults(); },160); };
+  document.querySelectorAll('.sugg').forEach(b=>b.onclick=()=>{ inp.value=b.dataset.t; searchQ=b.dataset.t; searchMore={}; renderResults(); });
+  renderResults();
+}
+function renderResults(){
+  const box=$('#sres'); if(!box) return; const I=buildIndex(); const terms=qTerms(searchQ);
+  const modTag=m=>SHORT[m]?`<span class="tag">${m==='mix'?'Pick the tool':SHORT[m]}</span>`:'';
+  if(!terms.length){
+    // browse: every topic, grouped
+    const G=loadGuides().filter(g=>g.html);
+    box.innerHTML=`<section class="panel"><h2>All study-guide topics</h2><p class="small" style="margin-top:0">Tap a topic to read it.</p>
+      ${G.map(g=>{ const items=I.gs.filter(x=>x.g===g.id); return `<details class="rev"><summary><span class="revq"><b>${esc(g.title)}</b> <span class="small">· ${items.length} topics</span></span></summary><div class="revbody"><ul class="toplist">${items.map(x=>`<li><a href="#" class="gl" data-g="${x.g}" data-id="${x.id}">${esc(x.title)}</a></li>`).join('')}</ul></div></details>`; }).join('')}</section>
+      <section class="panel"><h2>Midterm scenarios by module</h2><p class="small" style="margin-top:0">Tap a scenario to practice it.</p>
+      ${[...MOD_KEYS.filter(k=>/^m\d+$/.test(k)),'m10','mix'].map(m=>{ const xs=I.scs.filter(s=>s.mods.includes(m)); if(!xs.length) return ''; return `<details class="rev"><summary><span class="revq"><b>${m==='mix'?'Pick the right tool':MODS[m]}</b> <span class="small">· ${xs.length} scenarios</span></span></summary><div class="revbody"><ul class="toplist">${xs.map(s=>`<li><a href="#" class="ml" data-set="${s.set}" data-sec="${s.sec}" data-sc="${s.sc}">${esc(s.title)}</a> <span class="small">· Midterm ${s.set}, section ${s.sec} · ${s.n} parts</span></li>`).join('')}</ul></div></details>`; }).join('')}</section>`;
+  } else {
+    const rank=arr=>arr.filter(x=>matches(x.low,terms)).map(x=>({x,s:scoreOf(x.tlow,x.low,terms)})).sort((a,b)=>b.s-a.s).map(o=>o.x);
+    const gs=rank(I.gs), scs=rank(I.scs), lecs=rank(I.lecs), rcs=rank(I.rcs);
+    const lim=(k,arr,n)=>searchMore[k]?arr:arr.slice(0,n);
+    const more=(k,arr,n)=>arr.length>n&&!searchMore[k]?`<button class="btn quiet morebtn" data-k="${k}" style="margin-top:8px">Show all ${arr.length}</button>`:'';
+    const total=gs.length+scs.length+lecs.length+rcs.length;
+    box.innerHTML=(total?'':`<section class="panel"><p style="margin:0">No matches for “${esc(searchQ)}”. Try a shorter or different word (e.g., “margin” instead of “wide margins”).</p></section>`)
+    +(scs.length?`<section class="panel"><h2>Test yourself: midterm scenarios <span class="small">(${scs.length})</span></h2><div class="srlist">${lim('m',scs,6).map(s=>`<div class="sr"><div class="sr-h"><b>${esc(s.title)}</b> ${s.mods.map(modTag).join('')}</div><div class="small">Midterm ${s.set} · Section ${s.sec} · Scenario ${s.sc} · ${s.n} parts</div><p class="sr-s">${snippet(s.raw,terms)}</p><div class="row"><button class="btn mgo" data-set="${s.set}" data-sec="${s.sec}" data-sc="${s.sc}" style="min-height:38px;padding:6px 14px">Practice this scenario</button><button class="btn quiet mgo" data-set="${s.set}" data-sec="${s.sec}" style="min-height:38px;padding:6px 14px">Whole section ${s.sec}</button></div></div>`).join('')}</div>${more('m',scs,6)}</section>`:'')
+    +(gs.length?`<section class="panel"><h2>Read about it: study guides <span class="small">(${gs.length})</span></h2><div class="srlist">${lim('g',gs,8).map(x=>`<button class="sr srbtn gl" data-g="${x.g}" data-id="${x.id}"><div class="sr-h"><b>${esc(x.title)}</b></div><div class="small">${esc(x.gt)}${x.top?' · '+esc(x.top):''}</div><p class="sr-s">${snippet(x.raw||x.title,terms)}</p></button>`).join('')}</div>${more('g',gs,8)}</section>`:'')
+    +(lecs.length?`<section class="panel"><h2>Slide test lectures <span class="small">(${lecs.length})</span></h2><div class="srlist">${lim('s',lecs,6).map(x=>`<button class="sr srbtn sl" data-l="${x.lec}" data-m="${x.m}"><div class="sr-h"><b>${esc(x.lec)}</b> ${modTag(x.m)}</div><div class="small">${x.n} slide questions · tap to drill this lecture</div><p class="sr-s">${snippet(x.raw,terms)}</p></button>`).join('')}</div>${more('s',lecs,6)}</section>`:'')
+    +(rcs.length?`<section class="panel"><h2>Explain it to a new student <span class="small">(${rcs.length})</span></h2><div class="srlist">${lim('r',rcs,6).map(x=>`<button class="sr srbtn rl" data-r="${x.r.id}" ${rStatus(x.r)==='locked'?'disabled':''}><div class="sr-h"><b>${esc(x.title)}</b> ${modTag(x.r.m)}</div><p class="sr-s">${snippet(x.raw,terms)}</p></button>`).join('')}</div>${more('r',rcs,6)}</section>`:'');
+  }
+  box.querySelectorAll('.gl').forEach(a=>a.onclick=e=>{ e.preventDefault(); goGuide(a.dataset.g,a.dataset.id); });
+  box.querySelectorAll('.ml').forEach(a=>a.onclick=e=>{ e.preventDefault(); goMid(+a.dataset.set,+a.dataset.sec,+a.dataset.sc); });
+  box.querySelectorAll('.mgo').forEach(b=>b.onclick=()=>goMid(+b.dataset.set,+b.dataset.sec,b.dataset.sc?+b.dataset.sc:null));
+  box.querySelectorAll('.sl').forEach(b=>b.onclick=()=>goSlides(b.dataset.l,b.dataset.m));
+  box.querySelectorAll('.rl').forEach(b=>b.onclick=()=>{ drill={r:RC.find(r=>r.id===b.dataset.r),text:'',checked:false}; switchTab('recall'); });
+  box.querySelectorAll('.morebtn').forEach(b=>b.onclick=()=>{ searchMore[b.dataset.k]=true; renderResults(); });
 }
 // ---------- progress
 function renderProgress(){
