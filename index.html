@@ -5410,8 +5410,8 @@ function setSync(t){ const el=$('#sync'); if(el) el.textContent=t; }
 // ---------- status
 function qStatus(q){
   const e=st.q[q.id]; if(!e) return 'new';
-  if(e.s==='wrong' && e.last!==SESSION) return 'missed';
-  if(e.s==='retry' && e.last!==SESSION) return 'retried';
+  if(e.s==='wrong') return 'missed';
+  if(e.s==='retry') return 'retried';
   if(e.s==='mastered' && q.tough && (e.n||0)<3 && Date.now()-(e.at||0)>TOUGH_GAP && e.last!==SESSION) return 'due';
   return e.s;
 }
@@ -5424,6 +5424,9 @@ function answeredNow(q){ const e=st.q[q.id]; return e && e.last===SESSION; }
 function recordAnswer(q,correct){
   const e=st.q[q.id]||{n:0};
   const prev=qStatus(q);
+  if(correct && e.last===SESSION && (e.s==='wrong' || (e.s==='review' && e.rt))){
+    st.q[q.id]={s:'review',n:1,rt:1,last:SESSION,at:Date.now()}; save(); return;
+  }
   if(correct){
     let n=(['new','missed','retried'].includes(prev))?1:(e.n||0)+1;
     let s=(!q.tough||n>=2)?'mastered':'review';
@@ -5459,7 +5462,7 @@ const setupM={mods:new Set([...MOD_KEYS,'m10']),n:'all',incMastered:true,discOnl
 let setup=setupC;
 const inPool=q=>POOL==='slide'?!!q.slide:POOL==='core'?!!q.core:POOL==='mid'?!!q.mid:(!q.slide&&!q.core&&!q.mid);
 function available(){
-  return QS.filter(q=>inPool(q) && setup.mods.has(q.m) && (POOL!=='mid'||((setup.set==='all'||q.set===setup.set)&&(setup.sc?q.sc===setup.sc:(setup.sec==='all'||setup.set==='all'||q.sec===setup.sec)))) && (!setup.lec||(q.lecs||[]).includes(setup.lec)) && (!setup.discOnly||q.disc) && (!answeredNow(q) || (POOL==='mid'&&setup.incMastered)) && (setup.incMastered || qStatus(q)!=='mastered'));
+  return QS.filter(q=>inPool(q) && setup.mods.has(q.m) && (POOL!=='mid'||((setup.set==='all'||q.set===setup.set)&&(setup.sc?q.sc===setup.sc:(setup.sec==='all'||setup.set==='all'||q.sec===setup.sec)))) && (!setup.lec||(q.lecs||[]).includes(setup.lec)) && (!setup.discOnly||q.disc) && (!answeredNow(q) || qStatus(q)==='missed' || (st.q[q.id]&&st.q[q.id].rt) || (POOL==='mid'&&setup.incMastered)) && (setup.incMastered || qStatus(q)!=='mastered'));
 }
 function renderExam(){
   if(exam && exam.pool!==POOL && !exam.active) exam=null;
@@ -5517,6 +5520,8 @@ function renderMidSetup(){
   const notM=scopeQ.filter(q=>qStatus(q)!=='mastered');
   const av=available(); const n=av.length; const mins=Math.round(n*1.8);
   const mst=qq=>qq.filter(q=>qStatus(q)==='mastered').length;
+  const redo=qq=>qq.filter(q=>['missed','retried','review','due'].includes(qStatus(q))).length;
+  const badge=qq=>{ const r=redo(qq); return `<span class="st ${mst(qq)===qq.length?'solid':r?'locked':'new'}">${mst(qq)}/${qq.length} mastered${r?` · ${r} to redo`:''}</span>`; };
   const scopeLbl=setup.sc?`Scenario ${setup.sc}: ${SCN[setup.sc].title}`:setup.sec==='all'?setLbl(setup.set):`${setLbl(setup.set)}, section ${setup.sec}`;
   const scList=[...new Set(MQ.filter(inSet).map(q=>q.sc))];
   const pick=(attr,header,sel,right='')=>sel
@@ -5539,7 +5544,7 @@ function renderMidSetup(){
     <div class="chips" id="setchips">${SETS.concat(['all']).map(k=>{const qq=MQ.filter(q=>k==='all'||q.set===k); return `<button class="chip" data-s="${k}" aria-pressed="${setup.set===k}">${setLbl(k)} <span class="small">· ${mst(qq)}/${qq.length}</span></button>`;}).join('')}</div>
     ${setup.set==='all'?'':`<h3>How much?</h3>
     <p class="small" style="margin:0 0 8px">Short on time? Take one section, about the size of the sample quiz. Sections never split a scenario.</p>
-    <div class="picks" id="secchips">${pick('data-sec="all"',`Full midterm <span class="small">· ${MQ.filter(inSet).length} q · ~${Math.round(MQ.filter(inSet).length*1.8)} min</span>`,setup.sec==='all'&&!setup.sc)}${secs.map(k=>{const qq=MQ.filter(q=>inSet(q)&&q.sec===k); return pick(`data-sec="${k}"`,`Section ${k} <span class="small">· ${qq.length} q · ~${Math.round(qq.length*1.8)} min</span>`,setup.sec===k&&!setup.sc,`<span class="st ${mst(qq)===qq.length?'solid':'new'}">${mst(qq)}/${qq.length}</span>`);}).join('')}</div>
+    <div class="picks" id="secchips">${pick('data-sec="all"',`Full midterm <span class="small">· ${MQ.filter(inSet).length} q · ~${Math.round(MQ.filter(inSet).length*1.8)} min</span>`,setup.sec==='all'&&!setup.sc)}${secs.map(k=>{const qq=MQ.filter(q=>inSet(q)&&q.sec===k); return pick(`data-sec="${k}"`,`Section ${k} <span class="small">· ${qq.length} q · ~${Math.round(qq.length*1.8)} min</span>`,setup.sec===k&&!setup.sc,badge(qq));}).join('')}</div>
     ${setup.sc?`<p class="small" style="margin-top:8px">Selected: <b>${scopeLbl}</b> <button class="btn quiet" id="clrsc" style="min-height:32px;padding:4px 10px;margin-left:6px">Clear</button></p>`:''}`}
     <label style="display:flex;align-items:flex-start;margin-top:14px;gap:10px;cursor:pointer"><input type="checkbox" id="disconly" ${setup.discOnly?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Only <span class="tag disc">professor's discussion topics</span> <span class="small">(${scopeQ.filter(q=>q.disc).length} in ${scopeLbl}; all 17 topics are covered across the three midterms)</span></span></label>
     <label style="display:flex;align-items:flex-start;margin-top:10px;gap:10px;cursor:pointer"><input type="checkbox" id="incm" ${setup.incMastered?'checked':''} style="width:20px;height:20px;flex:none;margin-top:2px"> <span>Include questions I've already mastered <span class="small">(turn off to retake only the ones you haven't mastered: ${notM.length} left in ${scopeLbl})</span></span></label>
@@ -5547,7 +5552,7 @@ function renderMidSetup(){
     <div class="actions"><button class="btn" id="go" ${n?'':'disabled'}>Start (${mins} min)</button></div>
     ${n===0?'<p class="small">Nothing left here. Turn on “Include questions I’ve already mastered” to retake everything.</p>':''}
   </section>
-  ${setup.set==='all'?'':`<section class="panel"><h2>Scenarios in ${setLbl(setup.set)}</h2><p class="small" style="margin-top:0">Tap a scenario to practice just that one.</p><div class="picks">${scList.map(i=>{const qq=MQ.filter(q=>q.sc===i); const mods=[...new Set(qq.map(q=>q.m==='mix'?'Pick the tool':SHORT[q.m].split(' ')[0]))].join(', '); return pick(`data-sc="${i}"`,`<span class="small">Section ${qq[0].sec} · Scenario ${i}</span><br>${SCN[i].title} <span class="small">· ${qq.length} parts · ${mods}</span>`,setup.sc===i,`<span class="st ${mst(qq)===qq.length?'solid':'new'}">${mst(qq)}/${qq.length}</span>`);}).join('')}</div></section>`}`;
+  ${setup.set==='all'?'':`<section class="panel"><h2>Scenarios in ${setLbl(setup.set)}</h2><p class="small" style="margin-top:0">Tap a scenario to practice just that one.</p><div class="picks">${scList.map(i=>{const qq=MQ.filter(q=>q.sc===i); const mods=[...new Set(qq.map(q=>q.m==='mix'?'Pick the tool':SHORT[q.m].split(' ')[0]))].join(', '); return pick(`data-sc="${i}"`,`<span class="small">Section ${qq[0].sec} · Scenario ${i}</span><br>${SCN[i].title} <span class="small">· ${qq.length} parts · ${mods}</span>`,setup.sc===i,badge(qq));}).join('')}</div></section>`}`;
   const keep=fn=>()=>{ const y=window.scrollY; fn(); renderMidSetup(); window.scrollTo(0,y); };
   document.querySelectorAll('#setchips .chip').forEach(c=>c.onclick=keep(()=>{const v=c.dataset.s; setup.set=v==='all'?'all':+v; setup.sec='all'; setup.sc=null;}));
   document.querySelectorAll('#secchips [data-sec]').forEach(c=>c.onclick=keep(()=>{const v=c.dataset.sec; setup.sec=v==='all'?'all':+v; setup.sc=null;}));
@@ -5566,6 +5571,13 @@ function startExam(n){
   const picked=POOL==='mid'? av.slice().sort((a,b)=>a.seq-b.seq).slice(0,n) : POOL==='slide'? av.slice().sort(byOrd).slice(0,n) : av.map(q=>({q,k:Math.pow(Math.random(),1/weight(q))})).sort((a,b)=>b.k-a.k).slice(0,n).map(x=>x.q);
   const list=((POOL==='slide'||POOL==='mid')?picked:shuffle(picked)).map(q=>({q,st0:qStatus(q),order:q.fixed?q.opts.map((_,i)=>i):shuffle(q.opts.map((_,i)=>i)),pick:null,picks:[],submitted:false,correct:null}));
   const secs=POOL==='mid'?Math.round(n*108):n*60;
+  exam={active:true,done:false,pool:POOL,items:list,i:0,total:secs,left:secs,timed:true,started:Date.now()};
+  exam.tick=setInterval(()=>{ if(!exam.timed) return; exam.left--; updateClock(); if(exam.left<=0){ exam.left=0; timeUp(); } },1000);
+  renderQuestion();
+}
+function startWith(qs){
+  const list=qs.map(q=>({q,st0:qStatus(q),order:q.fixed?q.opts.map((_,i)=>i):shuffle(q.opts.map((_,i)=>i)),pick:null,picks:[],submitted:false,correct:null}));
+  const secs=POOL==='mid'?Math.round(list.length*108):list.length*60;
   exam={active:true,done:false,pool:POOL,items:list,i:0,total:secs,left:secs,timed:true,started:Date.now()};
   exam.tick=setInterval(()=>{ if(!exam.timed) return; exam.left--; updateClock(); if(exam.left<=0){ exam.left=0; timeUp(); } },1000);
   renderQuestion();
@@ -5615,9 +5627,10 @@ function renderQuestion(){
     html+=`<div class="actions"><button class="btn" id="submit" ${hasPick?'':'disabled'}>Submit final answer</button><button class="btn quiet" id="skip">Skip for now</button></div>`;
   } else {
     const e=st.q[q.id]||{};
-    html+=`<p class="verdict ${it.correct?'ok':'no'}">${it.correct?'Correct.':q.multi?'Not quite. Full credit needs exactly the right set; see which ones to select above.':'Not quite. This question will come back next time you open the page.'}</p>`;
+    html+=`<p class="verdict ${it.correct?'ok':'no'}">${it.correct?'Correct.':(q.multi?'Not quite. Full credit needs exactly the right set; see which ones to select above. ':'Not quite. ')+'It’s on your to-redo list: use “Retake missed” at the end, or retake this section with only unmastered questions.'}</p>`;
     if(it.correct){
       if(e.s==='retry') html+=`<p class="small">Reset: this question will be asked again next time.</p>`;
+      else if(e.s==='review' && e.rt) html+=`<p class="small">Right on the retake. Since you missed it earlier today, it isn’t marked mastered until you get it right again in a later session.</p>`;
       else if(e.s==='review') html+=`<p class="small">Tough question: answer it correctly again in a future session to master it.</p>`;
       else html+=`<p class="small">Mastered. It counts toward your comfort score.</p>`;
     }
@@ -5660,10 +5673,10 @@ function renderSummary(){
   const groups={all:items,missed:wrong,correct:right,unanswered:skipped};
   const shown=groups[revFilter]||items;
   const chip=(k,l,n)=>n||k==='all'?`<button class="chip" data-f="${k}" aria-pressed="${revFilter===k}">${l} (${n})</button>`:'';
-  const btns=`<div class="actions"><button class="btn again">Start another exam</button><button class="btn quiet prog">See progress</button></div>`;
+  const btns=`<div class="actions">${wrong.length?`<button class="btn retake">Retake the ${wrong.length} missed now</button>`:''}<button class="btn ${wrong.length?'quiet ':''}again">Start another exam</button><button class="btn quiet prog">See progress</button></div>`;
   let html=`<section class="panel"><h2>Exam results</h2>
     <p class="big">${right.length} / ${done.length}</p><p class="small">${pct}% correct · ${skipped.length} not answered · time used ${fmt(Math.min(exam.used,exam.total))} of ${fmt(exam.total)}</p>
-    ${wrong.length?'<p class="small">Missed questions come back first the next time you open this page.</p>':''}${btns}</section>
+    ${wrong.length?'<p class="small">Missed questions stay on your to-redo list until you get them right in a later session. Retake them now, or later from any section with “Include questions I’ve already mastered” turned off.</p>':''}${btns}</section>
   <section class="panel"><h2>Review every question</h2>
     <p class="small" style="margin-top:0">Tap a question to see all the options, the right answer, and why each wrong option is wrong. Missed and unanswered questions start open.</p>
     <div class="chips">${chip('all','All',items.length)}${chip('missed','Missed',wrong.length)}${chip('correct','Correct',right.length)}${chip('unanswered','Not answered',skipped.length)}</div>
@@ -5681,6 +5694,7 @@ function renderSummary(){
   main.innerHTML=html;
   document.querySelectorAll('.chips .chip[data-f]').forEach(c=>c.onclick=()=>{revFilter=c.dataset.f; renderSummary();});
   document.querySelectorAll('.again').forEach(b=>b.onclick=()=>{exam=null; revFilter='all'; render(); window.scrollTo(0,0);});
+  document.querySelectorAll('.retake').forEach(b=>b.onclick=()=>{ const qs=wrong.map(x=>x.q); revFilter='all'; startWith(qs); window.scrollTo(0,0); });
   document.querySelectorAll('.prog').forEach(b=>b.onclick=()=>{exam=null; revFilter='all'; switchTab('progress');});
 }
 // ---------- recall
