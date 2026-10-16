@@ -65,6 +65,14 @@ nav.tabs button[aria-selected="true"]{background:var(--card);color:var(--ink);bo
 .fb{border-radius:10px;padding:10px 12px;margin-top:8px;font-size:.93rem}
 .fb.ok{background:var(--ok-bg)} .fb.no{background:var(--bad-bg)} .fb.sk{background:var(--warn-bg)}
 .fb .refs{margin-top:6px;font-size:.84rem;color:var(--ink-2)}
+.phead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.pin{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:999px;padding:3px 10px;font:600 .78rem var(--sans);cursor:pointer;white-space:nowrap}
+.pin[aria-pressed="true"]{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.note.pinned{border-left-color:var(--warn)}
+.note.mine{border-left-color:var(--pen)}
+.addnote textarea{width:100%;min-height:70px;border:1px solid var(--line);border-radius:10px;padding:8px;font:inherit;background:var(--card);color:var(--ink)}
+.addnote select{border:1px solid var(--line);border-radius:8px;padding:6px;font:inherit;background:var(--card);color:var(--ink)}
+.xbtn{border:0;background:transparent;color:var(--ink-2);cursor:pointer;font:600 .8rem var(--sans);float:right}
 .navrow{display:flex;justify-content:space-between;gap:8px;margin-top:14px}
 .jump{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .jump button{min-width:44px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:5px 7px;font:600 .8rem var(--sans);cursor:pointer}
@@ -96,7 +104,7 @@ details.how summary{cursor:pointer;font-weight:600}
 <nav class="tabs" role="tablist">
   <button data-t="exam" aria-selected="true">Exam</button>
   <button data-t="grades" aria-selected="false">My grades</button>
-  <button data-t="notes" aria-selected="false">Missed-question notes</button>
+  <button data-t="notes" aria-selected="false">My notes</button>
 </nav>
 <main id="main"></main>
 </div>
@@ -110,7 +118,7 @@ const PARTS=[]; EXAM.forEach((s,si)=>s.parts.forEach((p,pi)=>{ p.id=s.id+'.'+Str
 const PBYID=Object.fromEntries(PARTS.map(p=>[p.id,p]));
 // ---- storage
 function load(){ try{ const j=JSON.parse(localStorage.getItem(KEY)||'null'); if(j&&j.attempts) return j; }catch(e){} return {attempts:[]}; }
-let DB=load();
+let DB=load(); DB.pins=DB.pins||{}; DB.custom=DB.custom||[];
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){} }
 function cur(){ if(!DB.attempts.length){ newAttempt(); } return DB.attempts[DB.attempts.length-1]; }
 function newAttempt(){ DB.attempts.push({n:DB.attempts.length+1,started:Date.now(),ans:{},skip:{}}); save(); }
@@ -148,7 +156,7 @@ function renderExam(){
    <details class="how" style="margin-top:10px"><summary>How this works</summary><ul class="small">
     <li>${EXAM.length} scenarios, ${PARTS.length} questions covering every module’s slides and the class discussions. Each answer shows the trap it tested and the slide / discussion to review.</li>
     <li><b>Skip</b> anything you already know; it doesn’t count against you. Your grade = correct ÷ answered.</li>
-    <li>Every question you miss goes into <b>Missed-question notes</b>, with its slide reference, ready to print.</li>
+    <li>Every question you miss goes into <b>My notes</b>, with its slide reference, ready to print. Tap <b>☆ Add to notes</b> on any question to add it too, or write your own notes there.</li>
     <li>When you’re done, tap <b>Start attempt ${att.n+1}</b> to retake (all questions, or only the ones you missed). <b>My grades</b> shows each attempt’s score so you can see your progress.</li>
     <li>Select-all questions need exactly the right set. Progress saves in this browser.</li></ul></details>
    <h3>Show</h3><div class="chips" id="only">${[['all','All scenarios'],['todo','Not done in this attempt'],['missed','Missed last time']].map(([k,l])=>`<button class="chip" data-k="${k}" aria-pressed="${view.only===k}">${l}</button>`).join('')}</div>
@@ -175,7 +183,8 @@ function renderExam(){
 function partHTML(att,p){
   const o=order(p,att); const a=att.ans[p.id]; const sk=att.skip[p.id]; const picks=a?a.picks:(draft[p.id]||[]);
   const prev=DB.attempts.filter(x=>x.n<att.n&&x.ans[p.id]).map(x=>x.ans[p.id].ok?'✓':'✗').join(' ');
-  let h=`<div class="part" id="p-${p.id}"><p class="plbl">PART ${p.letter.toUpperCase()}${p.type==='multi'?' · SELECT ALL THAT APPLY':''}${prev?` <span class="small" style="font-weight:500">· earlier attempts: ${prev}</span>`:''}</p><div class="qtext">${p.q}</div><div class="opts">`;
+  const pin=!!DB.pins[p.id];
+  let h=`<div class="part" id="p-${p.id}"><div class="phead"><p class="plbl">PART ${p.letter.toUpperCase()}${p.type==='multi'?' · SELECT ALL THAT APPLY':''}${prev?` <span class="small" style="font-weight:500">· earlier attempts: ${prev}</span>`:''}</p><button class="pin" data-pin="${p.id}" aria-pressed="${pin}">${pin?'★ In my notes':'☆ Add to notes'}</button></div><div class="qtext">${p.q}</div><div class="opts">`;
   o.forEach((oi,k)=>{ let cls='opt'; if(a){ cls+=' locked'; if(p.answer.includes(oi)) cls+=' right'; else if(a.picks.includes(oi)) cls+=' wrong'; }
     h+=`<button class="${cls}" data-p="${p.id}" data-oi="${oi}" aria-pressed="${picks.includes(oi)}"><span class="l">${p.type==='multi'?(picks.includes(oi)?'☑':'☐'):LET[k]+'.'}</span><span>${p.options[oi]}</span></button>`; });
   h+=`</div>`;
@@ -185,6 +194,7 @@ function partHTML(att,p){
   return h+`</div>`;
 }
 function bindParts(att){
+  document.querySelectorAll('[data-pin]').forEach(b=>b.onclick=()=>{ const id=b.dataset.pin; if(DB.pins[id]) delete DB.pins[id]; else DB.pins[id]=Date.now(); save(); const on=!!DB.pins[id]; b.setAttribute('aria-pressed',String(on)); b.textContent=on?'★ In my notes':'☆ Add to notes'; });
   document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ const p=PBYID[b.dataset.p]; if(att.ans[p.id]||att.skip[p.id]) return; const oi=+b.dataset.oi; let d=draft[p.id]||[];
     d=p.type==='multi'?(d.includes(oi)?d.filter(x=>x!==oi):d.concat(oi)):[oi]; draft[p.id]=d; rerenderPart(att,p); });
   document.querySelectorAll('[data-submit]').forEach(b=>b.onclick=()=>{ const p=PBYID[b.dataset.submit]; const d=draft[p.id]||[]; if(!d.length) return;
@@ -207,23 +217,44 @@ function renderGrades(){
    <div class="row"><button class="btn quiet" id="exp">Download progress</button><label class="btn quiet" style="display:inline-flex;align-items:center">Load progress<input type="file" id="imp" accept="application/json" style="display:none"></label><button class="btn danger" id="reset">Erase all attempts</button></div></section>`;
   $('#main').innerHTML=h;
   $('#exp').onclick=()=>{ const b=new Blob([JSON.stringify(DB)],{type:'application/json'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='practice-exam-progress.json'; a.click(); };
-  $('#imp').onchange=e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(t=>{ try{ const j=JSON.parse(t); if(j.attempts){ DB=j; save(); renderGrades(); } }catch(err){ alert('That file isn’t a progress file.'); } }); };
-  $('#reset').onclick=()=>{ if(confirm('Erase every attempt and grade? This can’t be undone.')){ DB={attempts:[]}; save(); renderGrades(); } };
+  $('#imp').onchange=e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(t=>{ try{ const j=JSON.parse(t); if(j.attempts){ DB=j; DB.pins=DB.pins||{}; DB.custom=DB.custom||[]; save(); renderGrades(); } }catch(err){ alert('That file isn’t a progress file.'); } }); };
+  $('#reset').onclick=()=>{ if(confirm('Erase every attempt and grade? Your added notes are kept. This can’t be undone.')){ DB={attempts:[],pins:DB.pins,custom:DB.custom}; save(); renderGrades(); } };
 }
-let notesFilter='open';
+let notesFilter='sheet';
 function renderNotes(){
   const missed=PARTS.filter(p=>everMissed(p.id));
-  const shown=missed.filter(p=>{ const l=latest(p.id); return notesFilter==='all'||(l&&!l.ok); });
-  let h=`<section class="panel"><h2>Missed-question notes</h2><p class="small">Built from every question you’ve missed: the takeaway, the trap, and where to review it. Questions you later got right are marked fixed. Print or save as PDF for your notes sheet.</p>
-   <div class="row noprint"><div class="chips" id="nf"><button class="chip" data-f="open" aria-pressed="${notesFilter==='open'}">Still missing (${missed.filter(p=>{const l=latest(p.id);return l&&!l.ok;}).length})</button><button class="chip" data-f="all" aria-pressed="${notesFilter==='all'}">All ever missed (${missed.length})</button></div><button class="btn quiet" onclick="window.print()">Print / save as PDF</button></div>`;
-  if(!shown.length) h+=`<p style="margin-top:12px">${missed.length?'Everything you missed has since been answered correctly. 🎉':'No missed questions yet. Answer some questions in the Exam tab first.'}</p>`;
-  MODORDER.forEach(m=>{ const ps=shown.filter(p=>p.mod===m); if(!ps.length) return;
+  const open=missed.filter(p=>{const l=latest(p.id); return l&&!l.ok;});
+  const pinned=PARTS.filter(p=>DB.pins[p.id]);
+  let shown;
+  if(notesFilter==='sheet') shown=PARTS.filter(p=>DB.pins[p.id]||open.includes(p));
+  else if(notesFilter==='all') shown=PARTS.filter(p=>DB.pins[p.id]||missed.includes(p));
+  else shown=pinned;
+  const showCustom=notesFilter!=='missedonly';
+  const mods=MODORDER;
+  let h=`<section class="panel"><h2>My notes</h2><p class="small">Your notes sheet: every question you’ve missed, plus anything you added with <b>☆ Add to notes</b> or wrote below. Each has the takeaway, the trap, and the slide or discussion to review. Print or save as PDF.</p>
+   <div class="row noprint"><div class="chips" id="nf">
+    <button class="chip" data-f="sheet" aria-pressed="${notesFilter==='sheet'}">Notes sheet: still missing + added (${new Set([...open,...pinned]).size + DB.custom.length})</button>
+    <button class="chip" data-f="all" aria-pressed="${notesFilter==='all'}">Everything, incl. fixed (${new Set([...missed,...pinned]).size + DB.custom.length})</button>
+    <button class="chip" data-f="pins" aria-pressed="${notesFilter==='pins'}">Only what I added (${pinned.length + DB.custom.length})</button></div>
+    <button class="btn quiet" onclick="window.print()">Print / save as PDF</button></div>
+   <div class="addnote noprint" style="margin-top:12px"><h3 style="margin-top:0">Add my own note</h3>
+    <textarea id="ntext" placeholder="e.g. Holt-Winters: L = periods per cycle in the data (170 per batch), not days per batch"></textarea>
+    <div class="row" style="margin-top:6px"><select id="nmod">${mods.map(m=>`<option value="${m}">${esc(MODNAME[m]||m)}</option>`).join('')}</select><input id="nref" placeholder="Slide / discussion (optional)" style="flex:1;min-width:140px;border:1px solid var(--line);border-radius:8px;padding:6px;font:inherit;background:var(--card);color:var(--ink)"><button class="btn" id="nadd">Add note</button></div></div>`;
+  const any=shown.length||(showCustom&&DB.custom.length);
+  if(!any) h+=`<p style="margin-top:12px">${notesFilter==='pins'?'Nothing added yet. Tap ☆ Add to notes on any question, or write a note above.':missed.length?'Everything you missed has since been answered correctly. 🎉':'No notes yet. Miss a question, tap ☆ Add to notes, or write a note above.'}</p>`;
+  mods.forEach(m=>{ const ps=shown.filter(p=>p.mod===m); const cs=showCustom?DB.custom.filter(c=>c.mod===m):[]; if(!ps.length&&!cs.length) return;
     h+=`<p class="mod">${esc(MODNAME[m]||m)}</p>`;
-    ps.forEach(p=>{ const hist=history(p.id); const l=hist[hist.length-1]; const fixed=l&&l.ok;
-      h+=`<div class="note ${fixed?'fixed':''}"><div class="c">${esc(p.concept||'')}${fixed?' <span class="small">✓ fixed</span>':''}</div><div>${p.note||p.explain}</div>${p.trap&&p.trap!=='none'?`<div class="r">Trap: ${esc(p.trap)}</div>`:''}<div class="r">Review: ${p.refs.map(esc).join(' · ')} · Q ${p.sid}${p.letter} · ${hist.map(x=>`#${x.n} ${x.ok?'✓':'✗'}`).join(' ')}</div></div>`; }); });
+    cs.forEach(c=>{ h+=`<div class="note mine"><button class="xbtn noprint" data-delc="${c.id}" title="Delete note">✕ delete</button><div class="c">My note</div><div>${esc(c.text).replace(/\n/g,'<br>')}</div>${c.ref?`<div class="r">Review: ${esc(c.ref)}</div>`:''}</div>`; });
+    ps.forEach(p=>{ const hist=history(p.id); const l=hist[hist.length-1]; const wasMissed=missed.includes(p); const fixed=wasMissed&&l&&l.ok; const pin=!!DB.pins[p.id];
+      const cls=pin&&!wasMissed?'pinned':fixed?'fixed':'';
+      const badge=[pin?'★ added':'',wasMissed?(fixed?'✓ fixed':'✗ missed'):''].filter(Boolean).join(' · ');
+      h+=`<div class="note ${cls}">${pin?`<button class="xbtn noprint" data-unpin="${p.id}" title="Remove from notes">✕ remove</button>`:''}<div class="c">${esc(p.concept||'')} <span class="small">${badge}</span></div><div>${p.note||p.explain}</div>${p.trap&&p.trap!=='none'?`<div class="r">Trap: ${esc(p.trap)}</div>`:''}<div class="r">Review: ${p.refs.map(esc).join(' · ')} · Q ${p.sid}${p.letter}${hist.length?' · '+hist.map(x=>`#${x.n} ${x.ok?'✓':'✗'}`).join(' '):''}</div></div>`; }); });
   h+=`</section>`;
   $('#main').innerHTML=h;
   document.querySelectorAll('#nf .chip').forEach(b=>b.onclick=()=>{notesFilter=b.dataset.f; renderNotes();});
+  $('#nadd').onclick=()=>{ const t=$('#ntext').value.trim(); if(!t) return; DB.custom.push({id:'c'+Date.now(),text:t,mod:$('#nmod').value,ref:$('#nref').value.trim(),at:Date.now()}); save(); renderNotes(); };
+  document.querySelectorAll('[data-delc]').forEach(b=>b.onclick=()=>{ if(confirm('Delete this note?')){ DB.custom=DB.custom.filter(c=>c.id!==b.dataset.delc); save(); renderNotes(); } });
+  document.querySelectorAll('[data-unpin]').forEach(b=>b.onclick=()=>{ delete DB.pins[b.dataset.unpin]; save(); renderNotes(); });
 }
 render();
 </script>
