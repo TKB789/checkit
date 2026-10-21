@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lasso vs Ridge, with Coefficient Path</title>
+<style>
+  body{font-family:system-ui,-apple-system,sans-serif;max-width:720px;margin:0 auto;padding:14px;color:#222;line-height:1.5;background:#fafafa}
+  h1{font-size:1.4rem;margin:0 0 4px}
+  .box{background:#fff;border:1px solid #e3e3e3;border-radius:10px;padding:12px 14px;margin:12px 0}
+  canvas{width:100%;max-width:360px;height:auto;display:block;margin:0 auto;background:#fff;border:1px solid #eee;border-radius:8px}
+  .legend{font-size:.85rem;color:#666}
+  .key{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:center;font-size:.9rem;margin-top:8px}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:middle;border:1px solid #999}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .results{display:flex;gap:12px;flex-wrap:wrap}
+  .res{flex:1 1 200px;background:#fff;border:1px solid #e3e3e3;border-radius:10px;padding:10px 12px;font-family:monospace;font-size:.9rem;white-space:pre-line}
+  .res b{font-family:system-ui,sans-serif}
+  table{border-collapse:collapse;margin:6px auto;font-size:.9rem}
+  td,th{border:1px solid #ddd;padding:3px 10px;text-align:center}
+  input[type=range]{width:100%;margin:6px 0 2px}
+</style>
+</head>
+<body>
+
+<h1>Lasso vs. Ridge, built from data</h1>
+<p class="legend">Slide τ and watch the rings, the answers, and the coefficient path change.</p>
+
+<div class="box">
+  <p><b>Data:</b> predict price (y) from size (x1) and bedrooms (x2). No intercept, to keep the math short.</p>
+  <table>
+    <tr><th>House</th><th>x1 (size)</th><th>x2 (bedrooms)</th><th>y (price)</th></tr>
+    <tr><td>1</td><td>1</td><td>2</td><td>3</td></tr>
+    <tr><td>2</td><td>2</td><td>1</td><td>4</td></tr>
+    <tr><td>3</td><td>3</td><td>3</td><td>6</td></tr>
+  </table>
+  <p class="legend">
+    Shape of the rings: H = [[14, 13], [13, 14]].<br>
+    Center: a* = H⁻¹·[29, 28] = (1.56, 0.56), the grey X.
+  </p>
+</div>
+
+<div class="box">
+  <label><b>Limit size τ (tau):</b> <span id="tv"></span></label>
+  <input type="range" id="tau" min="0.05" max="10" step="0.05" value="2">
+  <p class="legend">Small τ = tight limit. Large τ = loose limit. τ is a setting you choose, usually with cross-validation, not something the data determines.</p>
+</div>
+
+<div class="box">
+  <canvas id="plot" width="340" height="340"></canvas>
+  <div class="key">
+    <span><span class="sw" style="background:rgba(255,214,90,.7);border-color:#c9a227"></span>Lasso diamond</span>
+    <span><span class="sw" style="background:rgba(120,180,255,.45);border-color:#3b7dd8"></span>Ridge circle</span>
+    <span><span class="dot" style="background:#7b2cbf"></span>Lasso answer</span>
+    <span><span class="dot" style="background:#e4572e"></span>Ridge answer</span>
+    <span><b>X</b> = best fit (no limit)</span>
+  </div>
+  <p class="legend" style="text-align:center">Each thick ring is the lowest-error ring that touches that answer.</p>
+</div>
+
+<div class="results">
+  <div class="res" id="lr"></div>
+  <div class="res" id="rr"></div>
+</div>
+
+<div class="box">
+  <p><b>Coefficient path:</b> how each weight changes as τ grows. Solid = a1, dashed = a2. Purple = lasso, orange = ridge. The black line marks the current τ.</p>
+  <canvas id="path" width="340" height="200"></canvas>
+  <p class="legend" style="text-align:center">Lasso weights hit exactly 0 for a stretch and then leave zero. Ridge weights rise smoothly and never touch zero.</p>
+</div>
+
+<script>
+// Built from the house data
+const H = [[14, 13], [13, 14]];
+const C = [1.5556, 0.5556];
+const W = 340, SC = W / 12, ctr = W / 2;
+const px = x => ctr + x * SC, py = y => ctr - y * SC;
+
+const loss = (x, y) => {
+  const dx = x - C[0], dy = y - C[1];
+  return H[0][0]*dx*dx + 2*H[0][1]*dx*dy + H[1][1]*dy*dy;
+};
+function sqrtm2(M) {
+  const det = M[0][0]*M[1][1] - M[0][1]*M[1][0];
+  const s = Math.sqrt(det);
+  const t = Math.sqrt(M[0][0] + M[1][1] + 2*s);
+  return [[(M[0][0]+s)/t, M[0][1]/t], [M[1][0]/t, (M[1][1]+s)/t]];
+}
+function inv2(M) {
+  const det = M[0][0]*M[1][1] - M[0][1]*M[1][0];
+  return [[M[1][1]/det, -M[0][1]/det], [-M[1][0]/det, M[0][0]/det]];
+}
+const Sinv = inv2(sqrtm2(H));
+
+// step controls precision: 0.02 for the main plot, 0.05 for the path (faster)
+function solve(shape, tau, step = 0.02) {
+  let best = Infinity, bx = 0, by = 0;
+  for (let x = -6; x <= 6.0001; x += step) {
+    for (let y = -6; y <= 6.0001; y += step) {
+      const ok = shape === 'lasso'
+        ? Math.abs(x) + Math.abs(y) <= tau + 1e-9
+        : x*x + y*y <= tau + 1e-9;
+      if (!ok) continue;
+      const L = loss(x, y);
+      if (L < best) { best = L; bx = x; by = y; }
+    }
+  }
+  return {x: bx, y: by, k: best};
+}
+
+// Precompute coefficient path once
+const PATH_TAUS = [];
+for (let t = 0.05; t <= 10.0001; t += 0.1) PATH_TAUS.push(t);
+const PATH_L = PATH_TAUS.map(t => solve('lasso', t, 0.05));
+const PATH_R = PATH_TAUS.map(t => solve('ridge', t, 0.05));
+
+const slider = document.getElementById('tau');
+const tv = document.getElementById('tv');
+const cv = document.getElementById('plot');
+const g = cv.getContext('2d');
+const pc = document.getElementById('path');
+const pg = pc.getContext('2d');
+const fmt = v => Math.abs(v) < 0.05 ? '0 (dropped)' : v.toFixed(2);
+
+let cacheTau = null, cacheL = null, cacheR = null;
+function answers(t) {
+  if (t !== cacheTau) {
+    cacheTau = t;
+    cacheL = solve('lasso', t);
+    cacheR = solve('ridge', t);
+  }
+  return {l: cacheL, r: cacheR};
+}
+
+function tracePath(k) {
+  g.beginPath();
+  for (let i = 0; i <= 200; i++) {
+    const th = i / 200 * 2 * Math.PI;
+    const ux = Math.cos(th), uy = Math.sin(th);
+    const x = C[0] + Math.sqrt(k) * (Sinv[0][0]*ux + Sinv[0][1]*uy);
+    const y = C[1] + Math.sqrt(k) * (Sinv[1][0]*ux + Sinv[1][1]*uy);
+    if (i === 0) g.moveTo(px(x), py(y)); else g.lineTo(px(x), py(y));
+  }
+  g.closePath();
+}
+
+// Coefficient path layout
+const PL = 36, PR = 330, PT = 10, PB = 170, VMIN = -2, VMAX = 2;
+const tx = t => PL + (t - 0.05) / (10 - 0.05) * (PR - PL);
+const vy = v => PT + (VMAX - v) / (VMAX - VMIN) * (PB - PT);
+
+function drawPathStatic() {
+  pg.clearRect(0, 0, 340, 200);
+  // axes
+  pg.strokeStyle = '#aaa'; pg.lineWidth = 1;
+  pg.beginPath();
+  pg.moveTo(PL, PT); pg.lineTo(PL, PB); pg.lineTo(PR, PB);
+  pg.moveTo(PL, vy(0)); pg.lineTo(PR, vy(0));
+  pg.stroke();
+  pg.fillStyle = '#555'; pg.font = '11px system-ui';
+  pg.fillText('2', PL - 12, PT + 4);
+  pg.fillText('0', PL - 12, vy(0) + 4);
+  pg.fillText('-2', PL - 16, PB + 4);
+  pg.fillText('τ →', PR - 22, PB + 14);
+
+  const line = (arr, key, color, dash) => {
+    pg.strokeStyle = color; pg.lineWidth = 1.8;
+    pg.setLineDash(dash);
+    pg.beginPath();
+    arr.forEach((s, i) => {
+      const x = tx(PATH_TAUS[i]), y = vy(Math.max(VMIN, Math.min(VMAX, s[key])));
+      i ? pg.lineTo(x, y) : pg.moveTo(x, y);
+    });
+    pg.stroke();
+    pg.setLineDash([]);
+  };
+  line(PATH_L, 'x', '#7b2cbf', []);
+  line(PATH_L, 'y', '#7b2cbf', [5, 4]);
+  line(PATH_R, 'x', '#e4572e', []);
+  line(PATH_R, 'y', '#e4572e', [5, 4]);
+}
+
+function drawPathMarker(t) {
+  pg.strokeStyle = '#000'; pg.lineWidth = 1.2;
+  pg.beginPath();
+  pg.moveTo(tx(t), PT); pg.lineTo(tx(t), PB);
+  pg.stroke();
+}
+
+function update() {
+  const t = parseFloat(slider.value);
+  tv.textContent = t.toFixed(2);
+
+  const {l, r} = answers(t);
+  g.clearRect(0, 0, W, W);
+
+  // axes
+  g.strokeStyle = '#aaa'; g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(0, ctr); g.lineTo(W, ctr);
+  g.moveTo(ctr, 0); g.lineTo(ctr, W);
+  g.stroke();
+  g.fillStyle = '#555'; g.font = '13px system-ui';
+  g.fillText('a1', W - 18, ctr - 6);
+  g.fillText('a2', ctr + 6, 12);
+
+  // ridge circle
+  g.fillStyle = 'rgba(120,180,255,0.35)';
+  g.strokeStyle = '#3b7dd8'; g.lineWidth = 1.8;
+  g.beginPath();
+  g.arc(ctr, ctr, Math.sqrt(t) * SC, 0, 2*Math.PI);
+  g.fill(); g.stroke();
+
+  // lasso diamond
+  g.fillStyle = 'rgba(255,214,90,0.6)';
+  g.strokeStyle = '#c9a227'; g.lineWidth = 1.8;
+  g.beginPath();
+  g.moveTo(px(t), py(0)); g.lineTo(px(0), py(t));
+  g.lineTo(px(-t), py(0)); g.lineTo(px(0), py(-t));
+  g.closePath();
+  g.fill(); g.stroke();
+
+  // best rings
+  g.lineWidth = 3;
+  g.strokeStyle = 'rgba(123,44,191,0.9)';
+  tracePath(l.k); g.stroke();
+  g.strokeStyle = 'rgba(228,87,46,0.9)';
+  tracePath(r.k); g.stroke();
+
+  // best fit X
+  const bx = px(C[0]), by = py(C[1]), rr = 5;
+  g.strokeStyle = '#333'; g.lineWidth = 2.5;
+  g.beginPath();
+  g.moveTo(bx-rr, by-rr); g.lineTo(bx+rr, by+rr);
+  g.moveTo(bx+rr, by-rr); g.lineTo(bx-rr, by+rr);
+  g.stroke();
+
+  // answer dots
+  g.fillStyle = '#7b2cbf';
+  g.beginPath(); g.arc(px(l.x), py(l.y), 6, 0, 2*Math.PI); g.fill();
+  g.fillStyle = '#e4572e';
+  g.beginPath(); g.arc(px(r.x), py(r.y), 6, 0, 2*Math.PI); g.fill();
+
+  // readouts
+  const lNote = Math.abs(l.y) < 0.05 ? 'x2 is removed from the model'
+              : Math.abs(l.x) < 0.05 ? 'x1 is removed from the model'
+              : 'Both inputs kept';
+  document.getElementById('lr').innerHTML =
+    `<b>Lasso</b>\na1 = ${fmt(l.x)}\na2 = ${fmt(l.y)}\nbest ring: k = ${l.k.toFixed(2)}\n${lNote}`;
+
+  const rNote = (Math.abs(r.x) < 0.05 || Math.abs(r.y) < 0.05)
+    ? 'One weight is near 0' : 'Both inputs kept (shrunk)';
+  document.getElementById('rr').innerHTML =
+    `<b>Ridge</b>\na1 = ${r.x.toFixed(2)}\na2 = ${r.y.toFixed(2)}\nbest ring: k = ${r.k.toFixed(2)}\n${rNote}`;
+
+  // coefficient path with marker
+  drawPathStatic();
+  drawPathMarker(t);
+}
+
+slider.addEventListener('input', update);
+update();
+</script>
+</body>
+</html>
