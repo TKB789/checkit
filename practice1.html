@@ -84,8 +84,10 @@ function rng(seed){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/429
 function order(p,att){const idx=p.options.map((_,i)=>i);if(p.fixed)return idx;const r=rng(att.n*97+p.n*13+7);for(let i=idx.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}return idx;}
 const same=(a,b)=>[...a].sort().join()===[...b].sort().join();
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1600);}
+function refList(r){return (r||[]).map(x=>String(x).replace(/^M(\d+) L(\w+)/,'Module $1 · Lesson $2')).join('; ');}
+function refsOf(n){const p=n.pid&&byId(n.pid);return n.refs||(p&&p.refs)||[];}
 function hasNote(pid){return DB.notes.some(n=>n.pid===pid);}
-function addNote(p,why){if(hasNote(p.id))return false;DB.notes.push({id:'n'+Date.now()+Math.random().toString(36).slice(2,6),pid:p.id,sc:SCS[p.si].title,title:p.concept,key:p.note,explain:p.explain,q:p.q,why,mine:'',at:Date.now()});save();return true;}
+function addNote(p,why){if(hasNote(p.id))return false;DB.notes.push({id:'n'+Date.now()+Math.random().toString(36).slice(2,6),pid:p.id,refs:p.refs||[],sc:SCS[p.si].title,title:p.concept,key:p.note,explain:p.explain,q:p.q,why,mine:'',at:Date.now()});save();return true;}
 
 function renderQuiz(){
   const att=cur(), ids=att.ids, done=ids.filter(id=>att.ans[id]).length, right=ids.filter(id=>att.ans[id]&&att.ans[id].ok).length;
@@ -100,7 +102,7 @@ function renderQuiz(){
       if(a){ if(isAns&&picked){cls='right';tag='Correct choice';} else if(isAns&&!picked){cls='wrong';tag='Missed: this is true';} else if(!isAns&&picked){cls='wrong';tag='Not true';} }
       h+=`<label class="opt ${cls}"><input type="checkbox" data-p="${id}" value="${i}" ${picked?'checked':''} ${a?'disabled':''}><span>${p.options[i]}${tag?`<span class="tag">${tag}</span>`:''}</span></label>`;});
     if(!a){h+=`<div class="row"><button class="primary" data-submit="${id}">Submit</button></div>`;}
-    else{h+=`<div class="fb"><div class="v ${a.ok?'ok':'no'}">${a.ok?'Correct':'Not quite'}${a.ok?'':' · added to your notes'}</div><div>${p.explain}</div><div class="key"><b>Key idea:</b> ${p.note}</div>${p.refs&&p.refs.length?`<div class="refs">Lecture: ${esc(p.refs.join(' · '))}</div>`:''}<div class="row">${hasNote(id)?`<button disabled>In your notes ✓</button>`:`<button data-add="${id}">Add to notes</button>`}</div></div>`;}
+    else{h+=`<div class="fb"><div class="v ${a.ok?'ok':'no'}">${a.ok?'Correct':'Not quite'}${a.ok?'':' · added to your notes'}</div><div>${p.explain}</div><div class="key"><b>Key idea:</b> ${p.note}</div>${p.refs&&p.refs.length?`<div class="refs">Lecture: ${esc(refList(p.refs))}</div>`:''}<div class="row">${hasNote(id)?`<button disabled>In your notes ✓</button>`:`<button data-add="${id}">Add to notes</button>`}</div></div>`;}
     h+=`</div>`;});
   if(done===ids.length){const missed=ids.filter(id=>!att.ans[id].ok);
     h+=`<div class="card done"><h2 style="margin:0 0 6px;font-size:1.15rem">Score: ${right} / ${ids.length} (${Math.round(100*right/ids.length)}%)</h2><p style="margin:0">${missed.length?`You missed ${missed.length}. ${missed.length===1?'It is':'They are'} in your notes.`:'All correct. Nice work.'}</p><div class="row"><button class="primary" data-retest="all">Retest all questions</button>${missed.length?`<button data-retest="missed">Retest missed only (${missed.length})</button>`:''}<button data-tab="notes">Review notes</button></div>`;
@@ -112,7 +114,7 @@ function renderNotes(){
   document.getElementById('nCount').textContent=DB.notes.length?`(${DB.notes.length})`:'';
   let h=`<div class="card notes">`;
   if(!DB.notes.length) h+=`<p class="empty">No notes yet. Missed questions are added automatically, and you can add any graded question with "Add to notes".</p>`;
-  DB.notes.forEach(n=>{h+=`<div class="n"><h3>${esc(n.title||'My note')}</h3>${n.pid?`<div class="meta">${n.why==='missed'?'Missed':'Added'}${n.sc?' · '+esc(n.sc):''} · ${n.q.replace(/<[^>]+>/g,'')}</div><div class="key"><b>Key idea:</b> ${n.key}</div><div style="margin-top:6px">${n.explain}</div>`:''}<textarea data-mine="${n.id}" placeholder="Your own note (saved automatically)">${esc(n.mine||'')}</textarea><div class="row"><button data-del="${n.id}">Remove</button></div></div>`;});
+  DB.notes.forEach(n=>{h+=`<div class="n"><h3>${esc(n.title||'My note')}</h3>${n.pid?`<div class="meta">${n.why==='missed'?'Missed':'Added'}${n.sc?' · '+esc(n.sc):''} · ${n.q.replace(/<[^>]+>/g,'')}</div><div class="key"><b>Key idea:</b> ${n.key}</div><div style="margin-top:6px">${n.explain}</div>${refsOf(n).length?`<div class="refs">Lecture: ${esc(refList(refsOf(n)))}</div>`:''}`:''}<textarea data-mine="${n.id}" placeholder="Your own note (saved automatically)">${esc(n.mine||'')}</textarea><div class="row"><button data-del="${n.id}">Remove</button></div></div>`;});
   h+=`</div><div class="card"><b>Add your own note</b><textarea id="newNote" placeholder="Anything you want to remember"></textarea><div class="row"><button class="primary" id="addOwn">Add note</button>${DB.notes.length?`<button id="copyNotes">Copy all notes</button>`:''}</div></div>`;
   h+=`<div class="card"><div class="row" style="margin:0"><button id="reset">Start over (clear grades and notes)</button></div></div>`;
   document.getElementById('notes').innerHTML=h;
@@ -129,7 +131,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(b.dataset.tab){tab(b.dataset.tab);}
   else if(b.dataset.del){DB.notes=DB.notes.filter(n=>n.id!==b.dataset.del);save();render();}
   else if(b.id==='addOwn'){const t=document.getElementById('newNote').value.trim();if(!t)return;DB.notes.push({id:'n'+Date.now(),title:'My note',mine:t,at:Date.now()});save();render();toast('Note added');}
-  else if(b.id==='copyNotes'){const strip=s=>String(s||'').replace(/<sub>(.*?)<\/sub>/g,'$1').replace(/<[^>]+>/g,'');const txt=DB.notes.map(n=>[n.title,n.key?'Key idea: '+strip(n.key):'',strip(n.explain),n.mine?'My note: '+n.mine:''].filter(Boolean).join('\n')).join('\n\n');
+  else if(b.id==='copyNotes'){const strip=s=>String(s||'').replace(/<sub>(.*?)<\/sub>/g,'$1').replace(/<[^>]+>/g,'');const txt=DB.notes.map(n=>[n.title,n.key?'Key idea: '+strip(n.key):'',strip(n.explain),refsOf(n).length?'Lecture: '+refList(refsOf(n)):'',n.mine?'My note: '+n.mine:''].filter(Boolean).join('\n')).join('\n\n');
     (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Notes copied'),()=>toast('Copy not available here'));}
   else if(b.id==='reset'){if(confirm('Clear all attempts and notes on this device?')){DB={attempts:[],notes:[]};newAttempt();render();tab('quiz');}}
 });
