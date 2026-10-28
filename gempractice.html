@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Practice Exam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
+        
+        /* Drag and drop styles */
+        .draggable { cursor: grab; transition: background-color 0.2s; }
+        .draggable:active { cursor: grabbing; }
+        .dropzone { min-height: 60px; border: 2px dashed #cbd5e1; transition: all 0.2s; }
+        .dropzone.drag-over { background-color: #e0f2fe; border-color: #3b82f6; }
+        .dropzone.has-item { border: 2px solid #3b82f6; background-color: #f8fafc; }
+        
+        /* Custom scrollbar for notepad */
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: #f1f1f1; }
+        textarea::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        
+        /* Explanations */
+        .explanation { display: none; }
+        .explanation.show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-8">
+        <div class="max-w-4xl mx-auto">
+            <header class="mb-8 flex justify-between items-end border-b pb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Conceptual Analytics Midterm</h1>
+                    <p class="text-gray-600 mt-2">Dynamic traps and realistic data scenarios.</p>
+                </div>
+                <button id="submitBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded shadow transition" onclick="submitExam()">
+                    Submit Exam
+                </button>
+            </header>
+
+            <div id="scoreDisplay" class="hidden mb-6 p-4 rounded bg-white shadow text-xl font-bold text-center border-t-4">
+                <!-- Score injected here -->
+            </div>
+
+            <div id="questionsContainer" class="space-y-8 pb-12">
+                <!-- Questions injected dynamically via JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Notetaking Sidebar -->
+    <aside class="w-80 bg-white border-l border-gray-200 flex flex-col shadow-xl z-10 hidden md:flex">
+        <div class="p-4 border-b bg-gray-50">
+            <h2 class="text-lg font-bold text-gray-700 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                Exam Notepad
+            </h2>
+            <p class="text-xs text-gray-500 mt-1">Saves automatically to your browser.</p>
+        </div>
+        <textarea id="notepad" class="flex-1 w-full p-4 resize-none focus:outline-none text-gray-700 leading-relaxed" placeholder="Use this space for scratch work, calculations, or noting down variables..."></textarea>
+    </aside>
+
+    <script>
+        // --- 1. Dynamic Content Generation ---
+        
+        // Dynamic Variable: Base Rate Shift
+        const realWorldRates = [0.05, 0.10, 0.20];
+        const selectedRate = realWorldRates[Math.floor(Math.random() * realWorldRates.length)];
+        const totalPopulation = 10000;
+        const actualSpam = totalPopulation * selectedRate;
+        const actualHam = totalPopulation * (1 - selectedRate);
+        
+        // Validation set performance (fixed for the scenario)
+        const valTPR = 0.80; // 400 TP / 500 Real Spam in validation
+        const valFPR = 0.10; // 50 FP / 500 Real Ham in validation
+        const valFNR = 0.20; // 100 FN / 500 Real Spam
+        const valTNR = 0.90; // 450 TN / 500 Real Ham
+        
+        // Real-world application calculations
+        const realFN = actualSpam * valFNR;
+        const realFP = actualHam * valFPR;
+        const costFN = 50;
+        const costFP = 10;
+        const expectedTotalCost = (realFN * costFN) + (realFP * costFP);
+
+        // Dynamic Variable: Unit Mismatches
+        const unitPairs = [['Years', 'Minutes'], ['Miles', 'Feet'], ['Kilograms', 'Grams']];
+        const selectedUnits = unitPairs[Math.floor(Math.random() * unitPairs.length)];
+
+        // Dynamic Variable: Outlier
+        const outlierValues = ['99999', '-99', '999'];
+        const selectedOutlier = outlierValues[Math.floor(Math.random() * outlierValues.length)];
+
+        // Exam Data Structure
+        const examData = [
+            {
+                id: "q1",
+                type: "number",
+                title: "1. Base Rate Shift & Expected Costs",
+                question: `Your spam filter validation set contains exactly 500 spam emails and 500 ham (normal) emails. In this set, you have 400 True Positives (spam caught), 100 False Negatives (spam missed), 450 True Negatives, and 50 False Positives.<br><br>
+                You are deploying this filter to a real-world system receiving <strong>${totalPopulation}</strong> emails total, where the actual prevalence of spam is <strong>${selectedRate * 100}%</strong>.<br><br>
+                If a False Negative costs $${costFN} and a False Positive costs $${costFP}, what is the total expected cost of errors in the real-world system? (Enter numeric value only)`,
+                correctAnswer: expectedTotalCost,
+                explanation: `<strong>Trap Revealed:</strong> You cannot use the validation matrix directly! The validation set was artificially balanced (50/50 mix). In reality, spam is ${selectedRate * 100}%. 
+                <br>1. Calculate real volumes: ${actualSpam} spam, ${actualHam} ham. 
+                <br>2. Apply rates: FNR is 20% (${actualSpam} * 0.2 = ${realFN} missed). FPR is 10% (${actualHam} * 0.1 = ${realFP} false alarms).
+                <br>3. Multiply costs: (${realFN} * $${costFN}) + (${realFP} * $${costFP}) = $${expectedTotalCost}.`
+            },
+            {
+                id: "q2",
+                type: "mcq",
+                title: "2. The Inverted Anomaly",
+                question: `A real estate pricing linear regression model receives an uncleaned dataset where missing Zip Codes are encoded as the integer <strong>${selectedOutlier}</strong>. Zip Code is included in the model as a standard numerical variable. What is the primary mechanical effect on the model?`,
+                options: [
+                    "It will create a massive artificial slope to account for the extreme value, heavily distorting predictions for normal zip codes.",
+                    "The model will standardize the value and successfully treat it as a typical Gaussian outlier.",
+                    "It will have no effect because standard linear regression algorithms automatically exclude values beyond 3 standard deviations.",
+                    "It will perfectly predict the missing houses but fail on the normal houses."
+                ],
+                correctAnswer: 0,
+                explanation: `<strong>Trap Revealed:</strong> Linear regression cannot distinguish between a real measurement and a placeholder. By treating a massive placeholder (${selectedOutlier}) as a quantitative number, the regression line is violently pulled toward this extreme point, ruining the slope and intercept for all normal data points. Options 2 and 3 are "False Fix" distractors—regression does not auto-standardize or auto-exclude outliers.`
+            },
+            {
+                id: "q3",
+                type: "mcq",
+                title: "3. Time Series Validation",
+                question: `A data science team is trying to forecast daily stock market closing prices. To validate their model, they apply standard 5-fold cross-validation (randomly shuffling the 5 years of daily data into 5 distinct folds). Why is this approach critically flawed?`,
+                options: [
+                    "The validation error will be artificially optimistic because random splits allow the model to train on 'future' data relative to the test fold.",
+                    "They must use a Box-Cox transformation before applying 5-fold cross-validation to stabilize the variance.",
+                    "They should use 10-fold cross-validation instead to ensure seasonal cycles are fully captured in each fold.",
+                    "The model will fail to converge due to the unit mismatch in time."
+                ],
+                correctAnswer: 0,
+                explanation: `<strong>Trap Revealed:</strong> Random splitting (k-fold) destroys the temporal order of data. If you predict stock prices for Wednesday, but your training set randomly included Thursday and Friday's prices, you have leaked the future into the training phase (Optimistic Validation/Data Leakage). Options 2 and 3 are standard ML terms used as distractors.`
+            },
+            {
+                id: "q4",
+                type: "mcq",
+                title: "4. Unit Mismatches",
+                question: `You are clustering logistics data using K-Means. Feature A is transit duration measured in <strong>${selectedUnits[0]}</strong>, and Feature B is processing time measured in <strong>${selectedUnits[1]}</strong>. Neither feature is scaled. Which feature will heavily dominate the clustering distance metric?`,
+                options: [
+                    `Feature B (${selectedUnits[1]}), because it will likely have numerically much larger variance due to the smaller unit scale.`,
+                    `Feature A (${selectedUnits[0]}), because it represents a larger magnitude of real time.`,
+                    "Neither, K-Means automatically accounts for unit differences by default.",
+                    "Both will contribute equally if Euclidean distance is used."
+                ],
+                correctAnswer: 0,
+                explanation: `<strong>Trap Revealed:</strong> Models relying on distance (K-Means, KNN) care about *numeric variance*, not real-world magnitude. Because there are many ${selectedUnits[1]} in one ${selectedUnits[0]}, the variable measured in ${selectedUnits[1]} will have a massively wider numerical range. Unscaled, K-means will essentially ignore Feature A and cluster almost entirely based on Feature B.`
+            },
+            {
+                id: "q5",
+                type: "dragdrop",
+                title: "5. Model Limitations (Drag & Drop)",
+                question: "Drag the specific model to the conceptual trap or mechanical limitation that most affects it.",
+                draggables: [
+                    { id: "d1", text: "Regression Trees" },
+                    { id: "d2", text: "CUSUM Change Detection" },
+                    { id: "d3", text: "Holt-Winters Smoothing" }
+                ],
+                dropzones: [
+                    { id: "dz3", match: "d3", text: "Fails to adapt when a fixed-date holiday (like July 4) shifts across the weekly seasonal cycle." },
+                    { id: "dz1", match: "d1", text: "Fails to extrapolate trends; predicts a flat average for any input outside its training range." },
+                    { id: "dz2", match: "d2", text: "Triggers false alarms later if the baseline setup phase is contaminated by temporary outliers." }
+                ],
+                explanation: `<strong>Trap Revealed:</strong><br>
+                - <strong>Holt-Winters</strong> struggles with moving events (like July 4th on a Tuesday this year, Wednesday next year) because its seasonal component is tied to rigid periods (e.g., day of the week).<br>
+                - <strong>Trees</strong> build step-functions. A leaf node simply outputs the average of the data falling into it; it cannot extend a slope like linear regression.<br>
+                - <strong>CUSUM</strong> relies entirely on its baseline (mu). A contaminated baseline ruins the sensitivity of the entire detector.`
+            }
+        ];
+
+        // --- 2. Application Logic & Rendering ---
+
+        function initApp() {
+            // Load notepad
+            const notepad = document.getElementById('notepad');
+            notepad.value = localStorage.getItem('examNotepad') || '';
+            notepad.addEventListener('input', (e) => {
+                localStorage.setItem('examNotepad', e.target.value);
+            });
+
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            examData.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "bg-white p-6 rounded-lg shadow-sm border border-gray-200";
+                
+                let contentHTML = `<h3 class="font-bold text-lg text-gray-800 mb-3">${q.title}</h3>`;
+                contentHTML += `<p class="text-gray-700 mb-4">${q.question}</p>`;
+
+                if (q.type === 'number') {
+                    contentHTML += `
+                        <input type="number" id="${q.id}_ans" class="w-full max-w-xs p-2 border rounded focus:ring focus:ring-blue-200 focus:outline-none" placeholder="Enter number...">
+                    `;
+                } else if (q.type === 'mcq') {
+                    const optionsHTML = q.options.map((opt, i) => `
+                        <label class="flex items-start p-3 border rounded mb-2 cursor-pointer hover:bg-gray-50 transition">
+                            <input type="radio" name="${q.id}" value="${i}" class="mt-1 mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500">
+                            <span class="text-gray-700">${opt}</span>
+                        </label>
+                    `).join('');
+                    contentHTML += `<div id="${q.id}_ans" class="space-y-2">${optionsHTML}</div>`;
+                } else if (q.type === 'dragdrop') {
+                    let dragsHTML = q.draggables.map(d => `
+                        <div draggable="true" id="${d.id}" class="draggable bg-blue-100 text-blue-800 font-medium px-4 py-2 rounded shadow-sm inline-block m-1" ondragstart="dragStart(event)">
+                            ${d.text}
+                        </div>
+                    `).join('');
+                    
+                    let dropsHTML = q.dropzones.map(dz => `
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-1">${dz.text}</p>
+                            <div id="${dz.id}" data-match="${dz.match}" class="dropzone rounded flex items-center p-2" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">
+                            </div>
+                        </div>
+                    `).join('');
+
+                    contentHTML += `
+                        <div class="mb-6 p-4 bg-gray-50 rounded border" id="${q.id}_bank">
+                            <p class="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">Word Bank</p>
+                            <div class="min-h-[50px] flex flex-wrap" id="dragBank" ondragover="dragOver(event)" ondrop="dropBank(event)">
+                                ${dragsHTML}
+                            </div>
+                        </div>
+                        <div class="space-y-4" id="${q.id}_ans">
+                            ${dropsHTML}
+                        </div>
+                    `;
+                }
+
+                contentHTML += `
+                    <div id="${q.id}_exp" class="explanation mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r">
+                        ${q.explanation}
+                    </div>
+                `;
+
+                qDiv.innerHTML = contentHTML;
+                container.appendChild(qDiv);
+            });
+        }
+
+        // --- 3. Drag and Drop Logic ---
+        
+        function dragStart(e) {
+            e.dataTransfer.setData("text/plain", e.target.id);
+            e.target.style.opacity = '0.5';
+            setTimeout(() => {
+                e.target.style.opacity = '1'; // restore immediately after drag starts
+            }, 100);
+        }
+
+        function dragOver(e) {
+            e.preventDefault(); // Necessary to allow dropping
+            if (e.currentTarget.classList.contains('dropzone') || e.currentTarget.id === 'dragBank') {
+                e.currentTarget.classList.add('drag-over');
+            }
+        }
+
+        function dragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            const dropzone = e.currentTarget;
+            dropzone.classList.remove('drag-over');
+            
+            const draggedId = e.dataTransfer.getData("text/plain");
+            const draggedElement = document.getElementById(draggedId);
+            
+            // If dropzone already has an item, move the existing item back to bank
+            if (dropzone.children.length > 0) {
+                const existingItem = dropzone.children[0];
+                document.getElementById('dragBank').appendChild(existingItem);
+            }
+            
+            dropzone.appendChild(draggedElement);
+            dropzone.classList.add('has-item');
+        }
+
+        function dropBank(e) {
+            e.preventDefault();
+            const dropzone = e.currentTarget;
+            dropzone.classList.remove('drag-over');
+            
+            const draggedId = e.dataTransfer.getData("text/plain");
+            const draggedElement = document.getElementById(draggedId);
+            dropzone.appendChild(draggedElement);
+            
+            // Clean up old dropzones that might be empty now
+            document.querySelectorAll('.dropzone').forEach(dz => {
+                if(dz.children.length === 0) dz.classList.remove('has-item');
+            });
+        }
+
+        // --- 4. Grading Logic ---
+
+        function submitExam() {
+            let score = 0;
+            let totalQuestions = examData.length;
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Exam Graded";
+            submitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            submitBtn.classList.remove('hover:bg-blue-700', 'bg-blue-600');
+
+            examData.forEach(q => {
+                let isCorrect = false;
+                const expDiv = document.getElementById(`${q.id}_exp`);
+                const ansContainer = document.getElementById(`${q.id}_ans`);
+
+                if (q.type === 'number') {
+                    const input = document.getElementById(`${q.id}_ans`);
+                    input.disabled = true;
+                    if (Number(input.value) === q.correctAnswer) {
+                        isCorrect = true;
+                        input.classList.add('border-green-500', 'bg-green-50');
+                    } else {
+                        input.classList.add('border-red-500', 'bg-red-50');
+                    }
+                } 
+                else if (q.type === 'mcq') {
+                    const radios = document.getElementsByName(q.id);
+                    radios.forEach(r => r.disabled = true);
+                    
+                    const selected = Array.from(radios).find(r => r.checked);
+                    if (selected && Number(selected.value) === q.correctAnswer) {
+                        isCorrect = true;
+                    }
+
+                    // Highlight options
+                    Array.from(radios).forEach(r => {
+                        const parentLabel = r.closest('label');
+                        if (Number(r.value) === q.correctAnswer) {
+                            parentLabel.classList.add('bg-green-100', 'border-green-500');
+                        } else if (r.checked && Number(r.value) !== q.correctAnswer) {
+                            parentLabel.classList.add('bg-red-100', 'border-red-500');
+                        }
+                    });
+                }
+                else if (q.type === 'dragdrop') {
+                    let allMatched = true;
+                    q.dropzones.forEach(dz => {
+                        const dropEl = document.getElementById(dz.id);
+                        // Disable further dragging
+                        if (dropEl.children.length > 0) {
+                            dropEl.children[0].setAttribute('draggable', 'false');
+                            dropEl.children[0].classList.remove('cursor-grab');
+                        }
+                        
+                        if (dropEl.children.length > 0 && dropEl.children[0].id === dropEl.getAttribute('data-match')) {
+                            dropEl.classList.replace('border-blue-500', 'border-green-500');
+                            dropEl.style.backgroundColor = '#f0fdf4'; // green-50
+                        } else {
+                            allMatched = false;
+                            dropEl.classList.add('border-red-500');
+                            dropEl.style.backgroundColor = '#fef2f2'; // red-50
+                        }
+                    });
+                    
+                    // Disable word bank items
+                    document.querySelectorAll('#dragBank .draggable').forEach(el => {
+                        el.setAttribute('draggable', 'false');
+                        el.classList.remove('cursor-grab');
+                    });
+                    
+                    if (allMatched) isCorrect = true;
+                }
+
+                if (isCorrect) score++;
+                
+                // Show explanations
+                expDiv.classList.add('show');
+            });
+
+            // Display Score
+            const scoreDiv = document.getElementById('scoreDisplay');
+            scoreDiv.classList.remove('hidden');
+            const percent = Math.round((score / totalQuestions) * 100);
+            
+            if (percent === 100) {
+                scoreDiv.classList.add('bg-green-100', 'text-green-800', 'border-green-500');
+            } else if (percent >= 70) {
+                scoreDiv.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-500');
+            } else {
+                scoreDiv.classList.add('bg-red-100', 'text-red-800', 'border-red-500');
+            }
+            
+            scoreDiv.innerHTML = `You scored ${score} out of ${totalQuestions} (${percent}%)<br><span class="text-sm font-normal mt-1 block text-gray-700">Review the highlighted explanations below. Refresh the page to generate new dynamic data scenarios.</span>`;
+            
+            // Scroll to top
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize on load
+        window.onload = initApp;
+
+    </script>
+</body>
+</html>
