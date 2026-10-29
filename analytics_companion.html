@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISYE 6501 Modules 11-13 Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .section-hidden { display: none; }
+        .nav-active { background-color: #1e293b; color: #60a5fa; border-right: 4px solid #60a5fa; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <nav class="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-10 flex-shrink-0">
+        <div class="p-6">
+            <h1 class="text-xl font-bold text-white tracking-tight">Analytics Study</h1>
+            <p class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Modules 11-13</p>
+        </div>
+        <ul class="flex-1 mt-4 space-y-1">
+            <li>
+                <button onclick="showSection('mod11', this)" class="nav-btn nav-active w-full text-left px-6 py-3 hover:bg-slate-800 transition-colors font-medium text-sm flex items-center">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Module 11: Variable Selection
+                </button>
+            </li>
+            <li>
+                <button onclick="showSection('mod12', this)" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-800 transition-colors font-medium text-sm flex items-center">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    Module 12: Design of Experiments
+                </button>
+            </li>
+            <li>
+                <button onclick="showSection('mod13', this)" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-800 transition-colors font-medium text-sm flex items-center">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                    Module 13: Prob. & Simulation
+                </button>
+            </li>
+            <li class="pt-4 mt-4 border-t border-slate-700">
+                <button onclick="showSection('quiz', this)" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-800 transition-colors font-medium text-sm flex items-center text-emerald-400">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    Knowledge Check
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 relative p-8">
+        <div class="max-w-4xl mx-auto pb-20">
+
+            <!-- MODULE 11 -->
+            <section id="mod11" class="content-section fade-in">
+                <header class="mb-8 border-b pb-4 border-slate-200">
+                    <h2 class="text-3xl font-bold text-slate-800">Module 11: Variable Selection</h2>
+                    <p class="text-slate-500 mt-2">Understanding trade-offs and regularization techniques to build robust models.</p>
+                </header>
+
+                <div class="space-y-8">
+                    <!-- Bias-Variance -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-semibold mb-4 text-indigo-600">The Bias-Variance Tradeoff</h3>
+                        <p class="text-slate-600 mb-4">When building predictive models, the total error can be decomposed into three parts: <strong>Bias</strong>, <strong>Variance</strong>, and Irreducible Error.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-slate-700 mb-1 flex items-center">
+                                    <span class="w-3 h-3 bg-red-400 rounded-full mr-2"></span> High Bias (Underfitting)
+                                </h4>
+                                <p class="text-sm text-slate-600">The model is too simple and fails to capture the underlying patterns in the data. Assumes a rigid structure (e.g., linear) when the reality is complex.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-slate-700 mb-1 flex items-center">
+                                    <span class="w-3 h-3 bg-blue-400 rounded-full mr-2"></span> High Variance (Overfitting)
+                                </h4>
+                                <p class="text-sm text-slate-600">The model is too complex and captures random noise along with the true signal. It performs perfectly on training data but poorly on unseen data.</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-4 bg-indigo-50 text-indigo-800 rounded-lg text-sm">
+                            <strong>Goal:</strong> Find the sweet spot. As model complexity increases, bias decreases but variance increases. Regularization helps us control this complexity.
+                        </div>
+                    </div>
+
+                    <!-- Regularization -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-semibold mb-4 text-indigo-600">Regularization: LASSO vs. Ridge</h3>
+                        <p class="text-slate-600 mb-6">Regularization adds a penalty to the objective function, constraining the model's coefficients to prevent overfitting.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="border border-sky-100 rounded-xl overflow-hidden shadow-sm">
+                                <div class="bg-sky-50 px-4 py-3 border-b border-sky-100">
+                                    <h4 class="font-bold text-sky-800">LASSO Regression (L1 Penalty)</h4>
+                                </div>
+                                <div class="p-4 text-sm text-slate-600">
+                                    <p class="mb-2">Adds the absolute value of magnitude of coefficients as penalty term to the loss function.</p>
+                                    <code class="block bg-slate-100 p-2 rounded mb-3 text-xs text-center">Penalty = λ * Σ|βj|</code>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>Can shrink coefficients <strong>exactly to zero</strong>.</li>
+                                        <li>Acts as an automatic <strong>feature selection</strong> method.</li>
+                                        <li>Good when you suspect many variables are irrelevant.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-emerald-100 rounded-xl overflow-hidden shadow-sm">
+                                <div class="bg-emerald-50 px-4 py-3 border-b border-emerald-100">
+                                    <h4 class="font-bold text-emerald-800">Ridge Regression (L2 Penalty)</h4>
+                                </div>
+                                <div class="p-4 text-sm text-slate-600">
+                                    <p class="mb-2">Adds the squared magnitude of coefficients as penalty term to the loss function.</p>
+                                    <code class="block bg-slate-100 p-2 rounded mb-3 text-xs text-center">Penalty = λ * Σ(βj²)</code>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>Shrinks coefficients towards zero, but <strong>rarely exactly zero</strong>.</li>
+                                        <li>Excellent at handling <strong>multicollinearity</strong>.</li>
+                                        <li>Keeps all features but reduces the impact of less important ones.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE 12 -->
+            <section id="mod12" class="content-section section-hidden fade-in">
+                <header class="mb-8 border-b pb-4 border-slate-200">
+                    <h2 class="text-3xl font-bold text-slate-800">Module 12: Design of Experiments</h2>
+                    <p class="text-slate-500 mt-2">Methods for testing hypotheses, comparing options, and optimizing decisions in the real world.</p>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- A/B Testing -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 text-slate-800">A/B Testing</h3>
+                        <p class="text-sm text-slate-600 mb-3">Comparing two versions (A and B) of a single variable to determine which performs better.</p>
+                        <ul class="text-xs text-slate-500 list-disc pl-4 space-y-1">
+                            <li>Randomized assignment is crucial.</li>
+                            <li>Tests one variable at a time.</li>
+                            <li>Common in web design, marketing, and medicine.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Factorial Design -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 text-slate-800">Factorial Design</h3>
+                        <p class="text-sm text-slate-600 mb-3">Testing multiple variables (factors) simultaneously to observe their individual and joint effects.</p>
+                        <ul class="text-xs text-slate-500 list-disc pl-4 space-y-1">
+                            <li>Highly efficient use of data.</li>
+                            <li>Identifies <strong>interaction effects</strong> between variables.</li>
+                            <li>Ex: Testing Price AND Color at the same time.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Multi-armed Bandits -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                        <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 text-slate-800">Multi-Armed Bandits</h3>
+                        <p class="text-sm text-slate-600 mb-3">Dynamic resource allocation balancing the need to find the best option and capitalize on known good options.</p>
+                        <ul class="text-xs text-slate-500 list-disc pl-4 space-y-1">
+                            <li>Solves the <strong>Exploration vs. Exploitation</strong> dilemma.</li>
+                            <li>Updates dynamically as data arrives.</li>
+                            <li>Reduces opportunity cost compared to static A/B testing.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODULE 13 -->
+            <section id="mod13" class="content-section section-hidden fade-in">
+                <header class="mb-8 border-b pb-4 border-slate-200">
+                    <h2 class="text-3xl font-bold text-slate-800">Module 13: Probability & Simulation</h2>
+                    <p class="text-slate-500 mt-2">Deep dive into Quantile-Quantile (Q-Q) Plots and understanding distributions.</p>
+                </header>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden mb-8">
+                    <div class="p-6 border-b border-slate-100 bg-slate-50">
+                        <h3 class="text-xl font-semibold text-slate-800 mb-2">Interactive Q-Q Plot Visualizer</h3>
+                        <p class="text-sm text-slate-600">A Q-Q plot compares the quantiles of your sample data against the quantiles of a theoretical distribution (usually Normal). If the sample matches the theoretical distribution, the points will form a roughly straight 45-degree line.</p>
+                        
+                        <div class="mt-4 flex flex-wrap gap-2" id="qq-buttons">
+                            <button onclick="updateChart('normal')" class="qq-btn px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors hover:bg-blue-700 shadow-sm" data-type="normal">Good Match (Normal)</button>
+                            <button onclick="updateChart('heavy')" class="qq-btn px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg text-sm font-medium transition-colors hover:bg-slate-100 shadow-sm" data-type="heavy">Heavy Tails</button>
+                            <button onclick="updateChart('skewed')" class="qq-btn px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg text-sm font-medium transition-colors hover:bg-slate-100 shadow-sm" data-type="skewed">Right Skewed</button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 flex flex-col md:flex-row gap-6">
+                        <div class="flex-1 min-w-[300px] h-[350px] relative">
+                            <canvas id="qqChart"></canvas>
+                        </div>
+                        <div class="w-full md:w-1/3 bg-slate-50 p-4 rounded-lg flex flex-col justify-center border border-slate-100" id="qq-description">
+                            <!-- Dynamic Description Injected Here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q-Q Plot Mini Quiz -->
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-indigo-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Mini Quiz: Interpret the Q-Q Plot
+                    </h3>
+                    
+                    <div class="mb-6">
+                        <p class="font-medium text-slate-800 mb-3">1. If the points in a Q-Q plot form an "S-shape" that deviates significantly below the line on the left and above the line on the right, what does this indicate?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-3 bg-white rounded border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                                <input type="radio" name="qq1" value="wrong" class="form-radio text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                                <span class="ml-3 text-sm text-slate-700">The data is perfectly normally distributed.</span>
+                            </label>
+                            <label class="flex items-center p-3 bg-white rounded border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                                <input type="radio" name="qq1" value="correct" class="form-radio text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                                <span class="ml-3 text-sm text-slate-700">The distribution has "heavy tails" (more extreme outliers than a normal distribution).</span>
+                            </label>
+                            <label class="flex items-center p-3 bg-white rounded border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                                <input type="radio" name="qq1" value="wrong" class="form-radio text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                                <span class="ml-3 text-sm text-slate-700">The data is skewed to the left.</span>
+                            </label>
+                        </div>
+                        <div id="qq1-feedback" class="mt-2 text-sm font-medium hidden"></div>
+                    </div>
+
+                    <div>
+                        <p class="font-medium text-slate-800 mb-3">2. In a Q-Q plot, what does a strong upward "U-shaped" curve suggest?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-3 bg-white rounded border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                                <input type="radio" name="qq2" value="wrong" class="form-radio text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                                <span class="ml-3 text-sm text-slate-700">Light tails.</span>
+                            </label>
+                            <label class="flex items-center p-3 bg-white rounded border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                                <input type="radio" name="qq2" value="correct" class="form-radio text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                                <span class="ml-3 text-sm text-slate-700">The distribution is Right-Skewed.</span>
+                            </label>
+                            <label class="flex items-center p-3 bg-white rounded border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                                <input type="radio" name="qq2" value="wrong" class="form-radio text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                                <span class="ml-3 text-sm text-slate-700">The distribution is Left-Skewed.</span>
+                            </label>
+                        </div>
+                        <div id="qq2-feedback" class="mt-2 text-sm font-medium hidden"></div>
+                    </div>
+                    
+                    <button onclick="checkQQQuiz()" class="mt-6 px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm shadow-sm">Check Answers</button>
+                </div>
+            </section>
+
+            <!-- GENERAL QUIZ -->
+            <section id="quiz" class="content-section section-hidden fade-in">
+                <header class="mb-8 border-b pb-4 border-slate-200">
+                    <h2 class="text-3xl font-bold text-slate-800">Master Knowledge Check</h2>
+                    <p class="text-slate-500 mt-2">Test your understanding of Modules 11, 12, and 13.</p>
+                </header>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+                    <div id="quiz-container" class="space-y-8">
+                        <!-- Quiz questions injected here via JS -->
+                    </div>
+                    
+                    <div class="mt-10 pt-6 border-t border-slate-100 flex items-center justify-between">
+                        <div id="quiz-score" class="text-lg font-bold text-slate-800 hidden"></div>
+                        <button onclick="submitGeneralQuiz()" class="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold shadow-md">Submit Final Quiz</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // --- Navigation Logic ---
+        function showSection(sectionId, btnElement) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(el => {
+                el.classList.add('section-hidden');
+            });
+            // Show target section
+            document.getElementById(sectionId).classList.remove('section-hidden');
+            
+            // Update active nav state
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('nav-active');
+                btn.classList.replace('bg-slate-800', 'hover:bg-slate-800'); // reset
+            });
+            btnElement.classList.add('nav-active');
+            
+            // Re-render chart if navigating to Mod 13
+            if(sectionId === 'mod13' && qqChartInstance) {
+                qqChartInstance.resize();
+            }
+        }
+
+        // --- Q-Q Plot Chart.js Logic ---
+        let qqChartInstance = null;
+
+        // Generate synthetic data
+        function generateLineData() {
+            return [{x: -3, y: -3}, {x: 3, y: 3}];
+        }
+
+        const plotData = {
+            normal: {
+                title: "Normal Distribution (Good Match)",
+                desc: "The sample data closely follows the theoretical normal distribution. Notice how the points fall neatly along the 45-degree reference line.",
+                color: '#3b82f6',
+                data: [
+                    {x:-2.5, y:-2.4}, {x:-2, y:-1.9}, {x:-1.5, y:-1.6}, {x:-1, y:-1.1}, {x:-0.5, y:-0.4},
+                    {x:0, y:0.1}, {x:0.5, y:0.6}, {x:1, y:0.9}, {x:1.5, y:1.4}, {x:2, y:2.1}, {x:2.5, y:2.4}
+                ]
+            },
+            heavy: {
+                title: "Heavy Tails",
+                desc: "Notice the 'S-shape'. The ends of the distribution deviate significantly from the line. The left side falls below the line (extreme negative values) and the right side rises above it (extreme positive values).",
+                color: '#ef4444',
+                data: [
+                    {x:-2.5, y:-4.5}, {x:-2, y:-3}, {x:-1.5, y:-1.8}, {x:-1, y:-1}, {x:-0.5, y:-0.4},
+                    {x:0, y:0}, {x:0.5, y:0.4}, {x:1, y:1}, {x:1.5, y:1.8}, {x:2, y:3}, {x:2.5, y:4.5}
+                ]
+            },
+            skewed: {
+                title: "Right Skewed",
+                desc: "The points form an upward curve (U-shape). This indicates that the sample distribution is skewed to the right compared to the theoretical normal distribution.",
+                color: '#f59e0b',
+                data: [
+                    {x:-2.5, y:-1.5}, {x:-2, y:-1.2}, {x:-1.5, y:-0.8}, {x:-1, y:-0.2}, {x:-0.5, y:0.3},
+                    {x:0, y:1}, {x:0.5, y:1.8}, {x:1, y:2.8}, {x:1.5, y:4.0}, {x:2, y:5.5}
+                ]
+            }
+        };
+
+        function initChart() {
+            const ctx = document.getElementById('qqChart').getContext('2d');
+            
+            // Base config
+            const config = {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Theoretical Line (y=x)',
+                            data: generateLineData(),
+                            type: 'line',
+                            borderColor: '#94a3b8',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        },
+                        {
+                            label: 'Sample Quantiles',
+                            data: plotData.normal.data,
+                            backgroundColor: plotData.normal.color,
+                            borderColor: plotData.normal.color,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Theoretical Quantiles', font: {weight: 'bold'} }, min: -3, max: 3 },
+                        y: { title: { display: true, text: 'Sample Quantiles', font: {weight: 'bold'} }, min: -5, max: 6 }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            };
+
+            qqChartInstance = new Chart(ctx, config);
+            updateDescription('normal');
+        }
+
+        function updateChart(type) {
+            // Update button styles
+            document.querySelectorAll('.qq-btn').forEach(btn => {
+                if (btn.dataset.type === type) {
+                    btn.className = `qq-btn px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors hover:bg-blue-700 shadow-sm`;
+                } else {
+                    btn.className = `qq-btn px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg text-sm font-medium transition-colors hover:bg-slate-100 shadow-sm`;
+                }
+            });
+
+            // Update Chart Data
+            qqChartInstance.data.datasets[1].data = plotData[type].data;
+            qqChartInstance.data.datasets[1].backgroundColor = plotData[type].color;
+            qqChartInstance.data.datasets[1].borderColor = plotData[type].color;
+            qqChartInstance.update();
+
+            // Update Text
+            updateDescription(type);
+        }
+
+        function updateDescription(type) {
+            const descDiv = document.getElementById('qq-description');
+            descDiv.innerHTML = `
+                <h4 class="font-bold text-lg text-slate-800 mb-2">${plotData[type].title}</h4>
+                <p class="text-sm text-slate-600 leading-relaxed">${plotData[type].desc}</p>
+            `;
+        }
+
+        // --- Q-Q Mini Quiz Logic ---
+        function checkQQQuiz() {
+            const checkQuestion = (name, feedbackId) => {
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                const feedbackEl = document.getElementById(feedbackId);
+                feedbackEl.classList.remove('hidden');
+                
+                if (!selected) {
+                    feedbackEl.textContent = "Please select an answer.";
+                    feedbackEl.className = "mt-2 text-sm font-medium text-amber-600";
+                    return;
+                }
+                
+                if (selected.value === 'correct') {
+                    feedbackEl.textContent = "✓ Correct!";
+                    feedbackEl.className = "mt-2 text-sm font-medium text-emerald-600";
+                } else {
+                    feedbackEl.textContent = "✗ Incorrect, try again.";
+                    feedbackEl.className = "mt-2 text-sm font-medium text-red-500";
+                }
+            };
+            
+            checkQuestion('qq1', 'qq1-feedback');
+            checkQuestion('qq2', 'qq2-feedback');
+        }
+
+        // --- General Quiz Logic ---
+        const quizQuestions = [
+            {
+                q: "Which regularization method tends to shrink coefficients exactly to zero, effectively performing feature selection?",
+                options: ["Ridge Regression (L2)", "LASSO Regression (L1)", "Elastic Net", "Linear Regression"],
+                ans: 1
+            },
+            {
+                q: "As a model becomes more complex, what happens to Bias and Variance?",
+                options: ["Bias increases, Variance decreases", "Both increase", "Bias decreases, Variance increases", "Both decrease"],
+                ans: 2
+            },
+            {
+                q: "A Factorial Design is generally preferred over standard A/B testing when you want to:",
+                options: ["Minimize sample size needed for a single variable", "Test multiple variables and understand interaction effects between them", "Dynamically allocate traffic to the winning variable", "Remove all variance from a dataset"],
+                ans: 1
+            },
+            {
+                q: "In Multi-Armed Bandits, the algorithm dynamically balances which two concepts?",
+                options: ["Bias and Variance", "Exploration and Exploitation", "Sensitivity and Specificity", "L1 and L2 penalties"],
+                ans: 1
+            },
+            {
+                q: "If your data's Q-Q plot against a normal distribution looks like a straight line, what can you conclude?",
+                options: ["The data has heavy tails", "The data is skewed", "The data is approximately normally distributed", "The model is overfitting"],
+                ans: 2
+            }
+        ];
+
+        function renderGeneralQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            
+            quizQuestions.forEach((item, index) => {
+                let optionsHtml = '';
+                item.options.forEach((opt, optIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-center p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
+                            <input type="radio" name="genq${index}" value="${optIdx}" class="form-radio text-emerald-600 focus:ring-emerald-500 h-4 w-4">
+                            <span class="ml-3 text-slate-700 text-sm">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="quiz-item" data-index="${index}">
+                        <h4 class="text-base font-semibold text-slate-800 mb-3">${index + 1}. ${item.q}</h4>
+                        <div class="space-y-2 pl-4">
+                            ${optionsHtml}
+                        </div>
+                        <div class="feedback mt-2 text-sm font-medium hidden"></div>
+                    </div>
+                `;
+            });
+        }
+
+        function submitGeneralQuiz() {
+            let score = 0;
+            let answeredAll = true;
+            
+            quizQuestions.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="genq${index}"]:checked`);
+                const feedbackEl = document.querySelector(`.quiz-item[data-index="${index}"] .feedback`);
+                feedbackEl.classList.remove('hidden');
+                
+                if (!selected) {
+                    answeredAll = false;
+                    feedbackEl.textContent = "Please answer this question.";
+                    feedbackEl.className = "feedback mt-2 text-sm font-medium text-amber-600";
+                    return;
+                }
+                
+                if (parseInt(selected.value) === item.ans) {
+                    score++;
+                    feedbackEl.textContent = "✓ Correct";
+                    feedbackEl.className = "feedback mt-2 text-sm font-medium text-emerald-600";
+                } else {
+                    feedbackEl.textContent = `✗ Incorrect. The correct answer was: ${item.options[item.ans]}`;
+                    feedbackEl.className = "feedback mt-2 text-sm font-medium text-red-500";
+                }
+            });
+
+            if (answeredAll) {
+                const scoreBox = document.getElementById('quiz-score');
+                scoreBox.classList.remove('hidden');
+                
+                const percentage = (score / quizQuestions.length) * 100;
+                let colorClass = 'text-emerald-600';
+                if (percentage < 60) colorClass = 'text-red-500';
+                else if (percentage < 80) colorClass = 'text-amber-500';
+                
+                scoreBox.innerHTML = `You scored: <span class="${colorClass}">${score} out of ${quizQuestions.length}</span> (${percentage}%)`;
+            }
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            initChart();
+            renderGeneralQuiz();
+        };
+
+    </script>
+</body>
+</html>
