@@ -51,11 +51,12 @@ mark{background:var(--warnbg);color:inherit}
 .chip .fix{display:block;font-size:.75rem;color:var(--ink2)}
 .bucket.over{border-color:var(--pen)}
 .score{font-weight:700}
+.btnlink{display:inline-block;background:var(--pen);color:var(--penink);border-radius:10px;padding:8px 12px;text-decoration:none;font-weight:600}
 </style>
 </head>
 <body>
 <div class="wrap">
- <div class="top"><div><h1>Slide Summaries</h1><p class="sub">ISYE 6501 · every slide deck in plain English, plus a topic check per module</p></div><button id="theme" aria-label="Switch light or dark mode"></button></div>
+ <div class="top"><div><h1>Slide Summaries</h1><p class="sub">ISYE 6501 · every slide deck in plain English</p></div><button id="theme" aria-label="Switch light or dark mode"></button></div>
  <input type="search" id="q" placeholder="Search all slides (e.g. CUSUM, margin, Box-Cox)" aria-label="Search slides">
  <div class="chips" id="mods"></div>
  <div id="view"></div>
@@ -79,17 +80,17 @@ function findLec(name){ for(let i=0;i<MODS.length;i++){ const j=MODS[i].lectures
 function render(){ chips(); const M=MODS[V.m];
   if(V.mode==='search') return renderSearch();
   if(V.mode==='lec'&&M.lectures[V.l]) return renderLec(M,V.l);
-  if(V.mode==='check') return renderCheck(M);
+  
   const fl=[]; M.lectures.forEach(L=>L.slides.forEach(s=>{ if(S.f[sid(L,s)]) fl.push([L,s]); }));
-  let h=`<h2 style="margin:4px 0">Module ${M.n} · ${esc(M.title)}</h2><p class="sub">${M.lectures.length} slide decks · ${M.lectures.reduce((a,L)=>a+prog(L).u,0)} of ${M.lectures.reduce((a,L)=>a+L.slides.length,0)} summaries understood${S.best[M.n]!=null?` · topic check best: ${S.best[M.n]}%`:''}</p>
-   <div class="row" style="margin-bottom:12px"><button class="primary" data-check="1">Topic check: match topics to descriptions</button></div>`;
+  let h=`<h2 style="margin:4px 0">Module ${M.n} · ${esc(M.title)}</h2><p class="sub">${M.lectures.length} slide decks · ${M.lectures.reduce((a,L)=>a+prog(L).u,0)} of ${M.lectures.reduce((a,L)=>a+L.slides.length,0)} summaries understood</p><div class="row" style="margin:0 0 12px"><a class="btnlink" href="index.html#slidetest=M${M.n}">Slide test for Module ${M.n} →</a></div>
+`;
   M.lectures.forEach((L,j)=>{ const p=prog(L); h+=`<button class="lec" data-lec="${j}"><b>${esc(L.lec)} · ${esc(L.title)}</b><span>${esc(strip(L.intro||''))}</span><span>${p.n} summaries · ${p.u} understood</span><div class="bar"><i style="width:${p.n?100*p.u/p.n:0}%"></i></div></button>`; });
   if(fl.length) h+=`<h3>Marked "not sure" in this module</h3>`+fl.map(([L,s])=>card(L,s,true)).join('');
   view.innerHTML=h; }
 function renderLec(M,j){ const L=M.lectures[j], p=prog(L);
-  let h=`<div class="row"><button data-back="1">← Module ${M.n}</button></div><h2 style="margin:10px 0 2px">${esc(L.lec)} · ${esc(L.title)}</h2><p class="sub" id="lsub">${p.u} of ${p.n} understood</p>${L.intro?`<div class="intro">${L.intro}</div>`:''}`;
+  let h=`<div class="row"><button data-back="1">← Module ${M.n}</button></div><h2 style="margin:10px 0 2px">${esc(L.lec)} · ${esc(L.title)}</h2><p class="sub" id="lsub">${p.u} of ${p.n} understood</p>${L.intro?`<div class="intro">${L.intro}</div>`:''}<div class="row" style="margin:0 0 12px"><a class="btnlink" href="index.html#slidetest=${encodeURIComponent(L.lec)}">Test yourself on this deck →</a></div>`;
   h+=L.slides.map(s=>card(L,s,false)).join('');
-  h+=`<div class="nav2">${j>0?`<button data-lec="${j-1}">← ${esc(M.lectures[j-1].lec)}</button>`:'<span></span>'}${j<M.lectures.length-1?`<button class="primary" data-lec="${j+1}">${esc(M.lectures[j+1].lec)} →</button>`:`<button class="primary" data-check="1">Topic check →</button>`}</div>`;
+  h+=`<div class="nav2">${j>0?`<button data-lec="${j-1}">← ${esc(M.lectures[j-1].lec)}</button>`:'<span></span>'}${j<M.lectures.length-1?`<button class="primary" data-lec="${j+1}">${esc(M.lectures[j+1].lec)} →</button>`:(V.m<MODS.length-1?`<button class="primary" data-m="${V.m+1}">Module ${MODS[V.m+1].n} →</button>`:'<span></span>')}</div>`;
   view.innerHTML=h; }
 function renderSearch(){ const q=$('#q').value.trim().toLowerCase(); const terms=q.split(/\s+/).filter(Boolean); const out=[];
   MODS.forEach(M=>M.lectures.forEach(L=>L.slides.forEach(s=>{ const t=(strip(s.title)+' '+s.points.map(strip).join(' ')+' '+strip(s.key)+' '+strip(s.watch)+' '+L.title).toLowerCase(); if(terms.every(w=>t.includes(w))) out.push([L,s]); })));

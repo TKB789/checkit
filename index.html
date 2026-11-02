@@ -4472,7 +4472,7 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('clic
   switchTab(b.dataset.tab);
 }));
 function switchTab(t){ tab=t; document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t))); render(); window.scrollTo(0,0); }
-function render(){ if(tab==='mid'){ PX.render(main); return; } if(tab==='ss'){ main.innerHTML=`<section class="panel"><h2>Slide summaries</h2><p>Every slide deck for Modules 1–13 (73 decks) is summarized in plain English on its own page, with search, “I understand / Not sure” tracking, and a topic check for each module that matches topic names to descriptions, with slide references.</p><p><a class="btn" href="slides.html" style="display:inline-block;text-decoration:none">Open slide summaries →</a></p></section>`; return; } if(tab==='exam'||tab==='slides'||tab==='core'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else if(tab==='search') renderSearch(); else renderProgress(); }
+function render(){ if(tab==='mid'){ PX.render(main); return; } if(tab==='ss'){ main.innerHTML=`<section class="panel"><h2>Slide summaries</h2><p>Every slide deck for Modules 1–13 (73 decks) is summarized in plain English on its own page, with search, “I understand / Not sure” tracking.</p><p><a class="btn" href="slides.html" style="display:inline-block;text-decoration:none">Open slide summaries →</a></p></section>`; return; } if(tab==='exam'||tab==='slides'||tab==='core'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else if(tab==='search') renderSearch(); else renderProgress(); }
 // ---------- dialog
 function confirmDlg(msg,okLabel,onOk,cancelLabel='Cancel'){
   const d=$('#dlg'); $('#dlg-msg').textContent=msg; const a=$('#dlg-actions'); a.innerHTML='';
@@ -4974,6 +4974,12 @@ applyTheme(theme);
 document.querySelectorAll('[data-theme-set]').forEach(b=>b.onclick=()=>applyTheme(b.dataset.themeSet));
 render();
 setSync('');
+// deep link from slides.html: index.html#slidetest=M7%20L2 (one lecture) or #slidetest=M7 (whole module)
+function openFromHash(){ const h=decodeURIComponent(location.hash||''); const m=h.match(/^#slidetest=M(\d+)(?: (L\w+))?$/); if(!m) return;
+  const mod='m'+m[1], lec=m[2]?('M'+m[1]+' '+m[2]):''; exam=null;
+  if(lec&&LECS.includes(lec)) goSlides(lec,mod); else { setupS.mods=new Set([mod]); setupS.lec=''; switchTab('slides'); }
+  try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} }
+openFromHash(); window.addEventListener('hashchange',openFromHash);
 })();
 
 </script>
