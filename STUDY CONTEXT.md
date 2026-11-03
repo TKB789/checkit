@@ -5,7 +5,7 @@
 
 This file contains only paraphrased notes. Never put course slides, transcripts, homework solutions or the professor's posts word for word in this public repo.
 
-_Last updated: 2026-11-02 (Module 16 added; `add_module.py` now supports `guide_id`)._
+_Last updated: 2026-11-02 (Module 16 added; question bank saved in `bank/`; `add_module.py` now supports `guide_id`)._
 
 ---
 
@@ -16,9 +16,11 @@ _Last updated: 2026-11-02 (Module 16 added; `add_module.py` now supports `guide_
 | `index.html` | The main study site (one self-contained file, ~2.9 MB) |
 | `slides.html` | Slide summaries for all modules (JSON in `<script id="data">`) |
 | `analytics_companion.html` | Older Modules 11–13 companion page (standalone) |
-| `practice1.html` | Study Group Practice 1 (standalone) |
+| `practice1.html` | Study Group Practice page (standalone): tabs **Practice 1** (variable selection, 10 select-all Qs), **Practice 2** (4 drag-and-drop Qs: distributions, Q-Q plot shapes, distribution + Q-Q combined, design of experiments) and a shared **Notes** tab (overall notebook + every saved question note from both practices, filterable). Storage: Practice 1 attempts, all notes and the notebook stay in `study-group-practice-1-m2` (the original key, so earlier notes survive); Practice 2 attempts in `study-group-practice-2`. Notes are per browser; members share by "Copy all notes". Builder: `tools/study_group/` (`p2_data.py` → `p2.json`, `build.py` keeps Practice 1's data byte-for-byte). Questions also saved in `bank/study_group.json` |
 | `computational.html` | CSE 6040 prep tracker (a different course; leave alone) |
 | `STUDY_CONTEXT.md` | This file |
+| `bank/m1.json … m16.json, mix.json` | **Question bank**: every midterm scenario (with its exam id), slide-test item (first option = correct) and explain-it prompt, per module. Append-only: questions are never deleted from it. 61 scenarios / 164 questions, 717 slide-test items, 63 explain-it prompts as of 2026-11-02 |
+| `tools/save_bank.py` | Saves everything in `index.html` into `bank/`: adds new questions, keeps old versions of edited ones, and lists any bank question MISSING from `index.html`. Run after every update |
 | `tools/add_module.py` | Adds a module to `index.html` + `slides.html` from a manifest (safe to re-run). Optional manifest keys: `guide_id` (when the guide id isn't `mN`), `prev_guide` |
 | `tools/guide_helpers.py` | HTML helpers for guides and Maya stories (`box`, `plain`, `trap`, `ex`, `formula`, `tbl`, `who`, `code`, `ch`, `nearly`, `remembered`, `sec`) |
 | `tools/m14/`, `tools/m15/`, `tools/m16/` | Source files for those modules (my wording only): exam generator + JSON, slide summaries JSON (M16: `m16_slides.py` builds it), slide-test and explain-it JS, guide builder, manifest (M15; M16 builds it with `make_manifest.py`) |
@@ -45,7 +47,7 @@ _Last updated: 2026-11-02 (Module 16 added; `add_module.py` now supports `guide_
 
 | Module | Slides summary | Slide test | Midterm Qs | Guide + Maya + Model Map/Clues |
 |---|---|---|---|---|
-| 1–10 | ✓ | ✓ (M1–M10 by slide page) | Midterm 1: 77 Qs, 27 scenarios | ✓ |
+| 1–10 | ✓ | ✓ (M1–M10 by slide page) | Midterm 1: 102 Qs, 34 scenarios (next ID X-35) | ✓ |
 | 11 Variable selection | ✓ | 22 | Midterm 2 | ✓ |
 | 12 Design of experiments | ✓ | 13 | Midterm 2 | ✓ |
 | 13 Probability & simulation | ✓ | 27 | Midterm 2 | ✓ |
@@ -53,7 +55,7 @@ _Last updated: 2026-11-02 (Module 16 added; `add_module.py` now supports `guide_
 | 15 Optimization | ✓ (72 summaries) | 85 | Midterm 2: Y-20…Y-25 (15 Qs) | ✓ 3 Model Map cards (optimization models, network models, under uncertainty) + new Model List group + R script E1–E4 (lpSolve) + notes sheet |
 | 16 Advanced models | ✓ (63 summaries, 11 lectures incl. L1a, L5a, L8a) | 76 + 6 explain-it | Midterm 2: Y-27…Y-34 (17 Qs: 7 single, 3 match, 7 select-all; figures: graph SVG, McNemar, payoff and boosting tables) | ✓ guide `mod16` + Maya story + 7 Model Map cards (mm-nonparam, mm-empbayes, mm-louvain, mm-neural, mm-gametheory, mm-cox, mm-gboost) + Model List group + Big Ideas row + 8 Context Clues rows + 2 knob rows + R script F1–F4 + notes sheet |
 
-Midterm 2 is now "Modules 11–16 · 87 questions" (includes Y-26, an M14 binary-imputation scenario from the week 10 discussion). **Assumption:** Module 16 was added to Midterm 2, like M15; if the syllabus puts it on the final only, move it with a new exam entry rather than deleting. The page heading now says "Modules 1–16" (it had been left at 1–13).
+Midterm 2 is now "Modules 11–16 · 113 questions" (41 scenarios) (includes Y-26, an M14 binary-imputation scenario from the week 10 discussion). **Exam ranges (confirmed by me, 2026-11-02):** Midterm 1 = Modules 1–10; Midterm 2 = Module 11 onward (every new module goes to `mid2`, and its `sub` label grows, e.g. "Modules 11–17"); the final is cumulative over all modules (not built yet; see §8 item 3). The page heading now says "Modules 1–16" (it had been left at 1–13).
 
 **Known slide misprints to keep flagged:** M10 L5 NPV printed as TP/(TP+FP) (should be TN/(TN+FN)); M13 L3 "probability mass function" used for densities; M9 L5 "eigenvalue v" should be eigenvector; M3 L2 KNN-5 total 92 should be 82; M14 L2 "#kids,missing" column actually holds #kids when height is *present*; M15 L5 p17 hard SVM printed "Maximize Σaⱼ²" (should minimize); M15 L8 p12 the {0,1} example sits under a "convex" title but {0,1} isn't a convex set; M15 L2 vᵢd defined as binary but called "number of visits" in the transcript; M15 L5 ARIMA uses αᵢ for φᵢ and GARCH shows −Σγε² (should be +); M15 L5a swaps m/n indices; M15 L7 writes pᵢₛ for a scenario probability pₛ; M16 L1 p7–8 "p = 0.02 (accept)" / "p = 0.38 (reject)" label the conclusion "B is better", not the null; M16 L1a p13 labels both antibiotic samples "antibiotic 1"; M16 L5a p18 says "higher price is better" in both columns, but if BP charges $2.00, Shell's $2.00 (0.125d) beats $2.50 ($0), so both (high, high) and (low, low) are stable; M16 L8a p26 writes −2(yᵢ − 0.56F₁(xᵢ)) for −2(yᵢ − F₁(xᵢ)); M16 L8a table header −∇F₀ means −∇L(F₀); M16 L7 calls the hazard h(t) a "probability" (it's a rate); M16 L2 rounds the 20-point example's true edge to 3.5 (exact ≈ 3.7).
 
@@ -65,7 +67,19 @@ Midterm 2 is now "Modules 11–16 · 87 questions" (includes Y-26, an M14 binary
 - Tests: reading figures and counting (SVM plots, KNN at a range of k, dot chart of CV adjusted R², confusion matrices at 3 thresholds, number-line ranges, tree with a regression in each leaf, PCA eigenvalues); reasoning from the formula *as printed* (soft SVM with C on the margin term); direction traps (relative likelihood e^((AIC_min − AIC_other)/2); BIC difference of 1.8 is only slight; close adjusted R² = hard to be sure); business constraints (required/forbidden variable, simplest good model); scenario chains (closure → over- then under-prediction; small randomness → larger α; lagged non-response is not autoregressive; U-shape → add x²); validation logic (roles of training/validation/test; best of many on validation probably worse on test); symbolic costs (C = 2D, compute all thresholds); creative combinations (CUSUM on Holt-Winters seasonal factors).
 - "Likely/could/might" options are judged by the typical case taught; absolutes and unsupported conclusions are false.
 
-**Question-type mix (the real exam is NOT all select-all):** each module's set must mix all three types, with at least 2–3 single-best-answer questions with "because…" reasons and 1–2 drag-and-drop. Current counts: Midterm 1 has 59 select-all, 10 single, 8 match; Midterm 2 has 50 select-all, 14 single, 6 match; all singles are M14–M15. M11–M13 have no singles yet, so rebalance them when tagging (add new parts; never change existing ones).
+**Midterm 2 coverage pass (2026-11-02):** Y-35…Y-41 (26 Qs, `tools/mid2_fill/`) filled the gaps found in a concept-by-concept check of M11–M16. They added:
+- singles for M11–M13;
+- a CV adjusted-R² dot chart + AIC table (M11 + M8/M3);
+- an A/B significance test, blocking and bandits;
+- a balanced vs unbalanced fractional factorial table;
+- a Q-Q plot to read, plus Kendall notation and common random numbers;
+- a Markowitz model printed with λ on the *return* term (a direction trap), a binary-constraint match with a "not correct" category, DP/MDP and a Newton step;
+- a cross-module clinic scenario (missing data → logistic + lasso → cost threshold → experiment design → chance constraint + simulation);
+- Wilcoxon W and Mann-Whitney U by hand.
+
+The exam stays Modules 11–16 but may touch related Module 1–10 concepts; new Midterm 2 scenarios should keep linking back where natural.
+
+**Question-type mix (the real exam is NOT all select-all):** each module's set must mix all three types, with at least 2–3 single-best-answer questions with "because…" reasons and 1–2 drag-and-drop. Current counts: Midterm 1 has 66 select-all, 26 single, 10 match (102 Qs, 34 scenarios, 12 with a figure or table); Midterm 2 has 70 select-all, 33 single, 10 match (12 of 41 scenarios have a figure or table). Midterm 1 had the same pass on 2026-11-02 (X-28…X-34, 25 Qs, `tools/mid1_fill/`): KNN figure across k, k-means elbow + Euclidean vs rectilinear, box-plot fences, CUSUM by hand, confusion matrices at 3 thresholds with C = 2D / 5D, logistic log-odds, Holt-Winters arithmetic, regression output, interaction, Box-Cox, PCA eigenvectors, rotation-split bias, refit after k-fold, M10 L7 models.
 
 **Scoring gap:** the site grades every question all-or-nothing, but the real exam gives select-all partial credit per option. The planned engine should show per-option partial credit.
 
@@ -139,9 +153,9 @@ _Pending: upload homework prompts and class solutions. Record here (paraphrased)
    - Context Clues rows, word and knob;
    - R walkthrough script section (if the module adds new R steps);
    - Midterm 2 notes sheet block.
-5. **One verification pass** by a fresh agent, then a headless browser load check (no JS errors), then send files and update this file.
+5. **One verification pass** by a fresh agent, then a headless browser load check (no JS errors), then **`python3 tools/save_bank.py`** (it must report 0 missing unless a removal was intended), then send files (including `bank/`) and update this file.
 
-**Build steps with the tools:** write `tools/mN/` files modeled on `tools/m15/` (exam generator → JSON, slides JSON, slide-test JS, explain JS, guide builder using `guide_helpers.py`, manifest with anchors for Model Map / Clues / notes sheet / R script inserts), then run `add_module.py`. Anchors must match exactly once; the script stops if not. The midterm IDs continue from the last one (next: Y-35).
+**Build steps with the tools:** write `tools/mN/` files modeled on `tools/m15/` (exam generator → JSON, slides JSON, slide-test JS, explain JS, guide builder using `guide_helpers.py`, manifest with anchors for Model Map / Clues / notes sheet / R script inserts), then run `add_module.py`. Anchors must match exactly once; the script stops if not. The midterm IDs continue from the last one (next: Y-42).
 
 **Concept search on request:** every midterm part has a `concept` field and `refs`, so a conversation can list all scenarios for a concept (e.g. "show me everything on overfitting") straight from `px-data`.
 
@@ -155,6 +169,14 @@ _Pending: upload homework prompts and class solutions. Record here (paraphrased)
    - Carry existing progress over by question ID.
    - **Concept browser:** pick a concept, see every scenario and flashcard on it, and practice just those.
    - **Per-option partial credit** for select-all questions, like the real exam.
+   - **Status:** the bank itself is done (`bank/` + `tools/save_bank.py`, 2026-11-02). The engine below is **on hold**: build it only when I ask. Until then, practice sets are made on request from the bank ("make me a 25-question Midterm 2 practice weighted to my weak spots").
+   - **Build brief (for when I ask; agreed 2026-11-02):**
+     - **Never lose a question.** Already handled by `bank/` and `tools/save_bank.py`. The engine should read from `bank/` (retiring a question = `hidden: true`, never deleting) and keep progress keys unchanged (storage rule in §2).
+     - **Don't make me answer everything.** The bank is the store; practice is a selection. Default view = "Next 10" (weakness-first) and "Practice midterm" (25 Qs from whole scenarios, frozen once generated, 95-min timer). The full list stays reachable under "Browse bank" for review only.
+     - **Priority score per scenario:** weakness (concept miss rate from my saved answers and flashcard misses; never-seen concepts start at medium) × exam weight (real-exam patterns §4, discussion §5, homework §6) × staleness (days since last seen). Mastered questions drop out unless I ask. Coverage rule: every module in the exam's range appears at least once per practice midterm.
+     - **Match the real format** (§4): 25 Qs, type mix not all select-all, shared info blocks feeding 2+ questions, at least a few figure/table blocks, per-option partial credit for select-all. Hold back about 25% of scenarios as never-shown for a final mock.
+     - **Show me why:** each selected scenario shows a one-line reason ("weak: AIC direction · exam pattern · not seen 9 days"), and the Progress tab shows a concept heat map (concept × miss rate).
+     - **Current gaps to note in the bank's coverage grid:** practice is select-all-heavy (Midterm 1 59/10/8, Midterm 2 57/21/9 select-all/single/match), most scenarios have 1–3 parts (real blocks feed 2–9), only 15 of 61 scenarios have a figure or table, and M11–M13 have no single-best-answer questions. Fill these in item 2, not in the engine build.
 2. **Tag and fill:** tag existing questions; build a coverage grid of concepts against exam patterns; write questions only where there are gaps; one real-world setting per scenario; Midterm 1, then Midterm 2.
 3. **Final bank:** cross-module scenarios, plus extension parts appended to existing scenarios (e.g. a Q-Q plot or distribution question on a time-series scenario). Midterms show only their own modules' parts; the final shows the full chain.
 
@@ -166,7 +188,7 @@ _Pending: upload homework prompts and class solutions. Record here (paraphrased)
 - **Large uploads:** a module can arrive in parts; build slide summaries for part 1 while waiting, then do everything else once all parts are in.
 - **Questions:** write the exam generator in Python (figures as SVG computed from a formula, so numbers and positions are exact), then check the rendered figure in a headless browser screenshot.
 - **Test:** headless Chromium (Playwright is preinstalled) loads both pages, opens `#slidetest=M15%20L4`, the new guide and Model Map cards, and checks for JS errors.
-- **Midterm assignment:** Module 15 was added to Midterm 2 (assumption: Midterm 2 covers Modules 11+). If the syllabus says otherwise, move it with a new exam entry rather than deleting.
+- **Midterm assignment:** every module from 11 on goes to Midterm 2 (`"exam": {"id": "mid2", "sub": "Modules 11–N"}` in the manifest). Modules 1–10 stay in Midterm 1. The final draws from both.
 
 ## 10. Keeping cost low
 
