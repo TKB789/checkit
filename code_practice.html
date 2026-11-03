@@ -56,7 +56,7 @@ ol.tmpl{margin:6px 0 0;padding-left:1.3em}ol.tmpl li{margin:3px 0}
 </style>
 <style>/*GRID-bg*/:root{--gpaper:#F7F9FC;--gline:#E1E8F3;--bg:#F7F9FC}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}}:root[data-theme="dark"]{--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}body{background-color:var(--gpaper);background-image:linear-gradient(var(--gline) 1px,transparent 1px),linear-gradient(90deg,var(--gline) 1px,transparent 1px);background-size:24px 24px;min-height:100vh}</style><script>/*EMBED*/
 (function(){
-  const PAGE={'slides.html':'ss','practice1.html':'sg','code_practice.html':'code'}[location.pathname.split('/').pop()];
+  const PAGE={'slides.html':'ss','study_group.html':'sg','code_practice.html':'code'}[location.pathname.split('/').pop()];
   const q=location.search;
   if(window.parent===window){ if(PAGE&&!/[?&]standalone=1/.test(q)) location.replace('index.html#'+PAGE+(location.hash.length>1?'-'+location.hash.slice(1):'')); return; }
   if(!/[?&]embed=1/.test(q)) return;
@@ -76,7 +76,7 @@ ol.tmpl{margin:6px 0 0;padding-left:1.3em}ol.tmpl li{margin:3px 0}
 </head>
 <body>
 <div class="wrap">
-  <nav class="sitebar"><a href="index.html">← ISYE 6501 study site</a><span>·</span><a href="slides.html">Slide summaries</a><span>·</span><a href="practice1.html">Study group</a></nav>
+  <nav class="sitebar"><a href="index.html">← ISYE 6501 study site</a><span>·</span><a href="slides.html">Slide summaries</a><span>·</span><a href="study_group.html">Study group</a></nav>
   <div class="top"><div><h1>R Code Practice</h1><p class="sub">Plan the code before you write it: order the steps, pick the right function, assemble the lines, then write and run it yourself.</p><p class="aidisc">Made by AI as a study aid for Introduction to Analytics Modeling. Verify for accuracy.</p></div><button id="theme" aria-label="Switch light or dark mode"></button></div>
   <div id="view"></div>
 </div>
