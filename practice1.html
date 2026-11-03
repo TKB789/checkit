@@ -92,12 +92,31 @@ a.card.resource{display:block;text-decoration:none;color:var(--ink);border-color
 .fb .pts{display:inline-block;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 10px;margin-right:6px;font-size:.9rem;color:var(--ink)}
 .saved{color:var(--mute);font-size:.82rem;margin-top:4px}
 </style>
-<style>.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style><style>.newb{display:inline-block;font:700 .68rem/1.4 system-ui,sans-serif;letter-spacing:.05em;background:#d9480f;color:#fff!important;text-decoration:none!important;border-radius:999px;padding:2px 8px;margin-left:8px;vertical-align:middle}</style><style>/*GRID-bg*/:root{--gpaper:#F7F9FC;--gline:#E1E8F3;--bg:#F7F9FC}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}}:root[data-theme="dark"]{--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}body{background-color:var(--gpaper);background-image:linear-gradient(var(--gline) 1px,transparent 1px),linear-gradient(90deg,var(--gline) 1px,transparent 1px);background-size:24px 24px;min-height:100vh}</style></head>
+<style>.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style><style>.newb{display:inline-block;font:700 .68rem/1.4 system-ui,sans-serif;letter-spacing:.05em;background:#d9480f;color:#fff!important;text-decoration:none!important;border-radius:999px;padding:2px 8px;margin-left:8px;vertical-align:middle}</style><style>/*GRID-bg*/:root{--gpaper:#F7F9FC;--gline:#E1E8F3;--bg:#F7F9FC}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}}:root[data-theme="dark"]{--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}body{background-color:var(--gpaper);background-image:linear-gradient(var(--gline) 1px,transparent 1px),linear-gradient(90deg,var(--gline) 1px,transparent 1px);background-size:24px 24px;min-height:100vh}</style><script>/*EMBED*/
+(function(){
+  const PAGE={'slides.html':'ss','practice1.html':'sg','code_practice.html':'code'}[location.pathname.split('/').pop()];
+  const q=location.search;
+  if(window.parent===window){ if(PAGE&&!/[?&]standalone=1/.test(q)) location.replace('index.html#'+PAGE+(location.hash.length>1?'-'+location.hash.slice(1):'')); return; }
+  if(!/[?&]embed=1/.test(q)) return;
+  const R=document.documentElement; R.classList.add('embed'); R.removeAttribute('data-theme');
+  const post=m=>{ try{ parent.postMessage(m,'*'); }catch(e){} };
+  window.scrollTo=function(x,y){ if(x&&typeof x==='object') y=x.top; post({ssTop:+y||0}); };
+  addEventListener('message',e=>{ if(e.source!==parent) return; const d=e.data||{}; if(d.ssTheme===undefined) return;
+    if(d.ssTheme) R.setAttribute('data-theme',d.ssTheme); else R.removeAttribute('data-theme'); });
+  const size=()=>{ const w=document.querySelector('.wrap'); if(w) post({ssH:Math.ceil(w.getBoundingClientRect().height)+24}); };
+  addEventListener('DOMContentLoaded',()=>{ const w=document.querySelector('.wrap'); if(w&&window.ResizeObserver) new ResizeObserver(size).observe(w); size(); post({ssReady:1}); });
+  addEventListener('load',size);
+  document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const h=a.getAttribute('href');
+    if(!h||h.charAt(0)==='#'||a.hasAttribute('download')) return; e.preventDefault(); try{ top.location.href=new URL(h,location.href).href; }catch(x){ location.href=h; } },true);
+})();
+</script>
+<style>/*EMBED-css*/html.embed .sitebar,html.embed .top,html.embed .aidisc{display:none!important}html.embed body{background:transparent!important;min-height:0!important}html.embed .wrap{padding:0 0 12px!important;max-width:none!important}</style>
+</head>
 <body>
 <div class="wrap">
   <nav class="sitebar"><a href="index.html">← ISYE 6501 study site</a><span>·</span><a href="qq_explorer.html">Q-Q Plot Explorer<span class="newb">NEW</span></a><span>·</span><a href="code_practice.html">R practice<span class="newb">NEW</span></a></nav>
   <div class="top"><h1>Study Group Practice</h1><button id="theme" aria-label="Switch light or dark mode"></button></div>
-  <p class="aidisc">Made by AI as a study aid for Introduction to Analytics Modeling. Verify information for better understanding.</p>
+  <p class="aidisc">Made by AI as a study aid for Introduction to Analytics Modeling. Verify for accuracy.</p>
   <p class="sub" id="sub"></p>
   <div class="tabs"><button data-t="p1" class="on">Practice 1</button><button data-t="p2">Practice 2</button><button data-t="p3">Practice 3</button><button data-t="notes">Notes<span id="nCount" class="tabscore" style="color:var(--mute)"></span></button></div>
   <div id="v-p1"></div>
@@ -194,7 +213,7 @@ function matchHTML(p,att,a){
 function renderNotes(){
   const F=renderNotes.f||'all', list=DB1.notes.filter(n=>F==='all'||(F==='own'?!n.pid:(n.practice||'Practice 1')===F));
   document.getElementById('nCount').textContent=DB1.notes.length?`(${DB1.notes.length})`:'';
-  let h=`<div class="card nb"><b>Overall notebook</b><p class="hint" style="margin:2px 0 8px">One running page of notes for the whole topic, across all practices. Saved automatically in this browser. To see these together with your Midterm 1 and 2 notes, or to back them up, open <a href="index.html#allnotes">All notes on the main site ↗</a>.</p><textarea id="notebook" placeholder="Big ideas, formulas, things the group discussed…">${esc(DB1.notebook)}</textarea><div class="saved" id="nbSaved"></div></div>`;
+  let h=`<div class="card nb"><b>Overall notebook</b><p class="hint" style="margin:2px 0 8px">One running page of notes for the whole topic, across all practices. Saved automatically in this browser. To see these together with your Midterm 1 and 2 notes, or to back them up, open <a href="index.html#notes">All notes on the main site ↗</a>.</p><textarea id="notebook" placeholder="Big ideas, formulas, things the group discussed…">${esc(DB1.notebook)}</textarea><div class="saved" id="nbSaved"></div></div>`;
   h+=`<div class="card notes"><div class="filters">${['all','Practice 1','Practice 2','Practice 3','own'].map(f=>`<button data-filter="${f}" class="${F===f?'on':''}">${f==='all'?'All':f==='own'?'My own notes':f}</button>`).join('')}</div>`;
   if(!list.length) h+=`<p class="empty">No notes here yet. Missed questions are added automatically, and you can add any graded question with "Add to notes".</p>`;
   list.forEach(n=>{h+=`<div class="n"><h3>${esc(n.title||'My note')}</h3>${n.pid?`<div class="meta">${n.why==='missed'?'Missed':'Added'} · ${esc(n.practice||'Practice 1')}${n.sc?' · '+esc(n.sc):''} · ${n.q.replace(/<svg[\s\S]*?<\/svg>/g,'[plot]').replace(/<[^>]+>/g,'')}</div><div class="key"><b>Key idea:</b> ${n.key}</div><div style="margin-top:6px">${n.explain}</div>${refsOf(n).length?`<div class="refs">Lecture: ${esc(refList(refsOf(n)))}</div>`:''}`:''}<textarea data-mine="${n.id}" placeholder="Your own note (saved automatically)">${esc(n.mine||'')}</textarea><div class="row"><button data-del="${n.id}">Remove</button></div></div>`;});
