@@ -82,6 +82,8 @@ sub{font-size:.75em}
 .bar2{display:flex;height:12px;background:var(--chip);border-radius:9px;overflow:hidden;margin-bottom:8px}
 .bar2 .g{background:var(--ok)}.bar2 .r{background:var(--bad);opacity:.75}
 .tabscore{display:block;font-size:.8rem;font-weight:700;color:var(--accent)}
+.sitebar{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:.88rem;margin:0 0 10px;color:var(--mute)}.sitebar a{color:var(--accent);text-decoration:none;font-weight:600}.sitebar a:hover{text-decoration:underline}
+a.card.resource{display:block;text-decoration:none;color:var(--ink);border-color:var(--accent)}a.card.resource b{color:var(--accent);display:block;margin-bottom:2px}a.card.resource span{color:var(--mute);font-size:.92rem}
 .tabmeta{display:block;font-size:.75rem;font-weight:500;color:var(--mute)}
 .tabs button.on .tabmeta{color:var(--ink)}
 .tabmeta .sm{display:none}@media (max-width:480px){.tabmeta{font-size:.7rem;white-space:nowrap}.tabmeta .lg{display:none}.tabmeta .sm{display:inline}}
@@ -93,9 +95,9 @@ sub{font-size:.75em}
 </head>
 <body>
 <div class="wrap">
+  <nav class="sitebar"><a href="index.html">← ISYE 6501 study site</a><span>·</span><a href="qq_explorer.html">Q-Q Plot Explorer</a></nav>
   <div class="top"><h1>Study Group Practice</h1><button id="theme" aria-label="Switch light or dark mode"></button></div>
   <p class="sub" id="sub"></p>
-  <p class="sub" style="margin-top:-10px"><a href="qq_explorer.html" style="color:var(--accent)">📈 Q-Q Plot Explorer →</a> <span style="color:var(--mute)">see every distribution as a histogram and Q-Q plot, and practice guessing the shape</span></p>
   <div class="tabs"><button data-t="p1" class="on">Practice 1</button><button data-t="p2">Practice 2</button><button data-t="p3">Practice 3</button><button data-t="notes">Notes<span id="nCount" class="tabscore" style="color:var(--mute)"></span></button></div>
   <div id="v-p1"></div>
   <div id="v-p2" class="hidden"></div>
@@ -147,10 +149,11 @@ const maxPts=p=>p.type==='match'?p.items.length:1;
 const gotPts=(p,a)=>!a?0:p.type==='match'?p.items.filter((_,i)=>a.place[i]===p.answer[i]).length:(a.ok?1:0);
 function tally(k){const pr=PR[k],att=pr.cur();let got=0,max=0,ans=0;att.ids.forEach(id=>{const p=pr.byId(id),a=att.ans[id];max+=maxPts(p);if(a){got+=gotPts(p,a);ans+=maxPts(p);}});return {got,max,ans,att};}
 
+const EXTRA={p2:`<a class="card resource" href="qq_explorer.html"><b>📈 Q-Q Plot Explorer →</b><span>New to Q-Q plots? Start there: how they're built, every distribution as a histogram and Q-Q plot, what each shape means, and a guess-the-shape quiz.</span></a>`};
 function renderQuiz(k){
   const pr=PR[k],att=pr.cur(),ids=att.ids,done=ids.filter(id=>att.ans[id]).length,right=ids.filter(id=>att.ans[id]&&att.ans[id].ok).length;
   const T=tally(k),pct=T.max?Math.round(100*T.got/T.max):0;
-  let h=`<div class="card scorebox"><div class="big"><span class="num">${T.got}</span><span class="of">/ ${T.max} points</span><span class="pct">${T.ans?Math.round(100*T.got/T.ans)+'% of answered':''}</span></div><div class="bar2"><i class="g" style="width:${T.max?100*T.got/T.max:0}%"></i><i class="r" style="width:${T.max?100*(T.ans-T.got)/T.max:0}%"></i></div><div class="score"><b>Attempt ${att.n}${att.kind==='missed'?' · missed questions only':''}</b><span>${done} of ${ids.length} questions answered · ${pr.P.every(p=>p.type==='match')?'1 point per card':pr.P.some(p=>p.type==='match')?'1 point per drag-and-drop card or select-all question':'1 point per question'}</span></div></div>`;
+  let h=(EXTRA[k]||'')+`<div class="card scorebox"><div class="big"><span class="num">${T.got}</span><span class="of">/ ${T.max} points</span><span class="pct">${T.ans?Math.round(100*T.got/T.ans)+'% of answered':''}</span></div><div class="bar2"><i class="g" style="width:${T.max?100*T.got/T.max:0}%"></i><i class="r" style="width:${T.max?100*(T.ans-T.got)/T.max:0}%"></i></div><div class="score"><b>Attempt ${att.n}${att.kind==='missed'?' · missed questions only':''}</b><span>${done} of ${ids.length} questions answered · ${pr.P.every(p=>p.type==='match')?'1 point per card':pr.P.some(p=>p.type==='match')?'1 point per drag-and-drop card or select-all question':'1 point per question'}</span></div></div>`;
   let lastSi=-1;
   ids.forEach((id,qi)=>{const p=pr.byId(id),a=att.ans[id];
     if(p.si!==lastSi){lastSi=p.si;const sc=pr.SCS[p.si];h+=`<div class="card setup"><div class="qn">Scenario ${p.si+1} of ${pr.SCS.length}</div><h2>${esc(sc.title)}</h2><div>${sc.setup}</div></div>`;}
