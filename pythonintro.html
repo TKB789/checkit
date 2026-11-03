@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CS50P Practice Tracker</title>
+<style>
+  /* Same shell as the CSE 6040 tracker (header, tab bar, cards) so both pages read the same way. Crimson accent marks this one as CS50. */
+  :root {
+    --bg:#f6f6f8; --card:#ffffff; --ink:#1f2128; --muted:#686b76; --line:#e4e4ea;
+    --accent:#a51c30; --accent-soft:#fbe9ec; --accent-ink:#7d1424;
+    --head:#2a0d13; --head-ink:#ffffff; --head-sub:#d9aeb5;
+    --ok:#15803d; --ok-soft:#dcfce7; --bad:#b91c1c; --bad-soft:#fee2e2;
+    --warn:#92400e; --warn-soft:#fef3c7;
+    --code-bg:#14161c; --code-ink:#e6e6ea; --gutter:#6d717e; --inline-code:#efeff3;
+    --tag-bg:#f1e7e9; --tag-ink:#7d1424;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#121317; --card:#1b1c22; --ink:#e8e8ec; --muted:#9a9cab; --line:#2c2e37;
+    --accent:#e0566a; --accent-soft:#3a1a20; --accent-ink:#f3a5b0;
+    --head:#1d0a0e; --head-ink:#ffffff; --head-sub:#c48a94;
+    --ok:#4ade80; --ok-soft:#173322; --bad:#f87171; --bad-soft:#3b1818;
+    --warn:#fbbf24; --warn-soft:#3a2a10;
+    --code-bg:#0b0c10; --code-ink:#e6e6ea; --gutter:#5a5d69; --inline-code:#262832;
+    --tag-bg:#33191e; --tag-ink:#f3a5b0; color-scheme:dark; } }
+  :root[data-theme="dark"] {
+    --bg:#121317; --card:#1b1c22; --ink:#e8e8ec; --muted:#9a9cab; --line:#2c2e37;
+    --accent:#e0566a; --accent-soft:#3a1a20; --accent-ink:#f3a5b0;
+    --head:#1d0a0e; --head-ink:#ffffff; --head-sub:#c48a94;
+    --ok:#4ade80; --ok-soft:#173322; --bad:#f87171; --bad-soft:#3b1818;
+    --warn:#fbbf24; --warn-soft:#3a2a10;
+    --code-bg:#0b0c10; --code-ink:#e6e6ea; --gutter:#5a5d69; --inline-code:#262832;
+    --tag-bg:#33191e; --tag-ink:#f3a5b0; color-scheme:dark; }
+
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; font-size:15px; }
+  header { background:var(--head); color:var(--head-ink); padding-block:18px; padding-left:max(24px, env(safe-area-inset-left,0px)); padding-right:max(24px, env(safe-area-inset-right,0px)); }
+  header h1 { margin:0; font-size:20px; }
+  header p { margin:4px 0 0; color:var(--head-sub); font-size:13px; }
+  nav { display:flex; gap:2px; background:var(--card); border-bottom:1px solid var(--line); padding:0 max(12px, env(safe-area-inset-right,0px)) 0 max(12px, env(safe-area-inset-left,0px)); position:sticky; top:0; z-index:5; overflow-x:auto; }
+  nav button { border:none; background:none; padding:12px 14px; cursor:pointer; font-size:14px; color:var(--muted); border-bottom:2px solid transparent; white-space:nowrap; }
+  nav button.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+  main { max-width:980px; margin:0 auto; padding-block:22px 60px; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+  section.tab { display:none; }
+  section.tab.active { display:block; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin-bottom:16px; min-width:0; }
+  h2 { font-size:19px; margin:0 0 10px; text-wrap:balance; }
+  h3 { font-size:16px; margin:20px 0 6px; }
+  .muted { color:var(--muted); font-size:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; }
+  .stat .big { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .bar { height:8px; background:var(--line); border-radius:6px; overflow:hidden; margin-top:8px; }
+  .bar > div { height:100%; background:var(--accent); width:0%; transition:width .3s; }
+  label.item { display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--line); cursor:pointer; }
+  label.item:last-child { border-bottom:none; }
+  label.item input { margin-top:5px; transform:scale(1.15); accent-color:var(--accent); }
+  .tag { display:inline-block; font-size:12px; background:var(--tag-bg); color:var(--tag-ink); border-radius:999px; padding:1px 9px; margin-right:6px; font-variant-numeric:tabular-nums; }
+  pre { background:var(--code-bg); color:var(--code-ink); padding:12px 14px; border-radius:8px; overflow-x:auto; font-size:13px; margin:8px 0; }
+  code, .mono { font-family:ui-monospace,Menlo,Consolas,monospace; }
+  p code, li code, td code, .muted code { background:var(--inline-code); padding:1px 5px; border-radius:4px; font-size:13px; }
+  a { color:var(--accent); }
+  ul, ol { padding-left:22px; }
+  li { margin:3px 0; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+  button { font:inherit; }
+  button.run { background:var(--accent); color:#fff; border:none; border-radius:7px; padding:8px 16px; cursor:pointer; font-size:14px; font-weight:600; }
+  button.run:disabled { opacity:.5; cursor:wait; }
+  button.ghost, label.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:7px; padding:6px 12px; cursor:pointer; font-size:13px; }
+  button.ghost.danger { color:var(--bad); border-color:var(--bad); }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .pill { font-size:12px; border-radius:999px; padding:2px 10px; background:var(--line); color:var(--ink); white-space:nowrap; }
+  .pill.done { background:var(--ok-soft); color:var(--ok); }
+  .pill.ext { background:var(--warn-soft); color:var(--warn); }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:5px 12px; cursor:pointer; font-size:13px; font-variant-numeric:tabular-nums; }
+  .chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .chip .ct { opacity:.75; margin-left:4px; }
+
+  /* editor */
+  .ed { display:flex; border-radius:8px; overflow:hidden; border:1px solid var(--line); background:var(--code-bg); }
+  .ed .gut { margin:0; padding:12px 8px 12px 10px; border-radius:0; background:transparent; color:var(--gutter); text-align:right; user-select:none; overflow:hidden; font-size:13px; line-height:1.5; font-family:ui-monospace,Menlo,Consolas,monospace; min-width:2.6em; }
+  .ed textarea { flex:1; min-width:0; min-height:180px; border:none; outline:none; resize:vertical; background:transparent; color:var(--code-ink); padding:12px 12px 12px 4px; font-size:13px; line-height:1.5; font-family:ui-monospace,Menlo,Consolas,monospace; white-space:pre; overflow:auto; tab-size:4; }
+  .ed.small textarea { min-height:60px; }
+  .ed textarea:focus-visible { outline:none; }
+  .ed:focus-within { outline:2px solid var(--accent); outline-offset:1px; }
+  textarea.plain, input.plain { width:100%; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; padding:8px 10px; border:1px solid var(--line); border-radius:7px; background:var(--card); color:var(--ink); }
+  textarea.plain { min-height:64px; resize:vertical; }
+  .fieldlabel { font-size:13px; font-weight:600; margin:12px 0 4px; display:block; }
+  .out { white-space:pre-wrap; background:var(--inline-code); border-radius:8px; padding:10px 12px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; min-height:38px; margin-top:10px; overflow-x:auto; }
+  .results { margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+  .res { border-radius:8px; padding:8px 10px; font-size:13.5px; }
+  .res.ok { background:var(--ok-soft); }
+  .res.bad { background:var(--bad-soft); }
+  .res .lbl { font-weight:600; }
+  .res.ok .lbl::before { content:"✓ "; color:var(--ok); }
+  .res.bad .lbl::before { content:"✗ "; color:var(--bad); }
+  .res pre { margin:6px 0 0; font-size:12.5px; background:var(--card); color:var(--ink); border:1px solid var(--line); }
+  .explain { margin-top:8px; font-size:13.5px; background:var(--warn-soft); color:var(--ink); border-left:3px solid var(--warn); border-radius:6px; padding:8px 10px; }
+  .explain b { color:var(--warn); }
+  .summary-line { font-weight:600; margin-top:10px; }
+  .summary-line.ok { color:var(--ok); }
+  .summary-line.bad { color:var(--bad); }
+  .nudge { margin-top:8px; font-size:14px; background:var(--accent-soft); border-radius:6px; padding:8px 10px; }
+  .prob-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+  .prob-head h2 { margin:0; }
+  .prob-head .meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:13px; }
+  .prob-head label { display:flex; gap:5px; align-items:center; cursor:pointer; color:var(--muted); }
+  .prompt { margin:10px 0; }
+  .prompt p { margin:6px 0; }
+  details.tests { margin-top:10px; font-size:14px; }
+  details.tests summary { cursor:pointer; color:var(--muted); }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .tablewrap { overflow-x:auto; }
+  .snip { margin:10px 0 14px; }
+  .snip .row { margin-top:6px; }
+  .snip .out { margin-top:6px; }
+  .quiz { border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:12px 0; }
+  .quiz .opts { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .quiz .opt { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:7px; padding:6px 12px; cursor:pointer; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; }
+  .quiz .opt.right { background:var(--ok-soft); border-color:var(--ok); }
+  .quiz .opt.wrong { background:var(--bad-soft); border-color:var(--bad); }
+  .quiz .why { margin-top:8px; font-size:14px; }
+  .week-card h2 { display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; }
+  .probrow { display:flex; justify-content:space-between; gap:10px; align-items:center; padding:7px 0; border-bottom:1px solid var(--line); font-size:14px; flex-wrap:wrap; }
+  .probrow:last-child { border-bottom:none; }
+  .probrow .r { display:flex; gap:8px; align-items:center; }
+  .probrow label { display:flex; gap:5px; align-items:center; cursor:pointer; color:var(--muted); font-size:13px; }
+  .steps { counter-reset:s; list-style:none; padding:0; }
+  .steps li { counter-increment:s; position:relative; padding-left:34px; margin:10px 0; }
+  .steps li::before { content:counter(s); position:absolute; left:0; top:0; width:24px; height:24px; border-radius:50%; background:var(--accent-soft); color:var(--accent-ink); font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  textarea.journal { width:100%; min-height:260px; padding:12px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:inherit; background:var(--card); color:var(--ink); }
+  .themebtn { float:right; background:transparent; border:1px solid var(--head-sub); color:var(--head-ink); border-radius:7px; padding:4px 10px; cursor:pointer; font-size:12px; }
+  .confirm { display:inline-flex; gap:6px; align-items:center; font-size:13px; }
+  @media (max-width:520px){ .card { padding:14px; } header h1 { font-size:18px; } }
+  @media (prefers-reduced-motion: reduce){ .bar > div { transition:none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="themebtn" id="theme-btn" type="button">Theme: auto</button>
+  <h1>CS50P · Introduction to Programming with Python</h1>
+  <p>Harvard CS50 · 2026 deadline: Dec 31, 2026 (23:59 UTC) · Progress and code save automatically in this browser</p>
+</header>
+
+<nav>
+  <button class="active" data-tab="dash">Dashboard</button>
+  <button data-tab="course">Course</button>
+  <button data-tab="learn">Learn</button>
+  <button data-tab="practice">Practice</button>
+  <button data-tab="resources">Resources</button>
+  <button data-tab="notes">Notes</button>
+</nav>
+
+<main>
+
+<!-- ============ DASHBOARD ============ -->
+<section class="tab active" id="tab-dash">
+  <div class="grid">
+    <div class="stat"><div class="muted">Days until Dec 31 deadline</div><div class="big" id="days-left">–</div></div>
+    <div class="stat"><div class="muted">Lectures watched</div><div class="big" id="lec-count">0 / 10</div><div class="bar"><div id="lec-bar"></div></div></div>
+    <div class="stat"><div class="muted">Practice problems passed here</div><div class="big" id="pass-count">0 / 0</div><div class="bar"><div id="pass-bar"></div></div></div>
+    <div class="stat"><div class="muted">Submitted on cs50.dev</div><div class="big" id="sub-count">0 / 0</div><div class="bar"><div id="sub-bar"></div></div></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>Next up</h2>
+    <div id="next-up" class="muted">Loading…</div>
+  </div>
+
+  <div class="card">
+    <h2>How to study each week</h2>
+    <ol class="steps">
+      <li><b>Watch the lecture</b> (Course tab has the link). Pause and type along with the examples instead of only watching.</li>
+      <li><b>Learn tab:</b> run and edit every example, then answer the "Check yourself" questions without running code first.</li>
+      <li><b>Practice tab:</b> write each problem yourself. Use <b>Try it</b> to type your own inputs, then <b>Run checks</b>. Open a nudge only after 15 minutes stuck.</li>
+      <li><b>Submit on cs50.dev:</b> copy your code into the matching file, run <code>check50</code>, then <code>submit50</code>. The exact commands are on each official problem page. Tick <b>Submitted</b> here.</li>
+      <li><b>Notes tab:</b> write two lines on what confused you. Re-read them before the next week.</li>
+    </ol>
+    <p class="muted">The checks on this page are my own and are close to CS50's, but only <code>check50</code> and <code>submit50</code> count toward your certificate.</p>
+  </div>
+
+  <div class="card">
+    <h2>Pacing plan to finish by Dec 31</h2>
+    <p class="muted">About 6–8 hours a week. Lighter weeks line up with your ISYE 6501 Midterm 2 (closes Nov 22) and final (closes Dec 13). If you fall behind, keep going: the official FAQ explains what happens to unfinished work after the deadline.</p>
+    <div id="plan"></div>
+  </div>
+
+  <div class="card">
+    <h2>Backup and transfer</h2>
+    <p class="muted">Progress and your code live in this browser only. Export before clearing browser data or switching computers.</p>
+    <div class="row">
+      <button class="ghost" id="export-btn" type="button">Export progress</button>
+      <label class="ghost">Import progress<input type="file" id="import-file" accept="application/json" hidden></label>
+      <span id="reset-wrap"><button class="ghost danger" id="reset-btn" type="button">Reset everything</button></span>
+      <span class="muted" id="backup-msg"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COURSE ============ -->
+<section class="tab" id="tab-course">
+  <div class="card">
+    <h2>Getting set up (one time)</h2>
+    <p class="muted">From the Problem Set 0 page. You don't need to install Python on your computer for submitting; cs50.dev is VS Code in the browser.</p>
+    <ol class="steps">
+      <li>Submit the short form linked on <a href="https://cs50.harvard.edu/python/psets/0/" target="_blank" rel="noopener">Problem Set 0</a>.</li>
+      <li>Follow the link there, log in with GitHub, authorize CS50, tick the box that gives staff access to your submissions, and click <b>Join course</b>.</li>
+      <li>Log in to <a href="https://cs50.dev" target="_blank" rel="noopener">cs50.dev</a>. Close any Welcome tabs.</li>
+      <li>In its terminal, run <code>update50</code>. Click <b>Rebuild now</b> if asked.</li>
+      <li>For each problem: <code>mkdir</code> and <code>cd</code> into a folder named as the problem page says, create the file with <code>code name.py</code>, paste your code, then run the <code>check50</code> and <code>submit50</code> commands from that page.</li>
+      <li>Check your scores at <a href="https://cs50.me/cs50p" target="_blank" rel="noopener">cs50.me/cs50p</a>.</li>
+    </ol>
+    <p class="muted"><b>Academic honesty:</b> CS50 allows its own AI helper (the CS50 Duck at <a href="https://cs50.ai" target="_blank" rel="noopener">cs50.ai</a>) but not other AI tools for writing pset code. The nudges on this page point to concepts and never give code. Read the policy linked in Resources.</p>
+  </div>
+  <div id="course-weeks"></div>
+</section>
+
+<!-- ============ LEARN ============ -->
+<section class="tab" id="tab-learn">
+  <div class="card">
+    <div class="prob-head"><h2 style="margin:0">Learn</h2><span id="py-status-learn" class="pill">Python not loaded yet</span></div>
+    <p class="muted" style="margin-bottom:10px">Every example below is editable and runs real Python. If an example uses <code>input()</code>, type answers in its Input box, one per line.</p>
+    <div class="chips" id="learn-chips"></div>
+  </div>
+  <div id="learn-body"></div>
+</section>
+
+<!-- ============ PRACTICE ============ -->
+<section class="tab" id="tab-practice">
+  <div class="card">
+    <div class="prob-head"><h2 style="margin:0">Practice</h2><span id="py-status" class="pill">Python not loaded yet</span></div>
+    <p class="muted" style="margin-bottom:10px">Real Python 3.12 in your browser. The first load downloads about 10 MB. Your code saves as you type. <b>Tab</b> indents, <b>Shift+Tab</b> un-indents, <b>Ctrl+Enter</b> (or ⌘+Enter) runs checks.</p>
+    <div class="chips" id="prac-chips"></div>
+  </div>
+  <div id="prac-body"></div>
+
+  <div class="card">
+    <h2>Free scratchpad</h2>
+    <p class="muted">Try anything here. Standard library only (no <code>pip</code> packages).</p>
+    <div id="scratch-host"></div>
+  </div>
+</section>
+
+<!-- ============ RESOURCES ============ -->
+<section class="tab" id="tab-resources">
+  <div class="card">
+    <h2>Official course links</h2>
+    <ul>
+      <li><a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P home</a>. Lectures, notes, shorts, and problem sets.</li>
+      <li><a href="https://cs50.harvard.edu/python/psets/" target="_blank" rel="noopener">Problem sets</a>. Full specs with the exact <code>check50</code> and <code>submit50</code> commands.</li>
+      <li><a href="https://cs50.dev" target="_blank" rel="noopener">cs50.dev</a>. Where you write and submit your final code.</li>
+      <li><a href="https://cs50.ai" target="_blank" rel="noopener">CS50 Duck (cs50.ai)</a>. The AI tutor CS50 allows. Ask it to explain errors and concepts.</li>
+      <li><a href="https://cs50.me/cs50p" target="_blank" rel="noopener">cs50.me/cs50p</a>. Your submission scores and certificate.</li>
+      <li><a href="https://cs50.harvard.edu/python/honesty/" target="_blank" rel="noopener">Academic honesty policy</a>. Read it once before Problem Set 0.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>For a complete beginner</h2>
+    <ul>
+      <li><a href="https://pythontutor.com" target="_blank" rel="noopener">Python Tutor</a>. Paste a small program and step through it line by line. The single best tool for understanding loops and functions.</li>
+      <li><a href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener">The official Python tutorial</a>. Chapters 3–5 match Weeks 0–2.</li>
+      <li><a href="https://automatetheboringstuff.com/" target="_blank" rel="noopener">Automate the Boring Stuff with Python</a>. Free online book. Chapters on regex and files match Weeks 6–7.</li>
+      <li><a href="https://docs.python.org/3/library/stdtypes.html#string-methods" target="_blank" rel="noopener">String methods reference</a>. You'll use this page in almost every problem set.</li>
+      <li><a href="https://regex101.com/" target="_blank" rel="noopener">regex101</a>. Test regular expressions live. Pick the Python flavor.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Libraries used in Problem Sets 4–8 (run them on cs50.dev)</h2>
+    <p class="muted">This page only has Python's standard library, so the problems that need these are marked "cs50.dev only".</p>
+    <ul>
+      <li><code>emoji</code>, <code>pyfiglet</code>, <code>inflect</code>, <code>requests</code> (Problem Set 4, and inflect again in 8)</li>
+      <li><code>tabulate</code>, <code>Pillow</code> (Problem Set 6)</li>
+      <li><code>validators</code> (Problem Set 7)</li>
+      <li><code>fpdf2</code> (Problem Set 8)</li>
+    </ul>
+    <p class="muted">Install one on cs50.dev with <code>pip install name</code>, and read its documentation on pypi.org.</p>
+  </div>
+</section>
+
+<!-- ============ NOTES ============ -->
+<section class="tab" id="tab-notes">
+  <div class="card">
+    <h2>Study journal</h2>
+    <p class="muted">What clicked, what didn't, and errors you hit (and what fixed them). Saved automatically.</p>
+    <textarea class="journal" id="journal" placeholder="Week 0: I kept getting TypeError because input() returns a string…"></textarea>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= PYTHON HARNESS (runs inside Pyodide) ================= -->
+<script type="text/plain" id="py-harness">
+import sys, io, os, json, types, random, builtins, traceback, shutil, math
+import re as _re
+
+FILENAME = "<your code>"
+
+class TookTooLong(BaseException):
+    pass
+
+class _Raises:
+    def __init__(self, exc):
+        self.exc = exc
+    def __enter__(self):
+        return self
+    def __exit__(self, t, v, tb):
+        if t is None:
+            raise AssertionError("DID NOT RAISE " + self.exc.__name__)
+        return issubclass(t, self.exc)
+
+_pytest = types.ModuleType("pytest")
+_pytest.raises = lambda exc, match=None: _Raises(exc)
+sys.modules["pytest"] = _pytest
+
+def _err_info(e):
+    info = {"type": type(e).__name__, "msg": str(e), "line": None}
+    if isinstance(e, SyntaxError) and e.filename == FILENAME:
+        info["line"] = e.lineno
+        info["msg"] = e.msg
+    else:
+        for fr in traceback.extract_tb(e.__traceback__):
+            if fr.filename == FILENAME:
+                info["line"] = fr.lineno
+    if isinstance(e, TookTooLong):
+        info["type"] = "TookTooLong"
+    return info
+
+def _make_tracer(limit):
+    counter = [0]
+    def local(frame, event, arg):
+        if event == "line":
+            counter[0] += 1
+            if counter[0] > limit:
+                raise TookTooLong("Stopped after too many steps")
+        return local
+    def glob(frame, event, arg):
+        if frame.f_code.co_filename == FILENAME:
+            return local
+        return None
+    return glob
+
+def _run(code, inputs=(), argv=None, files=None, echo=False, name="__main__", patches=None, limit=2000000):
+    out = io.StringIO()
+    q = list(inputs)
+    st = {"eof": 0}
+    def fake_input(prompt=""):
+        prompt = "" if prompt is None else str(prompt)
+        if echo:
+            out.write(prompt)
+        if not q:
+            st["eof"] += 1
+            if st["eof"] > 25:
+                raise TookTooLong("Kept asking for input after input ran out")
+            if echo:
+                out.write("\n")
+            raise EOFError("no more input")
+        v = q.pop(0)
+        if echo:
+            out.write(v + "\n")
+        return v
+    wd = "/tmp/cs50run"
+    shutil.rmtree(wd, ignore_errors=True)
+    os.makedirs(wd)
+    for fn, content in (files or {}).items():
+        with open(os.path.join(wd, fn), "w", newline="") as f:
+            f.write(content)
+    saved = (builtins.input, sys.argv, sys.stdout, sys.stderr, os.getcwd())
+    saved_rand = {}
+    res = {"exit": None, "exited": False, "error": None, "files": {}}
+    ns = {"__name__": name}
+    try:
+        builtins.input = fake_input
+        sys.argv = list(argv or ["program.py"])
+        sys.stdout = out
+        sys.stderr = out
+        os.chdir(wd)
+        for k, v in (patches or {}).items():
+            saved_rand[k] = getattr(random, k)
+            setattr(random, k, eval(v))
+        compiled = compile(code, FILENAME, "exec")
+        sys.settrace(_make_tracer(limit))
+        try:
+            exec(compiled, ns)
+        finally:
+            sys.settrace(None)
+    except SystemExit as e:
+        res["exited"] = True
+        if isinstance(e.code, str):
+            out.write(e.code + "\n")
+            res["exit"] = e.code
+        else:
+            res["exit"] = e.code
+    except BaseException as e:
+        res["error"] = _err_info(e)
+    finally:
+        builtins.input, sys.argv, sys.stdout, sys.stderr, cwd = saved
+        for k, v in saved_rand.items():
+            setattr(random, k, v)
+        try:
+            for fn in os.listdir(wd):
+                p = os.path.join(wd, fn)
+                if os.path.isfile(p) and os.path.getsize(p) < 200000:
+                    with open(p, newline="") as f:
+                        res["files"][fn] = f.read()
+        except Exception:
+            pass
+        os.chdir(cwd)
+    res["out"] = out.getvalue()
+    res["eof"] = st["eof"]
+    res["ns"] = ns
+    return res
+
+def _call(ns, setup, call, limit=2000000):
+    out = io.StringIO()
+    saved = (sys.stdout, builtins.input)
+    def no_input(prompt=""):
+        raise EOFError("input() was called inside a function test")
+    sys.stdout = out
+    builtins.input = no_input
+    sys.settrace(_make_tracer(limit))
+    try:
+        if setup:
+            exec(compile(setup, "<test>", "exec"), ns)
+        val = eval(compile(call, "<test>", "eval"), ns)
+        return {"ok": True, "val": val}
+    except BaseException as e:
+        return {"ok": False, "exc": e}
+    finally:
+        sys.settrace(None)
+        sys.stdout, builtins.input = saved
+
+def _norm(s):
+    lines = [l.rstrip() for l in s.replace("\r\n", "\n").replace("\r", "\n").split("\n")]
+    while lines and not lines[0]:
+        lines.pop(0)
+    while lines and not lines[-1]:
+        lines.pop()
+    return "\n".join(lines)
+
+def _show(s):
+    return s if s != "" else "(nothing printed)"
+
+def _io_label(t):
+    if t.get("label"):
+        return t["label"]
+    parts = []
+    if t.get("argv"):
+        parts.append("Command: python " + " ".join(t["argv"]))
+    if t.get("in"):
+        parts.append("Input: " + "  ⏎  ".join(repr(x) for x in t["in"]))
+    if "exit" in t:
+        parts.append("→ exits with an error message")
+    elif "out" in t:
+        parts.append("→ prints " + (repr(t["out"]) if t["out"] else "nothing"))
+    elif "last" in t:
+        parts.append("→ last line " + repr(t["last"]))
+    elif "ends" in t:
+        parts.append("→ last line ends with " + repr(t["ends"]))
+    elif "file" in t:
+        parts.append("→ writes " + t["file"])
+    return "  ".join(parts) if parts else "Runs without errors"
+
+def _grade_io(code, t):
+    r = _run(code, t.get("in", []), t.get("argv"), t.get("files"), patches=t.get("patch"))
+    got = _norm(r["out"])
+    last = got.split("\n")[-1] if got else ""
+    item = {"label": _io_label(t), "ok": False, "detail": "", "err": None}
+    if "exit" in t:
+        ok = r["exited"] and r["exit"] not in (0, None)
+        if not ok:
+            item["detail"] = "Expected the program to stop with sys.exit(\"some message\").\nGot: " + _show(got)
+            if r["error"]:
+                item["err"] = r["error"]
+        item["ok"] = bool(ok)
+        return item
+    if r["error"]:
+        item["err"] = r["error"]
+        item["detail"] = "Printed before the error:\n" + _show(got)
+        if r["error"]["type"] == "EOFError" and r["eof"]:
+            item["detail"] += "\n\nThe test ran out of inputs while your program was still asking for more."
+        return item
+    if r["exited"] and r["exit"] not in (0, None):
+        item["detail"] = "Your program called sys.exit with: " + str(r["exit"])
+        return item
+    if "out" in t:
+        exp = _norm(t["out"])
+        item["ok"] = got == exp
+        item["detail"] = "Expected:\n" + _show(exp) + "\nGot:\n" + _show(got)
+    elif "last" in t:
+        item["ok"] = last == t["last"]
+        item["detail"] = "Expected last line: " + repr(t["last"]) + "\nGot: " + (repr(last) if got else "(nothing printed)")
+    elif "ends" in t:
+        item["ok"] = last.endswith(t["ends"])
+        item["detail"] = "Expected the last line to end with: " + repr(t["ends"]) + "\nGot: " + (repr(last) if got else "(nothing printed)")
+    elif "file" in t:
+        content = r["files"].get(t["file"])
+        if content is None:
+            item["detail"] = "Your program didn't create " + t["file"] + "."
+        else:
+            exp = _norm(t["content"])
+            gotc = _norm(content)
+            item["ok"] = gotc == exp
+            item["detail"] = "Expected " + t["file"] + ":\n" + exp + "\nGot:\n" + _show(gotc)
+    if item["ok"] and t.get("has"):
+        if t["has"] not in got:
+            item["ok"] = False
+            item["detail"] = "Expected the output to include: " + repr(t["has"]) + "\nGot:\n" + _show(got)
+    return item
+
+def _same(a, b):
+    if isinstance(a, bool) or isinstance(b, bool):
+        return a is b or a == b and type(a) == type(b)
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9)
+    return a == b
+
+def _grade_fn(code, t, cache):
+    label = t.get("label") or (t["call"] + ("  → raises " + t["raises"] if "raises" in t else "  → " + repr(t.get("want"))))
+    if t.get("setup") and not t.get("label"):
+        label = t["setup"] + ";  " + label
+    item = {"label": label, "ok": False, "detail": "", "err": None}
+    if "student" not in cache:
+        cache["student"] = _run(code, name="student")
+    s = cache["student"]
+    if s["error"]:
+        item["err"] = s["error"]
+        if s["error"]["type"] == "EOFError":
+            item["detail"] = "Your code called input() as soon as it was loaded. Put the call to main() inside:\nif __name__ == \"__main__\":\n    main()"
+        else:
+            item["detail"] = "Your code crashed while loading, so the function couldn't be tested."
+        return item
+    if s["exited"]:
+        item["detail"] = "Your code called sys.exit while loading. Put the call to main() inside if __name__ == \"__main__\":"
+        return item
+    c = _call(s["ns"], t.get("setup"), t["call"])
+    if "raises" in t:
+        if c["ok"]:
+            item["detail"] = "Expected " + t["raises"] + " to be raised, but it returned " + repr(c["val"])
+        elif type(c["exc"]).__name__ == t["raises"] or any(k.__name__ == t["raises"] for k in type(c["exc"]).__mro__):
+            item["ok"] = True
+        else:
+            item["detail"] = "Expected " + t["raises"] + ", but got " + type(c["exc"]).__name__
+            item["err"] = _err_info(c["exc"])
+        return item
+    if not c["ok"]:
+        item["err"] = _err_info(c["exc"])
+        item["detail"] = "The call raised " + type(c["exc"]).__name__ + " instead of returning a value."
+        return item
+    item["ok"] = _same(c["val"], t.get("want"))
+    item["detail"] = "Expected: " + repr(t.get("want")) + "\nGot: " + repr(c["val"])
+    return item
+
+def _grade_unit(code, p):
+    mod = p["module"]
+    results = []
+    for im in p["impls"]:
+        m = types.ModuleType(mod)
+        exec(im["src"], m.__dict__)
+        sys.modules[mod] = m
+        r = _run(code, name="student")
+        item = {"label": im["label"], "ok": False, "detail": "", "err": None}
+        if r["error"]:
+            item["err"] = r["error"]
+            item["detail"] = "Your test file crashed when it was loaded."
+            results.append(item)
+            continue
+        tests = [(k, v) for k, v in r["ns"].items() if k.startswith("test_") and callable(v)]
+        if not tests:
+            item["detail"] = "No functions whose names start with test_ were found."
+            results.append(item)
+            break
+        failed = []
+        for k, v in tests:
+            c = _call(r["ns"], None, k + "()")
+            if not c["ok"]:
+                failed.append(k)
+        if im["correct"]:
+            item["ok"] = not failed
+            item["detail"] = "These tests failed even though the code is correct: " + ", ".join(failed) + "\nCheck the expected values in those asserts."
+        else:
+            item["ok"] = bool(failed)
+            item["detail"] = "All of your tests passed, so none of them noticed this bug. Add an assert that would catch it."
+        results.append(item)
+    sys.modules.pop(mod, None)
+    return results
+
+def grade(payload):
+    p = json.loads(payload)
+    code = p["code"]
+    if p.get("kind") == "unittest":
+        return json.dumps(_grade_unit(code, p))
+    cache = {}
+    results = []
+    for t in p["tests"]:
+        try:
+            if "call" in t:
+                results.append(_grade_fn(code, t, cache))
+            else:
+                results.append(_grade_io(code, t))
+        except BaseException as e:
+            results.append({"label": "Test harness", "ok": False, "detail": repr(e), "err": None})
+    return json.dumps(results)
+
+def tryit(payload):
+    p = json.loads(payload)
+    r = _run(p["code"], p.get("in", []), p.get("argv"), p.get("files"), echo=True)
+    return json.dumps({"out": r["out"], "error": r["error"], "exited": r["exited"], "exit": r["exit"] if isinstance(r["exit"], (int, str, type(None))) else str(r["exit"]), "eof": r["eof"], "files": r["files"] if p.get("showFiles") else {}})
+</script>
+
+<!-- ================= STARTER CODE ================= -->
+<script type="text/plain" class="src" data-id="faces">def convert(text):
+    # Replace :) and :( with emoji, then return the new text
+    ...
+
+
+def main():
+    ...
+
+
+main()
+</script>
+<script type="text/plain" class="src" data-id="tip">def main():
+    dollars = dollars_to_float(input("How much was the meal? "))
+    percent = percent_to_float(input("What percentage would you like to tip? "))
+    tip = dollars * percent
+    print(f"Leave ${tip:.2f}")
+
+
+def dollars_to_float(d):
+    # Turn a str like "$50.00" into the float 50.0
+    ...
+
+
+def percent_to_float(p):
+    # Turn a str like "15%" into the float 0.15
+    ...
+
+
+main()
+</script>
+<script type="text/plain" class="src" data-id="meal">def main():
+    ...
+
+
+def convert(time):
+    # "7:30" -> 7.5
+    ...
+
+
+if __name__ == "__main__":
+    main()
+</script>
+<script type="text/plain" class="src" data-id="plates">def main():
+    plate = input("Plate: ")
+    if is_valid(plate):
+        print("Valid")
+    else:
+        print("Invalid")
+
+
+def is_valid(s):
+    ...
+
+
+main()
+</script>
+<script type="text/plain" class="src" data-id="professor">import random
+
+
+def main():
+    ...
+
+
+def get_level():
+    ...
+
+
+def generate_integer(level):
+    ...
+
+
+if __name__ == "__main__":
+    main()
+</script>
+<script type="text/plain" class="src" data-id="test_twttr">from twttr import shorten
+
+
+def test_lowercase_vowels():
+    assert shorten("twitter") == "twttr"
+
+
+# Add more test_ functions. Think about what a buggy shorten() might get wrong.
+</script>
+<script type="text/plain" class="src" data-id="test_bank">from bank import value
+
+
+def test_hello():
+    assert value("hello") == 0
+
+
+# Add more test_ functions.
+</script>
+<script type="text/plain" class="src" data-id="test_plates">from plates import is_valid
+
+
+def test_valid_plate():
+    assert is_valid("CS50") == True
+
+
+# Add more test_ functions, one per rule.
+</script>
+<script type="text/plain" class="src" data-id="test_fuel">import pytest
+from fuel import convert, gauge
+
+
+def test_convert_basic():
+    assert convert("1/2") == 50
+
+
+def test_zero_division():
+    with pytest.raises(ZeroDivisionError):
+        convert("1/0")
+
+
+# Add more test_ functions for convert and gauge.
+</script>
+<script type="text/plain" class="src" data-id="lines">import sys
+
+
+def main():
+    ...
+
+
+if __name__ == "__main__":
+    main()
+</script>
+<script type="text/plain" class="src" data-id="scourgify">import csv
+import sys
+
+
+def main():
+    ...
+
+
+if __name__ == "__main__":
+    main()
+</script>
+<script type="text/plain" class="src" data-id="numb3rs">import re
+
+
+def main():
+    print(validate(input("IPv4 Address: ")))
+
+
+def validate(ip):
+    ...
+
+
+if __name__ == "__main__":
+    main()
+</script>
+<script type="text/plain" class="src" data-id="watch">import re
+
+
+def main():
+    print(parse(input("HTML: ")))
+
+
+def parse(s):
+    ...
+
+
+if __name__ == "__main__":
+    main()
+</script>
+<script type="text/plain" class="src" data-id="working">import re
+
+
+def main():
+    print(convert(input("Hours: ")))
+
+
+def convert(s):
+    ...
+
+
+if __name__ == "__main__":
+    main()
+</script>
+<script type="text/plain" class="src" data-id="um">import re
+
+
+def main():
+    print(count(input("Text: ")))
+
+
+def count(s):
+    ...
+
+
+if __name__ == "__main__":
+    main()
+</script>
+<script type="text/plain" class="src" data-id="jar">class Jar:
+    def __init__(self, capacity=12):
+        ...
+
+    def __str__(self):
+        ...
+
+    def deposit(self, n):
+        ...
+
+    def withdraw(self, n):
+        ...
+
+    @property
+    def capacity(self):
+        ...
+
+    @property
+    def size(self):
+        ...
+
+
+def main():
+    jar = Jar()
+    jar.deposit(3)
+    print(jar)
+
+
+if __name__ == "__main__":
+    main()
+</script>
+<script type="text/plain" class="src" data-id="scratch">names = ["Ada", "Grace", "Alan"]
+for name in sorted(names):
+    print(f"hello, {name}")
+</script>
+
+<!-- Reference implementations for Problem Set 5 (your tests run against these) -->
+<script type="text/plain" class="impl" data-id="twttr-ok">def shorten(word):
+    return "".join(c for c in word if c.lower() not in "aeiou")
+</script>
+<script type="text/plain" class="impl" data-id="twttr-b1">def shorten(word):
+    return "".join(c for c in word if c not in "aeiou")
+</script>
+<script type="text/plain" class="impl" data-id="twttr-b2">def shorten(word):
+    return "".join(c for c in word if c.lower() not in "aeiou" and not c.isdigit())
+</script>
+<script type="text/plain" class="impl" data-id="twttr-b3">def shorten(word):
+    return "".join(c for c in word if c.lower() not in "aeiou" and c.isalnum())
+</script>
+<script type="text/plain" class="impl" data-id="bank-ok">def value(greeting):
+    g = greeting.strip().lower()
+    if g.startswith("hello"):
+        return 0
+    if g.startswith("h"):
+        return 20
+    return 100
+</script>
+<script type="text/plain" class="impl" data-id="bank-b1">def value(greeting):
+    g = greeting.strip()
+    if g.startswith("hello"):
+        return 0
+    if g.startswith("h"):
+        return 20
+    return 100
+</script>
+<script type="text/plain" class="impl" data-id="bank-b2">def value(greeting):
+    g = greeting.strip().lower()
+    if g.startswith("hello"):
+        return 0
+    return 100
+</script>
+<script type="text/plain" class="impl" data-id="bank-b3">def value(greeting):
+    g = greeting.strip().lower()
+    if g.startswith("h"):
+        return 20
+    if g.startswith("hello"):
+        return 0
+    return 100
+</script>
+<script type="text/plain" class="impl" data-id="plates-ok">def is_valid(s):
+    if not 2 <= len(s) <= 6 or not s.isalnum():
+        return False
+    if not s[:2].isalpha():
+        return False
+    seen_digit = False
+    for c in s:
+        if c.isdigit():
+            if not seen_digit and c == "0":
+                return False
+            seen_digit = True
+        elif seen_digit:
+            return False
+    return True
+</script>
+<script type="text/plain" class="impl" data-id="plates-b1">def is_valid(s):
+    if not 2 <= len(s) <= 8 or not s.isalnum():
+        return False
+    if not s[:2].isalpha():
+        return False
+    seen_digit = False
+    for c in s:
+        if c.isdigit():
+            if not seen_digit and c == "0":
+                return False
+            seen_digit = True
+        elif seen_digit:
+            return False
+    return True
+</script>
+<script type="text/plain" class="impl" data-id="plates-b2">def is_valid(s):
+    if not 2 <= len(s) <= 6 or not s.isalnum():
+        return False
+    if not s[:2].isalpha():
+        return False
+    seen_digit = False
+    for c in s:
+        if c.isdigit():
+            if not seen_digit and c == "0":
+                return False
+            seen_digit = True
+    return True
+</script>
+<script type="text/plain" class="impl" data-id="plates-b3">def is_valid(s):
+    if not 2 <= len(s) <= 6 or not s.isalnum():
+        return False
+    if not s[:2].isalpha():
+        return False
+    seen_digit = False
+    for c in s:
+        if c.isdigit():
+            seen_digit = True
+        elif seen_digit:
+            return False
+    return True
+</script>
+<script type="text/plain" class="impl" data-id="plates-b4">def is_valid(s):
+    if not 2 <= len(s) <= 6:
+        return False
+    if not s[:2].isalpha():
+        return False
+    seen_digit = False
+    for c in s:
+        if c.isdigit():
+            if not seen_digit and c == "0":
+                return False
+            seen_digit = True
+        elif seen_digit:
+            return False
+    return True
+</script>
+<script type="text/plain" class="impl" data-id="plates-b5">def is_valid(s):
+    if not 2 <= len(s) <= 6 or not s.isalnum():
+        return False
+    if not s[0].isalpha():
+        return False
+    seen_digit = False
+    for c in s:
+        if c.isdigit():
+            if not seen_digit and c == "0":
+                return False
+            seen_digit = True
+        elif seen_digit:
+            return False
+    return True
+</script>
+<script type="text/plain" class="impl" data-id="fuel-ok">def convert(fraction):
+    x, y = fraction.split("/")
+    x, y = int(x), int(y)
+    if y == 0:
+        raise ZeroDivisionError
+    if x > y:
+        raise ValueError
+    return round(x / y * 100)
+
+
+def gauge(percentage):
+    if percentage <= 1:
+        return "E"
+    if percentage >= 99:
+        return "F"
+    return f"{percentage}%"
+</script>
+<script type="text/plain" class="impl" data-id="fuel-b1">def convert(fraction):
+    x, y = fraction.split("/")
+    x, y = int(x), int(y)
+    if y == 0:
+        raise ZeroDivisionError
+    if x > y:
+        raise ValueError
+    return round(x / y * 100)
+
+
+def gauge(percentage):
+    if percentage < 1:
+        return "E"
+    if percentage > 99:
+        return "F"
+    return f"{percentage}%"
+</script>
+<script type="text/plain" class="impl" data-id="fuel-b2">def convert(fraction):
+    x, y = fraction.split("/")
+    x, y = int(x), int(y)
+    if y == 0:
+        raise ZeroDivisionError
+    return round(x / y * 100)
+
+
+def gauge(percentage):
+    if percentage <= 1:
+        return "E"
+    if percentage >= 99:
+        return "F"
+    return f"{percentage}%"
+</script>
+<script type="text/plain" class="impl" data-id="fuel-b3">def convert(fraction):
+    x, y = fraction.split("/")
+    x, y = int(x), int(y)
+    if y == 0:
+        raise ZeroDivisionError
+    if x > y:
+        raise ValueError
+    return int(x / y * 100)
+
+
+def gauge(percentage):
+    if percentage <= 1:
+        return "E"
+    if percentage >= 99:
+        return "F"
+    return f"{percentage}%"
+</script>
+<script type="text/plain" class="impl" data-id="fuel-b4">def convert(fraction):
+    x, y = fraction.split("/")
+    x, y = int(x), int(y)
+    if y == 0:
+        raise ZeroDivisionError
+    if x > y:
+        raise ValueError
+    return round(x / y * 100)
+
+
+def gauge(percentage):
+    if percentage <= 1:
+        return "E"
+    if percentage >= 99:
+        return "F"
+    return str(percentage)
+</script>
+
+<script>
+const STORE_KEY = "cs50p-tracker-v1";
+const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
+const DEADLINE = new Date("2026-12-31T23:59:00Z");
+
+function src(id, cls="src"){ const el = document.querySelector(`script.${cls}[data-id="${id}"]`); return el ? el.textContent.replace(/^\n/, "") : ""; }
+const DEFAULT_STARTER = "# Write your program here\n";
+
+/* =================== COURSE DATA =================== */
+const WEEKS = [
+ { n:0, title:"Functions, Variables", probs:[
+  { id:"indoor", name:"Indoor Voice", file:"indoor.py", kind:"io",
+    prompt:`<p>Ask the user for some text and print it back in lowercase. Spaces and punctuation stay as they are.</p>`,
+    tryIn:"HELLO, WORLD",
+    tests:[ {in:["HELLO"], out:"hello"}, {in:["THIS IS CS50"], out:"this is cs50"}, {in:["50"], out:"50"} ],
+    nudges:["Every <code>str</code> has methods. One of them returns a lowercase copy of the string. See the string methods link in Resources.", "<code>input()</code> already returns a <code>str</code>. Call the method on that value, then print the result."] },
+  { id:"playback", name:"Playback Speed", file:"playback.py", kind:"io",
+    prompt:`<p>Ask for some text and print it with every space replaced by <code>...</code> (three periods), as if someone is speaking slowly.</p>`,
+    tryIn:"This is CS50",
+    tests:[ {in:["This is CS50"], out:"This...is...CS50"}, {in:["This is our week on functions"], out:"This...is...our...week...on...functions"}, {in:["Let's implement a function called hello"], out:"Let's...implement...a...function...called...hello"} ],
+    nudges:["There's a string method that swaps one piece of text for another everywhere it appears.", "You could also split the text into words and join them back together with a different separator."] },
+  { id:"faces", name:"Making Faces", file:"faces.py", kind:"io", starter:"faces",
+    prompt:`<p>Write a function <code>convert(text)</code> that returns the text with every <code>:)</code> replaced by 🙂 and every <code>:(</code> replaced by 🙁. In <code>main()</code>, ask for input, call <code>convert</code>, and print what it returns. Call <code>main()</code> at the bottom.</p>`,
+    tryIn:"Hello :) Goodbye :(",
+    tests:[ {in:["Hello :)"], out:"Hello 🙂"}, {in:["Goodbye :("], out:"Goodbye 🙁"}, {in:["Hello :) Goodbye :("], out:"Hello 🙂 Goodbye 🙁"} ],
+    nudges:["You can paste emoji straight into a Python string.", "A method that returns a new string can be called again on its own result: <code>a.method(...).method(...)</code>."] },
+  { id:"einstein", name:"Einstein", file:"einstein.py", kind:"io",
+    prompt:`<p>Ask for a mass in kilograms (a whole number) and print the energy in joules as a whole number, using <b>E = mc²</b> with <code>c = 300000000</code> meters per second.</p>`,
+    tryIn:"1",
+    tests:[ {in:["1"], last:"90000000000000000"}, {in:["14"], last:"1260000000000000000"}, {in:["50"], last:"4500000000000000000"} ],
+    nudges:["<code>input()</code> gives you text. Convert it to a number before doing math.", "<code>**</code> is the exponent operator in Python. Stay with whole numbers (<code>int</code>) so the answer prints without a decimal point."] },
+  { id:"tip", name:"Tip Calculator", file:"tip.py", kind:"io", starter:"tip",
+    prompt:`<p>CS50 gives you <code>main()</code>. Finish the two helper functions: <code>dollars_to_float("$50.00")</code> should return <code>50.0</code>, and <code>percent_to_float("15%")</code> should return <code>0.15</code>.</p>`,
+    tryIn:"$50.00\n15%",
+    tests:[ {in:["$50.00","15%"], last:"Leave $7.50"}, {in:["$100.00","18%"], last:"Leave $18.00"}, {in:["$15.00","25%"], last:"Leave $3.75"} ],
+    nudges:["Strings have methods that remove characters from the start or the end. Or use slicing: <code>s[1:]</code> drops the first character.", "After removing the symbol, convert with <code>float()</code>. For the percentage, divide by 100."] },
+ ]},
+ { n:1, title:"Conditionals", probs:[
+  { id:"deep", name:"Deep Thought", file:"deep.py", kind:"io",
+    prompt:`<p>Ask "What is the Answer to the Great Question of Life, the Universe, and Everything?" Print <code>Yes</code> if the user types <code>42</code>, <code>forty-two</code>, or <code>forty two</code> (any capitalization, extra spaces allowed). Otherwise print <code>No</code>.</p>`,
+    tryIn:"Forty Two",
+    tests:[ {in:["42"], out:"Yes"}, {in:["Forty Two"], out:"Yes"}, {in:["forty-two"], out:"Yes"}, {in:["  42  "], out:"Yes"}, {in:["50"], out:"No"}, {in:["fifty"], out:"No"} ],
+    nudges:["Clean the input first: remove surrounding spaces and make it lowercase. Then you only have three exact strings to compare with.", "<code>or</code> lets one <code>if</code> check several conditions. You could also use <code>in</code> with a list."] },
+  { id:"bank", name:"Home Federal Savings Bank", file:"bank.py", kind:"io",
+    prompt:`<p>Ask for a greeting. If it starts with "hello", print <code>$0</code>. If it starts with "h" (but not "hello"), print <code>$20</code>. Otherwise print <code>$100</code>. Ignore case and leading spaces.</p>`,
+    tryIn:"Hello, Newman",
+    tests:[ {in:["Hello"], out:"$0"}, {in:["Hello, Newman"], out:"$0"}, {in:["  HELLO there"], out:"$0"}, {in:["How you doing?"], out:"$20"}, {in:["What's happening?"], out:"$100"} ],
+    nudges:["Strings have a method that checks how they begin.", "Order matters: check the more specific case (\"hello\") before the general one (\"h\")."] },
+  { id:"extensions", name:"File Extensions", file:"extensions.py", kind:"io",
+    prompt:`<p>Ask for a file name and print its media type based on the extension (ignore case and surrounding spaces):</p>
+    <div class="tablewrap"><table><tr><th>Ends with</th><th>Print</th></tr>
+    <tr><td><code>.gif</code></td><td><code>image/gif</code></td></tr><tr><td><code>.jpg</code> or <code>.jpeg</code></td><td><code>image/jpeg</code></td></tr>
+    <tr><td><code>.png</code></td><td><code>image/png</code></td></tr><tr><td><code>.pdf</code></td><td><code>application/pdf</code></td></tr>
+    <tr><td><code>.txt</code></td><td><code>text/plain</code></td></tr><tr><td><code>.zip</code></td><td><code>application/zip</code></td></tr>
+    <tr><td>anything else</td><td><code>application/octet-stream</code></td></tr></table></div>`,
+    tryIn:"happy.jpg",
+    tests:[ {in:["happy.jpg"], out:"image/jpeg"}, {in:["photo.jpeg"], out:"image/jpeg"}, {in:["DOCUMENT.PDF"], out:"application/pdf"}, {in:["cat.gif"], out:"image/gif"}, {in:["  plain.txt "], out:"text/plain"}, {in:["files.zip"], out:"application/zip"}, {in:["a.png"], out:"image/png"}, {in:["noextension"], out:"application/octet-stream"} ],
+    nudges:["Lowercase and strip the input before checking anything.", "Look for a string method that checks how a string <i>ends</i>. <code>match</code>/<code>case</code> also works if you pull out the part after the last period."] },
+  { id:"interpreter", name:"Math Interpreter", file:"interpreter.py", kind:"io",
+    prompt:`<p>Ask for an expression like <code>1 + 1</code> (a number, a space, one of <code>+ - * /</code>, a space, a number). Print the result as a float with one decimal place.</p>`,
+    tryIn:"1 + 1",
+    tests:[ {in:["1 + 1"], out:"2.0"}, {in:["2 - 3"], out:"-1.0"}, {in:["2 * 2"], out:"4.0"}, {in:["50 / 5"], out:"10.0"}, {in:["1 / 3"], out:"0.3"} ],
+    nudges:["<code>x, y, z = expression.split(\" \")</code> unpacks the three parts into three variables.", "An f-string can round for you: <code>f\"{value:.1f}\"</code>."] },
+  { id:"meal", name:"Meal Time", file:"meal.py", kind:"io", starter:"meal",
+    prompt:`<p>Ask for a 24-hour time like <code>7:30</code>. Print <code>breakfast time</code> between 7:00 and 8:00, <code>lunch time</code> between 12:00 and 13:00, <code>dinner time</code> between 18:00 and 19:00 (inclusive). Print nothing otherwise. Write <code>convert(time)</code> that returns the hours as a float, so <code>convert("7:30")</code> returns <code>7.5</code>.</p>`,
+    tryIn:"7:30",
+    tests:[ {in:["7:00"], out:"breakfast time"}, {in:["7:30"], out:"breakfast time"}, {in:["12:42"], out:"lunch time"}, {in:["18:32"], out:"dinner time"}, {in:["11:11"], out:""},
+      {call:'convert("7:30")', want:7.5}, {call:'convert("18:45")', want:18.75}, {call:'convert("12:00")', want:12.0} ],
+    nudges:["Split the time on <code>:</code>, convert both parts to numbers, and divide the minutes by 60.", "Python lets you chain comparisons: <code>7 &lt;= t &lt;= 8</code>."] },
+ ]},
+ { n:2, title:"Loops", probs:[
+  { id:"camel", name:"camelCase", file:"camel.py", kind:"io",
+    prompt:`<p>Ask for a variable name in camel case (like <code>firstName</code>) and print it in snake case (<code>first_name</code>).</p>`,
+    tryIn:"preferredFirstName",
+    tests:[ {in:["name"], ends:"name"}, {in:["firstName"], ends:"first_name"}, {in:["preferredFirstName"], ends:"preferred_first_name"} ],
+    nudges:["Loop over the string one character at a time with <code>for c in s:</code>.", "<code>c.isupper()</code> tells you when to add an underscore and a lowercase copy of the letter."] },
+  { id:"coke", name:"Coke Machine", file:"coke.py", kind:"io",
+    prompt:`<p>A Coke costs 50 cents. Repeatedly print <code>Amount Due: N</code> and ask for a coin. Accept only 25, 10, and 5 (ignore anything else). Once at least 50 cents are in, print <code>Change Owed: N</code>.</p>`,
+    tryIn:"25\n10\n10\n10",
+    tests:[ {in:["25","25"], last:"Change Owed: 0"}, {in:["25","10","10","10"], last:"Change Owed: 5"}, {in:["30","25","25"], last:"Change Owed: 0", label:"Rejects a 30-cent coin, then accepts 25 + 25"}, {in:["10","10","10","10","10"], last:"Change Owed: 0"} ],
+    nudges:["Keep a variable for how much is still owed and loop <code>while</code> it's above 0.", "Check <code>coin in [25, 10, 5]</code> before subtracting. Remember <code>input()</code> returns text."] },
+  { id:"twttr", name:"Just setting up my twttr", file:"twttr.py", kind:"io",
+    prompt:`<p>Ask for text and print it with all vowels (A, E, I, O, U, upper or lowercase) removed.</p>`,
+    tryIn:"Twitter",
+    tests:[ {in:["Twitter"], ends:"Twttr"}, {in:["What's your name?"], ends:"Wht's yr nm?"}, {in:["CS50"], ends:"CS50"}, {in:["AEIOU aeiou rhythm"], ends:" rhythm"} ],
+    nudges:["Build a new string. Start with <code>\"\"</code> and add each character you want to keep.", "<code>c.lower() not in \"aeiou\"</code> handles both cases in one check."] },
+  { id:"plates", name:"Vanity Plates", file:"plates.py", kind:"io", starter:"plates",
+    prompt:`<p>Write <code>is_valid(s)</code>. A plate is valid if it: starts with at least two letters; has 2 to 6 characters; uses only letters and numbers (no spaces or punctuation); has numbers only at the end (<code>AAA22A</code> is invalid); and the first number isn't <code>0</code>.</p>`,
+    tryIn:"CS50",
+    tests:[ {in:["CS50"], out:"Valid"}, {in:["ECTO88"], out:"Valid"}, {in:["NRVOUS"], out:"Valid"}, {in:["CS05"], out:"Invalid"}, {in:["CS50P"], out:"Invalid"}, {in:["PI3.14"], out:"Invalid"}, {in:["H"], out:"Invalid"}, {in:["OUTATIME"], out:"Invalid"}, {in:["50CS"], out:"Invalid"} ],
+    nudges:["Write one check per rule and <code>return False</code> as soon as one fails. If nothing failed, <code>return True</code>.", "For the \"numbers at the end\" rule, loop through the characters and remember whether you've already seen a digit."] },
+  { id:"nutrition", name:"Nutrition Facts", file:"nutrition.py", kind:"io",
+    prompt:`<p>Ask for a fruit (any capitalization) and print <code>Calories: N</code> for one serving. Print nothing for an unknown item. Calories: apple 130, avocado 50, banana 110, cantaloupe 50, grapefruit 60, grapes 90, honeydew melon 50, kiwifruit 90, lemon 15, lime 20, nectarine 60, orange 80, peach 60, pear 100, pineapple 50, plums 70, strawberries 50, sweet cherries 100, tangerine 50, watermelon 80.</p>`,
+    tryIn:"Apple",
+    tests:[ {in:["Apple"], out:"Calories: 130"}, {in:["banana"], out:"Calories: 110"}, {in:["Sweet Cherries"], out:"Calories: 100"}, {in:["lemon"], out:"Calories: 15"}, {in:["Tomato"], out:""} ],
+    nudges:["A dictionary maps a key (the fruit) to a value (its calories).", "Check <code>if fruit in my_dict:</code> before looking it up."] },
+ ]},
+ { n:3, title:"Exceptions", probs:[
+  { id:"fuel", name:"Fuel Gauge", file:"fuel.py", kind:"io",
+    prompt:`<p>Ask for a fraction <code>X/Y</code> and print how full the tank is as a rounded percentage like <code>75%</code>. Print <code>E</code> if it's 1% or less and <code>F</code> if it's 99% or more. If X or Y isn't a whole number, X is bigger than Y, or Y is 0, ask again.</p>`,
+    tryIn:"cat/dog\n3/4",
+    tests:[ {in:["3/4"], out:"75%"}, {in:["1/3"], out:"33%"}, {in:["2/3"], out:"67%"}, {in:["0/100"], out:"E"}, {in:["1/100"], out:"E"}, {in:["99/100"], out:"F"}, {in:["100/100"], out:"F"},
+      {in:["cat/dog","3/4"], out:"75%", label:"Reprompts after cat/dog"}, {in:["4/3","1/2"], out:"50%", label:"Reprompts after 4/3"}, {in:["1/0","1/2"], out:"50%", label:"Reprompts after 1/0"}, {in:["1.5/3","1/4"], out:"25%", label:"Reprompts after 1.5/3"} ],
+    nudges:["Wrap the reading and converting in <code>while True:</code> with <code>try:</code> inside. <code>break</code> once everything is valid.", "<code>int(\"cat\")</code> raises <code>ValueError</code> and <code>1 / 0</code> raises <code>ZeroDivisionError</code>. You can catch both: <code>except (ValueError, ZeroDivisionError):</code>. Use <code>round()</code> for the percentage."] },
+  { id:"taqueria", name:"Felipe's Taqueria", file:"taqueria.py", kind:"io",
+    prompt:`<p>Keep asking for menu items until the user presses Ctrl-D. After each valid item, print the running total as <code>Total: $X.XX</code>. Ignore items not on the menu. Ignore capitalization. Menu: Baja Taco 4.25, Burrito 7.50, Bowl 8.50, Nachos 11.00, Quesadilla 8.50, Super Burrito 8.50, Super Quesadilla 9.50, Taco 3.00, Tortilla Salad 8.00.</p>
+    <p class="muted">Ctrl-D raises <code>EOFError</code>. On this page, the Try it button sends it after your last input line.</p>`,
+    tryIn:"taco\npizza\nbaja taco",
+    tests:[ {in:["taco","taco"], last:"Total: $6.00"}, {in:["baja taco","tortilla salad"], last:"Total: $12.25"}, {in:["Burrito","BOWL"], last:"Total: $16.00"}, {in:["nachos","pizza"], last:"Total: $11.00", label:"Ignores pizza (not on the menu)"} ],
+    nudges:["Store the menu in a dict with title-cased keys, and look up <code>item.title()</code>.", "Use <code>try</code>/<code>except EOFError</code> to stop the loop, and <code>except KeyError</code> to skip unknown items. <code>f\"{total:.2f}\"</code> formats money."] },
+  { id:"grocery", name:"Grocery List", file:"grocery.py", kind:"io",
+    prompt:`<p>Read items until Ctrl-D. Then print each item once, in uppercase, sorted alphabetically, with how many times it was entered: <code>2 APPLE</code>.</p>`,
+    tryIn:"apple\nbanana\napple",
+    tests:[ {in:["apple","banana","apple"], out:"2 APPLE\n1 BANANA"}, {in:["sugar","banana","apple"], out:"1 APPLE\n1 BANANA\n1 SUGAR"}, {in:["Tortilla","sweet potato","tortilla"], out:"1 SWEET POTATO\n2 TORTILLA"} ],
+    nudges:["A dict can count: <code>counts[item] = counts.get(item, 0) + 1</code>.", "Normalize case before counting. <code>sorted(counts)</code> gives the keys in alphabetical order."] },
+  { id:"outdated", name:"Outdated", file:"outdated.py", kind:"io",
+    prompt:`<p>Ask for a date as <code>9/8/1636</code> or <code>September 8, 1636</code> and print it as <code>1636-09-08</code>. If the input isn't a valid date in one of those two forms (month 1–12, day 1–31), ask again.</p>`,
+    tryIn:"September 8, 1636",
+    tests:[ {in:["9/8/1636"], out:"1636-09-08"}, {in:["September 8, 1636"], out:"1636-09-08"}, {in:["10/9/1701"], out:"1701-10-09"}, {in:["October 9, 1701"], out:"1701-10-09"},
+      {in:["23/6/1912","12/31/1999"], out:"1999-12-31", label:"Reprompts after month 23"}, {in:["September 8 1636","9/8/1636"], out:"1636-09-08", label:"Reprompts when the comma is missing"}, {in:["1/32/2000","1/1/2000"], out:"2000-01-01", label:"Reprompts after day 32"} ],
+    nudges:["Put the month names in a list. <code>months.index(\"March\") + 1</code> gives the month number.", "<code>f\"{year}-{month:02}-{day:02}\"</code> pads with a leading zero. Wrap your parsing in <code>try</code> so bad input loops back."] },
+ ]},
+ { n:4, title:"Libraries", probs:[
+  { id:"emojize", name:"Emojize", kind:"ext", why:"Needs the <code>emoji</code> library." },
+  { id:"figlet", name:"Frank, Ian and Glen's Letters", kind:"ext", why:"Needs the <code>pyfiglet</code> library." },
+  { id:"adieu", name:"Adieu, Adieu", file:"adieu.py", kind:"io",
+    prompt:`<p>Read names until Ctrl-D, then bid them farewell: <code>Adieu, adieu, to Liesl</code>, <code>... to Liesl and Friedrich</code>, <code>... to Liesl, Friedrich, and Louisa</code>.</p>
+    <p class="muted">On cs50.dev the spec wants the <code>inflect</code> library's <code>join</code>. This page can't load it, so build the joining yourself here. That's good practice with lists and string slicing.</p>`,
+    tryIn:"Liesl\nFriedrich\nLouisa",
+    tests:[ {in:["Liesl"], last:"Adieu, adieu, to Liesl"}, {in:["Liesl","Friedrich"], last:"Adieu, adieu, to Liesl and Friedrich"}, {in:["Liesl","Friedrich","Louisa"], last:"Adieu, adieu, to Liesl, Friedrich, and Louisa"}, {in:["Liesl","Friedrich","Louisa","Kurt"], last:"Adieu, adieu, to Liesl, Friedrich, Louisa, and Kurt"} ],
+    nudges:["Collect the names in a list inside a <code>while True</code> loop that ends on <code>EOFError</code>.", "Handle 1, 2, and 3+ names as separate cases. <code>\", \".join(names[:-1])</code> joins all but the last."] },
+  { id:"game", name:"Guessing Game", file:"game.py", kind:"io",
+    prompt:`<p>Ask for a level <i>n</i> (a positive integer, ask again otherwise). Pick a random integer from 1 to <i>n</i> with <code>random.randint</code>. Keep asking for a guess (ask again if it's not a positive integer). Print <code>Too small!</code>, <code>Too large!</code>, or <code>Just right!</code>, and stop once it's right.</p>
+    <p class="muted">The checks replace <code>random.randint</code> so the secret number is always 5.</p>`,
+    tryIn:"10\n3\n8\n5",
+    tests:[ {in:["10","3","8","5"], out:"Too small!\nToo large!\nJust right!", patch:{randint:"lambda a, b: 5"}}, {in:["cat","0","10","5"], out:"Just right!", patch:{randint:"lambda a, b: 5"}, label:"Reprompts for level after cat and 0"}, {in:["10","-1","x","5"], out:"Just right!", patch:{randint:"lambda a, b: 5"}, label:"Reprompts for guess after -1 and x"} ],
+    nudges:["Write two loops: one that gets a valid level, one that keeps taking guesses.", "Positive means greater than 0. Convert inside <code>try</code> so text like <code>cat</code> doesn't crash the program."] },
+  { id:"professor", name:"Little Professor", file:"professor.py", kind:"io", starter:"professor",
+    prompt:`<p><code>get_level()</code> asks for 1, 2, or 3 (ask again otherwise). <code>generate_integer(level)</code> returns a random integer with that many digits (level 1: 0–9, level 2: 10–99, level 3: 100–999). <code>main()</code> asks 10 addition problems like <code>3 + 4 = </code>. A wrong answer prints <code>EEE</code> and asks again. After 3 wrong tries, print the right equation and move on. Finish with <code>Score: N</code>.</p>
+    <p class="muted">The flow checks make <code>random.randint</code> always return 1, so every problem is <code>1 + 1</code>.</p>`,
+    tryIn:"1\n2\n2\n2\n2\n2\n2\n2\n2\n2\n2",
+    tests:[ {setup:"r = [generate_integer(1) for _ in range(300)]", call:"min(r) >= 0 and max(r) <= 9", want:true, label:"generate_integer(1) stays within 0–9"},
+      {setup:"r = [generate_integer(2) for _ in range(300)]", call:"min(r) >= 10 and max(r) <= 99", want:true, label:"generate_integer(2) stays within 10–99"},
+      {setup:"r = [generate_integer(3) for _ in range(300)]", call:"min(r) >= 100 and max(r) <= 999", want:true, label:"generate_integer(3) stays within 100–999"},
+      {in:["1","2","2","2","2","2","2","2","2","2","2"], last:"Score: 10", patch:{randint:"lambda a, b: 1"}, label:"10 right answers → Score: 10"},
+      {in:["0","4","x","1","2","2","2","2","2","2","2","2","2","2"], last:"Score: 10", patch:{randint:"lambda a, b: 1"}, label:"Reprompts for level after 0, 4, and x"},
+      {in:["1"].concat(Array(30).fill("5")), last:"Score: 0", has:"1 + 1 = 2", patch:{randint:"lambda a, b: 1"}, label:"Three wrong tries shows EEE, then 1 + 1 = 2"} ],
+    nudges:["<code>random.randint(a, b)</code> includes both ends. Work out <code>a</code> and <code>b</code> from the level.", "Use a <code>for</code> loop for the 10 problems and an inner loop (up to 3 tries) for each one. Put <code>input(f\"{x} + {y} = \")</code> inside the inner loop."] },
+  { id:"bitcoin", name:"Bitcoin Price Index", kind:"ext", why:"Needs <code>requests</code> and a live internet API." },
+ ]},
+ { n:5, title:"Unit Tests", probs:[
+  { id:"test_twttr", name:"Testing my twttr", file:"test_twttr.py", kind:"unittest", starter:"test_twttr", module:"twttr",
+    prompt:`<p>On cs50.dev you'll move your vowel-removing code into <code>shorten(word)</code> in <code>twttr.py</code>, then write <code>test_twttr.py</code>. Here, write the test file. A working <code>twttr.py</code> is provided. Your tests must pass on it and fail on each buggy version.</p>`,
+    impls:[ {id:"twttr-ok", label:"Passes on a correct shorten()", correct:true}, {id:"twttr-b1", label:"Catches a version that forgets uppercase vowels"}, {id:"twttr-b2", label:"Catches a version that also removes numbers"}, {id:"twttr-b3", label:"Catches a version that also removes punctuation"} ],
+    nudges:["One test function per idea: lowercase vowels, uppercase vowels, numbers, punctuation.", "Each test is just <code>assert shorten(\"...\") == \"...\"</code>. Think about input a lazy implementation would get wrong."] },
+  { id:"test_bank", name:"Back to the Bank", file:"test_bank.py", kind:"unittest", starter:"test_bank", module:"bank",
+    prompt:`<p>On cs50.dev you'll refactor <code>bank.py</code> so <code>value(greeting)</code> <b>returns</b> 0, 20, or 100. Here, write <code>test_bank.py</code> against a provided <code>bank.py</code>.</p>`,
+    impls:[ {id:"bank-ok", label:"Passes on a correct value()", correct:true}, {id:"bank-b1", label:"Catches a version that ignores capitalization rules"}, {id:"bank-b2", label:"Catches a version that never returns 20"}, {id:"bank-b3", label:"Catches a version that checks \"h\" before \"hello\""} ],
+    nudges:["Test each of the three outcomes with its own function.", "Include a greeting that starts with a capital letter."] },
+  { id:"test_plates", name:"Re-requesting a Vanity Plate", file:"test_plates.py", kind:"unittest", starter:"test_plates", module:"plates",
+    prompt:`<p>Write <code>test_plates.py</code> for <code>is_valid(s)</code>. Each of the five rules from Problem Set 2 should have at least one test.</p>`,
+    impls:[ {id:"plates-ok", label:"Passes on a correct is_valid()", correct:true}, {id:"plates-b1", label:"Catches a version that allows 7–8 characters"}, {id:"plates-b2", label:"Catches a version that allows letters after numbers"}, {id:"plates-b3", label:"Catches a version that allows a leading 0"}, {id:"plates-b4", label:"Catches a version that allows punctuation"}, {id:"plates-b5", label:"Catches a version that needs only one starting letter"} ],
+    nudges:["Name each test after the rule it checks: <code>test_length</code>, <code>test_zero</code>, and so on.", "For each rule, test one plate that breaks only that rule and nothing else."] },
+  { id:"test_fuel", name:"Refueling", file:"test_fuel.py", kind:"unittest", starter:"test_fuel", module:"fuel",
+    prompt:`<p>On cs50.dev, <code>fuel.py</code> gets <code>convert(fraction)</code> (returns a rounded int percentage, raises <code>ValueError</code> if X &gt; Y or not integers, <code>ZeroDivisionError</code> if Y is 0) and <code>gauge(percentage)</code> (returns <code>"E"</code>, <code>"F"</code>, or a string like <code>"75%"</code>). Write <code>test_fuel.py</code>.</p>`,
+    impls:[ {id:"fuel-ok", label:"Passes on correct convert() and gauge()", correct:true}, {id:"fuel-b1", label:"Catches a gauge() with wrong E/F boundaries"}, {id:"fuel-b2", label:"Catches a convert() that allows X > Y"}, {id:"fuel-b3", label:"Catches a convert() that truncates instead of rounding"}, {id:"fuel-b4", label:"Catches a gauge() that forgets the % sign"} ],
+    nudges:["<code>with pytest.raises(ValueError):</code> tests that an error happens.", "Boundaries catch the most bugs: test exactly 1 and 99 in <code>gauge</code>, and a fraction like 2/3 in <code>convert</code>."] },
+ ]},
+ { n:6, title:"File I/O", probs:[
+  { id:"lines", name:"Lines of Code", file:"lines.py", kind:"io", starter:"lines",
+    prompt:`<p>Run as <code>python lines.py FILE.py</code>. Print how many lines of code the file has, not counting blank lines or comment lines (lines whose first non-space character is <code>#</code>). Exit with <code>sys.exit("message")</code> if there are too few or too many arguments, the file doesn't end in <code>.py</code>, or it doesn't exist.</p>
+    <p class="muted">Sample files for Try it: <code>hello.py</code> (2 lines of code) and <code>notes.txt</code>.</p>`,
+    cmd:"python lines.py hello.py", tryIn:"",
+    sampleFiles:{"hello.py":"# Say hello\n\nname = input(\"What's your name? \")\nprint(f\"hello, {name}\")\n", "notes.txt":"not python\n"},
+    tests:[ {argv:["lines.py"], exit:true, label:"No file given → exits"}, {argv:["lines.py","a.py","b.py"], exit:true, files:{"a.py":"x = 1\n","b.py":"y = 2\n"}, label:"Two files given → exits"},
+      {argv:["lines.py","notes.txt"], exit:true, files:{"notes.txt":"hi\n"}, label:"notes.txt → exits (not a .py file)"}, {argv:["lines.py","missing.py"], exit:true, label:"missing.py → exits (file doesn't exist)"},
+      {argv:["lines.py","hello.py"], files:{"hello.py":"# Say hello\n\nname = input(\"What's your name? \")\nprint(f\"hello, {name}\")\n"}, out:"2"},
+      {argv:["lines.py","code.py"], files:{"code.py":"def main():\n    # an indented comment\n    x = 1\n\n    \n    return x  # code with a comment still counts\n"}, out:"3", label:"Skips indented comments and lines of only spaces → 3"} ],
+    nudges:["<code>sys.argv</code> is a list: <code>sys.argv[0]</code> is the program name and <code>sys.argv[1]</code> is the file. Check <code>len(sys.argv)</code> first.", "<code>line.lstrip()</code> removes leading spaces, so you can test <code>startswith(\"#\")</code> and emptiness. Catch <code>FileNotFoundError</code> around <code>open</code>."] },
+  { id:"pizza", name:"Pizza Py", kind:"ext", why:"Needs the <code>tabulate</code> library." },
+  { id:"scourgify", name:"Scourgify", file:"scourgify.py", kind:"io", starter:"scourgify",
+    prompt:`<p>Run as <code>python scourgify.py before.csv after.csv</code>. <code>before.csv</code> has columns <code>name</code> (as <code>"Last, First"</code>) and <code>house</code>. Write <code>after.csv</code> with columns <code>first</code>, <code>last</code>, <code>house</code>. Exit with <code>sys.exit("message")</code> for the wrong number of arguments or if <code>before.csv</code> can't be read.</p>
+    <p class="muted">A sample <code>before.csv</code> is available for Try it, and Try it shows the files your program writes.</p>`,
+    cmd:"python scourgify.py before.csv after.csv", tryIn:"", showFiles:true,
+    sampleFiles:{"before.csv":"name,house\n\"Abbott, Hannah\",Hufflepuff\n\"Bones, Susan\",Hufflepuff\n\"Granger, Hermione\",Gryffindor\n"},
+    tests:[ {argv:["scourgify.py"], exit:true, label:"No arguments → exits"}, {argv:["scourgify.py","a.csv","b.csv","c.csv"], exit:true, label:"Three arguments → exits"}, {argv:["scourgify.py","missing.csv","after.csv"], exit:true, label:"missing.csv → exits"},
+      {argv:["scourgify.py","before.csv","after.csv"], files:{"before.csv":"name,house\n\"Abbott, Hannah\",Hufflepuff\n\"Bones, Susan\",Hufflepuff\n\"Granger, Hermione\",Gryffindor\n"}, file:"after.csv", content:"first,last,house\nHannah,Abbott,Hufflepuff\nSusan,Bones,Hufflepuff\nHermione,Granger,Gryffindor\n"} ],
+    nudges:["<code>csv.DictReader</code> gives you each row as a dict, so <code>row[\"name\"]</code> works.", "<code>last, first = row[\"name\"].split(\", \")</code>, then <code>csv.DictWriter</code> with <code>fieldnames=[\"first\", \"last\", \"house\"]</code> and <code>writeheader()</code>."] },
+  { id:"shirt", name:"CS50 P-Shirt", kind:"ext", why:"Needs <code>Pillow</code> and image files." },
+ ]},
+ { n:7, title:"Regular Expressions", probs:[
+  { id:"numb3rs", name:"NUMB3RS", file:"numb3rs.py", kind:"io", starter:"numb3rs",
+    prompt:`<p>Write <code>validate(ip)</code> that returns <code>True</code> if <code>ip</code> is an IPv4 address (four numbers 0–255 separated by periods) and <code>False</code> otherwise.</p>`,
+    tryIn:"255.255.255.255",
+    tests:[ {call:'validate("255.255.255.255")', want:true}, {call:'validate("127.0.0.1")', want:true}, {call:'validate("0.0.0.0")', want:true}, {call:'validate("512.512.512.512")', want:false}, {call:'validate("1.2.3.1000")', want:false}, {call:'validate("1.2.3")', want:false}, {call:'validate("1.2.3.4.5")', want:false}, {call:'validate("cat")', want:false} ],
+    nudges:["Use <code>re.search</code> with <code>^</code> and <code>$</code> and four groups of <code>\\d{1,3}</code>.", "Regex can check the shape. Then convert each group with <code>int()</code> and check it's at most 255."] },
+  { id:"watch", name:"Watch on YouTube", file:"watch.py", kind:"io", starter:"watch",
+    prompt:`<p>Write <code>parse(s)</code>. Given HTML containing a YouTube <code>&lt;iframe&gt;</code> whose <code>src</code> is like <code>http(s)://(www.)youtube.com/embed/ID</code>, return <code>https://youtu.be/ID</code>. Return <code>None</code> if there's no such iframe.</p>`,
+    tryIn:'<iframe src="http://www.youtube.com/embed/xvFZjo5PgG0"></iframe>',
+    tests:[ {call:`parse('<iframe src="http://www.youtube.com/embed/xvFZjo5PgG0"></iframe>')`, want:"https://youtu.be/xvFZjo5PgG0", label:"http + www → https://youtu.be/xvFZjo5PgG0"},
+      {call:`parse('<iframe src="https://youtube.com/embed/xvFZjo5PgG0"></iframe>')`, want:"https://youtu.be/xvFZjo5PgG0", label:"https, no www"},
+      {call:`parse('<iframe width="560" height="315" src="https://www.youtube.com/embed/xvFZjo5PgG0" title="YouTube video player" frameborder="0" allowfullscreen></iframe>')`, want:"https://youtu.be/xvFZjo5PgG0", label:"Extra attributes around src"},
+      {call:`parse('<iframe src="https://cs50.harvard.edu/python"></iframe>')`, want:null, label:"Not YouTube → None"} ],
+    nudges:["<code>re.search</code> returns a match object or <code>None</code>. Use a group <code>( )</code> around the ID and read it with <code>.group(1)</code>.", "<code>(?:www\\.)?</code> makes \"www.\" optional without creating a group, and <code>https?</code> matches http or https."] },
+  { id:"working", name:"Working 9 to 5", file:"working.py", kind:"io", starter:"working",
+    prompt:`<p>Write <code>convert(s)</code> that turns <code>9 AM to 5 PM</code> or <code>9:00 AM to 5:00 PM</code> into 24-hour time: <code>09:00 to 17:00</code>. Raise <code>ValueError</code> if the format is wrong or a time is invalid (like 9:60).</p>`,
+    tryIn:"9 AM to 5 PM",
+    tests:[ {call:'convert("9 AM to 5 PM")', want:"09:00 to 17:00"}, {call:'convert("9:00 AM to 5:00 PM")', want:"09:00 to 17:00"}, {call:'convert("10 PM to 8 AM")', want:"22:00 to 08:00"}, {call:'convert("10:30 PM to 8:50 AM")', want:"22:30 to 08:50"}, {call:'convert("12 AM to 12 PM")', want:"00:00 to 12:00"},
+      {call:'convert("9:60 AM to 5:60 PM")', raises:"ValueError"}, {call:'convert("9 AM - 5 PM")', raises:"ValueError"}, {call:'convert("09:00 AM - 17:00 PM")', raises:"ValueError"} ],
+    nudges:["Match the whole string with <code>re.search(r\"^...$\", s)</code>. If it returns <code>None</code>, <code>raise ValueError</code>.", "Write a helper that converts one time (hour, optional minutes, AM/PM). 12 AM is 00 and 12 PM is 12."] },
+  { id:"um", name:"Regular, um, Expressions", file:"um.py", kind:"io", starter:"um",
+    prompt:`<p>Write <code>count(s)</code> that returns how many times "um" appears as a <b>whole word</b> (any case). "yummy" and "album" don't count.</p>`,
+    tryIn:"Um, thanks, um...",
+    tests:[ {call:'count("um")', want:1}, {call:'count("um?")', want:1}, {call:'count("hello, um, world")', want:1}, {call:'count("Um, thanks for the album.")', want:1}, {call:'count("Um, thanks, um...")', want:2}, {call:'count("yummy")', want:0} ],
+    nudges:["<code>\\b</code> in a regex means a word boundary.", "<code>re.findall</code> returns a list of every match, and <code>re.IGNORECASE</code> ignores case."] },
+  { id:"response", name:"Response Validation", kind:"ext", why:"Needs the <code>validators</code> (or <code>email-validator</code>) library." },
+ ]},
+ { n:8, title:"Object-Oriented Programming", probs:[
+  { id:"seasons", name:"Seasons of Love", kind:"ext", why:"Needs the <code>inflect</code> library." },
+  { id:"jar", name:"Cookie Jar", file:"jar.py", kind:"io", starter:"jar",
+    prompt:`<p>Implement a <code>Jar</code> class. <code>Jar(capacity=12)</code> raises <code>ValueError</code> if capacity isn't a non-negative int. <code>str(jar)</code> returns one 🍪 per cookie. <code>deposit(n)</code> raises <code>ValueError</code> if it would overfill; <code>withdraw(n)</code> raises <code>ValueError</code> if there aren't enough cookies. <code>capacity</code> and <code>size</code> are properties.</p>`,
+    tryIn:"",
+    tests:[ {setup:"j = Jar()", call:"j.capacity", want:12}, {setup:"j = Jar(3)", call:"j.capacity", want:3}, {call:"Jar(-1)", raises:"ValueError"},
+      {setup:"j = Jar()", call:"j.size", want:0}, {setup:"j = Jar(); j.deposit(2)", call:"str(j)", want:"🍪🍪"}, {setup:"j = Jar(5); j.deposit(5)", call:"j.deposit(1)", raises:"ValueError"},
+      {setup:"j = Jar(); j.deposit(3); j.withdraw(1)", call:"j.size", want:2}, {setup:"j = Jar()", call:"j.withdraw(1)", raises:"ValueError"} ],
+    nudges:["Store the values in <code>self._capacity</code> and <code>self._size</code>, and have the properties return them.", "<code>\"🍪\" * 3</code> repeats a string. Check the limits <i>before</i> changing <code>self._size</code>."] },
+  { id:"shirtificate", name:"CS50 Shirtificate", kind:"ext", why:"Needs the <code>fpdf2</code> library." },
+ ]},
+ { n:9, title:"Et Cetera", probs:[
+  { id:"project", name:"Final Project", kind:"ext", why:"Your own program with <code>main</code>, at least three functions, and pytest tests. Plan it, write it on cs50.dev, and record a short video.", link:"https://cs50.harvard.edu/python/project/" },
+ ]},
+];
+const ALL = WEEKS.flatMap(w => w.probs.map(p => Object.assign(p, {week:w.n})));
+const PRACTICE = ALL.filter(p => p.kind !== "ext");
+const PROBMAP = Object.fromEntries(ALL.map(p => [p.id, p]));
+
+const PLAN = [
+  ["Nov 3–9", "Week 0: Functions, Variables. Set up cs50.dev and submit Problem Set 0."],
+  ["Nov 10–16", "Week 1: Conditionals."],
+  ["Nov 17–23", "Week 2: Loops. Lighter week: your ISYE Midterm 2 closes Nov 22."],
+  ["Nov 24–30", "Week 3: Exceptions (Thanksgiving week, keep it short)."],
+  ["Dec 1–7", "Week 4: Libraries. Do the 3 cs50.dev-only problems on cs50.dev."],
+  ["Dec 8–14", "Week 5: Unit Tests. Light: your ISYE final closes Dec 13."],
+  ["Dec 15–21", "Weeks 6 and 7: File I/O and Regular Expressions."],
+  ["Dec 22–31", "Week 8: OOP, Week 9 lecture, and the final project. Submit everything by Dec 31, 23:59 UTC (3:59 pm Pacific)."],
+];
+
+/* =================== LEARN CONTENT =================== */
+const LEARN = {
+0: `<div class="card"><h2>Week 0 · Functions, Variables</h2>
+<p>A program is a list of instructions Python runs top to bottom. A <b>function</b> is a named action, like <code>print()</code> or <code>input()</code>. A <b>variable</b> is a name that points to a value.</p>
+<p><code>input()</code> always gives you a <b>str</b> (text), even when the user types a number. Chain string methods to clean it up:</p>
+<div class="snip" data-in="  ada lovelace  "><pre>name = input("What's your name? ")
+name = name.strip().title()   # remove outer spaces, capitalize each word
+print(f"hello, {name}")       # an f-string puts values inside {}</pre></div>
+<p>To do math, convert text to a number with <code>int()</code> or <code>float()</code>. <code>round()</code> and f-string formats control decimals.</p>
+<div class="snip" data-in="2&#10;3"><pre>x = float(input("x: "))
+y = float(input("y: "))
+z = x / y
+print(round(z, 2))
+print(f"{z:.2f}")      # same idea, as formatted text
+print(f"{1000000:,}")  # commas for big numbers</pre></div>
+<p><b>Define your own function</b> with <code>def</code>. <code>return</code> hands a value back to whoever called it. CS50 programs put the main logic in <code>main()</code> and call it at the bottom.</p>
+<div class="snip" data-in="3"><pre>def main():
+    x = int(input("What's x? "))
+    print("x squared is", square(x))
+
+
+def square(n):
+    return n * n
+
+
+main()</pre></div>
+<h3>Useful string methods</h3>
+<ul><li><code>s.lower()</code>, <code>s.upper()</code>, <code>s.title()</code>, <code>s.capitalize()</code></li>
+<li><code>s.strip()</code> removes spaces at both ends. <code>s.lstrip("$")</code> removes characters from the left.</li>
+<li><code>s.replace(old, new)</code> and <code>s.split(" ")</code></li></ul>
+<h3>Reading an error</h3>
+<p>Read the <b>last line</b> of an error first: it names the problem (like <code>TypeError</code>). The line number tells you where. On this page, errors also get a plain-English explanation.</p>
+<div class="snip" data-in="5"><pre>x = input("Number: ")
+print(x + 1)    # TypeError: can't add a str and an int. Fix: int(input(...))</pre></div>
+</div>`,
+1: `<div class="card"><h2>Week 1 · Conditionals</h2>
+<p><code>if</code>, <code>elif</code>, and <code>else</code> choose which code runs. Python checks top to bottom and runs only the first branch whose condition is true. The colon and 4-space indent mark the block.</p>
+<div class="snip" data-in="85"><pre>score = int(input("Score: "))
+if score &gt;= 90:
+    print("A")
+elif score &gt;= 80:
+    print("B")
+else:
+    print("Below B")</pre></div>
+<p>Comparisons: <code>==</code> (equal), <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>. Combine with <code>and</code>, <code>or</code>, <code>not</code>. Python also allows <code>90 &lt;= score &lt;= 100</code>.</p>
+<p>A function can return a <b>bool</b> (<code>True</code> or <code>False</code>) and be used straight in an <code>if</code>:</p>
+<div class="snip" data-in="7"><pre>def is_even(n):
+    return n % 2 == 0     # % gives the remainder
+
+
+n = int(input("n: "))
+if is_even(n):
+    print("Even")
+else:
+    print("Odd")</pre></div>
+<p><code>match</code> compares one value against several options. <code>|</code> means "or", and <code>_</code> catches everything else.</p>
+<div class="snip" data-in="Draco"><pre>name = input("Name: ")
+match name:
+    case "Harry" | "Hermione" | "Ron":
+        print("Gryffindor")
+    case "Draco":
+        print("Slytherin")
+    case _:
+        print("Who?")</pre></div>
+<p><b>Common mistake:</b> <code>=</code> assigns, <code>==</code> compares. And clean input (<code>.strip().lower()</code>) before comparing, so "  YES" equals "yes".</p>
+</div>`,
+2: `<div class="card"><h2>Week 2 · Loops</h2>
+<p><code>for</code> repeats once per item. <code>range(n)</code> gives 0 up to n−1. <code>while</code> repeats as long as a condition is true.</p>
+<div class="snip"><pre>for i in range(3):
+    print("meow", i)
+
+for c in "CS50":          # strings are sequences of characters
+    print(c, c.isdigit())</pre></div>
+<p>The <b>input-validation loop</b> appears in many problem sets: keep asking until the answer is acceptable, then <code>break</code>.</p>
+<div class="snip" data-in="-3&#10;0&#10;4"><pre>while True:
+    n = int(input("Positive number: "))
+    if n &gt; 0:
+        break
+print("Thanks,", n)</pre></div>
+<p><b>Lists</b> hold ordered items. <b>Dictionaries</b> map keys to values.</p>
+<div class="snip"><pre>students = ["Hermione", "Harry", "Ron"]
+houses = {"Hermione": "Gryffindor", "Draco": "Slytherin"}
+
+for s in students:
+    print(s)
+print(len(students), students[0], students[-1])
+
+for name in houses:
+    print(name, "is in", houses[name])
+
+houses["Luna"] = "Ravenclaw"   # add a key
+print("Luna" in houses)</pre></div>
+<p><b>Building a new string</b> one character at a time is a pattern you'll use in camelCase and twttr:</p>
+<div class="snip" data-in="Hello World"><pre>text = input("Text: ")
+result = ""
+for c in text:
+    if c != " ":
+        result += c
+print(result)</pre></div>
+</div>`,
+3: `<div class="card"><h2>Week 3 · Exceptions</h2>
+<p>An <b>exception</b> is an error that happens while the program runs. Wrap risky code in <code>try</code> and handle a specific error in <code>except</code>. Code in <code>else</code> runs only if nothing went wrong.</p>
+<div class="snip" data-in="cat&#10;50"><pre>def main():
+    x = get_int("What's x? ")
+    print(f"x is {x}")
+
+
+def get_int(prompt):
+    while True:
+        try:
+            return int(input(prompt))
+        except ValueError:
+            print("Not an integer")
+
+
+main()</pre></div>
+<ul><li><code>ValueError</code>: right type, wrong value, like <code>int("cat")</code>.</li>
+<li><code>ZeroDivisionError</code>: dividing by 0.</li>
+<li><code>KeyError</code>: looking up a dict key that isn't there.</li>
+<li><code>EOFError</code>: the user pressed Ctrl-D (end of input). Taqueria, Grocery List, and Adieu use this to stop reading.</li></ul>
+<div class="snip" data-in="apple&#10;pear&#10;apple"><pre>items = []
+while True:
+    try:
+        items.append(input())
+    except EOFError:
+        print()          # move to a new line after Ctrl-D
+        break
+print(items)</pre></div>
+<p><code>pass</code> means "do nothing", which is handy for silently ignoring bad input. <code>raise ValueError</code> lets your own function signal an error to its caller.</p>
+<p><b>Rule of thumb:</b> catch the specific error you expect. A bare <code>except:</code> hides bugs.</p>
+</div>`,
+4: `<div class="card"><h2>Week 4 · Libraries</h2>
+<p>A <b>module</b> is a file of code you can <code>import</code>. Python comes with many (the standard library). Others are installed with <code>pip</code> on cs50.dev.</p>
+<div class="snip"><pre>import random
+from statistics import mean
+
+print(random.choice(["heads", "tails"]))
+print(random.randint(1, 10))     # includes 1 and 10
+cards = ["jack", "queen", "king"]
+random.shuffle(cards)
+print(cards)
+print(mean([100, 90]))</pre></div>
+<p><b>Command-line arguments:</b> <code>sys.argv</code> is a list of what was typed after <code>python</code>. <code>sys.exit("message")</code> stops the program with an error message.</p>
+<div class="snip" data-argv="name.py David"><pre>import sys
+
+if len(sys.argv) &lt; 2:
+    sys.exit("Too few arguments")
+print("hello, my name is", sys.argv[1])
+print(sys.argv)</pre></div>
+<p><b>Your own module:</b> when one file imports another, the imported file runs top to bottom. Guard <code>main()</code> so it only runs when the file is run directly. This matters a lot in Week 5.</p>
+<pre>def main():
+    print(hello("world"))
+
+def hello(to):
+    return f"hello, {to}"
+
+if __name__ == "__main__":
+    main()</pre>
+<p><b>APIs:</b> <code>requests.get(url).json()</code> fetches data from a web service and turns it into dicts and lists. Try that one on cs50.dev, since it needs the internet and a pip package.</p>
+</div>`,
+5: `<div class="card"><h2>Week 5 · Unit Tests</h2>
+<p>A <b>test</b> is code that checks other code. <code>assert condition</code> does nothing if the condition is true and raises <code>AssertionError</code> if it's false.</p>
+<p>Test functions you can call, not programs that print. That's why Week 5 has you refactor earlier problems so a function <b>returns</b> its result.</p>
+<div class="snip"><pre>def square(n):
+    return n * n
+
+
+def test_positive():
+    assert square(2) == 4
+    assert square(3) == 9
+
+
+def test_negative():
+    assert square(-2) == 4
+
+
+def test_zero():
+    assert square(0) == 0
+
+
+# pytest finds and runs every test_ function for you.
+# Here we call them by hand:
+for test in [test_positive, test_negative, test_zero]:
+    test()
+    print(test.__name__, "passed")</pre></div>
+<p>To test that an error is raised, use <code>pytest.raises</code>:</p>
+<pre>import pytest
+
+def test_str():
+    with pytest.raises(TypeError):
+        square("cat")</pre>
+<p><b>What makes a good test:</b> one idea per function; normal cases; edge cases (0, empty string, the exact boundary like 1% and 99%); and inputs a careless implementation would get wrong (uppercase, punctuation, numbers). On cs50.dev, run <code>pytest test_name.py</code>.</p>
+</div>`,
+6: `<div class="card"><h2>Week 6 · File I/O</h2>
+<p><code>open(name, "w")</code> writes (erasing the old file), <code>"a"</code> appends, <code>"r"</code> reads. Use <code>with</code> so the file closes automatically. On this page, files live in a temporary folder that resets on every run.</p>
+<div class="snip"><pre>with open("names.txt", "w") as file:
+    for name in ["Ron", "Hermione", "Harry"]:
+        file.write(name + "\\n")
+
+with open("names.txt") as file:
+    for line in sorted(file):
+        print("hello,", line.rstrip())   # rstrip removes the \\n</pre></div>
+<p><b>CSV files</b> store tables. <code>csv.DictReader</code> turns each row into a dict keyed by the header, and <code>csv.DictWriter</code> writes dicts back.</p>
+<div class="snip"><pre>import csv
+
+with open("students.csv", "w") as file:
+    file.write('name,home\\nHarry,"Number Four, Privet Drive"\\nRon,The Burrow\\n')
+
+with open("students.csv") as file:
+    for row in csv.DictReader(file):
+        print(f"{row['name']} is from {row['home']}")
+
+with open("out.csv", "w") as file:
+    writer = csv.DictWriter(file, fieldnames=["name", "home"])
+    writer.writeheader()
+    writer.writerow({"name": "Luna", "home": "Ottery St Catchpole"})
+
+print(open("out.csv").read())</pre></div>
+<p>Notice the quoted <code>"Number Four, Privet Drive"</code>: the csv module handles commas inside quotes, which plain <code>split(",")</code> gets wrong. Opening a missing file raises <code>FileNotFoundError</code>.</p>
+</div>`,
+7: `<div class="card"><h2>Week 7 · Regular Expressions</h2>
+<p>A regular expression (regex) is a pattern for matching text. Always write patterns as raw strings, <code>r"..."</code>, so backslashes stay as written.</p>
+<div class="tablewrap"><table>
+<tr><th>Pattern</th><th>Matches</th><th>Pattern</th><th>Matches</th></tr>
+<tr><td><code>.</code></td><td>any character</td><td><code>\\d</code></td><td>a digit</td></tr>
+<tr><td><code>*</code></td><td>0 or more</td><td><code>\\w</code></td><td>letter, digit, or _</td></tr>
+<tr><td><code>+</code></td><td>1 or more</td><td><code>\\s</code></td><td>whitespace</td></tr>
+<tr><td><code>?</code></td><td>0 or 1 (optional)</td><td><code>[a-z]</code></td><td>one character in a set</td></tr>
+<tr><td><code>{m,n}</code></td><td>m to n times</td><td><code>^</code> <code>$</code></td><td>start and end of the string</td></tr>
+<tr><td><code>( )</code></td><td>a group you can read back</td><td><code>\\b</code></td><td>a word boundary</td></tr>
+</table></div>
+<div class="snip" data-in="malan@harvard.edu"><pre>import re
+
+email = input("Email: ").strip()
+if re.search(r"^\\w+@(\\w+\\.)?\\w+\\.(edu|com)$", email, re.IGNORECASE):
+    print("Valid")
+else:
+    print("Invalid")</pre></div>
+<p><b>Groups</b> pull pieces out of a match:</p>
+<div class="snip" data-in="Malan, David"><pre>import re
+
+name = input("Name: ").strip()
+if matches := re.search(r"^(.+), *(.+)$", name):
+    name = matches.group(2) + " " + matches.group(1)
+print(f"hello, {name}")</pre></div>
+<p><code>re.sub(pattern, replacement, text)</code> replaces matches, and <code>re.findall</code> returns all matches in a list. Test patterns on regex101.com with the Python flavor selected.</p>
+</div>`,
+8: `<div class="card"><h2>Week 8 · Object-Oriented Programming</h2>
+<p>A <b>class</b> is a blueprint for your own type. An <b>object</b> is one value made from it. <code>__init__</code> runs when you create an object, and <code>self</code> is that object.</p>
+<div class="snip"><pre>class Student:
+    def __init__(self, name, house):
+        if not name:
+            raise ValueError("Missing name")
+        self.name = name
+        self.house = house
+
+    def __str__(self):              # what print() shows
+        return f"{self.name} from {self.house}"
+
+    @property
+    def house(self):                # read with student.house
+        return self._house
+
+    @house.setter
+    def house(self, house):         # runs on student.house = ...
+        if house not in ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]:
+            raise ValueError("Invalid house")
+        self._house = house
+
+
+s = Student("Harry", "Gryffindor")
+print(s)
+try:
+    s.house = "Number Four, Privet Drive"
+except ValueError as e:
+    print("Error:", e)</pre></div>
+<ul><li><b>Properties</b> let you validate every change to an attribute. The real value lives in <code>self._house</code> (underscore by convention).</li>
+<li><b>Methods</b> are functions inside a class; their first parameter is <code>self</code>.</li>
+<li><b>Class methods</b> (<code>@classmethod</code>) belong to the class, not one object.</li>
+<li><b>Inheritance:</b> <code>class Wizard(Person):</code> reuses Person's code. <code>super().__init__(...)</code> calls the parent's setup.</li>
+<li><b>Operator overloading:</b> define <code>__add__</code> to make <code>a + b</code> work for your type.</li></ul>
+</div>`,
+9: `<div class="card"><h2>Week 9 · Et Cetera</h2>
+<p>A tour of features that make code shorter and clearer.</p>
+<div class="snip"><pre># set: unique items only
+print(set(["Gryffindor", "Gryffindor", "Slytherin"]))
+
+# list and dict comprehensions
+students = ["Hermione", "Harry", "Ron"]
+print([s.upper() for s in students])
+print([s for s in students if s.startswith("H")])
+print({s: len(s) for s in students})
+
+# unpacking with * and **
+def total(galleons, sickles, knuts):
+    return (galleons * 17 + sickles) * 29 + knuts
+coins = [100, 50, 25]
+print(total(*coins))
+print(total(**{"galleons": 1, "sickles": 0, "knuts": 0}))
+
+# enumerate gives index and item
+for i, s in enumerate(students, start=1):
+    print(i, s)
+
+# map, filter, lambda
+print(list(map(str.lower, students)))
+print(sorted(students, key=lambda s: len(s)))
+
+# type hints and a docstring (documentation, not enforced)
+def meow(n: int) -&gt; str:
+    """Return 'meow' n times, one per line."""
+    return "meow\\n" * n
+print(meow(2))</pre></div>
+<p>Also covered in the lecture: <code>global</code> variables, constants in <code>CAPS</code>, <code>argparse</code> for flags like <code>-n 3</code>, and generators with <code>yield</code>. The final project is the main work this week.</p>
+</div>`
+};
+
+const QUIZ = {
+ 0: [ {id:"q0a", code:'print("5" + "5")', opts:["10","55","Error"], a:1, why:"Both values are strings, so + joins them. To add numbers, convert first: int(\"5\") + int(\"5\")."},
+      {id:"q0b", code:'x = input("x: ")   # user types 3\nprint(x * 2)', opts:["6","33","Error"], a:1, why:"input() returns the str \"3\". Multiplying a str by 2 repeats it."},
+      {id:"q0c", code:'def f(n):\n    print(n * 2)\n\ny = f(4)\nprint(y)', opts:["8 then 8","8 then None","Error"], a:1, why:"f prints 8 but returns nothing, and a function without return gives back None. Use return when the caller needs the value."} ],
+ 1: [ {id:"q1a", code:'x = 5\nif x > 3:\n    print("A")\nelif x > 1:\n    print("B")\nelse:\n    print("C")', opts:["A","A B","B"], a:0, why:"Only the first true branch runs. x > 1 is also true, but elif is skipped once a branch has run."},
+      {id:"q1b", code:'answer = "Yes "\nprint(answer.lower() == "yes")', opts:["True","False"], a:1, why:"The trailing space is still there. You'd need .strip() as well."} ],
+ 2: [ {id:"q2a", code:'for i in range(1, 4):\n    print(i, end=" ")', opts:["1 2 3 4","1 2 3","0 1 2 3"], a:1, why:"range stops before its end value."},
+      {id:"q2b", code:'d = {"a": 1}\nd["b"] = 2\nprint(len(d))', opts:["1","2","Error"], a:1, why:"Assigning to a new key adds it to the dict."} ],
+ 3: [ {id:"q3a", code:'int("3.5")', opts:["3","4","ValueError"], a:2, why:"int() only accepts whole-number text. float(\"3.5\") works, then int() can truncate it."},
+      {id:"q3b", code:'try:\n    x = 1 / 0\nexcept ValueError:\n    print("caught")', opts:["caught","ZeroDivisionError crashes the program","Nothing happens"], a:1, why:"except only catches the error type you name. 1 / 0 raises ZeroDivisionError."} ],
+ 4: [ {id:"q4a", code:'# In hello.py:\nif __name__ == "__main__":\n    main()', opts:["Runs main() only when hello.py is run directly","Runs main() on import","Required for every program"], a:0, why:"When another file imports hello.py, __name__ is \"hello\", so main() is skipped. That keeps imports and tests from asking for input."},
+      {id:"q4b", code:'# Command: python greet.py Ada\nimport sys\nprint(sys.argv[1])', opts:["greet.py","Ada","python"], a:1, why:"sys.argv[0] is the program name and sys.argv[1] is the first argument after it."} ],
+ 5: [ {id:"q5a", code:'def test_square():\n    assert square(3) == 9', opts:["Prints True","Does nothing if correct, raises AssertionError if not","Returns 9"], a:1, why:"assert is silent when the condition holds. pytest reports any assertion that fails."},
+      {id:"q5b", code:'# Which is easier to test?\n# A: def value(g): print(100)\n# B: def value(g): return 100', opts:["A","B"], a:1, why:"A test can compare a returned value with assert. Printed output goes to the screen, where an assert can't check it."} ],
+ 6: [ {id:"q6a", code:'with open("log.txt", "w") as f:\n    f.write("new")\n# log.txt existed with 100 lines', opts:["Adds \"new\" at the end","Replaces the whole file with \"new\"","Error"], a:1, why:"\"w\" erases the file first. Use \"a\" to append."},
+      {id:"q6b", code:'line = "Harry\\n"\nprint(len(line.rstrip()))', opts:["5","6"], a:0, why:"Lines read from a file keep their newline. rstrip() removes it."} ],
+ 7: [ {id:"q7a", code:'import re\nprint(re.search(r"^\\d+$", "123a"))', opts:["A match for 123","None"], a:1, why:"^ and $ require the whole string to be digits, and \"a\" breaks that."},
+      {id:"q7b", code:'import re\nprint(re.findall(r"\\bcat\\b", "cat catalog cat"))', opts:["['cat', 'cat', 'cat']","['cat', 'cat']"], a:1, why:"\\b requires a word boundary, so the \"cat\" inside \"catalog\" doesn't count."} ],
+ 8: [ {id:"q8a", code:'class Cat:\n    def __str__(self):\n        return "meow"\n\nprint(Cat())', opts:["meow","<__main__.Cat object at …>","Error"], a:0, why:"print() calls __str__ to get the text to show."},
+      {id:"q8b", code:'class Box:\n    def __init__(self, size):\n        size = size\n\nprint(Box(3).size)', opts:["3","AttributeError"], a:1, why:"Without self., the value is a local variable that disappears. Write self.size = size."} ],
+ 9: [ {id:"q9a", code:'print(len({c for c in "banana"}))', opts:["6","3","1"], a:1, why:"A set keeps unique items: b, a, n."} ],
+};
+
+/* =================== STATE =================== */
+const blank = () => ({ lec:{}, notesRead:{}, code:{}, passed:{}, sub:{}, quiz:{}, plan:{}, tryIn:{}, cmd:{}, journal:"", week:0, theme:"auto" });
+let state = blank();
+function load(){ try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); if(s) state = Object.assign(blank(), s); } catch(e){} }
+let saveTimer = null;
+function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){} }
+function saveSoon(){ clearTimeout(saveTimer); saveTimer = setTimeout(save, 300); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+/* =================== THEME =================== */
+function applyTheme(){
+  const t = state.theme || "auto";
+  if(t === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", t);
+  document.getElementById("theme-btn").textContent = "Theme: " + t;
+}
+document.getElementById("theme-btn").addEventListener("click", () => {
+  const order = ["auto","light","dark"];
+  state.theme = order[(order.indexOf(state.theme || "auto") + 1) % 3];
+  applyTheme(); save();
+});
+
+/* =================== TABS =================== */
+function showTab(name){
+  document.querySelectorAll("nav button").forEach(x => x.classList.toggle("active", x.dataset.tab === name));
+  document.querySelectorAll("section.tab").forEach(x => x.classList.toggle("active", x.id === "tab-" + name));
+  window.scrollTo({top:0});
+  if(name === "learn" || name === "practice") loadPy().catch(()=>{});
+}
+document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+function goWeek(n, tab){ state.week = n; save(); renderLearn(); renderPractice(); showTab(tab); }
+
+/* =================== PYTHON (Pyodide) =================== */
+let pyPromise = null, py = null;
+function setPyStatus(t, done){
+  ["py-status","py-status-learn"].forEach(id => { const el = document.getElementById(id); if(el){ el.textContent = t; el.className = "pill " + (done ? "done" : ""); } });
+}
+function loadPy(){
+  if(pyPromise) return pyPromise;
+  setPyStatus("Loading Python…", false);
+  pyPromise = (async () => {
+    if(!window.loadPyodide){
+      await new Promise((res, rej) => {
+        const s = document.createElement("script");
+        s.src = PYODIDE_URL + "pyodide.js"; s.onload = res;
+        s.onerror = () => rej(new Error("Couldn't download Python. Check your internet connection, then reload the page."));
+        document.head.appendChild(s);
+      });
+    }
+    py = await loadPyodide({ indexURL: PYODIDE_URL });
+    py.runPython(document.getElementById("py-harness").textContent);
+    setPyStatus("Python ready", true);
+    return py;
+  })().catch(e => { setPyStatus("Python failed to load", false); pyPromise = null; throw e; });
+  return pyPromise;
+}
+async function pyCall(fn, payload){
+  const p = await loadPy();
+  p.globals.set("_payload", JSON.stringify(payload));
+  return JSON.parse(p.runPython(`${fn}(_payload)`));
+}
+
+/* =================== FRIENDLY ERRORS =================== */
+const EXPLAIN = {
+  SyntaxError:"Python couldn't read this line. Look for a missing colon at the end of <code>if</code>/<code>for</code>/<code>while</code>/<code>def</code>, an unclosed quote or parenthesis, or <code>=</code> where you meant <code>==</code>.",
+  IndentationError:"Lines inside an <code>if</code>, loop, <code>def</code>, or <code>try</code> must be indented by 4 spaces, and lines in the same block must line up exactly.",
+  TabError:"The indentation mixes tabs and spaces. On this page Tab inserts 4 spaces; re-indent the line.",
+  NameError:"Python doesn't recognize a name. Usually a typo, a variable used before it was created, a function defined below where it's called at the top level, or text missing its quotes.",
+  TypeError:"An operation got the wrong kind of value, like adding a <code>str</code> to an <code>int</code>, or calling a function with the wrong number of arguments. Remember <code>input()</code> always returns text.",
+  ValueError:"The type was right but the value wasn't, like <code>int(\"cat\")</code> or unpacking 2 items into 3 variables. If users might type this, catch it with <code>try</code>/<code>except ValueError</code>.",
+  ZeroDivisionError:"Something was divided by 0. Check for that case before dividing, or catch the error.",
+  KeyError:"You looked up a dictionary key that isn't there. Check with <code>if key in d:</code> or use <code>d.get(key)</code>. Watch capitalization.",
+  IndexError:"You asked for a position past the end of a list or string. Positions start at 0, so the last item of 3 is <code>[2]</code>.",
+  AttributeError:"That value doesn't have the method or attribute you used. Common causes: a typo (<code>.lowr()</code>), calling a string method on a number, or a value that is <code>None</code> because a function didn't <code>return</code>.",
+  UnboundLocalError:"A variable was used inside a function before it got a value there. Give it a starting value first.",
+  EOFError:"Your program called <code>input()</code> more times than there were inputs. In a check, that usually means it asked again when it should have accepted the answer, or it reads until Ctrl-D without catching <code>EOFError</code>.",
+  FileNotFoundError:"The file doesn't exist in the current folder. Check the name, and catch <code>FileNotFoundError</code> if the user might give a bad name.",
+  ModuleNotFoundError:"This page only has Python's standard library. Libraries installed with pip (emoji, inflect, requests…) work on cs50.dev.",
+  RecursionError:"A function kept calling itself without stopping.",
+  TookTooLong:"Your program ran for too long and was stopped. That's usually an infinite loop: check that every <code>while</code> loop can end (a <code>break</code>, or a condition that eventually turns false).",
+  AssertionError:"An <code>assert</code> was false.",
+};
+function explainHtml(err, ta){
+  if(!err) return "";
+  const lineBtn = err.line ? ` <button class="ghost goline" data-line="${err.line}" type="button">Go to line ${err.line}</button>` : "";
+  const head = err.type === "TookTooLong" ? "Stopped: probably an infinite loop" : `${esc(err.type)}${err.msg ? ": " + esc(err.msg) : ""}${err.line ? ` (line ${err.line})` : ""}`;
+  return `<div class="explain"><b>${head}</b><br>${EXPLAIN[err.type] || "Read the error type and message, then look at the line it points to."}${lineBtn}</div>`;
+}
+function wireGoLine(box, ta){
+  box.querySelectorAll(".goline").forEach(b => b.addEventListener("click", () => {
+    const n = +b.dataset.line, lines = ta.value.split("\n");
+    let start = 0; for(let i = 0; i < n - 1 && i < lines.length; i++) start += lines[i].length + 1;
+    const end = start + (lines[n-1] || "").length;
+    ta.focus(); ta.setSelectionRange(start, end);
+    const lh = parseFloat(getComputedStyle(ta).lineHeight) || 19;
+    ta.scrollTop = Math.max(0, (n - 4) * lh);
+  }));
+}
+
+/* =================== EDITOR =================== */
+function insertText(ta, text, from, to){
+  ta.focus();
+  if(from !== undefined) ta.setSelectionRange(from, to);
+  if(!document.execCommand || !document.execCommand("insertText", false, text)){
+    ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, "end");
+    ta.dispatchEvent(new Event("input"));
+  }
+}
+function makeEditor(value, opts={}){
+  const wrap = document.createElement("div");
+  wrap.className = "ed" + (opts.small ? " small" : "");
+  const gut = document.createElement("pre"); gut.className = "gut"; gut.setAttribute("aria-hidden","true");
+  const ta = document.createElement("textarea");
+  ta.spellcheck = false; ta.setAttribute("autocapitalize","off"); ta.setAttribute("autocomplete","off"); ta.setAttribute("autocorrect","off");
+  if(opts.id) ta.id = opts.id;
+  if(opts.label) ta.setAttribute("aria-label", opts.label);
+  ta.value = value;
+  if(opts.rows) ta.style.height = (opts.rows * 19.5 + 26) + "px";
+  wrap.append(gut, ta);
+  const syncGut = () => { const n = ta.value.split("\n").length; let s = ""; for(let i = 1; i <= n; i++) s += i + "\n"; gut.textContent = s; gut.scrollTop = ta.scrollTop; };
+  ta.addEventListener("input", () => { syncGut(); opts.onChange && opts.onChange(ta.value); });
+  ta.addEventListener("scroll", () => { gut.scrollTop = ta.scrollTop; });
+  ta.addEventListener("keydown", e => {
+    const v = ta.value, s = ta.selectionStart, en = ta.selectionEnd;
+    const lineStart = v.lastIndexOf("\n", s - 1) + 1;
+    if((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); opts.onRun && opts.onRun(); return; }
+    if(e.key === "Tab" && !e.shiftKey){
+      e.preventDefault();
+      if(s !== en && v.slice(s, en).includes("\n")){
+        const block = v.slice(lineStart, en).split("\n").map(l => "    " + l).join("\n");
+        insertText(ta, block, lineStart, en);
+      } else insertText(ta, "    ");
+      return;
+    }
+    if(e.key === "Tab" && e.shiftKey){
+      e.preventDefault();
+      const endLine = v.indexOf("\n", en); const stop = endLine === -1 ? v.length : endLine;
+      const block = v.slice(lineStart, stop).split("\n").map(l => l.replace(/^ {1,4}/, "")).join("\n");
+      insertText(ta, block, lineStart, stop);
+      return;
+    }
+    if(e.key === "Enter" && !e.shiftKey && !e.altKey){
+      const line = v.slice(lineStart, s);
+      let indent = (line.match(/^ */) || [""])[0];
+      if(/:\s*(#.*)?$/.test(line)) indent += "    ";
+      e.preventDefault(); insertText(ta, "\n" + indent);
+      return;
+    }
+    if(e.key === "Backspace" && s === en && s > lineStart){
+      const before = v.slice(lineStart, s);
+      if(/^ +$/.test(before)){
+        const rm = before.length % 4 === 0 ? 4 : before.length % 4;
+        e.preventDefault(); insertText(ta, "", s - rm, s);
+      }
+    }
+  });
+  syncGut();
+  return { wrap, ta, set(v){ ta.value = v; syncGut(); } };
+}
+
+/* =================== LEARN =================== */
+function weekChips(host, tab){
+  host.innerHTML = "";
+  WEEKS.forEach(w => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip" + (w.n === state.week ? " active" : "");
+    let ct = "";
+    if(tab === "practice"){ const ps = w.probs.filter(p => p.kind !== "ext"); if(ps.length) ct = `<span class="ct">${ps.filter(p => state.passed[p.id]).length}/${ps.length}</span>`; }
+    b.innerHTML = `Week ${w.n}${ct}`;
+    b.title = w.title;
+    b.addEventListener("click", () => { state.week = w.n; save(); renderLearn(); renderPractice(); });
+    host.appendChild(b);
+  });
+}
+function makeSnippet(el){
+  const code = el.querySelector("pre").textContent;
+  const inputs = el.dataset.in || "";
+  const argv = el.dataset.argv;
+  el.innerHTML = "";
+  const ed = makeEditor(code, { rows: Math.min(code.split("\n").length, 22), label:"Example code" });
+  el.appendChild(ed.wrap);
+  let inBox = null;
+  if(inputs || code.includes("input(")){
+    const lab = document.createElement("label"); lab.className = "fieldlabel"; lab.textContent = "Input (one line per input() call)";
+    inBox = document.createElement("textarea"); inBox.className = "plain"; inBox.value = inputs; inBox.rows = Math.max(1, inputs.split("\n").length);
+    inBox.style.minHeight = "38px";
+    el.append(lab, inBox);
+  }
+  const row = document.createElement("div"); row.className = "row";
+  const run = document.createElement("button"); run.type = "button"; run.className = "run"; run.textContent = "Run";
+  const reset = document.createElement("button"); reset.type = "button"; reset.className = "ghost"; reset.textContent = "Reset example";
+  row.append(run, reset);
+  if(argv){ const m = document.createElement("span"); m.className = "muted"; m.innerHTML = `Runs as <code>python ${esc(argv)}</code>`; row.appendChild(m); }
+  const out = document.createElement("div"); out.className = "out"; out.textContent = "Press Run (or Ctrl+Enter in the code).";
+  el.append(row, out);
+  const doRun = async () => {
+    run.disabled = true; out.textContent = py ? "Running…" : "Loading Python (first time only)…";
+    try {
+      const r = await pyCall("tryit", { code: ed.ta.value, in: inBox ? inBox.value.split("\n").filter((x,i,a) => !(i === a.length - 1 && x === "")) : [], argv: argv ? argv.split(/\s+/) : null });
+      out.innerHTML = esc(r.out || (r.error ? "" : "(no output)")) + explainHtml(r.error);
+      wireGoLine(out, ed.ta);
+    } catch(e){ out.textContent = e.message; }
+    run.disabled = false;
+  };
+  run.addEventListener("click", doRun);
+  ed.ta.addEventListener("keydown", e => { if((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); doRun(); } });
+  reset.addEventListener("click", () => { ed.set(code); if(inBox) inBox.value = inputs; out.textContent = "Press Run."; });
+}
+function renderQuiz(n){
+  const qs = QUIZ[n] || [];
+  if(!qs.length) return null;
+  const card = document.createElement("div"); card.className = "card";
+  card.innerHTML = `<h2>Check yourself</h2><p class="muted">Predict the answer before you click. If you miss one, paste the code into an example above and run it.</p>`;
+  qs.forEach(q => {
+    const box = document.createElement("div"); box.className = "quiz";
+    box.innerHTML = `<pre>${esc(q.code)}</pre><div class="muted">What happens?</div><div class="opts"></div><div class="why" hidden></div>`;
+    const opts = box.querySelector(".opts"), why = box.querySelector(".why");
+    const showResult = picked => {
+      opts.querySelectorAll(".opt").forEach((b, i) => { b.classList.toggle("right", i === q.a); b.classList.toggle("wrong", i === picked && picked !== q.a); });
+      why.hidden = false;
+      why.innerHTML = (picked === q.a ? `<b style="color:var(--ok)">Right.</b> ` : `<b style="color:var(--bad)">Not quite.</b> `) + esc(q.why);
+    };
+    q.opts.forEach((o, i) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.textContent = o;
+      b.addEventListener("click", () => { state.quiz[q.id] = { picked:i, right: i === q.a }; save(); showResult(i); renderDash(); renderCourse(); });
+      opts.appendChild(b);
+    });
+    if(state.quiz[q.id]) showResult(state.quiz[q.id].picked);
+    card.appendChild(box);
+  });
+  const row = document.createElement("div"); row.className = "row";
+  const reset = document.createElement("button"); reset.type = "button"; reset.className = "ghost"; reset.textContent = "Clear my answers";
+  reset.addEventListener("click", () => { qs.forEach(q => delete state.quiz[q.id]); save(); renderLearn(); });
+  row.appendChild(reset); card.appendChild(row);
+  return card;
+}
+function renderLearn(){
+  weekChips(document.getElementById("learn-chips"), "learn");
+  const body = document.getElementById("learn-body");
+  const n = state.week;
+  body.innerHTML = LEARN[n];
+  body.querySelectorAll(".snip").forEach(makeSnippet);
+  const q = renderQuiz(n); if(q) body.appendChild(q);
+  const w = WEEKS[n];
+  const nav = document.createElement("div"); nav.className = "card";
+  nav.innerHTML = `<h2>Next</h2><p class="muted">Practice the Week ${n} problems, or watch the lecture if you haven't yet.</p>
+    <div class="row"><button class="run" type="button" id="learn-to-prac">Practice Week ${n}</button>
+    <a class="ghost" style="text-decoration:none" href="https://cs50.harvard.edu/python/weeks/${n}/" target="_blank" rel="noopener">Lecture ${n}: ${esc(w.title)}</a></div>`;
+  body.appendChild(nav);
+  nav.querySelector("#learn-to-prac").addEventListener("click", () => goWeek(n, "practice"));
+}
+
+/* =================== PRACTICE =================== */
+function inputLines(s){ const a = s.split("\n"); if(a.length && a[a.length-1] === "") a.pop(); return a; }
+function renderProblem(p){
+  const div = document.createElement("div"); div.className = "card"; div.id = "prob-" + p.id;
+  if(p.kind === "ext"){
+    div.innerHTML = `<div class="prob-head"><h2>${esc(p.name)}</h2><div class="meta"><span class="pill ext">cs50.dev only</span>
+      <label><input type="checkbox" data-sub ${state.sub[p.id] ? "checked" : ""}> Submitted</label></div></div>
+      <p class="muted" style="margin-top:8px">${p.why} Work on it at cs50.dev. <a href="${p.link || `https://cs50.harvard.edu/python/psets/${p.week}/`}" target="_blank" rel="noopener">Read the full spec</a>.</p>`;
+    div.querySelector("[data-sub]").addEventListener("change", e => { state.sub[p.id] = e.target.checked; save(); renderDash(); renderCourse(); });
+    return div;
+  }
+  const passed = !!state.passed[p.id];
+  const starter = p.starter ? src(p.starter) : DEFAULT_STARTER;
+  div.innerHTML = `
+    <div class="prob-head"><h2>${esc(p.name)}</h2>
+      <div class="meta"><span class="pill ${passed ? "done" : ""}" data-status>${passed ? "Passed" : "Not yet"}</span>
+      <label><input type="checkbox" data-sub ${state.sub[p.id] ? "checked" : ""}> Submitted</label></div></div>
+    <div class="muted mono" style="font-size:13px;margin-top:2px">${esc(p.file)}</div>
+    <div class="prompt">${p.prompt}<p class="muted"><a href="https://cs50.harvard.edu/python/psets/${p.week}/" target="_blank" rel="noopener">Full spec and submit commands on the CS50 site</a></p></div>
+    <div data-ed></div>
+    <div data-try></div>
+    <div class="row">
+      <button class="run" data-check type="button">Run checks</button>
+      <button class="ghost" data-tryit type="button">Try it</button>
+      <button class="ghost" data-copy type="button">Copy code</button>
+      <button class="ghost" data-nudge type="button">Nudge (0/${p.nudges.length})</button>
+      <span data-resetwrap><button class="ghost danger" data-reset type="button">Reset code</button></span>
+    </div>
+    <div data-nudges></div>
+    <div data-out></div>`;
+  const ed = makeEditor(state.code[p.id] ?? starter, { id:"code-" + p.id, label: p.name + " code", rows: Math.min(22, Math.max(8, (state.code[p.id] ?? starter).split("\n").length + 2)),
+    onChange: v => { state.code[p.id] = v; saveSoon(); }, onRun: () => check() });
+  div.querySelector("[data-ed]").appendChild(ed.wrap);
+
+  // Try it controls
+  const tryBox = div.querySelector("[data-try]");
+  let inBox = null, cmdBox = null;
+  if(p.kind !== "unittest"){
+    if(p.cmd){
+      tryBox.insertAdjacentHTML("beforeend", `<label class="fieldlabel" for="cmd-${p.id}">Command for Try it</label><input class="plain" id="cmd-${p.id}" value="${esc(state.cmd[p.id] ?? p.cmd)}">`);
+      cmdBox = tryBox.querySelector("input"); cmdBox.addEventListener("input", () => { state.cmd[p.id] = cmdBox.value; saveSoon(); });
+    }
+    const usesInput = !p.cmd;
+    if(usesInput){
+      tryBox.insertAdjacentHTML("beforeend", `<label class="fieldlabel" for="in-${p.id}">Input for Try it (one line per <code>input()</code>; Ctrl-D is sent after the last line)</label><textarea class="plain" id="in-${p.id}" rows="2"></textarea>`);
+      inBox = tryBox.querySelector("textarea"); inBox.value = state.tryIn[p.id] ?? p.tryIn ?? "";
+      inBox.addEventListener("input", () => { state.tryIn[p.id] = inBox.value; saveSoon(); });
+    }
+  }
+  const out = div.querySelector("[data-out]");
+  const pill = div.querySelector("[data-status]");
+  const checkBtn = div.querySelector("[data-check]"), tryBtn = div.querySelector("[data-tryit]");
+
+  async function check(){
+    checkBtn.disabled = true; out.innerHTML = `<div class="out">${py ? "Checking…" : "Loading Python (first time only)…"}</div>`;
+    try {
+      let payload;
+      if(p.kind === "unittest") payload = { kind:"unittest", code: ed.ta.value, module: p.module, impls: p.impls.map(i => ({ label:i.label, correct:!!i.correct, src: src(i.id, "impl") })) };
+      else payload = { code: ed.ta.value, tests: p.tests };
+      const results = await pyCall("grade", payload);
+      const nOk = results.filter(r => r.ok).length, all = nOk === results.length && results.length > 0;
+      let html = `<div class="summary-line ${all ? "ok" : "bad"}">${all ? `All ${results.length} checks passed. Copy it to cs50.dev and run check50.` : `${nOk} of ${results.length} checks passed.`}</div><div class="results">`;
+      let explained = false;
+      results.forEach(r => {
+        html += `<div class="res ${r.ok ? "ok" : "bad"}"><div class="lbl">${esc(r.label)}</div>`;
+        if(!r.ok){
+          if(r.detail) html += `<pre>${esc(r.detail)}</pre>`;
+          if(r.err && !explained){ html += explainHtml(r.err); explained = true; }
+        }
+        html += `</div>`;
+      });
+      out.innerHTML = html + "</div>";
+      wireGoLine(out, ed.ta);
+      if(all && !state.passed[p.id]){ state.passed[p.id] = true; save(); }
+      pill.textContent = state.passed[p.id] ? "Passed" : "Not yet"; pill.className = "pill " + (state.passed[p.id] ? "done" : "");
+      renderDash(); renderCourse(); weekChips(document.getElementById("prac-chips"), "practice");
+    } catch(e){ out.innerHTML = `<div class="out">${esc(e.message)}</div>`; }
+    checkBtn.disabled = false;
+  }
+  async function tryIt(){
+    if(p.kind === "unittest"){
+      out.innerHTML = `<div class="out">Your tests are run by Run checks. To experiment freely, use the scratchpad at the bottom of this page.</div>`;
+      return;
+    }
+    tryBtn.disabled = true; out.innerHTML = `<div class="out">${py ? "Running…" : "Loading Python (first time only)…"}</div>`;
+    try {
+      let argv = null;
+      if(cmdBox){ argv = cmdBox.value.trim().split(/\s+/); if(argv[0] === "python" || argv[0] === "python3") argv.shift(); }
+      const r = await pyCall("tryit", { code: ed.ta.value, in: inBox ? inputLines(inBox.value) : [], argv, files: p.sampleFiles || {}, showFiles: !!p.showFiles });
+      let html = `<div class="out">${esc(r.out || (r.error ? "" : "(no output)"))}`;
+      if(r.exited && r.exit !== 0 && r.exit !== null) html += `\n<span class="muted">[program exited]</span>`;
+      if(r.error && r.error.type === "EOFError" && r.eof) html += `\n<span class="muted">Your program asked for more input than the Input box had. Add another line, or catch EOFError if you're reading until Ctrl-D.</span>`;
+      html += `</div>`;
+      if(p.showFiles && r.files){
+        const made = Object.keys(r.files).filter(f => !(p.sampleFiles && f in p.sampleFiles));
+        made.forEach(f => { html += `<div class="fieldlabel">${esc(f)} (written by your program)</div><pre>${esc(r.files[f])}</pre>`; });
+      }
+      if(r.error && !(r.error.type === "EOFError" && r.eof)) html += explainHtml(r.error);
+      out.innerHTML = html; wireGoLine(out, ed.ta);
+    } catch(e){ out.innerHTML = `<div class="out">${esc(e.message)}</div>`; }
+    tryBtn.disabled = false;
+  }
+  checkBtn.addEventListener("click", check);
+  tryBtn.addEventListener("click", tryIt);
+  if(p.kind === "unittest") tryBtn.hidden = true;
+
+  const copyBtn = div.querySelector("[data-copy]");
+  copyBtn.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(ed.ta.value); copyBtn.textContent = "Copied"; }
+    catch(e){ ed.ta.focus(); ed.ta.select(); copyBtn.textContent = "Selected: press Ctrl+C"; }
+    setTimeout(() => copyBtn.textContent = "Copy code", 1800);
+  });
+  let shown = 0;
+  const nudgeBtn = div.querySelector("[data-nudge]"), nudgeBox = div.querySelector("[data-nudges]");
+  nudgeBtn.addEventListener("click", () => {
+    if(shown >= p.nudges.length) return;
+    nudgeBox.insertAdjacentHTML("beforeend", `<div class="nudge"><b>Nudge ${shown + 1}:</b> ${p.nudges[shown]}</div>`);
+    shown++; nudgeBtn.textContent = `Nudge (${shown}/${p.nudges.length})`;
+    if(shown >= p.nudges.length) nudgeBtn.disabled = true;
+  });
+  const resetWrap = div.querySelector("[data-resetwrap]");
+  function wireReset(){
+    resetWrap.querySelector("[data-reset]").addEventListener("click", () => {
+      resetWrap.innerHTML = `<span class="confirm">Erase your code? <button class="ghost danger" data-yes type="button">Yes, reset</button><button class="ghost" data-no type="button">Keep it</button></span>`;
+      resetWrap.querySelector("[data-yes]").addEventListener("click", () => { ed.set(starter); delete state.code[p.id]; save(); restore(); });
+      resetWrap.querySelector("[data-no]").addEventListener("click", restore);
+    });
+  }
+  function restore(){ resetWrap.innerHTML = `<button class="ghost danger" data-reset type="button">Reset code</button>`; wireReset(); }
+  wireReset();
+  div.querySelector("[data-sub]").addEventListener("change", e => { state.sub[p.id] = e.target.checked; save(); renderDash(); renderCourse(); });
+  return div;
+}
+function renderPractice(){
+  weekChips(document.getElementById("prac-chips"), "practice");
+  const body = document.getElementById("prac-body");
+  body.innerHTML = "";
+  const w = WEEKS[state.week];
+  const head = document.createElement("div"); head.className = "card";
+  head.innerHTML = `<h2>Problem Set ${w.n}: ${esc(w.title)}</h2><p class="muted" style="margin:0">${w.n === 9 ? "Week 9 has no problem set, only the final project." : `Haven't done the Learn section yet? <a href="#" data-go>Open Week ${w.n} in Learn</a>.`}</p>`;
+  const go = head.querySelector("[data-go]"); if(go) go.addEventListener("click", e => { e.preventDefault(); goWeek(w.n, "learn"); });
+  body.appendChild(head);
+  w.probs.forEach(p => body.appendChild(renderProblem(p)));
+}
+
+/* =================== SCRATCHPAD =================== */
+function renderScratch(){
+  const host = document.getElementById("scratch-host");
+  const ed = makeEditor(state.scratch ?? src("scratch"), { id:"scratch", label:"Scratchpad code", rows:8, onChange: v => { state.scratch = v; saveSoon(); }, onRun: () => run() });
+  host.appendChild(ed.wrap);
+  host.insertAdjacentHTML("beforeend", `<label class="fieldlabel" for="scratch-in">Input (one line per input())</label><textarea class="plain" id="scratch-in" rows="2"></textarea>
+    <div class="row"><button class="run" type="button" id="scratch-run">Run</button></div><div class="out" id="scratch-out">Output appears here.</div>`);
+  const inBox = document.getElementById("scratch-in"), out = document.getElementById("scratch-out"), btn = document.getElementById("scratch-run");
+  async function run(){
+    btn.disabled = true; out.textContent = py ? "Running…" : "Loading Python (first time only)…";
+    try { const r = await pyCall("tryit", { code: ed.ta.value, in: inputLines(inBox.value) }); out.innerHTML = esc(r.out || (r.error ? "" : "(no output)")) + explainHtml(r.error); wireGoLine(out, ed.ta); }
+    catch(e){ out.textContent = e.message; }
+    btn.disabled = false;
+  }
+  btn.addEventListener("click", run);
+}
+
+/* =================== COURSE =================== */
+function weekStatus(w){
+  const prac = w.probs.filter(p => p.kind !== "ext");
+  return { prac, passed: prac.filter(p => state.passed[p.id]).length, sub: w.probs.filter(p => state.sub[p.id]).length,
+    quiz: (QUIZ[w.n] || []).filter(q => state.quiz[q.id] && state.quiz[q.id].right).length, answered: (QUIZ[w.n] || []).filter(q => state.quiz[q.id]).length, quizN: (QUIZ[w.n] || []).length };
+}
+function renderCourse(){
+  const box = document.getElementById("course-weeks");
+  box.innerHTML = "";
+  WEEKS.forEach(w => {
+    const s = weekStatus(w);
+    const card = document.createElement("div"); card.className = "card week-card";
+    let probs = w.probs.map(p => `<div class="probrow"><span>${esc(p.name)}</span><span class="r">
+        ${p.kind === "ext" ? `<span class="pill ext">cs50.dev only</span>` : `<span class="pill ${state.passed[p.id] ? "done" : ""}">${state.passed[p.id] ? "Passed here" : "Not yet"}</span>`}
+        <label><input type="checkbox" data-sub="${p.id}" ${state.sub[p.id] ? "checked" : ""}> Submitted</label></span></div>`).join("");
+    card.innerHTML = `<h2><span class="tag">Week ${w.n}</span>${esc(w.title)}</h2>
+      <label class="item"><input type="checkbox" data-lec="${w.n}" ${state.lec[w.n] ? "checked" : ""}><div>Watched <a href="https://cs50.harvard.edu/python/weeks/${w.n}/" target="_blank" rel="noopener">Lecture ${w.n}</a></div></label>
+      <label class="item"><input type="checkbox" data-notes="${w.n}" ${state.notesRead[w.n] ? "checked" : ""}><div>Read the lecture notes and watched the shorts (linked on the lecture page)</div></label>
+      <div class="muted" style="margin:8px 0">Learn checks right: ${s.quiz}/${s.quizN} · Practice passed: ${s.passed}/${s.prac.length} · Submitted: ${s.sub}/${w.probs.length}</div>
+      <div>${probs}</div>
+      <div class="row"><button class="ghost" type="button" data-learn>Learn Week ${w.n}</button><button class="ghost" type="button" data-prac>Practice Week ${w.n}</button></div>`;
+    card.querySelector("[data-lec]").addEventListener("change", e => { state.lec[w.n] = e.target.checked; save(); renderDash(); });
+    card.querySelector("[data-notes]").addEventListener("change", e => { state.notesRead[w.n] = e.target.checked; save(); renderDash(); });
+    card.querySelectorAll("[data-sub]").forEach(cb => cb.addEventListener("change", e => { state.sub[cb.dataset.sub] = e.target.checked; save(); renderDash(); renderPractice(); }));
+    card.querySelector("[data-learn]").addEventListener("click", () => goWeek(w.n, "learn"));
+    card.querySelector("[data-prac]").addEventListener("click", () => goWeek(w.n, "practice"));
+    box.appendChild(card);
+  });
+}
+
+/* =================== DASHBOARD =================== */
+function setBar(id, n, d){ document.getElementById(id).style.width = (d ? n / d * 100 : 0) + "%"; }
+function renderDash(){
+  const lec = WEEKS.filter(w => state.lec[w.n]).length;
+  document.getElementById("lec-count").textContent = `${lec} / ${WEEKS.length}`; setBar("lec-bar", lec, WEEKS.length);
+  const passed = PRACTICE.filter(p => state.passed[p.id]).length;
+  document.getElementById("pass-count").textContent = `${passed} / ${PRACTICE.length}`; setBar("pass-bar", passed, PRACTICE.length);
+  const sub = ALL.filter(p => state.sub[p.id]).length;
+  document.getElementById("sub-count").textContent = `${sub} / ${ALL.length}`; setBar("sub-bar", sub, ALL.length);
+  const days = Math.max(0, Math.ceil((DEADLINE - new Date()) / 86400000));
+  document.getElementById("days-left").textContent = days;
+
+  let next = null;
+  for(const w of WEEKS){
+    const btn = (label, tab) => `<button class="run" type="button" data-go-week="${w.n}" data-go-tab="${tab}" style="margin-top:8px">${label}</button>`;
+    if(!state.lec[w.n]){ next = `<b>Watch Lecture ${w.n}: ${esc(w.title)}</b><div style="margin-top:4px"><a href="https://cs50.harvard.edu/python/weeks/${w.n}/" target="_blank" rel="noopener">Open the lecture page</a>, then tick it off in the Course tab.</div>`; break; }
+    const s = weekStatus(w);
+    if(s.answered < s.quizN){ next = `<b>Week ${w.n} Learn section</b><div style="margin-top:4px">Run the examples and answer the ${s.quizN} check questions.</div>${btn("Open Learn","learn")}`; break; }
+    const p = w.probs.find(p => p.kind !== "ext" && !state.passed[p.id]);
+    if(p){ next = `<b>Practice: ${esc(p.name)}</b> <span class="tag">Problem Set ${w.n}</span><div style="margin-top:4px">${s.passed} of ${s.prac.length} passed this week.</div>${btn("Open Practice","practice")}`; break; }
+    const u = w.probs.find(p => !state.sub[p.id]);
+    if(u){ next = `<b>Submit ${esc(u.name)} on cs50.dev</b>${u.kind === "ext" ? " <span class=\"tag\">cs50.dev only</span>" : ""}<div style="margin-top:4px">Then tick Submitted.</div>${btn("Open Practice","practice")}`; break; }
+  }
+  const nu = document.getElementById("next-up");
+  nu.innerHTML = next || `<b>Everything is done.</b> Claim your certificate at cs50.me/cs50p.`;
+  nu.querySelectorAll("[data-go-week]").forEach(b => b.addEventListener("click", () => goWeek(+b.dataset.goWeek, b.dataset.goTab)));
+}
+function renderPlan(){
+  const box = document.getElementById("plan"); box.innerHTML = "";
+  PLAN.forEach(([d, t], i) => {
+    const lab = document.createElement("label"); lab.className = "item";
+    lab.innerHTML = `<input type="checkbox" ${state.plan[i] ? "checked" : ""}><div><span class="tag">${d}</span>${t}</div>`;
+    lab.querySelector("input").addEventListener("change", e => { state.plan[i] = e.target.checked; save(); });
+    box.appendChild(lab);
+  });
+}
+
+/* =================== BACKUP =================== */
+const msg = t => { const m = document.getElementById("backup-msg"); m.textContent = t; setTimeout(() => { if(m.textContent === t) m.textContent = ""; }, 4000); };
+document.getElementById("export-btn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "cs50p-progress.json";
+  document.body.appendChild(a); a.click(); a.remove(); msg("Exported cs50p-progress.json");
+});
+document.getElementById("import-file").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try { state = Object.assign(blank(), JSON.parse(await f.text())); save(); renderAll(); msg("Progress imported."); }
+  catch(err){ msg("That file isn't a valid progress export."); }
+  e.target.value = "";
+});
+function wireResetAll(){
+  document.getElementById("reset-btn").addEventListener("click", () => {
+    const w = document.getElementById("reset-wrap");
+    w.innerHTML = `<span class="confirm">Erase all progress, code, and notes? <button class="ghost danger" id="reset-yes" type="button">Yes, erase</button><button class="ghost" id="reset-no" type="button">Cancel</button></span>`;
+    const back = () => { w.innerHTML = `<button class="ghost danger" id="reset-btn" type="button">Reset everything</button>`; wireResetAll(); };
+    document.getElementById("reset-yes").addEventListener("click", () => { try { localStorage.removeItem(STORE_KEY); } catch(e){} state = blank(); renderAll(); back(); msg("Everything was reset."); });
+    document.getElementById("reset-no").addEventListener("click", back);
+  });
+}
+wireResetAll();
+
+/* =================== NOTES =================== */
+const journal = document.getElementById("journal");
+journal.addEventListener("input", () => { state.journal = journal.value; saveSoon(); });
+
+function renderAll(){
+  applyTheme(); renderDash(); renderPlan(); renderCourse(); renderLearn(); renderPractice();
+  journal.value = state.journal || "";
+}
+load();
+renderAll();
+renderScratch();
+</script>
+</body>
+</html>

@@ -2,69 +2,154 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CSE 6040 Prep Tracker</title>
 <style>
-  :root { --bg:#f6f7f9; --card:#fff; --ink:#1d2330; --muted:#6b7280; --accent:#2563eb; --ok:#16a34a; --warn:#b45309; --warnbg:#fef3c7; --line:#e5e7eb; --code:#0f172a; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; }
-  header { background:#0f172a; color:#fff; padding:18px 24px; }
+  /* Same shell as the CS50P page. Navy and blue mark this one as CSE 6040. */
+  :root {
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1d2330; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#2563eb; --accent-soft:#e8effd; --accent-ink:#1e40af;
+    --head:#0f172a; --head-ink:#ffffff; --head-sub:#94a3b8;
+    --ok:#15803d; --ok-soft:#dcfce7; --bad:#b91c1c; --bad-soft:#fee2e2;
+    --warn:#92400e; --warn-soft:#fef3c7;
+    --code-bg:#0f172a; --code-ink:#e2e8f0; --gutter:#64748b; --inline-code:#eef2f7;
+    --tag-bg:#eef2ff; --tag-ink:#3730a3;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#0d1117; --card:#161b24; --ink:#e5e9f0; --muted:#94a0b4; --line:#273041;
+    --accent:#6c9cff; --accent-soft:#1a2540; --accent-ink:#b4ccff;
+    --head:#070b14; --head-ink:#ffffff; --head-sub:#8392ab;
+    --ok:#4ade80; --ok-soft:#14301f; --bad:#f87171; --bad-soft:#3b1818;
+    --warn:#fbbf24; --warn-soft:#382a10;
+    --code-bg:#080c15; --code-ink:#e2e8f0; --gutter:#56627a; --inline-code:#222a39;
+    --tag-bg:#1e2547; --tag-ink:#b8c2ff; color-scheme:dark; } }
+  :root[data-theme="dark"] {
+    --bg:#0d1117; --card:#161b24; --ink:#e5e9f0; --muted:#94a0b4; --line:#273041;
+    --accent:#6c9cff; --accent-soft:#1a2540; --accent-ink:#b4ccff;
+    --head:#070b14; --head-ink:#ffffff; --head-sub:#8392ab;
+    --ok:#4ade80; --ok-soft:#14301f; --bad:#f87171; --bad-soft:#3b1818;
+    --warn:#fbbf24; --warn-soft:#382a10;
+    --code-bg:#080c15; --code-ink:#e2e8f0; --gutter:#56627a; --inline-code:#222a39;
+    --tag-bg:#1e2547; --tag-ink:#b8c2ff; color-scheme:dark; }
+
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; font-size:15px; }
+  header { background:var(--head); color:var(--head-ink); padding-block:18px; padding-left:max(24px, env(safe-area-inset-left,0px)); padding-right:max(24px, env(safe-area-inset-right,0px)); }
   header h1 { margin:0; font-size:20px; }
-  header p { margin:4px 0 0; color:#94a3b8; font-size:13px; }
-  nav { display:flex; flex-wrap:wrap; gap:4px; background:#fff; border-bottom:1px solid var(--line); padding:0 16px; position:sticky; top:0; z-index:5; }
-  nav button { border:none; background:none; padding:12px 14px; cursor:pointer; font-size:14px; color:var(--muted); border-bottom:2px solid transparent; }
+  header p { margin:4px 0 0; color:var(--head-sub); font-size:13px; }
+  nav { display:flex; gap:2px; background:var(--card); border-bottom:1px solid var(--line); padding:0 max(12px, env(safe-area-inset-right,0px)) 0 max(12px, env(safe-area-inset-left,0px)); position:sticky; top:0; z-index:5; overflow-x:auto; }
+  nav button { border:none; background:none; padding:12px 14px; cursor:pointer; font-size:14px; color:var(--muted); border-bottom:2px solid transparent; white-space:nowrap; }
   nav button.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
-  main { max-width:960px; margin:0 auto; padding:24px 18px 60px; }
+  main { max-width:980px; margin:0 auto; padding-block:22px 60px; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
   section.tab { display:none; }
   section.tab.active { display:block; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin-bottom:16px; }
-  h2 { font-size:19px; margin:0 0 10px; }
-  h3 { font-size:16px; margin:18px 0 6px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin-bottom:16px; min-width:0; }
+  h2 { font-size:19px; margin:0 0 10px; text-wrap:balance; }
+  h3 { font-size:16px; margin:20px 0 6px; }
   .muted { color:var(--muted); font-size:14px; }
-  .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; }
   .stat { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; }
-  .stat .big { font-size:26px; font-weight:700; }
+  .stat .big { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; }
   .bar { height:8px; background:var(--line); border-radius:6px; overflow:hidden; margin-top:8px; }
   .bar > div { height:100%; background:var(--accent); width:0%; transition:width .3s; }
-  label.item { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--line); cursor:pointer; }
+  label.item { display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--line); cursor:pointer; }
   label.item:last-child { border-bottom:none; }
-  label.item input { margin-top:5px; transform:scale(1.15); }
+  label.item input { margin-top:5px; transform:scale(1.15); accent-color:var(--accent); }
   .item-title { font-weight:600; }
-  .note { margin-top:6px; font-size:13px; background:var(--warnbg); color:var(--warn); border-radius:6px; padding:6px 9px; }
-  .tag { display:inline-block; font-size:12px; background:#eef2ff; color:#3730a3; border-radius:999px; padding:1px 9px; margin-right:4px; }
-  pre { background:var(--code); color:#e2e8f0; padding:12px 14px; border-radius:8px; overflow-x:auto; font-size:13px; }
-  code { font-family: ui-monospace, Menlo, Consolas, monospace; }
-  p code, li code { background:#eef2f7; padding:1px 5px; border-radius:4px; font-size:13px; }
+  .item.done .item-title { color:var(--muted); font-weight:500; }
+  .note { margin-top:6px; font-size:13px; background:var(--warn-soft); color:var(--warn); border-radius:6px; padding:6px 9px; }
+  .tag { display:inline-block; font-size:12px; background:var(--tag-bg); color:var(--tag-ink); border-radius:999px; padding:1px 9px; margin-right:6px; font-variant-numeric:tabular-nums; }
+  pre { background:var(--code-bg); color:var(--code-ink); padding:12px 14px; border-radius:8px; overflow-x:auto; font-size:13px; margin:8px 0; }
+  code, .mono { font-family:ui-monospace,Menlo,Consolas,monospace; }
+  p code, li code, td code, .muted code, .note code, .nudge code, .explain code { background:var(--inline-code); color:var(--ink); padding:1px 5px; border-radius:4px; font-size:13px; }
   a { color:var(--accent); }
-  ul { padding-left:20px; }
-  textarea.editor { width:100%; min-height:200px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size:13px; padding:12px; border-radius:8px; border:1px solid var(--line); background:#0b1220; color:#e2e8f0; resize:vertical; }
-  button.run { background:var(--accent); color:#fff; border:none; border-radius:7px; padding:8px 16px; cursor:pointer; font-size:14px; }
-  button.run:disabled { opacity:.5; cursor:wait; }
-  button.ghost { background:#fff; color:var(--accent); border:1px solid var(--accent); border-radius:7px; padding:6px 12px; cursor:pointer; font-size:13px; }
-  .out { white-space:pre-wrap; background:#f1f5f9; border-radius:8px; padding:10px 12px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size:13px; min-height:40px; margin-top:10px; }
-  .pass { color:var(--ok); font-weight:600; }
-  .fail { color:#b91c1c; font-weight:600; }
-  .pill { font-size:12px; border-radius:999px; padding:2px 10px; background:#e5e7eb; color:#374151; }
-  .pill.done { background:#dcfce7; color:#166534; }
-  textarea.journal { width:100%; min-height:260px; padding:12px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:inherit; }
+  ul, ol { padding-left:22px; }
+  li { margin:3px 0; }
   .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+  button { font:inherit; }
+  button.run { background:var(--accent); color:#fff; border:none; border-radius:7px; padding:8px 16px; cursor:pointer; font-size:14px; font-weight:600; }
+  :root[data-theme="dark"] button.run { color:#0b1220; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) button.run { color:#0b1220; } }
+  button.run:disabled { opacity:.5; cursor:wait; }
+  button.ghost, label.ghost, a.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:7px; padding:6px 12px; cursor:pointer; font-size:13px; text-decoration:none; }
+  button.ghost.danger { color:var(--bad); border-color:var(--bad); }
+  button:disabled { cursor:default; opacity:.6; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .pill { font-size:12px; border-radius:999px; padding:2px 10px; background:var(--line); color:var(--ink); white-space:nowrap; }
+  .pill.done { background:var(--ok-soft); color:var(--ok); }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:5px 12px; cursor:pointer; font-size:13px; font-variant-numeric:tabular-nums; }
+  .chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  :root[data-theme="dark"] .chip.active { color:#0b1220; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.active { color:#0b1220; } }
+  .chip .ct { opacity:.75; margin-left:4px; }
+
+  .ed { display:flex; border-radius:8px; overflow:hidden; border:1px solid var(--line); background:var(--code-bg); }
+  .ed .gut { margin:0; padding:12px 8px 12px 10px; border-radius:0; background:transparent; color:var(--gutter); text-align:right; user-select:none; overflow:hidden; font-size:13px; line-height:1.5; font-family:ui-monospace,Menlo,Consolas,monospace; min-width:2.6em; }
+  .ed textarea { flex:1; min-width:0; min-height:120px; border:none; outline:none; resize:vertical; background:transparent; color:var(--code-ink); padding:12px 12px 12px 4px; font-size:13px; line-height:1.5; font-family:ui-monospace,Menlo,Consolas,monospace; white-space:pre; overflow:auto; tab-size:4; }
+  .ed textarea:focus-visible { outline:none; }
+  .ed:focus-within { outline:2px solid var(--accent); outline-offset:1px; }
+  textarea.plain { width:100%; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; padding:8px 10px; border:1px solid var(--line); border-radius:7px; background:var(--card); color:var(--ink); min-height:38px; resize:vertical; }
+  .fieldlabel { font-size:13px; font-weight:600; margin:12px 0 4px; display:block; }
+  .out { white-space:pre-wrap; background:var(--inline-code); border-radius:8px; padding:10px 12px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; min-height:38px; margin-top:10px; overflow-x:auto; }
+  .results { margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+  .res { border-radius:8px; padding:8px 10px; font-size:13.5px; }
+  .res.ok { background:var(--ok-soft); }
+  .res.bad { background:var(--bad-soft); }
+  .res .lbl { font-weight:600; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; overflow-wrap:anywhere; }
+  .res.ok .lbl::before { content:"✓ "; color:var(--ok); }
+  .res.bad .lbl::before { content:"✗ "; color:var(--bad); }
+  .res pre { margin:6px 0 0; font-size:12.5px; background:var(--card); color:var(--ink); border:1px solid var(--line); }
+  .explain { margin-top:8px; font-size:13.5px; background:var(--warn-soft); color:var(--ink); border-left:3px solid var(--warn); border-radius:6px; padding:8px 10px; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; white-space:normal; }
+  .explain b { color:var(--warn); }
+  .summary-line { font-weight:600; margin-top:10px; }
+  .summary-line.ok { color:var(--ok); }
+  .summary-line.bad { color:var(--bad); }
+  .nudge { margin-top:8px; font-size:14px; background:var(--accent-soft); border-radius:6px; padding:8px 10px; }
+  .prob-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+  .prob-head h2 { margin:0; }
+  .prompt { margin:10px 0; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .tablewrap { overflow-x:auto; }
+  .snip { margin:10px 0 14px; }
+  .snip .row { margin-top:6px; }
+  .snip .out { margin-top:6px; }
+  .quiz { border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:12px 0; }
+  .quiz .opts { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .quiz .opt { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:7px; padding:6px 12px; cursor:pointer; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; }
+  .quiz .opt.right { background:var(--ok-soft); border-color:var(--ok); }
+  .quiz .opt.wrong { background:var(--bad-soft); border-color:var(--bad); }
+  .quiz .why { margin-top:8px; font-size:14px; }
+  .missing { display:flex; flex-direction:column; gap:8px; }
+  .miss { border:1px solid var(--line); border-left:3px solid var(--warn); border-radius:8px; padding:10px 12px; }
+  .miss .t { font-weight:600; }
+  .miss .row { margin-top:6px; }
+  .steps { counter-reset:s; list-style:none; padding:0; }
+  .steps li { counter-increment:s; position:relative; padding-left:34px; margin:10px 0; }
+  .steps li::before { content:counter(s); position:absolute; left:0; top:0; width:24px; height:24px; border-radius:50%; background:var(--accent-soft); color:var(--accent-ink); font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  textarea.journal { width:100%; min-height:260px; padding:12px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:inherit; background:var(--card); color:var(--ink); }
+  .themebtn { float:right; background:transparent; border:1px solid var(--head-sub); color:var(--head-ink); border-radius:7px; padding:4px 10px; cursor:pointer; font-size:12px; }
+  .confirm { display:inline-flex; gap:6px; align-items:center; font-size:13px; flex-wrap:wrap; }
+  @media (max-width:520px){ .card { padding:14px; } header h1 { font-size:18px; } }
+  @media (prefers-reduced-motion: reduce){ .bar > div { transition:none; } }
 </style>
 </head>
 <body>
 
 <header>
+  <button class="themebtn" id="theme-btn" type="button">Theme: auto</button>
   <h1>CSE 6040 · Computing for Data Analysis: Prep Tracker</h1>
-  <p>Georgia Tech · Target sign-up: January 2027 · Progress saves automatically in this browser</p>
+  <p>Georgia Tech · Target sign-up: January 2027 · Progress and code save automatically in this browser</p>
 </header>
 
 <nav>
   <button class="active" data-tab="dash">Dashboard</button>
   <button data-tab="outline">Course Outline</button>
   <button data-tab="prep">Prep Checklist</button>
-  <button data-tab="lab">Practice Lab</button>
   <button data-tab="learn">Learn</button>
+  <button data-tab="lab">Practice Lab</button>
   <button data-tab="resources">Resources</button>
-  <button data-tab="combo">Combined Plan</button>
   <button data-tab="notes">Notes</button>
 </nav>
 
@@ -76,6 +161,7 @@
     <div class="stat"><div class="muted">Days until January 2027</div><div class="big" id="days-left">–</div></div>
     <div class="stat"><div class="muted">Prep skills checked off</div><div class="big" id="prep-count">0 / 0</div><div class="bar"><div id="prep-bar"></div></div></div>
     <div class="stat"><div class="muted">Practice exercises passed</div><div class="big" id="ex-count">0 / 0</div><div class="bar"><div id="ex-bar"></div></div></div>
+    <div class="stat"><div class="muted">Learn checks answered</div><div class="big" id="quiz-count">0 / 0</div><div class="bar"><div id="quiz-bar"></div></div></div>
   </div>
 
   <div class="card" style="margin-top:16px">
@@ -84,20 +170,30 @@
   </div>
 
   <div class="card">
+    <h2>How to study each topic</h2>
+    <ol class="steps">
+      <li><b>Learn tab:</b> pick a topic, then run and change every example. Predict the output before you press Run.</li>
+      <li>Answer the <b>Check yourself</b> questions without running code.</li>
+      <li>Do the topic's <b>exercise</b> at the bottom of the lesson. Open a nudge only after 15 minutes stuck.</li>
+      <li>Tick the skill on the <b>Prep Checklist</b> once you can do it without looking anything up.</li>
+      <li>Write one line in <b>Notes</b> about what tripped you up.</li>
+    </ol>
+  </div>
+
+  <div class="card">
     <h2>10-week study plan (now → January)</h2>
-    <p class="muted">About 4–6 hours a week alongside your current analytics class. Check off each week when done.</p>
+    <p class="muted">About 4–6 hours a week. ISYE 6501 has its own review page now. Check off each week when done.</p>
     <div id="plan"></div>
   </div>
 
   <div class="card">
     <h2>Backup and transfer</h2>
-    <p class="muted">Progress lives in this browser only. Export it before clearing browser data or switching devices.</p>
+    <p class="muted">Progress and your code live in this browser only. Export before clearing browser data or switching computers.</p>
     <div class="row">
-      <button class="ghost" id="export-btn">Export progress</button>
-      <label class="ghost" style="padding:6px 12px;border:1px solid var(--accent);color:var(--accent);border-radius:7px;cursor:pointer;font-size:13px">
-        Import progress<input type="file" id="import-file" accept="application/json" hidden>
-      </label>
-      <button class="ghost" id="reset-btn" style="color:#b91c1c;border-color:#b91c1c">Reset everything</button>
+      <button class="ghost" id="export-btn" type="button">Export progress</button>
+      <label class="ghost">Import progress<input type="file" id="import-file" accept="application/json" hidden></label>
+      <span id="reset-wrap"><button class="ghost danger" id="reset-btn" type="button">Reset everything</button></span>
+      <span class="muted" id="backup-msg"></span>
     </div>
   </div>
 </section>
@@ -115,7 +211,6 @@
       <li><b>Deadlines:</b> Everything is due at 11:59 UTC. Notebooks get a 48-hour grace period, then half credit until the next exam.</li>
     </ul>
   </div>
-
   <div class="card">
     <h2>Module 0: Fundamentals</h2>
     <ul>
@@ -126,7 +221,6 @@
       <li>Topic 4: Representing numbers <span class="muted">(floating-point arithmetic, numerical analysis)</span></li>
     </ul>
   </div>
-
   <div class="card">
     <h2>Module 1: Representing, transforming, and visualizing data</h2>
     <ul>
@@ -137,7 +231,6 @@
       <li>Topic 9: Relational data <span class="muted">(SQL)</span></li>
     </ul>
   </div>
-
   <div class="card">
     <h2>Module 2: The analysis of data</h2>
     <ul>
@@ -149,7 +242,6 @@
       <li>Topic 15: Compression <span class="muted">(PCA, SVD)</span></li>
     </ul>
   </div>
-
   <div class="card">
     <h2>Bootcamp (optional but strongly recommended)</h2>
     <p class="muted">Live sessions, Tuesday/Thursday evenings in the fall term. Recordings are usually posted within a day.</p>
@@ -159,7 +251,6 @@
       <li><b>Before the Final:</b> review of the full course.</li>
     </ul>
   </div>
-
   <div class="card">
     <h2>Exams and deadlines</h2>
     <p class="muted">Fall 2026 reference dates. Your term's dates will differ.</p>
@@ -174,181 +265,39 @@
 <!-- ============ PREP CHECKLIST ============ -->
 <section class="tab" id="tab-prep">
   <div class="card">
-    <h2>Prerequisite checklist</h2>
-    <p class="muted">Check a skill off when you can do it without looking it up. If something stays unchecked, the note under it tells you which part of the course will be hardest.</p>
+    <h2>Still missing <span class="tag" id="missing-count">0</span></h2>
+    <p class="muted">Every skill you haven't checked off, with what it will make hard in the course and where to catch up.</p>
+    <div class="missing" id="missing-list"></div>
+  </div>
+  <div class="card">
+    <h2>Full checklist</h2>
+    <p class="muted">Check a skill off when you can do it without looking it up.</p>
     <div id="prep-list"></div>
-  </div>
-</section>
-
-<!-- ============ PRACTICE LAB ============ -->
-<section class="tab" id="tab-lab">
-  <div class="card">
-    <h2>Practice lab</h2>
-    <p class="muted">Real Python runs in your browser (Pyodide). The first run downloads about 10 MB and takes a little while. Write your function, then press <b>Run checks</b>. Each exercise has hidden tests, so a pass means your code works.</p>
-    <p class="muted">Writing code is the whole point. Try it yourself first, then use the Learn tab if you're stuck.</p>
-    <div class="row">
-      <span id="py-status" class="pill">Python not loaded yet</span>
-      <button class="ghost" id="load-py">Load Python now</button>
-    </div>
-  </div>
-
-  <div id="exercises"></div>
-
-  <div class="card">
-    <h2>Free scratchpad</h2>
-    <p class="muted">Use this for anything you want to try.</p>
-    <textarea class="editor" id="scratch">import numpy as np
-import pandas as pd
-
-x = np.arange(6).reshape(2, 3)
-print(x)
-print(x.shape, x.mean(axis=0))</textarea>
-    <div class="row"><button class="run" data-scratch>Run</button></div>
-    <div class="out" id="scratch-out">Output appears here.</div>
   </div>
 </section>
 
 <!-- ============ LEARN ============ -->
 <section class="tab" id="tab-learn">
   <div class="card">
-    <h2>Learn: everything you need, in one place</h2>
-    <p class="muted">Short explanations with the patterns you'll see again and again in the notebooks and exams. Read a section, then do the matching exercise in the Practice Lab.</p>
+    <div class="prob-head"><h2 style="margin:0">Learn</h2><span class="pill py-status">Python not loaded yet</span></div>
+    <p class="muted" style="margin-bottom:10px">Each topic has a short lesson with examples you can edit and run, a few check questions, and the matching practice exercise. The first run downloads Python (about 10 MB); NumPy and pandas download the first time they're imported.</p>
+    <div class="chips" id="learn-chips"></div>
   </div>
+  <div id="learn-body"></div>
+</section>
 
+<!-- ============ PRACTICE LAB ============ -->
+<section class="tab" id="tab-lab">
   <div class="card">
-    <h2>1. Python essentials for this course</h2>
-    <p>Dictionaries map keys to values. <code>defaultdict</code> gives you a default value for missing keys, which is handy for counting.</p>
-<pre>counts = {}
-for w in ["a", "b", "a"]:
-    counts[w] = counts.get(w, 0) + 1
-# {'a': 2, 'b': 1}
-
-from collections import defaultdict
-d = defaultdict(int)
-for w in ["a", "b", "a"]:
-    d[w] += 1</pre>
-    <p><b>List comprehensions</b> build lists in one line. Dict comprehensions do the same for dicts.</p>
-<pre>squares = [x*x for x in range(5) if x % 2 == 0]   # [0, 4, 16]
-inv = {v: k for k, v in {"a": 1, "b": 2}.items()}  # {1: 'a', 2: 'b'}</pre>
-    <p><b>Lambda and sorting.</b> <code>sorted</code> takes a <code>key</code> function.</p>
-<pre>names = ["Alan Turing", "Ada Lovelace"]
-sorted(names, key=lambda s: s.split()[-1])   # sorts by last name</pre>
-    <p><b>zip and enumerate</b> pair up items from several sequences or give you indices.</p>
-<pre>for i, (a, b) in enumerate(zip([1, 2], ["x", "y"])):
-    print(i, a, b)</pre>
-    <p><b>Nested data:</b> lists of dicts (or dicts of lists) are the standard shape for records. Loop over them, or convert them to a pandas DataFrame.</p>
+    <div class="prob-head"><h2 style="margin:0">Practice lab</h2><span class="pill py-status">Python not loaded yet</span></div>
+    <p class="muted">All exercises in one place. They're the same ones that appear at the end of each lesson, and your code is shared between both spots. <b>Tab</b> indents, <b>Shift+Tab</b> un-indents, <b>Ctrl+Enter</b> (or ⌘+Enter) runs checks.</p>
+    <p class="muted">Writing code is the whole point. Try it yourself first, then use a nudge or the lesson if you're stuck.</p>
   </div>
-
+  <div id="exercises"></div>
   <div class="card">
-    <h2>2. Big-O and running time</h2>
-    <p>Asymptotic running time describes how work grows with input size <code>n</code>. A single loop over the data is O(n). A loop inside a loop is O(n²). A dict lookup is O(1) on average, so replacing a nested search with a dict is often the fix for a slow solution.</p>
-  </div>
-
-  <div class="card">
-    <h2>3. Floating-point numbers</h2>
-    <p>Computers store most decimals in binary floating point, so some values can't be represented exactly. That's why this is <code>False</code>:</p>
-<pre>0.1 + 0.2 == 0.3          # False
-abs((0.1 + 0.2) - 0.3)   # about 5.5e-17</pre>
-    <p>Compare floats with a tolerance, not <code>==</code>. Use <code>math.isclose</code> or <code>np.isclose</code>. Be careful with subtracting nearly equal numbers and adding very large and very small numbers, since these lose precision.</p>
-  </div>
-
-  <div class="card">
-    <h2>4. Regular expressions</h2>
-    <p>A regex is a pattern for matching text. The basics are <code>\d</code> (digit), <code>\w</code> (word character), <code>\s</code> (whitespace), <code>.</code> (any character), <code>+</code> (one or more), <code>*</code> (zero or more), <code>?</code> (optional), <code>[abc]</code> (a character class), <code>^</code> and <code>$</code> (start and end), and <code>( )</code> (groups).</p>
-<pre>import re
-re.findall(r"\d+", "a12 b345")                 # ['12', '345']
-re.search(r"(\w+)@(\w+\.\w+)", "me@site.com").groups()   # ('me', 'site.com')
-re.sub(r"\s+", " ", "too    many   spaces")     # 'too many spaces'</pre>
-    <p>Test patterns interactively at regex101.com with the Python flavor selected.</p>
-  </div>
-
-  <div class="card">
-    <h2>5. Pandas</h2>
-    <p>A DataFrame is a table. A Series is one column. The core operations are selecting, filtering, grouping, and joining.</p>
-<pre>import pandas as pd
-df = pd.DataFrame({"team": ["A", "A", "B"], "pts": [10, 14, 7]})
-
-df.loc[df["pts"] > 8, ["team", "pts"]]   # label-based select with a boolean filter
-df.iloc[0:2, 1]                          # position-based select
-df.groupby("team")["pts"].mean()         # A: 12.0, B: 7.0
-df.merge(other, on="team", how="left")   # join (SQL-style)
-df.melt(id_vars="team")                  # wide to long</pre>
-    <p><b>Tip:</b> <code>loc</code> uses labels and includes the end of a slice. <code>iloc</code> uses positions and excludes the end.</p>
-  </div>
-
-  <div class="card">
-    <h2>6. NumPy</h2>
-    <p>NumPy arrays are fixed-type, vectorized containers. Operations apply to the whole array at once, which is much faster than Python loops.</p>
-<pre>import numpy as np
-A = np.array([[1., 2.], [3., 4.]])
-A.shape            # (2, 2)
-A @ A              # matrix multiplication
-A * A              # element-wise
-A[A > 2]           # boolean mask -> [3. 4.]
-A - A.mean(axis=0) # broadcasting: subtracts column means from every row
-np.argsort(-A[:, 0])  # indices that sort column 0 in descending order</pre>
-    <p><b>Broadcasting rule:</b> shapes are compared from the right. Each pair of dimensions must match or one must be 1. Then the size-1 dimension is stretched to fit.</p>
-  </div>
-
-  <div class="card">
-    <h2>7. SQL</h2>
-    <p>The core pattern is <code>SELECT</code>, <code>FROM</code>, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>. SQL runs in this order: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY. That's why you can't use a SELECT alias in WHERE.</p>
-<pre>SELECT team, AVG(pts) AS avg_pts
-FROM games
-WHERE season = 2025
-GROUP BY team
-HAVING AVG(pts) > 10
-ORDER BY avg_pts DESC;</pre>
-    <ul>
-      <li><b>JOIN:</b> INNER keeps matches only. LEFT keeps every row from the left table.</li>
-      <li><b>NULL:</b> use <code>IS NULL</code>, not <code>= NULL</code>. <code>COALESCE(x, 0)</code> replaces NULL.</li>
-      <li><b>CASE:</b> conditional values, e.g. <code>CASE WHEN pts &gt; 10 THEN 'high' ELSE 'low' END</code>.</li>
-      <li><b>CTE:</b> <code>WITH t AS (SELECT ...) SELECT ... FROM t</code>, a named subquery.</li>
-      <li><b>Window functions:</b> <code>RANK() OVER (PARTITION BY team ORDER BY pts DESC)</code> ranks within groups without collapsing rows. <code>LAG</code> and <code>LEAD</code> look at neighboring rows.</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>8. Linear algebra (the parts you'll actually use)</h2>
-    <ul>
-      <li><b>Vector:</b> a list of numbers. The <b>dot product</b> multiplies matching entries and sums them: <code>x · y = Σ xᵢyᵢ</code>.</li>
-      <li><b>Matrix multiplication:</b> (m×n) times (n×p) gives (m×p). The inner dimensions must match. Each output entry is a row dotted with a column.</li>
-      <li><b>Transpose:</b> swap rows and columns. <code>(AB)ᵀ = BᵀAᵀ</code>.</li>
-      <li><b>Norm:</b> the length of a vector. The L2 norm is <code>sqrt(x · x)</code>.</li>
-      <li><b>Linear regression:</b> solve <code>min ||Ax - b||²</code>. This is where QR decomposition comes in.</li>
-      <li><b>Eigenvectors and SVD:</b> these describe the directions a matrix stretches the most. SVD underlies PCA and compression.</li>
-    </ul>
-    <p class="muted">Best free visual intro: 3Blue1Brown's "Essence of Linear Algebra" series. For a full course, use LAFF (ulaff.net), which the instructors recommend.</p>
-  </div>
-
-  <div class="card">
-    <h2>9. Probability and statistics</h2>
-    <ul>
-      <li><b>Mean</b> is the average. <b>Median</b> is the middle value and is robust to outliers.</li>
-      <li><b>Variance</b> is the average squared distance from the mean. <b>Standard deviation</b> is its square root.</li>
-      <li><b>Conditional probability:</b> P(A | B) = P(A and B) / P(B).</li>
-      <li><b>Bayes' rule:</b> P(A | B) = P(B | A) P(A) / P(B).</li>
-      <li><b>Correlation</b> measures linear association. It is not causation.</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>10. Calculus for optimization</h2>
-    <p>A derivative tells you how fast a function changes. Machine learning minimizes a loss function. <b>Gradient descent</b> repeats: compute the gradient, then step the other way.</p>
-<pre>w = w - learning_rate * gradient   # repeat until the loss stops falling</pre>
-    <p>The gradient is the vector of partial derivatives. The learning rate controls step size. Too big and you overshoot. Too small and you crawl.</p>
-  </div>
-
-  <div class="card">
-    <h2>11. Intro analytics glossary (for your current class)</h2>
-    <ul>
-      <li><b>Descriptive:</b> what happened. <b>Predictive:</b> what will happen. <b>Prescriptive:</b> what to do about it.</li>
-      <li><b>Train / test split:</b> fit on one part of the data, evaluate on held-out data.</li>
-      <li><b>Overfitting:</b> the model memorizes training noise and does badly on new data.</li>
-      <li><b>Regression</b> predicts a number. <b>Classification</b> predicts a category.</li>
-      <li><b>Feature:</b> an input column. <b>Target / label:</b> what you're predicting.</li>
-      <li><b>Outlier:</b> a value far from the rest. Check whether it's an error before removing it.</li>
-    </ul>
+    <h2>Free scratchpad</h2>
+    <p class="muted">Use this for anything you want to try. NumPy, pandas, and sqlite3 load automatically when imported.</p>
+    <div id="scratch-host"></div>
   </div>
 </section>
 
@@ -357,229 +306,52 @@ ORDER BY avg_pts DESC;</pre>
   <div class="card">
     <h2>Recommended outside resources</h2>
     <p class="muted">Most of these are the ones the course itself recommends, plus a few I'd add. Free unless noted.</p>
-
     <h3>Python</h3>
     <ul>
-      <li><a href="https://jakevdp.github.io/WhirlwindTourOfPython/" target="_blank">A Whirlwind Tour of Python</a>, Jake VanderPlas. Free, the course's first recommended reference.</li>
-      <li><a href="https://pythontutor.com" target="_blank">Python Tutor</a>. Step through code and watch variables change. Excellent for dicts and loops.</li>
-      <li><a href="https://www.codewars.com/" target="_blank">Codewars</a>. Short drills. Start with the 6-kyu problems on the course's self-test list.</li>
-      <li><a href="https://www.w3resource.com/python-exercises/" target="_blank">w3resource Python exercises</a>. Practice sets by topic.</li>
+      <li><a href="https://jakevdp.github.io/WhirlwindTourOfPython/" target="_blank" rel="noopener">A Whirlwind Tour of Python</a>, Jake VanderPlas. Free, the course's first recommended reference.</li>
+      <li><a href="https://pythontutor.com" target="_blank" rel="noopener">Python Tutor</a>. Step through code and watch variables change. Excellent for dicts and loops.</li>
+      <li><a href="https://www.codewars.com/" target="_blank" rel="noopener">Codewars</a>. Short drills. Start with the 6-kyu problems on the course's self-test list.</li>
+      <li><a href="https://www.w3resource.com/python-exercises/" target="_blank" rel="noopener">w3resource Python exercises</a>. Practice sets by topic.</li>
+      <li><b>CS50P</b> (your other tracker page). Weeks 0–3 and 7 cover the Python core, exceptions, and regex this course assumes.</li>
     </ul>
-
     <h3>Pandas, NumPy, and data</h3>
     <ul>
-      <li><a href="https://jakevdp.github.io/PythonDataScienceHandbook/" target="_blank">Python Data Science Handbook</a>, Jake VanderPlas. Free online, covers NumPy, pandas, and more.</li>
-      <li><a href="https://www.oreilly.com/library/view/python-for-data/9781491957653/" target="_blank">Python for Data Analysis</a>, Wes McKinney. The course's recommended book. Free to Georgia Tech students through the library.</li>
-      <li><a href="https://numpy.org/doc/stable/user/basics.broadcasting.html" target="_blank">NumPy broadcasting guide</a>. Official and clear.</li>
-      <li><a href="https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf" target="_blank">Pandas cheat sheet</a>. Good visuals of what each operation does.</li>
+      <li><a href="https://jakevdp.github.io/PythonDataScienceHandbook/" target="_blank" rel="noopener">Python Data Science Handbook</a>, Jake VanderPlas. Free online, covers NumPy, pandas, and more.</li>
+      <li><a href="https://www.oreilly.com/library/view/python-for-data/9781491957653/" target="_blank" rel="noopener">Python for Data Analysis</a>, Wes McKinney. The course's recommended book. Free to Georgia Tech students through the library.</li>
+      <li><a href="https://numpy.org/doc/stable/user/basics.broadcasting.html" target="_blank" rel="noopener">NumPy broadcasting guide</a>. Official and clear.</li>
+      <li><a href="https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf" target="_blank" rel="noopener">Pandas cheat sheet</a>. Good visuals of what each operation does.</li>
     </ul>
-
     <h3>SQL</h3>
     <ul>
-      <li><a href="https://sqlzoo.net/wiki/SQL_Tutorial" target="_blank">SQLZoo</a>. Free, interactive, and in the course's bootcamp list.</li>
-      <li><a href="https://www.w3schools.com/sql/" target="_blank">W3Schools SQL</a>. Quick reference for syntax.</li>
+      <li><a href="https://sqlzoo.net/wiki/SQL_Tutorial" target="_blank" rel="noopener">SQLZoo</a>. Free, interactive, and in the course's bootcamp list.</li>
+      <li><a href="https://www.w3schools.com/sql/" target="_blank" rel="noopener">W3Schools SQL</a>. Quick reference for syntax.</li>
     </ul>
-
     <h3>Regex</h3>
     <ul>
-      <li><a href="https://regex101.com/" target="_blank">regex101</a>. Test patterns live with explanations. Choose the Python flavor.</li>
-      <li><a href="https://callumacrae.github.io/regex-tuesday/" target="_blank">Regex Tuesday</a>. 20 challenges with test cases.</li>
+      <li><a href="https://regex101.com/" target="_blank" rel="noopener">regex101</a>. Test patterns live with explanations. Choose the Python flavor.</li>
+      <li><a href="https://callumacrae.github.io/regex-tuesday/" target="_blank" rel="noopener">Regex Tuesday</a>. 20 challenges with test cases.</li>
     </ul>
-
     <h3>Math</h3>
     <ul>
-      <li><a href="https://www.3blue1brown.com/topics/linear-algebra" target="_blank">3Blue1Brown: Linear Algebra</a>, and the calculus series on the same site. Best visual intuition, free.</li>
-      <li><a href="https://ulaff.net/" target="_blank">LAFF: Linear Algebra Foundations to Frontiers</a>. Free PDF with exercises. Recommended by the course.</li>
-      <li><a href="https://www.youtube.com/c/joshstarmer" target="_blank">StatQuest with Josh Starmer</a> (YouTube). Statistics, regression, and ML explained step by step.</li>
-      <li><a href="https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2014/pages/readings/" target="_blank">MIT OCW: Probability and Statistics</a>. Free readings and notes.</li>
+      <li><a href="https://www.3blue1brown.com/topics/linear-algebra" target="_blank" rel="noopener">3Blue1Brown: Linear Algebra</a>, and the calculus series on the same site. Best visual intuition, free.</li>
+      <li><a href="https://ulaff.net/" target="_blank" rel="noopener">LAFF: Linear Algebra Foundations to Frontiers</a>. Free PDF with exercises. Recommended by the course.</li>
+      <li><a href="https://www.youtube.com/c/joshstarmer" target="_blank" rel="noopener">StatQuest with Josh Starmer</a> (YouTube). Statistics, regression, and ML explained step by step.</li>
+      <li><a href="https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2014/pages/readings/" target="_blank" rel="noopener">MIT OCW: Probability and Statistics</a>. Free readings and notes.</li>
     </ul>
-
     <h3>Floating point and numerics</h3>
     <ul>
-      <li><a href="https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html" target="_blank">What Every Computer Scientist Should Know About Floating-Point Arithmetic</a>. The course's recommended reference.</li>
-      <li><a href="https://www.h-schmidt.net/FloatConverter/IEEE754.html" target="_blank">IEEE 754 float converter</a>.</li>
+      <li><a href="https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html" target="_blank" rel="noopener">What Every Computer Scientist Should Know About Floating-Point Arithmetic</a>. The course's recommended reference.</li>
+      <li><a href="https://www.h-schmidt.net/FloatConverter/IEEE754.html" target="_blank" rel="noopener">IEEE 754 float converter</a>.</li>
     </ul>
-
     <h3>Practice and reference for this course</h3>
     <ul>
-      <li><a href="https://cse6040.gatech.edu/active/" target="_blank">The official CSE 6040 site</a>. Syllabus, bootcamp schedule, and exam practice are here once the course is running.</li>
-      <li><a href="https://github.com/gt-cse-6040/bootcamp" target="_blank">Bootcamp notebooks (GitHub)</a>. Public material from the course's bootcamp, which you can run in Google Colab.</li>
+      <li><a href="https://cse6040.gatech.edu/active/" target="_blank" rel="noopener">The official CSE 6040 site</a>. Syllabus, bootcamp schedule, and exam practice are here once the course is running.</li>
+      <li><a href="https://github.com/gt-cse-6040/bootcamp" target="_blank" rel="noopener">Bootcamp notebooks (GitHub)</a>. Public material from the course's bootcamp, which you can run in Google Colab.</li>
     </ul>
-
     <h3>Coming from outside the program?</h3>
     <ul>
-      <li><a href="https://www.edx.org/course/computing-in-python-i-fundamentals-and-procedural-programming-2" target="_blank">CS 1301x: Computing in Python I (edX)</a>. Georgia Tech's intro Python course. The syllabus says students who struggled before did well after taking it.</li>
+      <li><a href="https://www.edx.org/course/computing-in-python-i-fundamentals-and-procedural-programming-2" target="_blank" rel="noopener">CS 1301x: Computing in Python I (edX)</a>. Georgia Tech's intro Python course. The syllabus says students who struggled before did well after taking it.</li>
     </ul>
-  </div>
-</section>
-
-<!-- ============ COMBINED PLAN ============ -->
-<section class="tab" id="tab-combo">
-  <div class="card">
-    <h2>ISYE 6501 (now) + CSE 6040 (January target)</h2>
-    <p class="muted">Built from your ISYE 6501 Fall 2026 syllabus (Dr. Sokol) and the CSE 6040 site. All dates are Pacific time. The syllabus lists deadlines in UTC and says dates may change, so check Piazza.</p>
-    <ul>
-      <li><b>Grading:</b> Midterm 1 25% (already taken), Midterm 2 25%, Final 25%, homework 15% (your two lowest are dropped), project 8%, syllabus quiz 2%.</li>
-      <li><b>Quiz rules:</b> Midterm 2 is 90 minutes, about 45–50 questions, one handwritten sheet of notes (both sides). The final is 180 minutes, about 60 questions, two sheets. No calculators. Remote-proctored with a full room scan.</li>
-      <li><b>Peer grading:</b> Homework and the project are graded by classmates. Skip your peer reviews and you get zero for that submission.</li>
-      <li><b>Tools:</b> R and RStudio for most of the course, plus PuLP (optimization) and SimPy (simulation), both used from Python.</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>Your remaining deadlines (Pacific)</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:14px">
-      <tr style="text-align:left;border-bottom:1px solid var(--line)"><th style="padding:6px">Date</th><th>ISYE 6501</th><th>Notes</th></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Oct 28</td><td>Homework, Week 9 (design of experiments, probability-based models)</td><td>Peer reviews due Nov 1</td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Nov 4</td><td>Homework, Week 10 (missing data, optimization)</td><td>Peer reviews due Nov 8</td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Nov 11</td><td>Homework, Week 11 (optimization, advanced models). Midterm 2 opens the same evening.</td><td>Peer reviews due Nov 15</td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Nov 13</td><td>Course project released</td><td>Due Dec 2</td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Nov 18</td><td>Homework, Week 12 (power company case)</td><td>Peer reviews due Nov 22</td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px"><b>Nov 22</b></td><td><b>Midterm 2 closes (11 pm)</b></td><td>Aim to finish by Nov 18</td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Nov 25</td><td>Homework, Week 13 (retailer case)</td><td>Peer reviews due Nov 29</td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Dec 2</td><td>Homework, Week 14 (monetization case). Course project due. Final quiz opens that evening.</td><td>Peer reviews due Dec 6</td></tr>
-      <tr><td style="padding:6px"><b>Dec 13</b></td><td><b>Final quiz closes (11 pm)</b></td><td>180 minutes</td></tr>
-    </table>
-  </div>
-
-  <div class="card">
-    <h2>Weekly combined study plan</h2>
-    <p class="muted">Hours per week: about 9–10 for ISYE and 3–4 for CSE 6040 during the semester. After Dec 13, shift to 6–8 hours a week on CSE 6040.</p>
-    <label class="item"><input type="checkbox" data-key="wk1"><div style="flex:1"><span class="tag">Oct 26–Nov 1 · 12 h</span><b>ISYE:</b> Week 9 lessons and homework on design of experiments and Bayes-based models. <b>CSE:</b> conditional probability; Practice exercise 6 (pandas groupby).</div></label>
-    <label class="item"><input type="checkbox" data-key="wk2"><div style="flex:1"><span class="tag">Nov 2–8 · 12 h</span><b>ISYE:</b> Week 10 homework on missing data and the first optimization lessons. <b>CSE:</b> vectors and matrices; Practice exercise 5 (broadcasting). Set up PuLP.</div></label>
-    <label class="item"><input type="checkbox" data-key="wk3"><div style="flex:1"><span class="tag">Nov 9–15 · 14 h</span><b>ISYE:</b> Week 11 homework (optimization, advanced models). Start Midterm 2 review. Start the project. <b>CSE:</b> gradient descent and derivatives; Practice exercise 7.</div></label>
-    <label class="item"><input type="checkbox" data-key="wk4"><div style="flex:1"><span class="tag">Nov 16–22 · 14 h</span><b>ISYE:</b> Take Midterm 2 early in the window. Start the Week 12 case. <b>CSE:</b> SQL basics.</div></label>
-    <label class="item"><input type="checkbox" data-key="wk5"><div style="flex:1"><span class="tag">Nov 23–29 · 10 h</span><b>ISYE:</b> Week 13 retailer case; project work. <b>CSE:</b> SQL joins and window functions (light week for Thanksgiving).</div></label>
-    <label class="item"><input type="checkbox" data-key="wk6"><div style="flex:1"><span class="tag">Nov 30–Dec 6 · 14 h</span><b>ISYE:</b> Project and Week 14 homework (both due Dec 2). Start the final review. <b>CSE:</b> regex and pandas review.</div></label>
-    <label class="item"><input type="checkbox" data-key="wk7"><div style="flex:1"><span class="tag">Dec 7–13 · 14 h</span><b>ISYE:</b> Final quiz (180 min). Use the concept ladder below to find weak spots. <b>CSE:</b> light review.</div></label>
-    <label class="item"><input type="checkbox" data-key="wk8"><div style="flex:1"><span class="tag">Dec 14–Jan · 6–8 h/wk</span><b>CSE 6040 prep:</b> finish the Prep Checklist (floating point, Big-O, Jupyter) and run the Practice Lab exercises you haven't passed.</div></label>
-  </div>
-
-  <div class="card">
-    <h2>Why you're slipping after Midterm 1</h2>
-    <p class="muted">I can't see your scores, so these are the most common causes. Check which ones fit you.</p>
-    <ul>
-      <li><b>Concepts stacked faster than you can practice.</b> Midterm 1 covered about ten modules. Several (time series, trees, change detection) are new methods with little overlap. Fix: stop reading new lessons for a few days and redo the practice questions for those modules without notes.</li>
-      <li><b>The "why" is missing.</b> The syllabus says this course teaches you to choose a model and judge whether a conclusion holds up, not the math under the hood. If you memorized recipes, a new question feels foreign. Fix: for each model, write one sentence for the question it answers and one for when not to use it (see the concept ladder).</li>
-      <li><b>R is slowing you down.</b> The course is R-based and you may be learning R and the statistics at once. Fix: spend 20 minutes a day on R basics (R for Data Science, chapters 1–5), so the code stops using up your thinking time.</li>
-      <li><b>Homework is treated as the test.</b> The syllabus says homework is for learning and exams measure mastery. Fix: after each homework, do one closed-book practice question per concept.</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>Concept ladder: what you need to excel</h2>
-    <p class="muted">Each concept has the question it answers, the core idea, what you should be able to do, and suggested study hours. Tick a box when you can explain it and solve a problem without notes. Hours are estimates for going from "I've seen this" to "I can do it on the quiz."</p>
-
-    <details open><summary><b>Classification (k-nearest neighbors)</b> · 3 h</summary>
-      <p><b>Question:</b> which group does a new item belong to?<br><b>Core idea:</b> k-NN finds the k closest labeled examples and takes a vote. Distances depend on scale, so standardize features first.<br><b>Be able to:</b> choose k, explain small-vs-large k tradeoffs, and say why scaling matters.<br><b>Resources:</b> ISLR Ch. 4 (free at statlearning.com).</p>
-      <label class="item"><input type="checkbox" data-key="c1"> I can do this without notes</label></details>
-
-    <details><summary><b>Validation</b> · 3 h</summary>
-      <p><b>Question:</b> will this model work on new data?<br><b>Core idea:</b> split into training, validation, and test sets. k-fold cross-validation averages performance across folds. Never tune on the test set.<br><b>Be able to:</b> set up a 5-fold split and explain why the test set stays untouched.<br><b>Resources:</b> ISLR Ch. 5.</p>
-      <label class="item"><input type="checkbox" data-key="c2"> I can do this without notes</label></details>
-
-    <details><summary><b>Clustering (k-means)</b> · 2 h</summary>
-      <p><b>Question:</b> which items naturally group together without labels?<br><b>Core idea:</b> k-means alternates between assigning each point to its nearest center and moving each center to the mean of its points. Results depend on starting centers and on k.<br><b>Be able to:</b> walk through two iterations by hand on 6 points.<br><b>Resources:</b> ISLR Ch. 12.</p>
-      <label class="item"><input type="checkbox" data-key="c3"> I can do this without notes</label></details>
-
-    <details><summary><b>Change detection (CUSUM)</b> · 2 h</summary>
-      <p><b>Question:</b> when did the process start to shift?<br><b>Core idea:</b> accumulate deviations from the target, minus an allowance. Signal when the running sum crosses a threshold. The allowance and threshold control how fast you detect shifts and how many false alarms you get.<br><b>Be able to:</b> compute a CUSUM table for a short series.<br><b>Resources:</b> NIST/SEMATECH e-Handbook of Statistical Methods, process monitoring chapter (free at itl.nist.gov/div898/handbook).</p>
-      <label class="item"><input type="checkbox" data-key="c4"> I can do this without notes</label></details>
-
-    <details><summary><b>Time series (decomposition, exponential smoothing, ARIMA)</b> · 5 h</summary>
-      <p><b>Question:</b> what comes next, given trend and seasonality?<br><b>Core idea:</b> decompose a series into level, trend, seasonality, and remainder. Exponential smoothing gives recent observations more weight. ARIMA models autocorrelation after differencing to remove trend. ACF and PACF plots help choose its orders.<br><b>Be able to:</b> read an ACF plot, say whether differencing is needed, and explain what a smoothing parameter does.<br><b>Resources:</b> Forecasting: Principles and Practice (FPP3), free at otexts.com/fpp3, exponential smoothing and ARIMA chapters.</p>
-      <label class="item"><input type="checkbox" data-key="c5"> I can do this without notes</label></details>
-
-    <details><summary><b>Regression (linear and logistic)</b> · 3 h</summary>
-      <p><b>Question:</b> how does the outcome change with each predictor?<br><b>Core idea:</b> a coefficient is the change in y per unit of x, holding other predictors fixed. Logistic regression models a probability for a 0/1 outcome. Check residuals, p-values, and correlated predictors.<br><b>Be able to:</b> interpret a coefficient in words, including for logistic regression on the odds scale.<br><b>Resources:</b> ISLR Ch. 3 and 4.</p>
-      <label class="item"><input type="checkbox" data-key="c6"> I can do this without notes</label></details>
-
-    <details><summary><b>Tree-based models (CART, random forests)</b> · 3 h</summary>
-      <p><b>Question:</b> what rules predict the outcome?<br><b>Core idea:</b> a tree splits the data on the variable and cutoff that best separate outcomes, and pruning limits overfitting. A random forest averages many trees, each trained on a bootstrap sample with a random subset of predictors.<br><b>Be able to:</b> explain why one tree overfits and a forest doesn't, and what variable importance measures.<br><b>Resources:</b> ISLR Ch. 8; StatQuest's videos on decision trees and random forests.</p>
-      <label class="item"><input type="checkbox" data-key="c7"> I can do this without notes</label></details>
-
-    <details><summary><b>Variable selection (stepwise, LASSO, ridge)</b> · 3 h</summary>
-      <p><b>Question:</b> which predictors should stay in the model?<br><b>Core idea:</b> stepwise adds or removes variables by a criterion such as AIC. LASSO's penalty can shrink some coefficients to exactly zero. Ridge shrinks all coefficients but keeps them all.<br><b>Be able to:</b> say which method would drop variables and which would keep all of them.<br><b>Resources:</b> ISLR Ch. 6.</p>
-      <label class="item"><input type="checkbox" data-key="c8"> I can do this without notes</label></details>
-
-    <details><summary><b>Design of experiments</b> · 4 h</summary>
-      <p><b>Question:</b> which factors matter, and do they interact?<br><b>Core idea:</b> randomize, replicate, and block. Factorial designs estimate main effects and interactions from the same runs. ANOVA tests whether group means differ.<br><b>Be able to:</b> read a 2×2 interaction table and say whether the effect of one factor depends on the other.<br><b>Resources:</b> NIST/SEMATECH e-Handbook, design of experiments chapter.</p>
-      <label class="item"><input type="checkbox" data-key="c9"> I can do this without notes</label></details>
-
-    <details><summary><b>Probability distributions</b> · 3 h</summary>
-      <p><b>Question:</b> how likely is this outcome?<br><b>Core idea:</b> binomial counts successes in n trials. Poisson counts events per interval. Exponential models time between events. Normal describes averages and sums. Know their means and variances.<br><b>Be able to:</b> set up a binomial probability by hand. Use z-values without a calculator: 1.645 (90%), 1.96 (95%), 2.576 (99%).<br><b>Resources:</b> MIT OCW 18.05 readings (see Resources tab).</p>
-      <label class="item"><input type="checkbox" data-key="c10"> I can do this without notes</label></details>
-
-    <details><summary><b>Probability-based models (Bayes, naive Bayes)</b> · 2 h</summary>
-      <p><b>Question:</b> how should I update a belief when I see new evidence?<br><b>Core idea:</b> posterior = likelihood × prior ÷ evidence. Naive Bayes assumes features are independent given the class.<br><b>Be able to:</b> solve a two-test Bayes problem by hand.<br><b>Resources:</b> MIT OCW 18.05.</p>
-      <label class="item"><input type="checkbox" data-key="c11"> I can do this without notes</label></details>
-
-    <details><summary><b>Simulation</b> · 3 h</summary>
-      <p><b>Question:</b> what is the distribution of an outcome when the formulas get messy?<br><b>Core idea:</b> generate random inputs many times (Monte Carlo) and summarize the results. Discrete-event simulation (for example, a queue) moves through events in time order. More replications give a more precise estimate.<br><b>Be able to:</b> explain why you need more replications for a narrower confidence interval.<br><b>Resources:</b> SimPy documentation tutorial at simpy.readthedocs.io.</p>
-      <label class="item"><input type="checkbox" data-key="c12"> I can do this without notes</label></details>
-
-    <details><summary><b>Optimization (linear and integer programming)</b> · 4 h</summary>
-      <p><b>Question:</b> which decision best meets the goal within the limits?<br><b>Core idea:</b> decision variables, one objective, and constraints. Integer variables model yes/no decisions. Shadow prices show how much an extra unit of a limited resource is worth. You don't need the simplex math.<br><b>Be able to:</b> formulate a small problem on paper and write it in PuLP.<br><b>Resources:</b> PuLP documentation at coin-or.github.io/pulp.</p>
-      <label class="item"><input type="checkbox" data-key="c13"> I can do this without notes</label></details>
-
-    <details><summary><b>Data preparation: missing data and outliers</b> · 3 h</summary>
-      <p><b>Question:</b> what do I do with blanks and extreme values?<br><b>Core idea:</b> first decide whether the data is missing at random or depends on other values. Options include dropping rows, mean or median imputation, and model-based imputation. For outliers, use the IQR or z-scores, then investigate before deciding to remove or transform (log transform for skew).<br><b>Be able to:</b> justify one imputation choice and one outlier decision in a sentence each.<br><b>Resources:</b> ISLR Ch. 2 covers the general framework; the course lessons are the main source here.</p>
-      <label class="item"><input type="checkbox" data-key="c14"> I can do this without notes</label></details>
-
-    <details><summary><b>Principal component analysis (PCA)</b> · 3 h</summary>
-      <p><b>Question:</b> can many correlated variables be summarized with fewer?<br><b>Core idea:</b> principal components are orthogonal directions of maximum variance. Standardize first. A scree plot shows how many components to keep. This links directly to SVD in CSE 6040 Topic 15.<br><b>Be able to:</b> say what proportion of variance the first two components explain, given their eigenvalues.<br><b>Resources:</b> ISLR Ch. 12; 3Blue1Brown's linear algebra series for the geometry.</p>
-      <label class="item"><input type="checkbox" data-key="c15"> I can do this without notes</label></details>
-
-    <details><summary><b>Advanced models (Week 11 lessons)</b> · 3 h</summary>
-      <p><b>Question:</b> depends on the model. The syllabus lists this topic by name only, so use your Week 11 lesson list as the authority.<br><b>Core idea:</b> for general reference, ISLR Ch. 9 covers support vector machines and Ch. 10 covers neural networks.<br><b>Be able to:</b> state what the model is for, what data it needs, and one case where it fails.<br><b>Resources:</b> ISLR Ch. 9–10 (statlearning.com).</p>
-      <label class="item"><input type="checkbox" data-key="c16"> I can do this without notes</label></details>
-
-    <details><summary><b>Modeling judgment and ethics (cases and conceptual questions)</b> · 2 h</summary>
-      <p><b>Question:</b> is this model appropriate, and is the conclusion reasonable?<br><b>Core idea:</b> the course's second stated goal is to evaluate someone else's analysis. Check that the model fits the question and data, and say what the model cannot tell you (causation, extrapolation beyond the data, bias in the data).<br><b>Be able to:</b> critique a short case in a paragraph: strengths, one flaw, one fix.<br><b>Resources:</b> the three discussion cases in Weeks 12–14.</p>
-      <label class="item"><input type="checkbox" data-key="c17"> I can do this without notes</label></details>
-  </div>
-
-  <div class="card">
-    <h2>Quiz strategy</h2>
-    <ul>
-      <li><b>One cheat sheet per module:</b> model name, the question it answers, its key formula, its R function, and one "don't use when." Build it before Midterm 2 and extend it for the final. The sheet is limited to one double-sided page, so keep it short.</li>
-      <li><b>Practice cold:</b> write 10 questions per module from the lessons and answer them without notes. Target about 1.5–2 minutes per question on the midterms (90 minutes for roughly 48 questions), and about 3 minutes on the final (180 minutes for about 60).</li>
-      <li><b>Memorize:</b> the z-values above and the mean and variance formulas for each distribution. You can't use a calculator, so practice estimating square roots and simple ratios.</li>
-      <li><b>Before the quiz:</b> test your webcam and room setup a day early, and clear the desk. The room scan covers everything within reach.</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>R ↔ Python bridge</h2>
-    <p class="muted">ISYE 6501 uses R; CSE 6040 uses Python. This table lets you carry one into the other.</p>
-    <table style="width:100%;border-collapse:collapse;font-size:14px">
-      <tr style="text-align:left;border-bottom:1px solid var(--line)"><th style="padding:6px">Task</th><th>R (ISYE 6501)</th><th>Python (CSE 6040)</th></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Linear regression</td><td><code>lm()</code></td><td><code>statsmodels.OLS</code> or <code>sklearn LinearRegression</code></td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Logistic regression</td><td><code>glm(family=binomial)</code></td><td><code>LogisticRegression</code></td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">k-NN</td><td><code>knn()</code> (class package)</td><td><code>KNeighborsClassifier</code></td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">k-means</td><td><code>kmeans()</code></td><td><code>KMeans</code></td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Decision tree</td><td><code>rpart()</code></td><td><code>DecisionTreeClassifier</code></td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">Random forest</td><td><code>randomForest()</code></td><td><code>RandomForestClassifier</code></td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">LASSO / ridge</td><td><code>glmnet()</code></td><td><code>Lasso</code> / <code>Ridge</code></td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">PCA</td><td><code>prcomp()</code></td><td><code>PCA</code> (sklearn)</td></tr>
-      <tr style="border-bottom:1px solid var(--line)"><td style="padding:6px">ARIMA</td><td><code>arima()</code>, <code>auto.arima()</code></td><td><code>statsmodels ARIMA</code></td></tr>
-      <tr><td style="padding:6px">Optimization / simulation</td><td>(your course's tools)</td><td>PuLP, SimPy</td></tr>
-    </table>
-  </div>
-
-  <div class="card">
-    <h2>Additional resources</h2>
-    <ul>
-      <li><a href="https://www.statlearning.com" target="_blank">An Introduction to Statistical Learning (ISLR)</a>. Free PDF, with R and Python labs. The best single reference for this course.</li>
-      <li><a href="https://otexts.com/fpp3/" target="_blank">Forecasting: Principles and Practice (FPP3)</a>. Free online. Strong on time series and ARIMA.</li>
-      <li><a href="https://www.itl.nist.gov/div898/handbook/" target="_blank">NIST/SEMATECH e-Handbook of Statistical Methods</a>. Free. Covers CUSUM and design of experiments.</li>
-      <li><a href="https://r4ds.hadley.nz" target="_blank">R for Data Science (2nd ed.)</a>. Free. Start with chapters 1–5 for R basics.</li>
-      <li><a href="https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2014/pages/readings/" target="_blank">MIT OCW 18.05</a>. Free probability readings.</li>
-      <li><a href="https://simpy.readthedocs.io" target="_blank">SimPy documentation</a>. Simulation tutorials.</li>
-      <li><a href="https://coin-or.github.io/pulp/" target="_blank">PuLP documentation</a>. Optimization modeling in Python.</li>
-      <li><a href="https://www.youtube.com/c/joshstarmer" target="_blank">StatQuest with Josh Starmer</a>. Short videos on almost every model in this course.</li>
-    </ul>
-    <p class="muted">Study-time check: the concept ladder adds up to roughly 50 hours. Spread it across the semester, and aim to finish the time series, regression, and tree sections before Midterm 2.</p>
   </div>
 </section>
 
@@ -594,260 +366,1210 @@ ORDER BY avg_pts DESC;</pre>
 
 </main>
 
+<script type="text/plain" id="py-harness">
+import sys, io, os, json, types, random, builtins, traceback, shutil, math
+import re as _re
+
+FILENAME = "<your code>"
+
+class TookTooLong(BaseException):
+    pass
+
+class _Raises:
+    def __init__(self, exc):
+        self.exc = exc
+    def __enter__(self):
+        return self
+    def __exit__(self, t, v, tb):
+        if t is None:
+            raise AssertionError("DID NOT RAISE " + self.exc.__name__)
+        return issubclass(t, self.exc)
+
+_pytest = types.ModuleType("pytest")
+_pytest.raises = lambda exc, match=None: _Raises(exc)
+sys.modules["pytest"] = _pytest
+
+def _err_info(e):
+    info = {"type": type(e).__name__, "msg": str(e), "line": None}
+    if isinstance(e, SyntaxError) and e.filename == FILENAME:
+        info["line"] = e.lineno
+        info["msg"] = e.msg
+    else:
+        for fr in traceback.extract_tb(e.__traceback__):
+            if fr.filename == FILENAME:
+                info["line"] = fr.lineno
+    if isinstance(e, TookTooLong):
+        info["type"] = "TookTooLong"
+    return info
+
+def _make_tracer(limit):
+    counter = [0]
+    def local(frame, event, arg):
+        if event == "line":
+            counter[0] += 1
+            if counter[0] > limit:
+                raise TookTooLong("Stopped after too many steps")
+        return local
+    def glob(frame, event, arg):
+        if frame.f_code.co_filename == FILENAME:
+            return local
+        return None
+    return glob
+
+def _run(code, inputs=(), argv=None, files=None, echo=False, name="__main__", patches=None, limit=2000000):
+    out = io.StringIO()
+    q = list(inputs)
+    st = {"eof": 0}
+    def fake_input(prompt=""):
+        prompt = "" if prompt is None else str(prompt)
+        if echo:
+            out.write(prompt)
+        if not q:
+            st["eof"] += 1
+            if st["eof"] > 25:
+                raise TookTooLong("Kept asking for input after input ran out")
+            if echo:
+                out.write("\n")
+            raise EOFError("no more input")
+        v = q.pop(0)
+        if echo:
+            out.write(v + "\n")
+        return v
+    wd = "/tmp/cs50run"
+    shutil.rmtree(wd, ignore_errors=True)
+    os.makedirs(wd)
+    for fn, content in (files or {}).items():
+        with open(os.path.join(wd, fn), "w", newline="") as f:
+            f.write(content)
+    saved = (builtins.input, sys.argv, sys.stdout, sys.stderr, os.getcwd())
+    saved_rand = {}
+    res = {"exit": None, "exited": False, "error": None, "files": {}}
+    ns = {"__name__": name}
+    try:
+        builtins.input = fake_input
+        sys.argv = list(argv or ["program.py"])
+        sys.stdout = out
+        sys.stderr = out
+        os.chdir(wd)
+        for k, v in (patches or {}).items():
+            saved_rand[k] = getattr(random, k)
+            setattr(random, k, eval(v))
+        compiled = compile(code, FILENAME, "exec")
+        sys.settrace(_make_tracer(limit))
+        try:
+            exec(compiled, ns)
+        finally:
+            sys.settrace(None)
+    except SystemExit as e:
+        res["exited"] = True
+        if isinstance(e.code, str):
+            out.write(e.code + "\n")
+            res["exit"] = e.code
+        else:
+            res["exit"] = e.code
+    except BaseException as e:
+        res["error"] = _err_info(e)
+    finally:
+        builtins.input, sys.argv, sys.stdout, sys.stderr, cwd = saved
+        for k, v in saved_rand.items():
+            setattr(random, k, v)
+        try:
+            for fn in os.listdir(wd):
+                p = os.path.join(wd, fn)
+                if os.path.isfile(p) and os.path.getsize(p) < 200000:
+                    with open(p, newline="") as f:
+                        res["files"][fn] = f.read()
+        except Exception:
+            pass
+        os.chdir(cwd)
+    res["out"] = out.getvalue()
+    res["eof"] = st["eof"]
+    res["ns"] = ns
+    return res
+
+def _call(ns, setup, call, limit=2000000):
+    out = io.StringIO()
+    saved = (sys.stdout, builtins.input)
+    def no_input(prompt=""):
+        raise EOFError("input() was called inside a function test")
+    sys.stdout = out
+    builtins.input = no_input
+    sys.settrace(_make_tracer(limit))
+    try:
+        if setup:
+            exec(compile(setup, "<test>", "exec"), ns)
+        val = eval(compile(call, "<test>", "eval"), ns)
+        return {"ok": True, "val": val}
+    except BaseException as e:
+        return {"ok": False, "exc": e}
+    finally:
+        sys.settrace(None)
+        sys.stdout, builtins.input = saved
+
+def _norm(s):
+    lines = [l.rstrip() for l in s.replace("\r\n", "\n").replace("\r", "\n").split("\n")]
+    while lines and not lines[0]:
+        lines.pop(0)
+    while lines and not lines[-1]:
+        lines.pop()
+    return "\n".join(lines)
+
+def _show(s):
+    return s if s != "" else "(nothing printed)"
+
+def _io_label(t):
+    if t.get("label"):
+        return t["label"]
+    parts = []
+    if t.get("argv"):
+        parts.append("Command: python " + " ".join(t["argv"]))
+    if t.get("in"):
+        parts.append("Input: " + "  ⏎  ".join(repr(x) for x in t["in"]))
+    if "exit" in t:
+        parts.append("→ exits with an error message")
+    elif "out" in t:
+        parts.append("→ prints " + (repr(t["out"]) if t["out"] else "nothing"))
+    elif "last" in t:
+        parts.append("→ last line " + repr(t["last"]))
+    elif "ends" in t:
+        parts.append("→ last line ends with " + repr(t["ends"]))
+    elif "file" in t:
+        parts.append("→ writes " + t["file"])
+    return "  ".join(parts) if parts else "Runs without errors"
+
+def _grade_io(code, t):
+    r = _run(code, t.get("in", []), t.get("argv"), t.get("files"), patches=t.get("patch"))
+    got = _norm(r["out"])
+    last = got.split("\n")[-1] if got else ""
+    item = {"label": _io_label(t), "ok": False, "detail": "", "err": None}
+    if "exit" in t:
+        ok = r["exited"] and r["exit"] not in (0, None)
+        if not ok:
+            item["detail"] = "Expected the program to stop with sys.exit(\"some message\").\nGot: " + _show(got)
+            if r["error"]:
+                item["err"] = r["error"]
+        item["ok"] = bool(ok)
+        return item
+    if r["error"]:
+        item["err"] = r["error"]
+        item["detail"] = "Printed before the error:\n" + _show(got)
+        if r["error"]["type"] == "EOFError" and r["eof"]:
+            item["detail"] += "\n\nThe test ran out of inputs while your program was still asking for more."
+        return item
+    if r["exited"] and r["exit"] not in (0, None):
+        item["detail"] = "Your program called sys.exit with: " + str(r["exit"])
+        return item
+    if "out" in t:
+        exp = _norm(t["out"])
+        item["ok"] = got == exp
+        item["detail"] = "Expected:\n" + _show(exp) + "\nGot:\n" + _show(got)
+    elif "last" in t:
+        item["ok"] = last == t["last"]
+        item["detail"] = "Expected last line: " + repr(t["last"]) + "\nGot: " + (repr(last) if got else "(nothing printed)")
+    elif "ends" in t:
+        item["ok"] = last.endswith(t["ends"])
+        item["detail"] = "Expected the last line to end with: " + repr(t["ends"]) + "\nGot: " + (repr(last) if got else "(nothing printed)")
+    elif "file" in t:
+        content = r["files"].get(t["file"])
+        if content is None:
+            item["detail"] = "Your program didn't create " + t["file"] + "."
+        else:
+            exp = _norm(t["content"])
+            gotc = _norm(content)
+            item["ok"] = gotc == exp
+            item["detail"] = "Expected " + t["file"] + ":\n" + exp + "\nGot:\n" + _show(gotc)
+    if item["ok"] and t.get("has"):
+        if t["has"] not in got:
+            item["ok"] = False
+            item["detail"] = "Expected the output to include: " + repr(t["has"]) + "\nGot:\n" + _show(got)
+    return item
+
+def _same(a, b):
+    if hasattr(a, "tolist") and not isinstance(a, (str, bytes)):
+        a = a.tolist()
+    if isinstance(a, bool) or isinstance(b, bool):
+        return a is b or a == b and type(a) == type(b)
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9)
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+        return len(a) == len(b) and all(_same(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return set(a) == set(b) and all(_same(a[k], b[k]) for k in a)
+    return a == b
+
+def _grade_fn(code, t, cache):
+    label = t.get("label") or (t["call"] + ("  → raises " + t["raises"] if "raises" in t else "  → " + repr(t.get("want"))))
+    if t.get("setup") and not t.get("label"):
+        label = t["setup"] + ";  " + label
+    item = {"label": label, "ok": False, "detail": "", "err": None}
+    if "student" not in cache:
+        cache["student"] = _run(code, name="student")
+    s = cache["student"]
+    if s["error"]:
+        item["err"] = s["error"]
+        if s["error"]["type"] == "EOFError":
+            item["detail"] = "Your code called input() as soon as it was loaded. Put the call to main() inside:\nif __name__ == \"__main__\":\n    main()"
+        else:
+            item["detail"] = "Your code crashed while loading, so the function couldn't be tested."
+        return item
+    if s["exited"]:
+        item["detail"] = "Your code called sys.exit while loading. Put the call to main() inside if __name__ == \"__main__\":"
+        return item
+    c = _call(s["ns"], t.get("setup"), t["call"])
+    if "raises" in t:
+        if c["ok"]:
+            item["detail"] = "Expected " + t["raises"] + " to be raised, but it returned " + repr(c["val"])
+        elif type(c["exc"]).__name__ == t["raises"] or any(k.__name__ == t["raises"] for k in type(c["exc"]).__mro__):
+            item["ok"] = True
+        else:
+            item["detail"] = "Expected " + t["raises"] + ", but got " + type(c["exc"]).__name__
+            item["err"] = _err_info(c["exc"])
+        return item
+    if not c["ok"]:
+        item["err"] = _err_info(c["exc"])
+        item["detail"] = "The call raised " + type(c["exc"]).__name__ + " instead of returning a value."
+        return item
+    item["ok"] = _same(c["val"], t.get("want"))
+    item["detail"] = "Expected: " + repr(t.get("want")) + "\nGot: " + repr(c["val"])
+    return item
+
+def _grade_unit(code, p):
+    mod = p["module"]
+    results = []
+    for im in p["impls"]:
+        m = types.ModuleType(mod)
+        exec(im["src"], m.__dict__)
+        sys.modules[mod] = m
+        r = _run(code, name="student")
+        item = {"label": im["label"], "ok": False, "detail": "", "err": None}
+        if r["error"]:
+            item["err"] = r["error"]
+            item["detail"] = "Your test file crashed when it was loaded."
+            results.append(item)
+            continue
+        tests = [(k, v) for k, v in r["ns"].items() if k.startswith("test_") and callable(v)]
+        if not tests:
+            item["detail"] = "No functions whose names start with test_ were found."
+            results.append(item)
+            break
+        failed = []
+        for k, v in tests:
+            c = _call(r["ns"], None, k + "()")
+            if not c["ok"]:
+                failed.append(k)
+        if im["correct"]:
+            item["ok"] = not failed
+            item["detail"] = "These tests failed even though the code is correct: " + ", ".join(failed) + "\nCheck the expected values in those asserts."
+        else:
+            item["ok"] = bool(failed)
+            item["detail"] = "All of your tests passed, so none of them noticed this bug. Add an assert that would catch it."
+        results.append(item)
+    sys.modules.pop(mod, None)
+    return results
+
+def grade(payload):
+    p = json.loads(payload)
+    code = p["code"]
+    if p.get("kind") == "unittest":
+        return json.dumps(_grade_unit(code, p))
+    cache = {}
+    results = []
+    for t in p["tests"]:
+        try:
+            if "call" in t:
+                results.append(_grade_fn(code, t, cache))
+            else:
+                results.append(_grade_io(code, t))
+        except BaseException as e:
+            results.append({"label": "Test harness", "ok": False, "detail": repr(e), "err": None})
+    return json.dumps(results)
+
+def tryit(payload):
+    p = json.loads(payload)
+    r = _run(p["code"], p.get("in", []), p.get("argv"), p.get("files"), echo=True)
+    return json.dumps({"out": r["out"], "error": r["error"], "exited": r["exited"], "exit": r["exit"] if isinstance(r["exit"], (int, str, type(None))) else str(r["exit"]), "eof": r["eof"], "files": r["files"] if p.get("showFiles") else {}})
+</script>
+
+<!-- ================= STARTER CODE ================= -->
+<script type="text/plain" class="src" data-id="ex1">def count_words(text):
+    # your code here
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex2">def squares_of_evens(n):
+    # your code here (one list comprehension)
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex3">def sort_by_last(names):
+    # your code here
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex4">import re
+
+
+def extract_emails(text):
+    # your code here
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex5">import numpy as np
+
+
+def center_columns(M):
+    # your code here (no loops)
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex6">import pandas as pd
+
+
+def avg_by_group(df):
+    # your code here
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex7">def float_equal(a, b, tol=1e-9):
+    # your code here
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex8">def dot(x, y):
+    # your code here (plain Python, no NumPy)
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex9">def mean_var(xs):
+    # return (mean, variance)
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex10">def has_pair_sum(nums, target):
+    # your code here
+    pass
+</script>
+<script type="text/plain" class="src" data-id="ex11">def gradient_descent(learning_rate, steps):
+    w = 0.0
+    # your code here
+    return w
+</script>
+<script type="text/plain" class="src" data-id="ex12">import sqlite3
+
+SQL = """
+SELECT ...
+"""
+
+
+def team_averages(conn):
+    return conn.execute(SQL).fetchall()
+</script>
+<script type="text/plain" class="src" data-id="ex13">from collections import defaultdict
+from itertools import combinations
+
+
+def pair_counts(baskets):
+    # your code here
+    pass
+</script>
+<script type="text/plain" class="src" data-id="scratch">import numpy as np
+import pandas as pd
+
+x = np.arange(6).reshape(2, 3)
+print(x)
+print(x.shape, x.mean(axis=0))
+</script>
+
 <script>
 const STORE_KEY = "cse6040-tracker-v1";
 const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
+function src(id){ const el = document.querySelector(`script.src[data-id="${id}"]`); return el ? el.textContent : ""; }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
-/* ---------- DATA ---------- */
+/* =================== TOPICS (Learn) =================== */
+const TOPICS = [
+ { id:"py", name:"Python essentials", ex:["ex1","ex2","ex3","ex13"] },
+ { id:"bigo", name:"Big-O", ex:["ex10"] },
+ { id:"float", name:"Floating point", ex:["ex7"] },
+ { id:"regex", name:"Regex", ex:["ex4"] },
+ { id:"pandas", name:"Pandas", ex:["ex6"] },
+ { id:"numpy", name:"NumPy", ex:["ex5"] },
+ { id:"sql", name:"SQL", ex:["ex12"] },
+ { id:"linalg", name:"Linear algebra", ex:["ex8"] },
+ { id:"prob", name:"Probability", ex:["ex9"] },
+ { id:"calc", name:"Calculus", ex:["ex11"] },
+];
+const TOPIC_IDX = Object.fromEntries(TOPICS.map((t, i) => [t.id, i]));
+
+/* =================== PREP =================== */
 const PREP = [
-  { id:"py-core", title:"Python core: variables, loops, functions, lists", blocks:"Module 0 Topic 1 (bootcamp review) and every notebook. Without it, nothing in the first two weeks will make sense." },
-  { id:"dicts", title:"Dictionaries and comprehensions", blocks:"Module 0 Topic 2 (pairwise association, defaultdict) and the first midterm's coffee-table style problems." },
-  { id:"lambda-sort", title:"Lambda functions and sorting with key=", blocks:"Topic 2 sorting problems and Midterm 1 ranking questions." },
-  { id:"nested", title:"Nested data (lists of dicts, dicts of lists)", blocks:"Topic 2 and Topic 7 (tidying data). Records will be hard to manipulate without it." },
-  { id:"bigo", title:"Big-O: reading how running time grows", blocks:"Topic 2, where the course asks you to explain asymptotic running time. Notebook efficiency checks also fail without it." },
-  { id:"float", title:"Floating-point pitfalls (why 0.1 + 0.2 != 0.3)", blocks:"Topic 4 (representing numbers). Numerical bugs in later notebooks will be hard to diagnose." },
-  { id:"regex", title:"Regular expressions (findall, search, sub)", blocks:"Topic 5 (preprocessing text) and Midterm 1, which includes regex string manipulation." },
-  { id:"prob", title:"Probability: conditional probability, mean and variance", blocks:"Topic 3 (math preliminaries) and the statistics needed for Topics 12 to 14." },
-  { id:"calc", title:"Calculus basics: derivatives and the idea of a gradient", blocks:"Topic 3, and Topic 13 (logistic regression is solved with gradient-based optimization)." },
-  { id:"linalg", title:"Linear algebra: vectors, dot products, matrix multiplication", blocks:"Topics 10 to 15 (NumPy, PageRank, regression, PCA/SVD). This is the course's hardest gap for many students." },
-  { id:"numpy", title:"NumPy: shapes, boolean masks, broadcasting", blocks:"Topic 10 and Midterm 2. Broadcasting questions are common on exams." },
-  { id:"pandas", title:"Pandas: loc/iloc, merge, groupby", blocks:"Topic 7 (tidying data) and Midterm 2 (basic pandas and groupby)." },
-  { id:"sql", title:"SQL: SELECT, JOIN, GROUP BY, CASE, window functions", blocks:"Topic 9 (relational data) and Midterm 2 / Final, which both include SQL exercises." },
-  { id:"web", title:"Basic web: HTML structure, JSON, calling an API", blocks:"Topic 6 (mining the web)." },
-  { id:"jupyter", title:"Jupyter: running cells, restarting the kernel, reading tracebacks", blocks:"Every notebook. Lost time here is paid back in hours of confusion later." },
+  { id:"py-core", topic:"py", title:"Python core: variables, loops, functions, lists", blocks:"Module 0 Topic 1 (bootcamp review) and every notebook. Without it, nothing in the first two weeks will make sense.", extra:"CS50P Weeks 0–3 on your other page cover this from scratch." },
+  { id:"dicts", topic:"py", title:"Dictionaries and comprehensions", blocks:"Module 0 Topic 2 (pairwise association, defaultdict) and the first midterm's dictionary-heavy problems." },
+  { id:"lambda-sort", topic:"py", title:"Lambda functions and sorting with key=", blocks:"Topic 2 sorting problems and Midterm 1 ranking questions." },
+  { id:"nested", topic:"py", title:"Nested data (lists of dicts, dicts of lists)", blocks:"Topic 2 and Topic 7 (tidying data). Records will be hard to manipulate without it." },
+  { id:"bigo", topic:"bigo", title:"Big-O: reading how running time grows", blocks:"Topic 2, where the course asks you to explain asymptotic running time. Notebook efficiency checks also fail without it." },
+  { id:"float", topic:"float", title:"Floating-point pitfalls (why 0.1 + 0.2 != 0.3)", blocks:"Topic 4 (representing numbers). Numerical bugs in later notebooks will be hard to diagnose." },
+  { id:"regex", topic:"regex", title:"Regular expressions (findall, search, sub)", blocks:"Topic 5 (preprocessing text) and Midterm 1, which includes regex string manipulation.", extra:"CS50P Week 7 is a gentle second pass." },
+  { id:"prob", topic:"prob", title:"Probability: conditional probability, mean and variance", blocks:"Topic 3 (math preliminaries) and the statistics needed for Topics 12 to 14." },
+  { id:"calc", topic:"calc", title:"Calculus basics: derivatives and the idea of a gradient", blocks:"Topic 3, and Topic 13 (logistic regression is solved with gradient-based optimization)." },
+  { id:"linalg", topic:"linalg", title:"Linear algebra: vectors, dot products, matrix multiplication", blocks:"Topics 10 to 15 (NumPy, PageRank, regression, PCA/SVD). This is the course's hardest gap for many students.", extra:"3Blue1Brown's Essence of Linear Algebra, episodes 1–4 (Resources tab)." },
+  { id:"numpy", topic:"numpy", title:"NumPy: shapes, boolean masks, broadcasting", blocks:"Topic 10 and Midterm 2. Broadcasting questions are common on exams." },
+  { id:"pandas", topic:"pandas", title:"Pandas: loc/iloc, merge, groupby", blocks:"Topic 7 (tidying data) and Midterm 2 (basic pandas and groupby)." },
+  { id:"sql", topic:"sql", title:"SQL: SELECT, JOIN, GROUP BY, CASE, window functions", blocks:"Topic 9 (relational data) and Midterm 2 / Final, which both include SQL exercises.", extra:"SQLZoo (Resources tab) for extra reps." },
+  { id:"web", topic:null, title:"Basic web: HTML structure, JSON, calling an API", blocks:"Topic 6 (mining the web).", extra:"No lesson here yet. CS50P Week 4 shows requests and JSON; the Python Data Science Handbook covers the rest." },
+  { id:"jupyter", topic:null, title:"Jupyter: running cells, restarting the kernel, reading tracebacks", blocks:"Every notebook. Lost time here is paid back in hours of confusion later.", extra:"Open any bootcamp notebook in Google Colab and practice: run all, restart, run one cell out of order and see what breaks." },
 ];
 
 const PLAN = [
-  "Python core and dictionaries (Practice exercises 1–2)",
-  "Lambda, sorting, nested data, Big-O",
+  "Python core and dictionaries (Practice exercises 1–2, 13)",
+  "Lambda, sorting, nested data, Big-O (Practice exercises 3, 10)",
   "Floating point and math as code (Practice exercise 7)",
   "Regular expressions (Practice exercise 4)",
-  "Linear algebra I: vectors, dot products, matrix multiplication",
+  "Linear algebra I: vectors, dot products, matrix multiplication (Practice exercise 8)",
   "Pandas: loc/iloc and groupby (Practice exercise 6)",
   "NumPy: shapes, masks, broadcasting (Practice exercise 5)",
-  "SQL basics: SELECT, WHERE, GROUP BY, JOIN",
-  "SQL advanced: CASE, CTEs, window functions. Plus probability",
-  "Calculus for optimization. Intro analytics review. Re-do the exercises you missed"
+  "SQL basics: SELECT, WHERE, GROUP BY, JOIN (Practice exercise 12)",
+  "SQL advanced: CASE, CTEs, window functions. Plus probability (Practice exercise 9)",
+  "Calculus for optimization (Practice exercise 11). Re-do the exercises you missed",
 ];
 
+/* =================== EXERCISES =================== */
 const EXERCISES = [
-  { id:"ex1", title:"1. Word counts with a dict", prompt:"Write count_words(text) that returns a dict mapping each lowercase word to how many times it appears. Split on whitespace.",
-    starter:"def count_words(text):\n    # your code here\n    pass\n",
-    test:"assert count_words('a b A') == {'a': 2, 'b': 1}\nassert count_words('') == {}\n" },
-  { id:"ex2", title:"2. Squares of evens (comprehension)", prompt:"Write squares_of_evens(n) that returns a list of squares of the even numbers from 0 up to n-1, in order. Use a list comprehension.",
-    starter:"def squares_of_evens(n):\n    # your code here\n    pass\n",
-    test:"assert squares_of_evens(7) == [0, 4, 16]\nassert squares_of_evens(1) == [0]\n" },
-  { id:"ex3", title:"3. Sort by last name (lambda)", prompt:"Write sort_by_last(names) that sorts full names by their last word. Use sorted() with key=lambda.",
-    starter:"def sort_by_last(names):\n    # your code here\n    pass\n",
-    test:"assert sort_by_last(['Alan Turing', 'Ada Lovelace']) == ['Ada Lovelace', 'Alan Turing']\n" },
-  { id:"ex4", title:"4. Extract emails (regex)", prompt:"Write extract_emails(text) that returns a list of email addresses found in the text, using re.findall.",
-    starter:"import re\n\ndef extract_emails(text):\n    # your code here\n    pass\n",
-    test:"assert extract_emails('x a@b.com, c@d.org') == ['a@b.com', 'c@d.org']\nassert extract_emails('none here') == []\n" },
-  { id:"ex5", title:"5. Subtract column means (broadcasting)", prompt:"Write center_columns(M) that subtracts each column's mean from that column, using NumPy broadcasting (no loops).",
-    starter:"import numpy as np\n\ndef center_columns(M):\n    # your code here\n    pass\n",
-    test:"M = np.array([[1., 3.], [3., 5.]])\nassert np.allclose(center_columns(M), np.array([[-1., -1.], [1., 1.]]))\n" },
-  { id:"ex6", title:"6. Group averages (pandas)", prompt:"Write avg_by_group(df) that takes a DataFrame with columns 'group' and 'value' and returns the mean value per group as a Series.",
-    starter:"import pandas as pd\n\ndef avg_by_group(df):\n    # your code here\n    pass\n",
-    test:"import pandas as pd\ndf = pd.DataFrame({'group': ['a', 'a', 'b'], 'value': [1, 3, 10]})\nr = avg_by_group(df)\nassert r['a'] == 2 and r['b'] == 10\n" },
-  { id:"ex7", title:"7. Safe float comparison", prompt:"Write float_equal(a, b, tol=1e-9) that returns True if a and b differ by no more than tol. Do not use ==.",
-    starter:"def float_equal(a, b, tol=1e-9):\n    # your code here\n    pass\n",
-    test:"assert float_equal(0.1 + 0.2, 0.3)\nassert not float_equal(1, 2)\n" },
+  { id:"ex1", title:"1. Word counts with a dict", topic:"py",
+    prompt:"Write <code>count_words(text)</code> that returns a dict mapping each lowercase word to how many times it appears. Split on whitespace.",
+    tests:[ {call:'count_words("a b A")', want:{a:2, b:1}}, {call:'count_words("")', want:{}}, {call:'count_words("The cat the  hat")', want:{the:2, cat:1, hat:1}} ],
+    nudges:["<code>text.split()</code> with no argument splits on any run of whitespace and gives <code>[]</code> for an empty string.", "<code>d[w] = d.get(w, 0) + 1</code> counts without a KeyError. Lowercase each word first."] },
+  { id:"ex2", title:"2. Squares of evens (comprehension)", topic:"py",
+    prompt:"Write <code>squares_of_evens(n)</code> that returns a list of squares of the even numbers from 0 up to n−1, in order. Use a list comprehension.",
+    tests:[ {call:"squares_of_evens(7)", want:[0,4,16,36]}, {call:"squares_of_evens(1)", want:[0]}, {call:"squares_of_evens(0)", want:[]}, {call:"squares_of_evens(10)", want:[0,4,16,36,64]} ],
+    nudges:["The shape is <code>[expression for x in range(n) if condition]</code>.", "<code>x % 2 == 0</code> tests for even."] },
+  { id:"ex3", title:"3. Sort by last name (lambda)", topic:"py",
+    prompt:"Write <code>sort_by_last(names)</code> that sorts full names by their last word. Use <code>sorted()</code> with <code>key=lambda</code>.",
+    tests:[ {call:'sort_by_last(["Alan Turing", "Ada Lovelace"])', want:["Ada Lovelace","Alan Turing"]}, {call:'sort_by_last(["Ada Lovelace", "Katherine Johnson", "Grace Hopper"])', want:["Grace Hopper","Katherine Johnson","Ada Lovelace"]}, {call:'sort_by_last(["Guido van Rossum", "Ada Lovelace"])', want:["Ada Lovelace","Guido van Rossum"]} ],
+    nudges:["The key function receives one name and returns what to sort by.", "<code>s.split()[-1]</code> is the last word."] },
+  { id:"ex4", title:"4. Extract emails (regex)", topic:"regex",
+    prompt:"Write <code>extract_emails(text)</code> that returns a list of email addresses found in the text, in order, using <code>re.findall</code>.",
+    tests:[ {call:'extract_emails("x a@b.com, c@d.org")', want:["a@b.com","c@d.org"]}, {call:'extract_emails("none here")', want:[]}, {call:'extract_emails("Contact: first.last@uni.edu or a_b@x.co.uk.")', want:["first.last@uni.edu","a_b@x.co.uk"]} ],
+    nudges:["Usernames can contain letters, digits, dots, and underscores: a character class like <code>[\\w.]+</code>.", "The domain is one or more <code>word.</code> parts followed by a final word. Avoid capturing groups, or findall returns the groups instead of the whole match."] },
+  { id:"ex5", title:"5. Subtract column means (broadcasting)", topic:"numpy",
+    prompt:"Write <code>center_columns(M)</code> that subtracts each column's mean from that column, using NumPy broadcasting (no loops).",
+    tests:[ {setup:"import numpy as np\nM = np.array([[1., 3.], [3., 5.]])", call:"center_columns(M)", want:[[-1,-1],[1,1]], label:"center_columns([[1, 3], [3, 5]]) → [[-1, -1], [1, 1]]"},
+      {setup:"import numpy as np\nM = np.arange(6.).reshape(3, 2)", call:"center_columns(M)", want:[[-2,-2],[0,0],[2,2]], label:"A 3×2 matrix"},
+      {setup:"import numpy as np\nM = np.arange(6.).reshape(3, 2)", call:"tuple(center_columns(M).shape)", want:[3,2], label:"Keeps the shape (3, 2)"} ],
+    nudges:["<code>M.mean(axis=0)</code> gives one mean per column.", "An (m, n) array minus an (n,) array broadcasts row by row."] },
+  { id:"ex6", title:"6. Group averages (pandas)", topic:"pandas",
+    prompt:"Write <code>avg_by_group(df)</code> that takes a DataFrame with columns <code>group</code> and <code>value</code> and returns the mean value per group as a Series indexed by group.",
+    tests:[ {setup:"import pandas as pd\ndf = pd.DataFrame({'group': ['a', 'a', 'b'], 'value': [1, 3, 10]})", call:"dict(avg_by_group(df))", want:{a:2, b:10}, label:"groups a, a, b → {a: 2, b: 10}"},
+      {setup:"import pandas as pd\ndf = pd.DataFrame({'group': ['x', 'y', 'x', 'z'], 'value': [5, 1, 7, 4]})", call:"dict(avg_by_group(df))", want:{x:6, y:1, z:4}, label:"Three groups"} ],
+    nudges:["<code>df.groupby(\"group\")</code> splits the rows.", "Select the <code>value</code> column after grouping, then call <code>.mean()</code>."] },
+  { id:"ex7", title:"7. Safe float comparison", topic:"float",
+    prompt:"Write <code>float_equal(a, b, tol=1e-9)</code> that returns True if a and b differ by no more than tol. Do not use <code>==</code>.",
+    tests:[ {call:"float_equal(0.1 + 0.2, 0.3)", want:true}, {call:"float_equal(1, 2)", want:false}, {call:"float_equal(1.0, 1.0 + 1e-12)", want:true}, {call:"float_equal(1e-3, 2e-3)", want:false}, {call:"float_equal(5, 5.5, tol=1)", want:true} ],
+    nudges:["\"Differ by\" is the absolute value of the difference.", "<code>abs(a - b) &lt;= tol</code>"] },
+  { id:"ex8", title:"8. Dot product by hand", topic:"linalg",
+    prompt:"Write <code>dot(x, y)</code> that returns the dot product of two equal-length lists in plain Python. Raise <code>ValueError</code> if the lengths differ.",
+    tests:[ {call:"dot([1, 2, 3], [4, 5, 6])", want:32}, {call:"dot([], [])", want:0}, {call:"dot([2.5, -1], [2, 4])", want:1.0}, {call:"dot([1], [1, 2])", raises:"ValueError"} ],
+    nudges:["<code>zip(x, y)</code> pairs matching entries.", "<code>sum(a * b for a, b in zip(x, y))</code>. Check lengths first."] },
+  { id:"ex9", title:"9. Mean and variance", topic:"prob",
+    prompt:"Write <code>mean_var(xs)</code> that returns a tuple <code>(mean, variance)</code>, where variance is the population variance (divide by n).",
+    tests:[ {call:"mean_var([2, 4, 4, 4, 5, 5, 7, 9])", want:[5,4]}, {call:"mean_var([1])", want:[1,0]}, {call:"mean_var([1, 2, 3, 4])", want:[2.5,1.25]} ],
+    nudges:["Compute the mean first, then the average of the squared distances from it.", "<code>sum((x - m) ** 2 for x in xs) / len(xs)</code>"] },
+  { id:"ex10", title:"10. Pair that sums to a target (Big-O)", topic:"bigo",
+    prompt:"Write <code>has_pair_sum(nums, target)</code> that returns True if two different positions in <code>nums</code> add up to <code>target</code>. It must be fast: the last check uses 3,000 numbers, and a loop inside a loop (O(n²)) is too slow.",
+    tests:[ {call:"has_pair_sum([1, 4, 6, 3], 7)", want:true}, {call:"has_pair_sum([1, 2], 5)", want:false}, {call:"has_pair_sum([5], 10)", want:false, label:"has_pair_sum([5], 10) → False (can't use 5 twice)"}, {call:"has_pair_sum([5, 5], 10)", want:true},
+      {setup:"big = list(range(0, 6000, 2))", call:"has_pair_sum(big, 1)", want:false, label:"Fast enough on 3,000 numbers (needs O(n))"} ],
+    nudges:["For each number, the partner you need is <code>target - x</code>.", "Keep a set of numbers seen so far. Checking <code>in</code> a set is O(1) on average."] },
+  { id:"ex11", title:"11. Gradient descent", topic:"calc",
+    prompt:"Minimize <code>f(w) = (w − 3)²</code>. Its derivative is <code>2(w − 3)</code>. Starting from <code>w = 0</code>, take <code>steps</code> gradient-descent steps with the given learning rate and return <code>w</code>.",
+    tests:[ {call:"gradient_descent(0.1, 1)", want:0.6, label:"One step at rate 0.1 → 0.6"}, {call:"gradient_descent(0.5, 1)", want:3.0, label:"One step at rate 0.5 lands exactly on 3"}, {call:"round(gradient_descent(0.1, 100), 4)", want:3.0, label:"100 steps at rate 0.1 converge to 3"}, {call:"gradient_descent(0.1, 0)", want:0.0, label:"Zero steps → 0"} ],
+    nudges:["Each step: compute the gradient at the current <code>w</code>, then move against it.", "<code>w = w - learning_rate * 2 * (w - 3)</code> inside a loop."] },
+  { id:"ex12", title:"12. SQL: average points per team", topic:"sql",
+    prompt:"Table <code>games(team, season, pts)</code>. Fill in <code>SQL</code> so <code>team_averages(conn)</code> returns <code>(team, avg_pts)</code> for season 2025 only, highest average first.",
+    tests:[ {setup:"import sqlite3\nconn = sqlite3.connect(':memory:')\nconn.execute('CREATE TABLE games(team TEXT, season INT, pts INT)')\nconn.executemany('INSERT INTO games VALUES (?,?,?)', [('A',2025,10),('A',2025,14),('B',2025,7),('B',2025,20),('C',2024,30),('C',2025,9)])", call:"team_averages(conn)", want:[["B",13.5],["A",12],["C",9]], label:"2025 averages, highest first → B 13.5, A 12, C 9"},
+      {setup:"import sqlite3\nconn = sqlite3.connect(':memory:')\nconn.execute('CREATE TABLE games(team TEXT, season INT, pts INT)')\nconn.executemany('INSERT INTO games VALUES (?,?,?)', [('X',2024,99),('Y',2025,5)])", call:"team_averages(conn)", want:[["Y",5]], label:"Ignores other seasons"} ],
+    nudges:["You need WHERE (filter rows), GROUP BY (one row per team), and ORDER BY.", "<code>SELECT team, AVG(pts) AS avg_pts FROM games WHERE ... GROUP BY ... ORDER BY avg_pts DESC</code>"] },
+  { id:"ex13", title:"13. Pairwise counts (defaultdict)", topic:"py",
+    prompt:"This is the core of Topic 2. Write <code>pair_counts(baskets)</code>: for each basket (a list of items), count every unordered pair of <b>different</b> items in it. Return a dict whose keys are alphabetically sorted tuples like <code>('bread', 'milk')</code>. Duplicates within a basket count once.",
+    tests:[ {setup:"r = pair_counts([['milk', 'bread'], ['bread', 'milk', 'eggs'], ['eggs']])", call:"r[('bread', 'milk')]", want:2}, {setup:"r = pair_counts([['milk', 'bread'], ['bread', 'milk', 'eggs'], ['eggs']])", call:"r[('bread', 'eggs')]", want:1}, {setup:"r = pair_counts([['milk', 'bread'], ['bread', 'milk', 'eggs'], ['eggs']])", call:"len(r)", want:3},
+      {call:"dict(pair_counts([['a', 'a', 'b']]))", want_py:"{('a', 'b'): 1}", label:"pair_counts([['a', 'a', 'b']]) → {('a', 'b'): 1}"} ],
+    nudges:["<code>sorted(set(basket))</code> removes duplicates and puts items in order.", "<code>combinations(items, 2)</code> gives every pair once. Use a <code>defaultdict(int)</code> and add 1 per pair."] },
 ];
+const EXMAP = Object.fromEntries(EXERCISES.map(e => [e.id, e]));
 
-/* ---------- STATE ---------- */
-let state = { prep:{}, ex:{}, plan:{}, journal:"" };
-function load(){
-  try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); if(s) state = Object.assign(state, s); } catch(e){}
+/* =================== LEARN CONTENT =================== */
+const LEARN = {
+py: `<div class="card"><h2>Python essentials for this course</h2>
+<p><b>Dictionaries</b> map keys to values. <code>defaultdict</code> gives a default for missing keys, which is handy for counting.</p>
+<div class="snip"><pre>counts = {}
+for w in ["a", "b", "a"]:
+    counts[w] = counts.get(w, 0) + 1
+print(counts)
+
+from collections import defaultdict
+d = defaultdict(int)
+for w in ["a", "b", "a"]:
+    d[w] += 1
+print(dict(d))</pre></div>
+<p><b>Comprehensions</b> build lists and dicts in one line.</p>
+<div class="snip"><pre>squares = [x * x for x in range(5) if x % 2 == 0]
+inv = {v: k for k, v in {"a": 1, "b": 2}.items()}
+print(squares, inv)</pre></div>
+<p><b>Lambda and sorting.</b> <code>sorted</code> takes a <code>key</code> function that says what to sort by.</p>
+<div class="snip"><pre>names = ["Alan Turing", "Ada Lovelace", "Grace Hopper"]
+print(sorted(names, key=lambda s: s.split()[-1]))       # by last name
+print(sorted(names, key=len, reverse=True))              # longest first</pre></div>
+<p><b>zip and enumerate</b> pair items from several sequences or give you indices. <b>itertools.combinations</b> gives every pair once, which is the heart of Topic 2.</p>
+<div class="snip"><pre>from itertools import combinations
+for i, (a, b) in enumerate(zip([1, 2], ["x", "y"])):
+    print(i, a, b)
+print(list(combinations(["bread", "eggs", "milk"], 2)))</pre></div>
+<p><b>Nested data:</b> a list of dicts is the standard shape for records.</p>
+<div class="snip"><pre>rows = [{"name": "Ada", "dept": "math"}, {"name": "Alan", "dept": "cs"}, {"name": "Grace", "dept": "cs"}]
+by_dept = {}
+for r in rows:
+    by_dept.setdefault(r["dept"], []).append(r["name"])
+print(by_dept)          # dict of lists</pre></div>
+</div>`,
+bigo: `<div class="card"><h2>Big-O and running time</h2>
+<p>Big-O describes how work grows with input size <code>n</code>. A single loop over the data is O(n). A loop inside a loop is O(n²): double the data, four times the work. Checking <code>x in some_list</code> is O(n), but <code>x in some_set</code> or a dict lookup is O(1) on average.</p>
+<p>Run this and compare the step counts. Then change <code>n</code> to 600 and run again: the nested count quadruples while the single pass only doubles.</p>
+<div class="snip"><pre>n = 300
+data = list(range(n))
+
+steps = 0
+for a in data:              # O(n^2): every pair
+    for b in data:
+        steps += 1
+print("nested loops:", steps)
+
+seen = set()
+steps = 0
+for a in data:              # O(n): one pass with a set
+    steps += 1
+    seen.add(a)
+print("one pass:", steps)</pre></div>
+<p><b>The usual fix</b> for a slow solution: replace an inner search with a set or dict built once.</p>
+</div>`,
+float: `<div class="card"><h2>Floating-point numbers</h2>
+<p>Computers store most decimals in binary floating point, so some values can't be represented exactly.</p>
+<div class="snip"><pre>import math
+print(0.1 + 0.2 == 0.3)
+print(0.1 + 0.2)
+print(abs((0.1 + 0.2) - 0.3))
+print(math.isclose(0.1 + 0.2, 0.3))</pre></div>
+<p>Compare floats with a tolerance, not <code>==</code>. Use <code>math.isclose</code> or <code>np.isclose</code>. Subtracting nearly equal numbers, or adding a very small number to a very large one, loses precision:</p>
+<div class="snip"><pre>big = 1e16
+print(big + 1 - big)      # the 1 is lost
+total = 0.0
+for _ in range(10):
+    total += 0.1
+print(total, total == 1.0)</pre></div>
+</div>`,
+regex: `<div class="card"><h2>Regular expressions</h2>
+<p>A regex is a pattern for matching text. The basics: <code>\\d</code> (digit), <code>\\w</code> (word character), <code>\\s</code> (whitespace), <code>.</code> (any character), <code>+</code> (one or more), <code>*</code> (zero or more), <code>?</code> (optional), <code>[abc]</code> (a set), <code>^</code> and <code>$</code> (start and end), <code>( )</code> (groups). Write patterns as raw strings, <code>r"..."</code>.</p>
+<div class="snip"><pre>import re
+print(re.findall(r"\\d+", "a12 b345"))
+m = re.search(r"(\\w+)@(\\w+\\.\\w+)", "me@site.com")
+print(m.groups(), m.group(0))
+print(re.sub(r"\\s+", " ", "too    many   spaces"))</pre></div>
+<p><b>Gotcha:</b> if the pattern has groups, <code>findall</code> returns the groups, not the whole match. Use <code>(?:...)</code> for a group that doesn't capture.</p>
+<div class="snip"><pre>import re
+text = "cat.png dog.jpg bird.png"
+print(re.findall(r"\\w+\\.(png|jpg)", text))     # just the groups
+print(re.findall(r"\\w+\\.(?:png|jpg)", text))   # whole matches</pre></div>
+</div>`,
+pandas: `<div class="card"><h2>Pandas</h2>
+<p>A DataFrame is a table and a Series is one column. The core operations are selecting, filtering, grouping, and joining.</p>
+<div class="snip"><pre>import pandas as pd
+df = pd.DataFrame({"team": ["A", "A", "B"], "pts": [10, 14, 7]})
+other = pd.DataFrame({"team": ["A", "B"], "city": ["Atlanta", "Boston"]})
+
+print(df.loc[df["pts"] &gt; 8, ["team", "pts"]])   # labels + boolean filter
+print(df.iloc[0:2, 1])                         # positions
+print(df.groupby("team")["pts"].mean())
+print(df.merge(other, on="team", how="left"))
+print(df.melt(id_vars="team"))</pre></div>
+<p><b>Tip:</b> <code>loc</code> uses labels and includes the end of a slice. <code>iloc</code> uses positions and excludes the end.</p>
+</div>`,
+numpy: `<div class="card"><h2>NumPy</h2>
+<p>NumPy arrays are fixed-type, vectorized containers. Operations apply to the whole array at once, which is much faster than Python loops.</p>
+<div class="snip"><pre>import numpy as np
+A = np.array([[1., 2.], [3., 4.]])
+print(A.shape)
+print(A @ A)              # matrix multiplication
+print(A * A)              # element-wise
+print(A[A &gt; 2])           # boolean mask
+print(A - A.mean(axis=0)) # broadcasting: subtract column means
+print(np.argsort(-A[:, 0]))  # order of column 0, descending</pre></div>
+<p><b>Broadcasting rule:</b> compare shapes from the right. Each pair of dimensions must match or one must be 1, and the size-1 dimension stretches to fit.</p>
+<div class="snip"><pre>import numpy as np
+M = np.zeros((3, 4))
+print((M + np.arange(4)).shape)                 # (3,4) + (4,)   works
+print((M + np.arange(3).reshape(3, 1)).shape)   # (3,4) + (3,1) works
+try:
+    M + np.arange(3)                            # (3,4) + (3,)   fails
+except ValueError as e:
+    print("Error:", e)</pre></div>
+</div>`,
+sql: `<div class="card"><h2>SQL</h2>
+<p>The core pattern is <code>SELECT</code>, <code>FROM</code>, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>. SQL runs them in this order: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY. That's why you can't use a SELECT alias in WHERE. The example uses Python's built-in <code>sqlite3</code>, which is how the course's notebooks run SQL too.</p>
+<div class="snip"><pre>import sqlite3
+conn = sqlite3.connect(":memory:")
+conn.execute("CREATE TABLE games(team TEXT, season INT, pts INT)")
+conn.executemany("INSERT INTO games VALUES (?,?,?)",
+    [("A", 2025, 10), ("A", 2025, 14), ("B", 2025, 7), ("B", 2024, 30)])
+
+q = """
+SELECT team, AVG(pts) AS avg_pts
+FROM games
+WHERE season = 2025
+GROUP BY team
+HAVING AVG(pts) &gt; 5
+ORDER BY avg_pts DESC
+"""
+print(conn.execute(q).fetchall())
+
+q2 = """
+SELECT team, pts,
+       CASE WHEN pts &gt; 10 THEN 'high' ELSE 'low' END AS level,
+       RANK() OVER (PARTITION BY team ORDER BY pts DESC) AS rnk
+FROM games
+"""
+for row in conn.execute(q2):
+    print(row)</pre></div>
+<ul>
+<li><b>JOIN:</b> INNER keeps matches only. LEFT keeps every row from the left table.</li>
+<li><b>NULL:</b> use <code>IS NULL</code>, not <code>= NULL</code>. <code>COALESCE(x, 0)</code> replaces NULL.</li>
+<li><b>CTE:</b> <code>WITH t AS (SELECT ...) SELECT ... FROM t</code>, a named subquery.</li>
+<li><b>Window functions</b> like <code>RANK()</code> work within groups without collapsing rows. <code>LAG</code> and <code>LEAD</code> look at neighboring rows.</li>
+</ul>
+</div>`,
+linalg: `<div class="card"><h2>Linear algebra (the parts you'll actually use)</h2>
+<ul>
+<li><b>Vector:</b> a list of numbers. The <b>dot product</b> multiplies matching entries and sums them: <code>x · y = Σ xᵢyᵢ</code>.</li>
+<li><b>Matrix multiplication:</b> (m×n) times (n×p) gives (m×p). The inner dimensions must match. Each output entry is a row dotted with a column.</li>
+<li><b>Transpose:</b> swap rows and columns. <code>(AB)ᵀ = BᵀAᵀ</code>.</li>
+<li><b>Norm:</b> the length of a vector. The L2 norm is <code>sqrt(x · x)</code>.</li>
+<li><b>Linear regression:</b> solve <code>min ||Ax − b||²</code>. This is where QR decomposition comes in.</li>
+<li><b>Eigenvectors and SVD:</b> the directions a matrix stretches the most. SVD underlies PCA and compression.</li>
+</ul>
+<p>Check each rule in code: compute by hand, then compare with NumPy.</p>
+<div class="snip"><pre>import numpy as np
+x = [1, 2, 3]; y = [4, 5, 6]
+print(sum(a * b for a, b in zip(x, y)), np.dot(x, y))
+
+A = np.array([[1, 2], [3, 4], [5, 6]])     # 3x2
+B = np.array([[1, 0, 2], [0, 1, 3]])       # 2x3
+print((A @ B).shape)                       # (3, 3)
+print(A[0] @ B[:, 2], (A @ B)[0, 2])       # row 0 dot column 2
+print(np.allclose((A @ B).T, B.T @ A.T))
+print(np.linalg.norm([3, 4]))</pre></div>
+<p class="muted">Best free visual intro: 3Blue1Brown's "Essence of Linear Algebra" series. For a full course, use LAFF (ulaff.net), which the instructors recommend.</p>
+</div>`,
+prob: `<div class="card"><h2>Probability and statistics</h2>
+<ul>
+<li><b>Mean</b> is the average. <b>Median</b> is the middle value and is robust to outliers.</li>
+<li><b>Variance</b> is the average squared distance from the mean. <b>Standard deviation</b> is its square root.</li>
+<li><b>Conditional probability:</b> P(A | B) = P(A and B) / P(B).</li>
+<li><b>Bayes' rule:</b> P(A | B) = P(B | A) P(A) / P(B).</li>
+<li><b>Correlation</b> measures linear association. It is not causation.</li>
+</ul>
+<div class="snip"><pre>import statistics as st
+xs = [2, 4, 4, 4, 5, 5, 7, 9]
+print(st.mean(xs), st.median(xs), st.pvariance(xs), st.pstdev(xs))
+print(st.mean(xs + [100]), st.median(xs + [100]))   # an outlier moves the mean, not the median
+
+# Bayes: a test is 99% sensitive, 95% specific, and 1% of people have the condition
+p_d, sens, spec = 0.01, 0.99, 0.95
+p_pos = sens * p_d + (1 - spec) * (1 - p_d)
+print("P(condition | positive) =", round(sens * p_d / p_pos, 3))</pre></div>
+</div>`,
+calc: `<div class="card"><h2>Calculus for optimization</h2>
+<p>A derivative tells you how fast a function changes. Machine learning minimizes a loss function. <b>Gradient descent</b> repeats: compute the gradient, then step the other way.</p>
+<div class="snip"><pre>def f(w):
+    return (w - 3) ** 2
+
+def grad(w):
+    return 2 * (w - 3)
+
+w = 0.0
+for step in range(6):
+    w = w - 0.3 * grad(w)
+    print(step, round(w, 4), round(f(w), 4))
+
+h = 1e-6     # check the derivative numerically
+print(grad(1.0), (f(1.0 + h) - f(1.0)) / h)</pre></div>
+<p>The gradient is the vector of partial derivatives. The learning rate controls step size. Change 0.3 to 1.1 above to see it overshoot and diverge, or 0.01 to see it crawl.</p>
+</div>`,
+};
+
+const QUIZ = {
+ py: [ {id:"q-py1", code:'d = {}\nd["x"] += 1', opts:["d is {'x': 1}","KeyError"], a:1, why:"A plain dict has no default. Use d.get(\"x\", 0) + 1 or a defaultdict(int)."},
+       {id:"q-py2", code:'sorted(["b", "A", "c"])', opts:["['A', 'b', 'c']","['b', 'A', 'c']","['A', 'c', 'b']"], a:0, why:"Uppercase letters sort before lowercase. Use key=str.lower to ignore case."} ],
+ bigo: [ {id:"q-bigo1", code:'for x in a:\n    if x in b:   # b is a list of n items\n        ...', opts:["O(n)","O(n²)","O(1)"], a:1, why:"\"in\" on a list scans it, so it's O(n) inside an O(n) loop. Make b a set to get O(n) overall."} ],
+ float: [ {id:"q-fl1", code:'0.1 * 3 == 0.3', opts:["True","False"], a:1, why:"0.1 * 3 is 0.30000000000000004. Compare with math.isclose."} ],
+ regex: [ {id:"q-re1", code:'re.findall(r"(\\d)\\d", "12 34")', opts:["['12', '34']","['1', '3']"], a:1, why:"With a capturing group, findall returns the group's text."},
+          {id:"q-re2", code:'re.search(r"^\\d+$", "123\\n")', opts:["A match","None"], a:0, why:"$ also matches just before a final newline. Use \\Z or fullmatch for a strict end."} ],
+ pandas: [ {id:"q-pd1", code:'df = pd.DataFrame({"a": [10, 20, 30]})\nlen(df.loc[0:1])', opts:["1","2"], a:1, why:"loc slices by label and includes the end label, so rows 0 and 1."} ],
+ numpy: [ {id:"q-np1", code:'np.ones((2, 3)) + np.ones((2,))', opts:["Shape (2, 3)","ValueError"], a:1, why:"Compare from the right: 3 vs 2 don't match and neither is 1."},
+          {id:"q-np2", code:'A = np.array([[1, 2], [3, 4]])\n(A * A)[0, 1]', opts:["4","10"], a:0, why:"* is element-wise: 2 × 2. Matrix multiplication (A @ A) would give 10."} ],
+ sql: [ {id:"q-sql1", code:'SELECT team, AVG(pts) AS a\nFROM games\nWHERE a > 10\nGROUP BY team', opts:["Works","Error: a doesn't exist yet"], a:1, why:"WHERE runs before SELECT and before grouping. Filter on an aggregate with HAVING AVG(pts) > 10."} ],
+ linalg: [ {id:"q-la1", code:'(4×3 matrix) @ (3×2 matrix)', opts:["4×2","3×3","Error"], a:0, why:"Inner dimensions (3 and 3) match; the result takes the outer ones."} ],
+ prob: [ {id:"q-pr1", code:'P(A) = 0.5, P(B) = 0.4, P(A and B) = 0.2\nP(A | B) = ?', opts:["0.4","0.5","0.8"], a:1, why:"0.2 / 0.4 = 0.5. Since that equals P(A), A and B are independent."} ],
+ calc: [ {id:"q-ca1", code:'Gradient at w is positive.\nWhich way does gradient descent move w?', opts:["Increase w","Decrease w"], a:1, why:"It steps against the gradient: w − rate × gradient."} ],
+};
+const ALLQ = Object.values(QUIZ).flat();
+
+/* =================== STATE =================== */
+const blank = () => ({ prep:{}, ex:{}, plan:{}, journal:"", code:{}, quiz:{}, topic:0, theme:"auto" });
+let state = blank();
+function load(){ try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); if(s) state = Object.assign(blank(), s); } catch(e){} }
+let saveTimer = null;
+function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){} }
+function saveSoon(){ clearTimeout(saveTimer); saveTimer = setTimeout(save, 300); }
+
+/* =================== THEME =================== */
+function applyTheme(){
+  const t = state.theme || "auto";
+  if(t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t);
+  document.getElementById("theme-btn").textContent = "Theme: " + t;
 }
-function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+document.getElementById("theme-btn").addEventListener("click", () => {
+  const order = ["auto","light","dark"]; state.theme = order[(order.indexOf(state.theme || "auto") + 1) % 3]; applyTheme(); save();
+});
 
-/* ---------- TABS ---------- */
-document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll("nav button").forEach(x => x.classList.remove("active"));
-  document.querySelectorAll("section.tab").forEach(x => x.classList.remove("active"));
-  b.classList.add("active");
-  document.getElementById("tab-" + b.dataset.tab).classList.add("active");
+/* =================== TABS =================== */
+function showTab(name){
+  document.querySelectorAll("nav button").forEach(x => x.classList.toggle("active", x.dataset.tab === name));
+  document.querySelectorAll("section.tab").forEach(x => x.classList.toggle("active", x.id === "tab-" + name));
   window.scrollTo({top:0});
-}));
-
-/* ---------- PREP ---------- */
-function renderPrep(){
-  const box = document.getElementById("prep-list");
-  box.innerHTML = "";
-  PREP.forEach(p => {
-    const done = !!state.prep[p.id];
-    const lab = document.createElement("label");
-    lab.className = "item";
-    lab.innerHTML = `<input type="checkbox" ${done?"checked":""}>
-      <div style="flex:1">
-        <div class="item-title">${p.title}</div>
-        ${done ? "" : `<div class="note">⚠ Not checked off: ${p.blocks}</div>`}
-      </div>`;
-    lab.querySelector("input").addEventListener("change", e => {
-      state.prep[p.id] = e.target.checked; save(); renderPrep(); renderDash();
-    });
-    box.appendChild(lab);
-  });
+  if(name === "learn" || name === "lab") loadPy().catch(()=>{});
 }
+document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+function goTopic(id){ const i = TOPIC_IDX[id]; if(i === undefined) return; state.topic = i; save(); renderLearn(); showTab("learn"); }
 
-/* ---------- PLAN ---------- */
-function renderPlan(){
-  const box = document.getElementById("plan");
-  box.innerHTML = "";
-  PLAN.forEach((t,i) => {
-    const key = "w"+i; const done = !!state.plan[key];
-    const lab = document.createElement("label");
-    lab.className = "item";
-    lab.innerHTML = `<input type="checkbox" ${done?"checked":""}><div><span class="tag">Week ${i+1}</span> ${t}</div>`;
-    lab.querySelector("input").addEventListener("change", e => { state.plan[key]=e.target.checked; save(); renderDash(); });
-    box.appendChild(lab);
-  });
-}
-
-/* ---------- EXERCISES ---------- */
-function renderExercises(){
-  const box = document.getElementById("exercises");
-  box.innerHTML = "";
-  EXERCISES.forEach(ex => {
-    const passed = !!state.ex[ex.id];
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <h2 style="margin:0">${ex.title}</h2>
-        <span class="pill ${passed?"done":""}" data-status>${passed?"Passed":"Not yet"}</span>
-      </div>
-      <p class="muted">${ex.prompt}</p>
-      <textarea class="editor" spellcheck="false">${ex.starter.replace(/</g,"&lt;")}</textarea>
-      <div class="row">
-        <button class="run">Run checks</button>
-        <button class="ghost reset">Reset code</button>
-      </div>
-      <div class="out">Press Run checks.</div>`;
-    const ta = div.querySelector("textarea");
-    const out = div.querySelector(".out");
-    const pill = div.querySelector("[data-status]");
-    const runBtn = div.querySelector(".run");
-    runBtn.addEventListener("click", async () => {
-      runBtn.disabled = true; out.textContent = "Running…";
-      const code = ta.value + "\n\n# --- hidden checks ---\n" + ex.test + "\nprint('✅ All checks passed')";
-      const res = await runPython(code, true);
-      const ok = res.ok && res.output.includes("All checks passed");
-      out.innerHTML = ok ? `<span class="pass">${res.output}</span>` : `<span class="fail">Not yet.</span>\n${escapeHtml(res.output)}`;
-      if(ok && !state.ex[ex.id]){ state.ex[ex.id]=true; save(); }
-      pill.textContent = state.ex[ex.id] ? "Passed" : "Not yet";
-      pill.className = "pill " + (state.ex[ex.id] ? "done" : "");
-      renderDash();
-      runBtn.disabled = false;
-    });
-    div.querySelector(".reset").addEventListener("click", () => { ta.value = ex.starter; });
-    box.appendChild(div);
-  });
-}
-
-/* ---------- PYTHON (Pyodide) ---------- */
-let pyPromise = null, pyInstance = null;
-function setPyStatus(t, done){
-  const el = document.getElementById("py-status");
-  el.textContent = t; el.className = "pill " + (done ? "done" : "");
-}
+/* =================== PYTHON (Pyodide) =================== */
+let pyPromise = null, py = null;
+function setPyStatus(t, done){ document.querySelectorAll(".py-status").forEach(el => { el.textContent = t; el.className = "pill py-status " + (done ? "done" : ""); }); }
 function loadPy(){
   if(pyPromise) return pyPromise;
   setPyStatus("Loading Python…", false);
   pyPromise = (async () => {
-    await new Promise((res, rej) => {
-      const s = document.createElement("script");
-      s.src = PYODIDE_URL + "pyodide.js"; s.onload = res; s.onerror = () => rej(new Error("Could not load Pyodide. Check your internet connection."));
-      document.head.appendChild(s);
-    });
-    pyInstance = await loadPyodide({ indexURL: PYODIDE_URL });
+    if(!window.loadPyodide){
+      await new Promise((res, rej) => {
+        const s = document.createElement("script"); s.src = PYODIDE_URL + "pyodide.js"; s.onload = res;
+        s.onerror = () => rej(new Error("Couldn't download Python. Check your internet connection, then reload the page."));
+        document.head.appendChild(s);
+      });
+    }
+    py = await loadPyodide({ indexURL: PYODIDE_URL });
+    py.runPython(document.getElementById("py-harness").textContent);
     setPyStatus("Python ready", true);
-    return pyInstance;
-  })().catch(e => { setPyStatus("Failed to load", false); pyPromise = null; throw e; });
+    return py;
+  })().catch(e => { setPyStatus("Python failed to load", false); pyPromise = null; throw e; });
   return pyPromise;
 }
-async function runPython(code){
-  try {
-    const py = await loadPy();
-    let lines = [];
-    py.setStdout({ batched: s => lines.push(s) });
-    py.setStderr({ batched: s => lines.push(s) });
-    await py.loadPackagesFromImports(code);
-    await py.runPythonAsync(code);
-    return { ok:true, output: lines.join("\n") || "(no output)" };
-  } catch(e){
-    return { ok:false, output: String(e.message || e) };
+async function pyCall(fn, payload, codeForImports){
+  const p = await loadPy();
+  if(codeForImports){ setPyStatus("Loading packages…", false); try { await p.loadPackagesFromImports(codeForImports); } catch(e){} setPyStatus("Python ready", true); }
+  p.globals.set("_payload", JSON.stringify(payload));
+  return JSON.parse(p.runPython(`${fn}(_payload)`));
+}
+
+/* =================== FRIENDLY ERRORS =================== */
+const EXPLAIN = {
+  SyntaxError:"Python couldn't read this line. Look for a missing colon at the end of <code>if</code>/<code>for</code>/<code>while</code>/<code>def</code>, an unclosed quote or parenthesis, or <code>=</code> where you meant <code>==</code>.",
+  IndentationError:"Lines inside an <code>if</code>, loop, <code>def</code>, or <code>try</code> must be indented by 4 spaces, and lines in the same block must line up exactly.",
+  TabError:"The indentation mixes tabs and spaces. On this page Tab inserts 4 spaces; re-indent the line.",
+  NameError:"Python doesn't recognize a name. Usually a typo, a variable used before it was created, a function defined below where it's called at the top level, or text missing its quotes.",
+  TypeError:"An operation got the wrong kind of value, like adding a <code>str</code> to an <code>int</code>, or calling a function with the wrong number of arguments. Remember <code>input()</code> always returns text.",
+  ValueError:"The type was right but the value wasn't, like <code>int(\"cat\")</code> or unpacking 2 items into 3 variables. If users might type this, catch it with <code>try</code>/<code>except ValueError</code>.",
+  ZeroDivisionError:"Something was divided by 0. Check for that case before dividing, or catch the error.",
+  KeyError:"You looked up a dictionary key that isn't there. Check with <code>if key in d:</code> or use <code>d.get(key)</code>. Watch capitalization.",
+  IndexError:"You asked for a position past the end of a list or string. Positions start at 0, so the last item of 3 is <code>[2]</code>.",
+  AttributeError:"That value doesn't have the method or attribute you used. Common causes: a typo (<code>.lowr()</code>), calling a string method on a number, or a value that is <code>None</code> because a function didn't <code>return</code>.",
+  UnboundLocalError:"A variable was used inside a function before it got a value there. Give it a starting value first.",
+  EOFError:"Your program called <code>input()</code> more times than there were inputs. In a check, that usually means it asked again when it should have accepted the answer, or it reads until Ctrl-D without catching <code>EOFError</code>.",
+  FileNotFoundError:"The file doesn't exist in the current folder. Check the name, and catch <code>FileNotFoundError</code> if the user might give a bad name.",
+  ModuleNotFoundError:"This page only has Python's standard library. Libraries installed with pip (emoji, inflect, requests…) work on cs50.dev.",
+  RecursionError:"A function kept calling itself without stopping.",
+  TookTooLong:"Your code ran for too long and was stopped. Usually that's an infinite loop: check that every <code>while</code> loop can end. It can also mean the approach is too slow, like a loop inside a loop over a big input.",
+  AssertionError:"An <code>assert</code> was false.",
+};
+function explainHtml(err, ta){
+  if(!err) return "";
+  const lineBtn = err.line ? ` <button class="ghost goline" data-line="${err.line}" type="button">Go to line ${err.line}</button>` : "";
+  const head = err.type === "TookTooLong" ? "Stopped: probably an infinite loop" : `${esc(err.type)}${err.msg ? ": " + esc(err.msg) : ""}${err.line ? ` (line ${err.line})` : ""}`;
+  return `<div class="explain"><b>${head}</b><br>${EXPLAIN[err.type] || "Read the error type and message, then look at the line it points to."}${lineBtn}</div>`;
+}
+function wireGoLine(box, ta){
+  box.querySelectorAll(".goline").forEach(b => b.addEventListener("click", () => {
+    const n = +b.dataset.line, lines = ta.value.split("\n");
+    let start = 0; for(let i = 0; i < n - 1 && i < lines.length; i++) start += lines[i].length + 1;
+    const end = start + (lines[n-1] || "").length;
+    ta.focus(); ta.setSelectionRange(start, end);
+    const lh = parseFloat(getComputedStyle(ta).lineHeight) || 19;
+    ta.scrollTop = Math.max(0, (n - 4) * lh);
+  }));
+}
+
+/* =================== EDITOR =================== */
+function insertText(ta, text, from, to){
+  ta.focus();
+  if(from !== undefined) ta.setSelectionRange(from, to);
+  if(!document.execCommand || !document.execCommand("insertText", false, text)){
+    ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, "end");
+    ta.dispatchEvent(new Event("input"));
   }
 }
-function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-
-document.getElementById("load-py").addEventListener("click", async () => {
-  try { await loadPy(); } catch(e){ alert(e.message); }
-});
-document.querySelector("[data-scratch]").addEventListener("click", async e => {
-  const out = document.getElementById("scratch-out");
-  e.target.disabled = true; out.textContent = "Running…";
-  const r = await runPython(document.getElementById("scratch").value);
-  out.textContent = r.output; e.target.disabled = false;
-});
-
-/* ---------- DASHBOARD ---------- */
-function renderDash(){
-  const prepDone = PREP.filter(p => state.prep[p.id]).length;
-  document.getElementById("prep-count").textContent = `${prepDone} / ${PREP.length}`;
-  document.getElementById("prep-bar").style.width = (prepDone/PREP.length*100) + "%";
-
-  const exDone = EXERCISES.filter(e => state.ex[e.id]).length;
-  document.getElementById("ex-count").textContent = `${exDone} / ${EXERCISES.length}`;
-  document.getElementById("ex-bar").style.width = (exDone/EXERCISES.length*100) + "%";
-
-  const target = new Date("2027-01-01T00:00:00");
-  const now = new Date();
-  const days = Math.max(0, Math.ceil((target - now) / 86400000));
-  document.getElementById("days-left").textContent = days;
-
-  const next = PREP.find(p => !state.prep[p.id]);
-  document.getElementById("next-up").innerHTML = next
-    ? `<b>${next.title}</b><div class="muted" style="margin-top:4px">Why it matters: ${next.blocks}</div>`
-    : `<b>All prep skills checked off.</b> Work through the Practice Lab exercises you haven't passed yet.`;
+function makeEditor(value, opts={}){
+  const wrap = document.createElement("div");
+  wrap.className = "ed" + (opts.small ? " small" : "");
+  const gut = document.createElement("pre"); gut.className = "gut"; gut.setAttribute("aria-hidden","true");
+  const ta = document.createElement("textarea");
+  ta.spellcheck = false; ta.setAttribute("autocapitalize","off"); ta.setAttribute("autocomplete","off"); ta.setAttribute("autocorrect","off");
+  if(opts.id) ta.id = opts.id;
+  if(opts.label) ta.setAttribute("aria-label", opts.label);
+  ta.value = value;
+  if(opts.rows) ta.style.height = (opts.rows * 19.5 + 26) + "px";
+  wrap.append(gut, ta);
+  const syncGut = () => { const n = ta.value.split("\n").length; let s = ""; for(let i = 1; i <= n; i++) s += i + "\n"; gut.textContent = s; gut.scrollTop = ta.scrollTop; };
+  ta.addEventListener("input", () => { syncGut(); opts.onChange && opts.onChange(ta.value); });
+  ta.addEventListener("scroll", () => { gut.scrollTop = ta.scrollTop; });
+  ta.addEventListener("keydown", e => {
+    const v = ta.value, s = ta.selectionStart, en = ta.selectionEnd;
+    const lineStart = v.lastIndexOf("\n", s - 1) + 1;
+    if((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); opts.onRun && opts.onRun(); return; }
+    if(e.key === "Tab" && !e.shiftKey){
+      e.preventDefault();
+      if(s !== en && v.slice(s, en).includes("\n")){
+        const block = v.slice(lineStart, en).split("\n").map(l => "    " + l).join("\n");
+        insertText(ta, block, lineStart, en);
+      } else insertText(ta, "    ");
+      return;
+    }
+    if(e.key === "Tab" && e.shiftKey){
+      e.preventDefault();
+      const endLine = v.indexOf("\n", en); const stop = endLine === -1 ? v.length : endLine;
+      const block = v.slice(lineStart, stop).split("\n").map(l => l.replace(/^ {1,4}/, "")).join("\n");
+      insertText(ta, block, lineStart, stop);
+      return;
+    }
+    if(e.key === "Enter" && !e.shiftKey && !e.altKey){
+      const line = v.slice(lineStart, s);
+      let indent = (line.match(/^ */) || [""])[0];
+      if(/:\s*(#.*)?$/.test(line)) indent += "    ";
+      e.preventDefault(); insertText(ta, "\n" + indent);
+      return;
+    }
+    if(e.key === "Backspace" && s === en && s > lineStart){
+      const before = v.slice(lineStart, s);
+      if(/^ +$/.test(before)){
+        const rm = before.length % 4 === 0 ? 4 : before.length % 4;
+        e.preventDefault(); insertText(ta, "", s - rm, s);
+      }
+    }
+  });
+  syncGut();
+  return { wrap, ta, set(v){ ta.value = v; syncGut(); } };
 }
 
-/* ---------- BACKUP ---------- */
+
+
+/* =================== LEARN =================== */
+function makeSnippet(el){
+  const code = el.querySelector("pre").textContent;
+  const inputs = el.dataset.in || "";
+  el.innerHTML = "";
+  const ed = makeEditor(code, { rows: Math.min(code.split("\n").length, 24), label:"Example code" });
+  el.appendChild(ed.wrap);
+  let inBox = null;
+  if(code.includes("input(")){
+    const lab = document.createElement("label"); lab.className = "fieldlabel"; lab.textContent = "Input (one line per input() call)";
+    inBox = document.createElement("textarea"); inBox.className = "plain"; inBox.value = inputs;
+    el.append(lab, inBox);
+  }
+  const row = document.createElement("div"); row.className = "row";
+  const run = document.createElement("button"); run.type = "button"; run.className = "run"; run.textContent = "Run";
+  const reset = document.createElement("button"); reset.type = "button"; reset.className = "ghost"; reset.textContent = "Reset example";
+  row.append(run, reset);
+  const out = document.createElement("div"); out.className = "out"; out.textContent = "Press Run (or Ctrl+Enter in the code).";
+  el.append(row, out);
+  const doRun = async () => {
+    run.disabled = true; out.textContent = py ? "Running…" : "Loading Python (first time only)…";
+    try {
+      const r = await pyCall("tryit", { code: ed.ta.value, in: inBox ? inBox.value.split("\n").filter(x => x !== "") : [] }, ed.ta.value);
+      out.innerHTML = esc(r.out || (r.error ? "" : "(no output)")) + explainHtml(r.error);
+      wireGoLine(out, ed.ta);
+    } catch(e){ out.textContent = e.message; }
+    run.disabled = false;
+  };
+  run.addEventListener("click", doRun);
+  ed.ta.addEventListener("keydown", e => { if((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); doRun(); } });
+  reset.addEventListener("click", () => { ed.set(code); out.textContent = "Press Run."; });
+}
+function renderQuiz(tid){
+  const qs = QUIZ[tid] || [];
+  if(!qs.length) return null;
+  const card = document.createElement("div"); card.className = "card";
+  card.innerHTML = `<h2>Check yourself</h2><p class="muted">Predict the answer before you click. If you miss one, try the code in an example above.</p>`;
+  qs.forEach(q => {
+    const box = document.createElement("div"); box.className = "quiz";
+    box.innerHTML = `<pre>${esc(q.code)}</pre><div class="muted">What happens?</div><div class="opts"></div><div class="why" hidden></div>`;
+    const opts = box.querySelector(".opts"), why = box.querySelector(".why");
+    const show = picked => {
+      opts.querySelectorAll(".opt").forEach((b, i) => { b.classList.toggle("right", i === q.a); b.classList.toggle("wrong", i === picked && picked !== q.a); });
+      why.hidden = false;
+      why.innerHTML = (picked === q.a ? `<b style="color:var(--ok)">Right.</b> ` : `<b style="color:var(--bad)">Not quite.</b> `) + esc(q.why);
+    };
+    q.opts.forEach((o, i) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.textContent = o;
+      b.addEventListener("click", () => { state.quiz[q.id] = { picked:i, right: i === q.a }; save(); show(i); renderDash(); });
+      opts.appendChild(b);
+    });
+    if(state.quiz[q.id]) show(state.quiz[q.id].picked);
+    card.appendChild(box);
+  });
+  const row = document.createElement("div"); row.className = "row";
+  const reset = document.createElement("button"); reset.type = "button"; reset.className = "ghost"; reset.textContent = "Clear my answers";
+  reset.addEventListener("click", () => { qs.forEach(q => delete state.quiz[q.id]); save(); renderLearn(); renderDash(); });
+  row.appendChild(reset); card.appendChild(row);
+  return card;
+}
+function renderChips(){
+  const host = document.getElementById("learn-chips"); host.innerHTML = "";
+  TOPICS.forEach((t, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip" + (i === state.topic ? " active" : "");
+    b.innerHTML = `${esc(t.name)}<span class="ct">${t.ex.filter(e => state.ex[e]).length}/${t.ex.length}</span>`;
+    b.addEventListener("click", () => { state.topic = i; save(); renderLearn(); });
+    host.appendChild(b);
+  });
+}
+function renderLearn(){
+  renderChips();
+  const t = TOPICS[state.topic] || TOPICS[0];
+  const body = document.getElementById("learn-body");
+  unregister(body);
+  body.innerHTML = LEARN[t.id];
+  body.querySelectorAll(".snip").forEach(makeSnippet);
+  const q = renderQuiz(t.id); if(q) body.appendChild(q);
+  t.ex.forEach(id => body.appendChild(renderExercise(EXMAP[id], "learn")));
+  const nxt = TOPICS[state.topic + 1];
+  if(nxt){
+    const nav = document.createElement("div"); nav.className = "row"; nav.style.marginBottom = "16px";
+    nav.innerHTML = `<button class="ghost" type="button">Next topic: ${esc(nxt.name)} →</button>`;
+    nav.querySelector("button").addEventListener("click", () => { state.topic++; save(); renderLearn(); window.scrollTo({top:0}); });
+    body.appendChild(nav);
+  }
+}
+
+/* =================== EXERCISES =================== */
+const EDITORS = {};   // exercise id -> list of {ed, root}
+function unregister(root){ for(const id in EDITORS) EDITORS[id] = EDITORS[id].filter(x => !root.contains(x.root)); }
+function syncPills(id){
+  document.querySelectorAll(`[data-status="${id}"]`).forEach(p => { p.textContent = state.ex[id] ? "Passed" : "Not yet"; p.className = "pill " + (state.ex[id] ? "done" : ""); });
+}
+function renderExercise(ex, where){
+  const div = document.createElement("div"); div.className = "card";
+  const starter = src(ex.id);
+  const topic = TOPICS[TOPIC_IDX[ex.topic]];
+  div.innerHTML = `
+    <div class="prob-head"><h2>${where === "learn" ? "Exercise " : ""}${esc(ex.title)}</h2><span class="pill" data-status="${ex.id}"></span></div>
+    <p class="prompt">${ex.prompt}</p>
+    ${where === "lab" ? `<p class="muted" style="margin-top:-4px"><a href="#" data-lesson>Read the ${esc(topic.name)} lesson</a></p>` : ""}
+    <div data-ed></div>
+    <div class="row">
+      <button class="run" data-check type="button">Run checks</button>
+      <button class="ghost" data-tryit type="button">Run my code</button>
+      <button class="ghost" data-copy type="button">Copy code</button>
+      <button class="ghost" data-nudge type="button">Nudge (0/${ex.nudges.length})</button>
+      <span data-resetwrap><button class="ghost danger" data-reset type="button">Reset code</button></span>
+    </div>
+    <div data-nudges></div>
+    <div data-out></div>`;
+  const code0 = state.code[ex.id] ?? starter;
+  const ed = makeEditor(code0, { label: ex.title + " code", rows: Math.min(20, Math.max(7, code0.split("\n").length + 2)),
+    onChange: v => { state.code[ex.id] = v; saveSoon(); (EDITORS[ex.id] || []).forEach(o => { if(o.ed !== ed) o.ed.set(v); }); },
+    onRun: () => check() });
+  div.querySelector("[data-ed]").appendChild(ed.wrap);
+  (EDITORS[ex.id] = EDITORS[ex.id] || []).push({ ed, root: div });
+  const out = div.querySelector("[data-out]");
+  const checkBtn = div.querySelector("[data-check]"), tryBtn = div.querySelector("[data-tryit]");
+  const lesson = div.querySelector("[data-lesson]");
+  if(lesson) lesson.addEventListener("click", e => { e.preventDefault(); goTopic(ex.topic); });
+
+  async function check(){
+    checkBtn.disabled = true; out.innerHTML = `<div class="out">${py ? "Checking…" : "Loading Python (first time only)…"}</div>`;
+    try {
+      const tests = ex.tests.map(t => t.want_py ? Object.assign({}, t, { call: `(${t.call}) == ${t.want_py}`, want: true }) : t);
+      const scan = ed.ta.value + "\n" + tests.map(t => t.setup || "").join("\n");
+      const results = await pyCall("grade", { code: ed.ta.value, tests }, scan);
+      const nOk = results.filter(r => r.ok).length, all = nOk === results.length && results.length > 0;
+      let html = `<div class="summary-line ${all ? "ok" : "bad"}">${all ? `All ${results.length} checks passed.` : `${nOk} of ${results.length} checks passed.`}</div><div class="results">`;
+      let explained = false;
+      results.forEach((r, i) => {
+        const label = ex.tests[i] && ex.tests[i].label ? ex.tests[i].label : r.label;
+        html += `<div class="res ${r.ok ? "ok" : "bad"}"><div class="lbl">${esc(label)}</div>`;
+        if(!r.ok){
+          let d = r.detail;
+          if(ex.tests[i] && ex.tests[i].want_py) d = d.replace("Expected: True\nGot: False", "Expected: " + ex.tests[i].want_py);
+          if(d && d.startsWith("Your code called input()")) d = "Your code ran into input() while loading.";
+          if(d) html += `<pre>${esc(d)}</pre>`;
+          if(r.err && !explained){ html += explainHtml(r.err); explained = true; }
+        }
+        html += `</div>`;
+      });
+      out.innerHTML = html + "</div>";
+      wireGoLine(out, ed.ta);
+      if(all && !state.ex[ex.id]){ state.ex[ex.id] = true; save(); }
+      syncPills(ex.id); renderDash(); renderChips();
+    } catch(e){ out.innerHTML = `<div class="out">${esc(e.message)}</div>`; }
+    checkBtn.disabled = false;
+  }
+  async function tryIt(){
+    tryBtn.disabled = true; out.innerHTML = `<div class="out">${py ? "Running…" : "Loading Python (first time only)…"}</div>`;
+    try {
+      const r = await pyCall("tryit", { code: ed.ta.value, in: [] }, ed.ta.value);
+      out.innerHTML = `<div class="out">${esc(r.out || (r.error ? "" : "(no output: your file only defines functions. Add a print(...) call at the bottom to see a result.)"))}${explainHtml(r.error)}</div>`;
+      wireGoLine(out, ed.ta);
+    } catch(e){ out.innerHTML = `<div class="out">${esc(e.message)}</div>`; }
+    tryBtn.disabled = false;
+  }
+  checkBtn.addEventListener("click", check);
+  tryBtn.addEventListener("click", tryIt);
+  const copyBtn = div.querySelector("[data-copy]");
+  copyBtn.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(ed.ta.value); copyBtn.textContent = "Copied"; }
+    catch(e){ ed.ta.focus(); ed.ta.select(); copyBtn.textContent = "Selected: press Ctrl+C"; }
+    setTimeout(() => copyBtn.textContent = "Copy code", 1800);
+  });
+  let shown = 0;
+  const nudgeBtn = div.querySelector("[data-nudge]"), nudgeBox = div.querySelector("[data-nudges]");
+  nudgeBtn.addEventListener("click", () => {
+    if(shown >= ex.nudges.length) return;
+    nudgeBox.insertAdjacentHTML("beforeend", `<div class="nudge"><b>Nudge ${shown + 1}:</b> ${ex.nudges[shown]}</div>`);
+    shown++; nudgeBtn.textContent = `Nudge (${shown}/${ex.nudges.length})`;
+    if(shown >= ex.nudges.length) nudgeBtn.disabled = true;
+  });
+  const resetWrap = div.querySelector("[data-resetwrap]");
+  function wireReset(){
+    resetWrap.querySelector("[data-reset]").addEventListener("click", () => {
+      resetWrap.innerHTML = `<span class="confirm">Erase your code? <button class="ghost danger" data-yes type="button">Yes, reset</button><button class="ghost" data-no type="button">Keep it</button></span>`;
+      resetWrap.querySelector("[data-yes]").addEventListener("click", () => { delete state.code[ex.id]; save(); (EDITORS[ex.id] || []).forEach(o => o.ed.set(starter)); restore(); });
+      resetWrap.querySelector("[data-no]").addEventListener("click", restore);
+    });
+  }
+  function restore(){ resetWrap.innerHTML = `<button class="ghost danger" data-reset type="button">Reset code</button>`; wireReset(); }
+  wireReset();
+  setTimeout(() => syncPills(ex.id));
+  return div;
+}
+function renderLab(){
+  const box = document.getElementById("exercises");
+  unregister(box); box.innerHTML = "";
+  EXERCISES.forEach(ex => box.appendChild(renderExercise(ex, "lab")));
+}
+function renderScratch(){
+  const host = document.getElementById("scratch-host"); host.innerHTML = "";
+  const ed = makeEditor(state.scratch ?? src("scratch"), { label:"Scratchpad code", rows:8, onChange: v => { state.scratch = v; saveSoon(); }, onRun: () => run() });
+  host.appendChild(ed.wrap);
+  host.insertAdjacentHTML("beforeend", `<div class="row"><button class="run" type="button" id="scratch-run">Run</button></div><div class="out" id="scratch-out">Output appears here.</div>`);
+  const out = document.getElementById("scratch-out"), btn = document.getElementById("scratch-run");
+  async function run(){
+    btn.disabled = true; out.textContent = py ? "Running…" : "Loading Python (first time only)…";
+    try { const r = await pyCall("tryit", { code: ed.ta.value, in: [] }, ed.ta.value); out.innerHTML = esc(r.out || (r.error ? "" : "(no output)")) + explainHtml(r.error); wireGoLine(out, ed.ta); }
+    catch(e){ out.textContent = e.message; }
+    btn.disabled = false;
+  }
+  btn.addEventListener("click", run);
+}
+
+/* =================== PREP =================== */
+function prepActions(p){
+  let h = "";
+  if(p.topic){
+    const t = TOPICS[TOPIC_IDX[p.topic]];
+    h += `<button class="ghost" type="button" data-go="${p.topic}">Open the ${esc(t.name)} lesson</button>`;
+    const left = t.ex.filter(e => !state.ex[e]).map(e => EXMAP[e].title.split(".")[0]);
+    h += `<span class="muted">${left.length ? `Exercise${left.length > 1 ? "s" : ""} ${left.join(", ")} not passed yet` : "Exercises passed"}</span>`;
+  }
+  return h;
+}
+function renderPrep(){
+  const missing = PREP.filter(p => !state.prep[p.id]);
+  document.getElementById("missing-count").textContent = missing.length;
+  const ml = document.getElementById("missing-list");
+  ml.innerHTML = missing.length ? "" : `<div class="muted">Nothing missing. Keep the exercises fresh by redoing one a week.</div>`;
+  missing.forEach(p => {
+    const d = document.createElement("div"); d.className = "miss";
+    d.innerHTML = `<div class="t">${esc(p.title)}</div><div class="muted">Without it: ${esc(p.blocks)}</div>${p.extra ? `<div class="muted">Catch up: ${esc(p.extra)}</div>` : ""}<div class="row">${prepActions(p)}</div>`;
+    ml.appendChild(d);
+  });
+  const box = document.getElementById("prep-list"); box.innerHTML = "";
+  PREP.forEach(p => {
+    const done = !!state.prep[p.id];
+    const lab = document.createElement("label"); lab.className = "item" + (done ? " done" : "");
+    lab.innerHTML = `<input type="checkbox" ${done ? "checked" : ""}><div style="flex:1"><div class="item-title">${esc(p.title)}</div>${done ? "" : `<div class="note">⚠ Not checked off: ${esc(p.blocks)}</div>`}</div>`;
+    lab.querySelector("input").addEventListener("change", e => { state.prep[p.id] = e.target.checked; save(); renderPrep(); renderDash(); });
+    box.appendChild(lab);
+  });
+  document.querySelectorAll("#tab-prep [data-go]").forEach(b => b.addEventListener("click", () => goTopic(b.dataset.go)));
+}
+
+/* =================== PLAN =================== */
+function renderPlan(){
+  const box = document.getElementById("plan"); box.innerHTML = "";
+  PLAN.forEach((t, i) => {
+    const key = "w" + i;
+    const lab = document.createElement("label"); lab.className = "item";
+    lab.innerHTML = `<input type="checkbox" ${state.plan[key] ? "checked" : ""}><div><span class="tag">Week ${i + 1}</span>${esc(t)}</div>`;
+    lab.querySelector("input").addEventListener("change", e => { state.plan[key] = e.target.checked; save(); });
+    box.appendChild(lab);
+  });
+}
+
+/* =================== DASHBOARD =================== */
+function setStat(id, bar, n, d){ document.getElementById(id).textContent = `${n} / ${d}`; document.getElementById(bar).style.width = (d ? n / d * 100 : 0) + "%"; }
+function renderDash(){
+  setStat("prep-count", "prep-bar", PREP.filter(p => state.prep[p.id]).length, PREP.length);
+  setStat("ex-count", "ex-bar", EXERCISES.filter(e => state.ex[e.id]).length, EXERCISES.length);
+  setStat("quiz-count", "quiz-bar", ALLQ.filter(q => state.quiz[q.id]).length, ALLQ.length);
+  const days = Math.max(0, Math.ceil((new Date("2027-01-01T00:00:00") - new Date()) / 86400000));
+  document.getElementById("days-left").textContent = days;
+  const next = PREP.find(p => !state.prep[p.id]);
+  const nu = document.getElementById("next-up");
+  if(next){
+    nu.innerHTML = `<b>${esc(next.title)}</b><div class="muted" style="margin-top:4px">Why it matters: ${esc(next.blocks)}</div><div class="row">${prepActions(next)}</div>`;
+    nu.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => goTopic(b.dataset.go)));
+  } else {
+    const ex = EXERCISES.find(e => !state.ex[e.id]);
+    nu.innerHTML = ex ? `<b>All prep skills checked off.</b> Next exercise: ${esc(ex.title)}.` : `<b>Everything is checked off and passed.</b> Redo one exercise a week from memory to keep it fresh.`;
+  }
+}
+
+/* =================== BACKUP =================== */
+const msg = t => { const m = document.getElementById("backup-msg"); m.textContent = t; setTimeout(() => { if(m.textContent === t) m.textContent = ""; }, 4000); };
 document.getElementById("export-btn").addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = "cse6040-progress.json"; a.click();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "cse6040-progress.json";
+  document.body.appendChild(a); a.click(); a.remove(); msg("Exported cse6040-progress.json");
 });
 document.getElementById("import-file").addEventListener("change", async e => {
   const f = e.target.files[0]; if(!f) return;
-  try { state = Object.assign(state, JSON.parse(await f.text())); save(); renderAll(); alert("Progress imported."); }
-  catch(err){ alert("That file isn't a valid progress export."); }
+  try { state = Object.assign(blank(), JSON.parse(await f.text())); save(); renderAll(); msg("Progress imported."); }
+  catch(err){ msg("That file isn't a valid progress export."); }
+  e.target.value = "";
 });
-document.getElementById("reset-btn").addEventListener("click", () => {
-  if(confirm("Erase all progress, notes, and checkmarks?")){ localStorage.removeItem(STORE_KEY); state = {prep:{}, ex:{}, plan:{}, journal:""}; renderAll(); }
-});
-
-/* ---------- COMBINED PLAN ---------- */
-function renderCombo(){
-  const c = state.combo || {};
-  document.querySelectorAll('#tab-combo input[data-key]').forEach(cb => cb.checked = !!c[cb.dataset.key]);
+function wireResetAll(){
+  document.getElementById("reset-btn").addEventListener("click", () => {
+    const w = document.getElementById("reset-wrap");
+    w.innerHTML = `<span class="confirm">Erase all progress, code, and notes? <button class="ghost danger" id="reset-yes" type="button">Yes, erase</button><button class="ghost" id="reset-no" type="button">Cancel</button></span>`;
+    const back = () => { w.innerHTML = `<button class="ghost danger" id="reset-btn" type="button">Reset everything</button>`; wireResetAll(); };
+    document.getElementById("reset-yes").addEventListener("click", () => { try { localStorage.removeItem(STORE_KEY); } catch(e){} state = blank(); renderAll(); back(); msg("Everything was reset."); });
+    document.getElementById("reset-no").addEventListener("click", back);
+  });
 }
-document.getElementById("tab-combo").addEventListener("change", e => {
-  const k = e.target.dataset && e.target.dataset.key;
-  if(!k) return;
-  state.combo = state.combo || {};
-  state.combo[k] = e.target.checked; save();
-});
+wireResetAll();
 
-/* ---------- JOURNAL ---------- */
+/* =================== NOTES =================== */
 const journal = document.getElementById("journal");
-journal.addEventListener("input", () => { state.journal = journal.value; save(); });
+journal.addEventListener("input", () => { state.journal = journal.value; saveSoon(); });
 
 function renderAll(){
-  renderDash(); renderPrep(); renderPlan(); renderExercises(); renderCombo();
+  applyTheme(); renderDash(); renderPlan(); renderPrep(); renderLearn(); renderLab(); renderScratch();
   journal.value = state.journal || "";
 }
-
 load();
 renderAll();
 </script>
