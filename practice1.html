@@ -74,6 +74,15 @@ sub{font-size:.75em}
 .nb textarea{min-height:180px}
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
 .filters button{padding:5px 12px;font-size:.88rem}
+
+.scorebox .big{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px;margin-bottom:8px}
+.scorebox .num{font-size:2.6rem;font-weight:800;line-height:1;color:var(--accent)}
+.scorebox .of{font-size:1.15rem;font-weight:600}
+.scorebox .pct{margin-left:auto;color:var(--mute);font-weight:600}
+.bar2{display:flex;height:12px;background:var(--chip);border-radius:9px;overflow:hidden;margin-bottom:8px}
+.bar2 .g{background:var(--ok)}.bar2 .r{background:var(--bad);opacity:.75}
+.tabscore{display:block;font-size:.8rem;font-weight:700;color:var(--accent)}
+.fb .pts{display:inline-block;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 10px;margin-right:6px;font-size:.9rem;color:var(--ink)}
 .saved{color:var(--mute);font-size:.82rem;margin-top:4px}
 </style>
 </head>
@@ -123,20 +132,25 @@ function addNote(p,why){if(hasNote(p.id))return false;const pr=PR[p.pr];DB1.note
 // ---- drag-and-drop working state (not saved until submitted)
 const WIP={}; let SEL=null;   // WIP[qid] = {itemIndex: catIndex}; SEL = {q, i}
 function matchOk(p,place){return p.items.every((_,i)=>place[i]===p.answer[i]);}
+// points: each drag-and-drop card is 1 point; each select-all / single question is 1 point (all-or-nothing, as before)
+const maxPts=p=>p.type==='match'?p.items.length:1;
+const gotPts=(p,a)=>!a?0:p.type==='match'?p.items.filter((_,i)=>a.place[i]===p.answer[i]).length:(a.ok?1:0);
+function tally(k){const pr=PR[k],att=pr.cur();let got=0,max=0,ans=0;att.ids.forEach(id=>{const p=pr.byId(id),a=att.ans[id];max+=maxPts(p);if(a){got+=gotPts(p,a);ans+=maxPts(p);}});return {got,max,ans,att};}
 
 function renderQuiz(k){
   const pr=PR[k],att=pr.cur(),ids=att.ids,done=ids.filter(id=>att.ans[id]).length,right=ids.filter(id=>att.ans[id]&&att.ans[id].ok).length;
-  let h=`<div class="card"><div class="score"><b>Attempt ${att.n}${att.kind==='missed'?' · missed questions only':''}</b><span>${done} of ${ids.length} answered · ${right} correct</span><div class="bar"><i style="width:${ids.length?100*done/ids.length:0}%"></i></div></div></div>`;
+  const T=tally(k),pct=T.max?Math.round(100*T.got/T.max):0;
+  let h=`<div class="card scorebox"><div class="big"><span class="num">${T.got}</span><span class="of">/ ${T.max} points</span><span class="pct">${T.ans?Math.round(100*T.got/T.ans)+'% of answered':''}</span></div><div class="bar2"><i class="g" style="width:${T.max?100*T.got/T.max:0}%"></i><i class="r" style="width:${T.max?100*(T.ans-T.got)/T.max:0}%"></i></div><div class="score"><b>Attempt ${att.n}${att.kind==='missed'?' · missed questions only':''}</b><span>${done} of ${ids.length} questions answered · ${pr.P.some(p=>p.type==='match')?'1 point per card':'1 point per question'}</span></div></div>`;
   let lastSi=-1;
   ids.forEach((id,qi)=>{const p=pr.byId(id),a=att.ans[id];
     if(p.si!==lastSi){lastSi=p.si;const sc=pr.SCS[p.si];h+=`<div class="card setup"><div class="qn">Scenario ${p.si+1} of ${pr.SCS.length}</div><h2>${esc(sc.title)}</h2><div>${sc.setup}</div></div>`;}
     h+=`<div class="card" id="c-${id}"><div class="qn">Question ${qi+1} of ${ids.length}</div><div class="q">${p.q}</div>`;
     if(p.type==='match') h+=matchHTML(p,att,a); else h+=multiHTML(p,att,a);
-    if(a){h+=`<div class="fb"><div class="v ${a.ok?'ok':'no'}">${a.ok?'Correct':'Not quite'}${a.ok?'':' · added to your notes'}</div><div>${p.explain}</div><div class="key"><b>Key idea:</b> ${p.note}</div>${p.refs&&p.refs.length?`<div class="refs">Lecture: ${esc(refList(p.refs))}</div>`:''}<div class="row">${hasNote(id)?`<button disabled>In your notes ✓</button>`:`<button data-add="${id}">Add to notes</button>`}</div></div>`;}
+    if(a){h+=`<div class="fb"><div class="v ${a.ok?'ok':'no'}"><span class="pts">${gotPts(p,a)} / ${maxPts(p)} ${maxPts(p)===1?'point':'points'}</span> ${a.ok?'Correct':'Not quite'}${a.ok?'':' · added to your notes'}</div><div>${p.explain}</div><div class="key"><b>Key idea:</b> ${p.note}</div>${p.refs&&p.refs.length?`<div class="refs">Lecture: ${esc(refList(p.refs))}</div>`:''}<div class="row">${hasNote(id)?`<button disabled>In your notes ✓</button>`:`<button data-add="${id}">Add to notes</button>`}</div></div>`;}
     h+=`</div>`;});
   if(done===ids.length){const missed=ids.filter(id=>!att.ans[id].ok),D=pr.db();
-    h+=`<div class="card done"><h2 style="margin:0 0 6px;font-size:1.15rem">Score: ${right} / ${ids.length} (${Math.round(100*right/ids.length)}%)</h2><p style="margin:0">${missed.length?`You missed ${missed.length}. ${missed.length===1?'It is':'They are'} in your notes.`:'All correct. Nice work.'}</p><div class="row"><button class="primary" data-retest="all" data-pr="${k}">Retest all questions</button>${missed.length?`<button data-retest="missed" data-pr="${k}">Retest missed only (${missed.length})</button>`:''}<button data-goto="notes">Review notes</button></div>`;
-    if(D.attempts.length>1){h+=`<ul class="hist">`+D.attempts.map(t=>{const d=t.ids.filter(i=>t.ans[i]),r=d.filter(i=>t.ans[i].ok).length;return `<li>Attempt ${t.n}${t.kind==='missed'?' (missed only)':''}: ${d.length?`${r} / ${d.length}`:'not started'}</li>`;}).join('')+`</ul>`;}
+    h+=`<div class="card done"><h2 style="margin:0 0 6px;font-size:1.6rem">Final score: ${T.got} / ${T.max} points (${pct}%)</h2><p style="margin:0">${missed.length?`You missed ${missed.length}. ${missed.length===1?'It is':'They are'} in your notes.`:'All correct. Nice work.'}</p><div class="row"><button class="primary" data-retest="all" data-pr="${k}">Retest all questions</button>${missed.length?`<button data-retest="missed" data-pr="${k}">Retest missed only (${missed.length})</button>`:''}<button data-goto="notes">Review notes</button></div>`;
+    if(D.attempts.length>1){h+=`<ul class="hist">`+D.attempts.map(t=>{const d=t.ids.filter(i=>t.ans[i]),r=d.filter(i=>t.ans[i].ok).length;const g=d.reduce((s,i)=>s+gotPts(pr.byId(i),t.ans[i]),0),m=t.ids.reduce((s,i)=>s+maxPts(pr.byId(i)),0);return `<li>Attempt ${t.n}${t.kind==='missed'?' (missed only)':''}: ${d.length?`${g} / ${m} points`:'not started'}</li>`;}).join('')+`</ul>`;}
     h+=`</div>`;}
   document.getElementById('v-'+k).innerHTML=h;
 }
@@ -160,7 +174,7 @@ function matchHTML(p,att,a){
   else{h+=`<div class="zones">`;
     p.cats.forEach((c,ci)=>{const here=ord.filter(i=>a.place[i]===ci);
       h+=`<div class="zone" style="cursor:default"><div class="zt">${esc(c)}</div>${here.map(i=>{const ok=p.answer[i]===ci;return chip(p,i,'',ok?'right':'wrong').replace(/<\/div>$/,`<span class="tag">${ok?'Correct':'Belongs in: '+esc(p.cats[p.answer[i]])}</span><span style="display:block;font-size:.85rem;margin-top:2px">${esc(p.why[i])}</span></div>`);}).join('')||'<span class="empty" style="font-size:.85rem">(empty)</span>'}</div>`;});
-    const n=p.items.filter((_,i)=>a.place[i]===p.answer[i]).length; h+=`</div><p class="refs" style="margin-top:8px">${n} of ${p.items.length} cards placed correctly.</p>`;}
+    h+=`</div>`;}
   return h;
 }
 function renderNotes(){
@@ -174,7 +188,8 @@ function renderNotes(){
   h+=`<div class="card"><div class="row" style="margin:0"><button id="reset">Start over (clear grades and notes on this device)</button></div></div>`;
   document.getElementById('v-notes').innerHTML=h;
 }
-function render(){renderQuiz('p1');renderQuiz('p2');renderNotes();}
+function render(){renderQuiz('p1');renderQuiz('p2');renderNotes();
+  for(const k of ['p1','p2']){const T=tally(k),b=document.querySelector(`.tabs button[data-t="${k}"]`);b.innerHTML=`${PR[k].name}<span class="tabscore">${T.got}/${T.max}</span>`;}}
 let TAB='p1';
 function tab(t){TAB=t;for(const v of ['p1','p2','notes'])document.getElementById('v-'+v).classList.toggle('hidden',v!==t);
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
