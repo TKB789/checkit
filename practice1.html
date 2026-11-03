@@ -92,10 +92,10 @@ a.card.resource{display:block;text-decoration:none;color:var(--ink);border-color
 .fb .pts{display:inline-block;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 10px;margin-right:6px;font-size:.9rem;color:var(--ink)}
 .saved{color:var(--mute);font-size:.82rem;margin-top:4px}
 </style>
-<style>.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style></head>
+<style>.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style><style>.newb{display:inline-block;font:700 .68rem/1.4 system-ui,sans-serif;letter-spacing:.05em;background:#d9480f;color:#fff!important;text-decoration:none!important;border-radius:999px;padding:2px 8px;margin-left:8px;vertical-align:middle}</style></head>
 <body>
 <div class="wrap">
-  <nav class="sitebar"><a href="index.html">← ISYE 6501 study site</a><span>·</span><a href="qq_explorer.html">Q-Q Plot Explorer</a></nav>
+  <nav class="sitebar"><a href="index.html">← ISYE 6501 study site</a><span>·</span><a href="qq_explorer.html">Q-Q Plot Explorer<span class="newb">NEW</span></a></nav>
   <div class="top"><h1>Study Group Practice</h1><button id="theme" aria-label="Switch light or dark mode"></button></div>
   <p class="aidisc">Made by AI as a study aid for Introduction to Analytics Modeling. Verify information for better understanding.</p>
   <p class="sub" id="sub"></p>
@@ -150,7 +150,7 @@ const maxPts=p=>p.type==='match'?p.items.length:p.options.length;  // real-exam 
 const gotPts=(p,a)=>!a?0:p.type==='match'?p.items.filter((_,i)=>a.place[i]===p.answer[i]).length:p.type==='single'?(a.ok?p.options.length:0):p.options.filter((_,i)=>a.picks.includes(i)===p.answer.includes(i)).length;
 function tally(k){const pr=PR[k],att=pr.cur();let got=0,max=0,ans=0;att.ids.forEach(id=>{const p=pr.byId(id),a=att.ans[id];max+=maxPts(p);if(a){got+=gotPts(p,a);ans+=maxPts(p);}});return {got,max,ans,att};}
 
-const EXTRA={p2:`<a class="card resource" href="qq_explorer.html"><b>📈 Q-Q Plot Explorer →</b><span>New to Q-Q plots? Start there: how they're built, every distribution as a histogram and Q-Q plot, what each shape means, and a guess-the-shape quiz.</span></a>`};
+const EXTRA={p2:`<a class="card resource" href="qq_explorer.html"><b>📈 Q-Q Plot Explorer →<span class="newb">NEW</span></b><span>New to Q-Q plots? Start there: how they're built, every distribution as a histogram and Q-Q plot, what each shape means, and a guess-the-shape quiz.</span></a>`};
 function renderQuiz(k){
   const pr=PR[k],att=pr.cur(),ids=att.ids,done=ids.filter(id=>att.ans[id]).length,right=ids.filter(id=>att.ans[id]&&att.ans[id].ok).length;
   const T=tally(k),pct=T.max?Math.round(100*T.got/T.max):0;

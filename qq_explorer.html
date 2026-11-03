@@ -104,7 +104,7 @@ table.wk th{background:var(--chip);font-weight:600}
         <tr><td>Upward bend (right skew)</td><td>A long right tail of large values</td><td>Report the median, not just the mean; try a log or Box-Cox transformation before regression (Module 9); consider an exponential, Weibull or lognormal model.</td></tr>
         <tr><td>Inverted S (light tails)</td><td>Values stop at limits</td><td>Normal-based ranges will be too wide; a bounded model (e.g. uniform) may fit better.</td></tr>
         <tr><td>Steps / flat runs</td><td>Whole-number counts</td><td>Use a count model (Poisson, binomial; Poisson regression in Module 10) rather than a continuous one.</td></tr>
-        <tr><td>Straight against an <i>exponential</i></td><td>Gaps between events look random</td><td>Arrivals are likely Poisson, so standard queueing formulas apply (Module 13).</td></tr>
+        <tr><td>Straight against an <i>exponential</i></td><td>Gaps between events look random</td><td>Arrivals are likely Poisson. If service times are exponential too, the simple queueing formulas (M/M/1 and similar) apply; otherwise simulate (Module 13).</td></tr>
       </table>
       <div class="box"><b class="l">Where you'll use it in this course</b><p>Checking which distribution fits a quantity before building a model (Module 13); checking whether regression residuals look normal (Modules 8–9); and validating a simulation by comparing its output with real data, where a Q-Q plot of simulated vs real values should be close to straight (Module 13). Q-Q plots are visual on purpose: with lots of data, formal tests can reject a fit over tiny, unimportant differences.</p></div>
       <p style="margin:10px 0 0"><button class="primary" data-goto="explore">Try it in Explore →</button></p>
@@ -144,7 +144,7 @@ table.wk th{background:var(--chip);font-weight:600}
       <h2>Reading a Q-Q plot</h2>
       <p>A Q-Q plot sorts the data and plots each value against the matching quantile of a reference distribution (the 1st percentile against the 1st percentile, the median against the median, and so on). If the data come from that distribution, the points fall along a straight line.</p>
       <div class="box read"><b class="l">Three questions to ask</b><p>1. <b>Is it straight?</b> Straight means the shapes match. 2. <b>Where does it bend?</b> The ends show the tails. 3. <b>Slope and position</b> of a straight line compare spread and center.</p></div>
-      <div class="box trap"><b class="l">Common traps</b><p>Small samples wobble even when the distribution is right, so judge the overall pattern, not a few points (try sample size 25 in Explore). Steps or flat runs mean discrete data (whole-number counts), not a bad fit. A Q-Q plot only compares with the reference you chose: “not normal” doesn't tell you which distribution it is, so compare with a better candidate next.</p></div>
+      <div class="box trap"><b class="l">Common traps</b><p>Small samples wobble even when the distribution is right, and the first and last few points wobble most, because only a handful of values ever land out in the tails. Judge the overall pattern, not a few stray end points (try sample size 25 in Explore, then draw new samples). Steps or flat runs mean discrete data (whole-number counts), not a bad fit. A Q-Q plot only compares with the reference you chose: “not normal” doesn't tell you which distribution it is, so compare with a better candidate next.</p></div>
       <table class="guide" id="gtable"><tr><th>Shape (data vs normal)</th><th>Pattern</th><th>Meaning</th></tr></table>
       <p class="refs">About the last row: this explorer draws its dashed line through the data's quartiles, so center and spread are already absorbed and only the shape shows. Steeper or shifted lines matter when the reference line is y = x for a reference with a fixed mean and SD (as in Study group Practice 2).</p>
       <p class="refs">Course: Module 13 Lesson 4 (Q-Q plots); Lessons 2–3 (the distributions). A visual check is useful because with lots of data a statistical test can reject a fit over tiny, unimportant differences.</p>
@@ -199,7 +199,7 @@ const D=[
  {id:'normal',name:'Normal',kind:'c',mod:'M13 L2–L3 (normal as the reference)',gen:()=>50+10*rn(),
   desc:'Symmetric and bell-shaped, clustered around the mean, with thin tails on both sides.',
   ex:'Adult heights, or measurement error on a scale: many small, independent effects add up.',
-  read:'The points follow the straight line. With a small sample they still wobble a little, especially at the two ends, so judge the overall pattern.',match:'normal'},
+  read:'The points follow the straight line through the middle. A few points at the very ends often stray off it even though the data really is normal. Those are the smallest and largest values in the sample, and with only a handful of values out in the tails, they land somewhere different every time: press “Draw a new sample” and watch them move. Worry only when many end points curve away together in the same direction, sample after sample, or when the bend is still there at sample size 500. The histogram is bumpy for the same reason: it shows one sample, not the smooth bell curve.',match:'normal'},
  {id:'heavy',name:'Heavy-tailed (t, 3 df)',kind:'c',mod:'M13 L4',gen:()=>{const c=rn()**2+rn()**2+rn()**2;return rn()/Math.sqrt(c/3);},
   desc:'Symmetric like the normal, but extreme values on both sides happen much more often.',
   ex:'Daily stock returns: most days move a little, but crashes and spikes happen far more often than a normal model predicts.',
@@ -232,10 +232,10 @@ const D=[
   desc:'Number of successes in n independent yes/no trials with the same p (here n = 20, p = 0.3).',
   ex:'How many of 20 inspected parts are defective.',
   read:'A staircase, because counts are whole numbers. The steps follow the line fairly well: with enough trials the binomial is close to normal (here with a slight right skew, since p < 0.5).'},
- {id:'geometric',name:'Geometric',kind:'d',mod:'M13 L2',gen:()=>Math.floor(Math.log(1-Math.random())/Math.log(1-0.2))+1,
-  desc:'Number of trials until the first success (here p = 0.2, so 5 on average).',
-  ex:'How many customers you call before the first one says yes.',
-  read:'A staircase that bends sharply upward: whole-number counts, a floor at 1, and a long right tail of runs of bad luck.'},
+ {id:'geometric',name:'Geometric',kind:'d',mod:'M13 L2',gen:()=>Math.floor(Math.log(1-Math.random())/Math.log(1-0.2)),
+  desc:'Number of failures before the first success (here p = 0.2, so 4 on average). P(X = x) = (1 − p)ˣ p. Some books count the trials instead, including the success, which just adds 1.',
+  ex:'How many customers say no before the first one says yes.',
+  read:'A staircase that bends sharply upward: whole-number counts, a floor at 0, and a long right tail of runs of bad luck.'},
  {id:'poisson',name:'Poisson',kind:'d',mod:'M13 L3',gen:()=>poisson(4),
   desc:'Number of random arrivals in a fixed time window (here 4 on average).',
   ex:'Support emails arriving in an hour.',
@@ -316,14 +316,14 @@ function draw(){
   if(dd.kind==='d')read+=' The flat runs (steps) come from whole-number values, not from a bad fit.';
   $('#drefs').textContent='Course: '+(dd.mod==='M13 L4'?'Module 13 Lesson 4 (Q-Q plots).':dd.mod.replace(/M(\d+) L/g,'Module $1 Lesson ')+'; Module 13 Lesson 4 (Q-Q plots).');
   const dv=TRF==='log'?data.map(Math.log):data;
-  if(TRF==='log')read+=` <b>Log transform on:</b> the plots show log(value). Taking logs pulls in a long right tail${dd.id==='right'?', and this lognormal data becomes exactly normal, so the points straighten out':', so a right-skewed bend usually straightens'}. That's the idea behind Box-Cox transformations (Module 9).`;
+  if(TRF==='log')read+=` <b>Log transform on:</b> the plots show log(value). Taking logs pulls in a long right tail${dd.id==='right'?', and this lognormal data becomes exactly normal, so the points straighten out':', so a right-skewed bend usually straightens (for very skewed data such as the exponential it can overshoot into a slight left skew)'}. That's the idea behind Box-Cox transformations (Module 9).`;
   $('#dread').innerHTML=read;
   $('#hist').innerHTML=histSVG(dv,dd.kind==='d'&&TRF==='none',MARKS);
   $('#qqt').textContent=`Q-Q plot vs ${R.name.toLowerCase()}`+(TRF==='log'?' (log of data)':'');
   $('#qq').innerHTML=qqSVG(dv,REFK,false,MARKS);
   const m=dv.reduce((a,b)=>a+b,0)/dv.length;
   $('#hcap').textContent=`${N} values${TRF==='log'?' (log scale)':''} · mean ${fmt(m)} · median ${fmt(quant(dv,.5))}`+(MARKS?'. Dotted lines cut the data into tenths (10%, 20%, … 90%). Where they spread far apart (a long tail), the matching rings on the Q-Q plot climb away from the line.':'');
-  $('#qcap').textContent=(MARKS?'Rings: the same 10%…90% values, each paired with the reference’s 10%…90% quantile. ':'')+'Dashed line: through the data’s quartiles.';
+  $('#qcap').textContent=(MARKS?'Rings: the same 10%…90% values, each paired with the reference’s 10%…90% quantile. ':'')+'Dashed line: through the data’s quartiles. The first and last few points wobble the most from sample to sample.';
 }
 $('#resample').onclick=()=>setDist(cur);
 $('#pctOn').onchange=e=>{MARKS=e.target.checked;draw();};
