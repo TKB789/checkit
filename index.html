@@ -326,7 +326,7 @@ button.pick{border:1px solid var(--line);background:var(--card)}
 .pxm .jump button.done{background:var(--ok-bg);border-color:var(--ok)}
 .pxm .jump button.part{background:var(--warn-bg);border-top:1px solid var(--line);margin-top:0;padding-top:5px}
 .pxm .jump button.miss{background:var(--bad-bg);border-color:var(--bad)}
-/*PXPATCH-css*/.pxm .pkset{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:10px}.pxm .pkhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:4px 0 8px;border-bottom:1px solid var(--line)}/*PX2-css*/.pxm .jump button.skip{border-style:dashed;color:var(--ink-2)}
+/*PXPATCH-css*/.pxm .pkset{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:10px}.pxm .pkhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:4px 0 8px;border-bottom:1px solid var(--line)}/*PX2-css*/.pxm .setgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.pxm .setcard{display:flex;flex-direction:column;gap:4px;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}.pxm .setcard .row{margin-top:6px}.pxm .pk{grid-template-columns:1fr auto!important}.pxm .pkbtn{display:flex;flex-direction:column;gap:6px;align-items:stretch}.pxm .pkq{width:100%;min-height:38px;border:1px solid var(--line);border-radius:8px;padding:4px 10px;background:var(--card);color:var(--ink);font:inherit;margin:0 0 6px}.pxm .setlbl{margin:14px 0 2px;font-size:.95rem}.pxm .runbar{position:sticky;top:0;z-index:6}.pxm .timer{font-variant-numeric:tabular-nums;font-size:1.1rem}.pxm .over{color:var(--bad)}@media (max-width:560px){.pxm .pk{grid-template-columns:1fr!important}.pxm .pkbtn{flex-direction:row}}/*PX3-css*/.pxm .jump button.skip{border-style:dashed;color:var(--ink-2)}
 .pxm .picker{margin-top:10px}.pxm .picker summary{cursor:pointer;font-weight:600}
 .pxm .pk{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
 .pxm .pk:first-of-type{border-top:0}.pxm .pk input{width:18px;height:18px;margin-top:3px}
@@ -512,7 +512,7 @@ function history(pid){ return DB.attempts.map(a=>a.ans[pid]?{n:a.n,ok:a.ans[pid]
 function everMissed(pid){ return history(pid).some(h=>!h.ok); }
 function latest(pid){ const h=history(pid); return h.length?h[h.length-1]:null; }
 // ---- view state
-let sub='exam'; let view={si:0, mod:'all', only:'all', pickOpen:true};/*PX2-view*/ let draft={}; let M=null;
+let sub='exam'; let view={si:0, run:null};/*PX3-view*/ let draft={}; let M=null;
 function scrollToEl(el){ if(!el) return; const y=el.getBoundingClientRect().top+window.scrollY-70; window.scrollTo({top:y}); }
 function scenList(){ const att=cur();
   return EXAM.map((s,si)=>({s,si})).filter(({s})=>view.mod==='all'||s.module===view.mod).filter(({s})=>{
@@ -529,69 +529,85 @@ function render(el){ M=el||document.getElementById('main'); M.innerHTML=shell();
   if(sub==='exam') renderExam(); else if(sub==='grades') renderGrades(); else renderNotes(); }
 const body=()=>document.getElementById('pxbody');
 function partState(att,p){ if(att.ans[p.id]) return att.ans[p.id].ok?'done':'miss'; if(att.skip[p.id]) return 'skip'; return 'todo'; }
-/*PXPATCH-picker*/function scenMods(s){ const set=new Set(); (s.module==='MIX'?[]:[s.module]).forEach(m=>set.add(m)); s.parts.forEach(p=>(p.refs||[]).forEach(r=>{const m=/^M(\d+)/.exec(r); if(m) set.add('M'+m[1]);})); return [...set].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1))); }
+/*PXPATCH-picker*//*PX3*/function scenMods(s){ const set=new Set(); (s.module==='MIX'?[]:[s.module]).forEach(m=>set.add(m)); s.parts.forEach(p=>(p.refs||[]).forEach(r=>{const m=/^M(\d+)/.exec(r); if(m) set.add('M'+m[1]);})); return [...set].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1))); }
 function scenTypes(s){ const c={multi:0,single:0,match:0}; s.parts.forEach(p=>c[p.type]=(c[p.type]||0)+1); return [c.multi?`${c.multi} select-all`:'',c.single?`${c.single} single`:'',c.match?`${c.match} drag-and-drop`:''].filter(Boolean).join(', '); }
-function pickRows(att){ const SETS=CFG.sets&&CFG.sets.length?CFG.sets:[EXAM.map(s=>s.id)];
-  return SETS.map((ids,k)=>{ const sc=EXAM.filter(s=>ids.includes(s.id)), ps=PARTS.filter(p=>ids.includes(p.sid)), dn=ps.filter(p=>att.ans[p.id]).length, ok=ps.filter(p=>att.ans[p.id]&&att.ans[p.id].ok).length;
-    const mm=[...new Set(sc.flatMap(s=>scenMods(s)))].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
-    const rows=pickRowsOf(att,ids); if(!rows) return '';
-    return `<div class="pkset"><div class="pkhead"><div><b>${SETS.length>1?'Set '+(k+1):'All scenarios'}</b> <span class="small">· ${sc.length} scenarios · ${ps.length} questions · ${mm.join(', ')}</span><div class="small">${dn?`${dn}/${ps.length} answered · ${ok} correct`:'not started'}</div></div>${SETS.length>1?`<button class="chip" data-pset="${k+1}">Practice set ${k+1}</button>`:''}</div>${rows}</div>`; }).join('')||'<p class="small">No scenario matches that topic.</p>'; }
-/*PX2-group*/function pickRowsOf(att,ids){ const q=(view.pkq||'').toLowerCase().trim(); const picks=DB.picks||{};
-  return EXAM.map((s,si)=>({s,si})).filter(({s})=>ids.includes(s.id)).filter(({s})=>!q||(s.title+' '+s.parts.map(p=>p.concept+' '+(p.refs||[]).join(' ')).join(' ')+' '+scenMods(s).join(' ')).toLowerCase().includes(q)).map(({s,si})=>{
-    const ps=PARTS.filter(p=>p.sid===s.id), sts=ps.map(p=>partState(att,p)), nd=sts.filter(x=>x==='done'||x==='miss').length;
-    const st=sts.some(x=>x==='miss')?['miss','has a miss']:nd===ps.length?['done','done']:nd?['','in progress']:['','not attempted'];
-    const concepts=[...new Set(s.parts.map(p=>p.concept).filter(Boolean))];
-    return `<label class="pk"><input type="checkbox" data-pick="${s.id}" ${picks[s.id]?'checked':''}><div><a href="#" class="t" data-open="${si}">${si+1}. ${esc(s.title)}</a><div class="m">${scenMods(s).map(m=>m==='MIX'?'Mixed':m).join(' · ')||'Mixed'} · ${s.parts.length} question${s.parts.length>1?'s':''} (${scenTypes(s)})</div><div class="tags">${concepts.map(c=>`<span>${esc(c)}</span>`).join('')}</div></div><span class="st ${st[0]}">${nd}/${ps.length} · ${st[1]}</span></label>`; }).join(''); }
-function bindPicker(att){ const det=$('#pxpicker'); if(!det) return; det.ontoggle=()=>{view.pickOpen=det.open;};
-  const q=$('#pkq'); q.oninput=()=>{ view.pkq=q.value; $('#pklist').innerHTML=pickRows(att); bindRows(); };
-  function bindRows(){ document.querySelectorAll('#pklist [data-pick]').forEach(c=>c.onchange=()=>{ DB.picks=DB.picks||{}; if(c.checked) DB.picks[c.dataset.pick]=1; else delete DB.picks[c.dataset.pick]; save();
-      const n=Object.keys(DB.picks).length, b=document.querySelector('#only [data-k="picks"]'); if(b) b.textContent=`My picks (${n})`; });
-    document.querySelectorAll('#pklist [data-pset]').forEach(b=>b.onclick=()=>{ view.only='set'+b.dataset.pset; view.mod='all'; const l=scenList(); if(l.length) view.si=l[0].si; renderExam(); scrollToEl($('#pxscen')); });/*PX2-pset*/
-    document.querySelectorAll('#pklist [data-open]').forEach(a=>a.onclick=e=>{ e.preventDefault(); view.only='all'; view.mod='all'; view.si=+a.dataset.open; view.pickOpen=false; renderExam(); scrollToEl($('#pxscen')); }); }
-  bindRows();
-  $('#pkgo').onclick=()=>{ if(!Object.keys(DB.picks||{}).length){ alert('Tick at least one scenario first.'); return; } view.only='picks'; view.mod='all'; view.pickOpen=false; const l=scenList(); if(l.length) view.si=l[0].si; renderExam(); scrollToEl($('#pxscen')); };
-  $('#pkclr').onclick=()=>{ DB.picks={}; save(); if(view.only==='picks') view.only='all'; renderExam(); }; }
-function renderExam(){
-  const att=cur(); const st=stats(att); const list=scenList();
-  if(!list.length){ view.si=0; }
-  let pos=list.findIndex(x=>x.si===view.si); if(pos<0){ pos=0; if(list[0]) view.si=list[0].si; }
-  const mods=MODORDER.filter(m=>EXAM.some(s=>s.module===m));
+const EXAM_MIN=95, EXAM_Q=25, PER_Q=EXAM_MIN/EXAM_Q;
+const SETS=()=>CFG.sets&&CFG.sets.length?CFG.sets:[EXAM.map(s=>s.id)];
+const scenMin=s=>Math.ceil(s.parts.length*PER_Q);
+function runDef(r){ if(!r) return null; if(r.kind==='set'){ const ids=SETS()[r.k]; return {key:'set'+r.k, title:`${CFG.label} · Set ${r.k+1}`, ids, min:EXAM_MIN}; }
+  const s=EXAM[r.si]; return {key:'scen'+s.id, title:s.title, ids:[s.id], min:scenMin(s)}; }
+function runStats(att,ids){ const ps=PARTS.filter(p=>ids.includes(p.sid)), a=ps.filter(p=>att.ans[p.id]), ok=a.filter(p=>att.ans[p.id].ok).length; return {n:ps.length,answered:a.length,ok,ps}; }
+const fmtT=ms=>{ const t=Math.round(Math.abs(ms)/1000), m=Math.floor(t/60), s=t%60; return m+':'+String(s).padStart(2,'0'); };
+let TICK=null;
+function timerText(R){ const T=(DB.timers||{})[R.key]; if(!T) return {txt:`${R.min}:00`,over:false,left:R.min*60000};
+  const left=T.start+R.min*60000-(T.end||Date.now()); return {txt:left>=0?fmtT(left)+' left':fmtT(left)+' over',over:left<0,left}; }
+function startTimer(R,fresh){ DB.timers=DB.timers||{}; if(fresh||!DB.timers[R.key]||DB.timers[R.key].end) DB.timers[R.key]={start:Date.now()}; save(); }
+function statusOf(att,ids,R){ const st=runStats(att,ids), T=R&&(DB.timers||{})[R.key]; if(T&&T.end) return `finished · ${st.ok}/${st.n} correct · ${fmtT(T.end-T.start)}`; return st.answered===0?'not started':st.answered===st.n?`done · ${st.ok}/${st.n} correct`:`${st.answered}/${st.n} answered · ${st.ok} correct`; }
+function homeHTML(att){ const st=stats(att); const q=(view.pkq||'').toLowerCase().trim();
   let h=`<section class="panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc(CFG.short)} · Attempt ${att.n}</h2><span class="small">started ${new Date(att.started).toLocaleString()}</span></div>
    <div class="stat"><div><b>${st.pct===null?'–':st.pct+'%'}</b><span>grade (answered only)</span></div><div><b>${st.correct}/${st.answered}</b><span>correct / answered</span></div><div><b>${PARTS.length-st.answered}</b><span>not attempted${st.skipped?` (${st.skipped} skipped)`:''}</span></div><div><b>${PARTS.length}</b><span>questions in total</span></div></div>
    ${DB.movedNotes&&!DB.movedSeen?`<p class="hint" style="background:var(--warn-bg);padding:8px 10px;border-radius:8px;color:var(--ink)">${DB.movedNotes} notes from your earlier practice exams were carried over into <b>My notes</b>. <button class="xbtn" id="pxmseen" style="float:none">OK</button></p>`:''}
-   <details class="how" style="margin-top:10px"><summary>Instructions</summary><ul class="small">
-    <li>${EXAM.length} scenarios, ${PARTS.length} questions. Most questions are <b>select all that apply</b> (one or more options can be correct; you need exactly the right set for credit). Some ask for the <b>single best answer</b>, and some are drag-and-drop, as on the real exam.</li>
-    <li>Calculators aren't needed; any numbers work out by hand.</li>
-    <li><b>Skip</b> any question: it's marked <b>not attempted</b> and never counts against you. Your grade = correct ÷ answered. Skipped questions stay under “Not done in this attempt”.</li>
-    <li>Missed questions go into <b>My notes</b> with a slide or discussion reference. Tap <b>☆ Add to notes</b> to save any other question.</li>
-    <li>Start a new attempt to retake everything or only what you missed. <b>My grades</b> shows every attempt.</li></ul></details>
-   <h3>Show</h3><div class="chips" id="only">${[['all','All scenarios'],['todo','Not done in this attempt'],['missed','Missed last time'],['picks',`My picks (${Object.keys(DB.picks||{}).filter(k=>EXAM.some(s=>s.id===k)).length})`],...(CFG.sets||[]).map((_,i)=>['set'+(i+1),'Set '+(i+1)])/*PX2-chips*/].map(([k,l])=>`<button class="chip" data-k="${k}" aria-pressed="${view.only===k}">${l}</button>`).join('')}</div>
-   <div class="chips" id="mods" style="margin-top:6px"><button class="chip" data-m="all" aria-pressed="${view.mod==='all'}">All modules</button>${mods.map(m=>`<button class="chip" data-m="${m}" aria-pressed="${view.mod===m}">${m==='MIX'?'Mixed':m}</button>`).join('')}</div>
-   <div class="jump">${list.map(({s,si})=>{ const ps=PARTS.filter(p=>p.sid===s.id); const sts=ps.map(p=>partState(att,p)); const cls=sts.some(x=>x==='miss')?'miss':sts.every(x=>x==='done')?'done':sts.some(x=>x==='done')?'part':sts.some(x=>x==='skip')?'skip':''; return `<button class="${cls} ${si===view.si?'cur':''}" data-si="${si}" title="${esc(s.title)}">${si+1}</button>`; }).join('')}</div>
-   <details class="picker" id="pxpicker" ${view.pickOpen?'open':''}><summary>Practice sets: the exam in ${(CFG.sets||[]).length||1} balanced parts (${EXAM.length} scenarios · ${PARTS.length} questions)</summary>
-     <p class="small" style="margin:6px 0 0">Each set mixes every module, question type and figure-reading question, so any one set is a fair sample of the exam. Tap <b>Practice set</b> to do one set, open a single scenario by its title, or tick scenarios and tap <b>Practice my picks</b>.</p><!--PX2-summary-->
-     <div class="pkbar"><input type="search" id="pkq" placeholder="Filter by topic, e.g. lasso, CUSUM, Q-Q" value="${esc(view.pkq||'')}"><button class="chip" id="pkgo">Practice my picks</button><button class="chip" id="pkclr">Clear picks</button></div>
-     <div id="pklist">${pickRows(att)}</div></details>
-    <p class="hint">Numbers = scenarios. Green = all answered correctly, yellow = in progress, red = has a miss, dashed = skipped (not attempted).</p></section>`;
-  if(list.length){ const s=EXAM[view.si]; const ps=PARTS.filter(p=>p.sid===s.id);
-    h+=`<section class="panel" id="pxscen"><p class="small" style="margin:0">Scenario ${view.si+1} of ${EXAM.length}</p><h2>${esc(s.title)}</h2><div class="setup">${s.setup}</div>`;
-    ps.forEach(p=>{ h+=partHTML(att,p); });
-    h+=`<div class="navrow"><button class="btn quiet" id="pxprev" ${pos<=0?'disabled':''}>← Previous</button><button class="btn quiet" id="pxskipall">Skip remaining parts</button><button class="btn" id="pxnext" ${pos>=list.length-1?'disabled':''}>Next →</button></div></section>`;
-  } else h+=`<section class="panel"><p>Nothing to show with these filters.</p></section>`;
-  h+=`<section class="panel noprint"><h2>Finish this attempt</h2><p class="small">Start a new attempt to retake. Attempt ${att.n} is saved in <b>My grades</b>.</p><div class="row"><button class="btn" id="pxnewall">Start attempt ${att.n+1}: all questions</button><button class="btn ghost" id="pxnewmiss">Start attempt ${att.n+1}: only missed</button></div></section>`;
-  body().innerHTML=h;
-  const ms=$('#pxmseen'); if(ms) ms.onclick=()=>{ DB.movedSeen=1; save(); renderExam(); };
-  document.querySelectorAll('#only .chip').forEach(b=>b.onclick=()=>{view.only=b.dataset.k; renderExam();});
-  document.querySelectorAll('#mods .chip').forEach(b=>b.onclick=()=>{view.mod=b.dataset.m; const l=scenList(); if(l.length) view.si=l[0].si; renderExam();});
+   <details class="how" style="margin-top:10px"><summary>How this works</summary><ul class="small">
+    <li>The real midterm is ${EXAM_Q} questions in ${EXAM_MIN} minutes. Each <b>set</b> below is about that size and mixes every module and question type, so any set works as a mock exam: ${EXAM_MIN} minutes on the clock.</li>
+    <li>Or practice <b>one scenario</b> at a time. Its timer uses the same pace (${PER_Q.toFixed(1)} minutes per question).</li>
+    <li>Questions are <b>select all that apply</b>, <b>single best answer</b> or <b>drag-and-drop</b>, as on the real exam. <b>Skip</b> marks a question not attempted; it never counts against you. Grade = correct ÷ answered.</li>
+    <li>The timer keeps running if you leave and come back. Going over time is allowed and shown in red. <b>Finish</b> shows your score; <b>Retake</b> clears that set's or scenario's answers so you can try again.</li>
+    <li>Missed questions go into <b>My notes</b>. <b>My grades</b> shows every attempt and every timed run.</li></ul></details></section>
+   <section class="panel"><h2>Timed practice sets</h2><div class="setgrid">`;
+  SETS().forEach((ids,k)=>{ const R=runDef({kind:'set',k}), rs=runStats(att,ids), T=(DB.timers||{})[R.key], tt=timerText(R), mm=[...new Set(EXAM.filter(s=>ids.includes(s.id)).flatMap(scenMods))].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
+    const live=T&&!T.end, done=rs.answered===rs.n||(T&&T.end);
+    h+=`<div class="setcard"><b>${esc(CFG.label)} · Set ${k+1}</b><span class="small">${ids.length} scenarios · ${rs.n} questions · ${EXAM_MIN} min</span><span class="small">${mm.join(', ')}</span><span class="small st">${statusOf(att,ids,R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</span>
+      <div class="row">${live?`<button class="btn" data-run="set:${k}">Continue</button>`:done?`<button class="btn" data-run="set:${k}">Review</button><button class="btn ghost" data-retake="set:${k}">Retake</button>`:`<button class="btn" data-run="set:${k}" data-fresh="1">Start Set ${k+1} · ${EXAM_MIN} min</button>`}</div></div>`; });
+  h+=`</div></section><section class="panel"><h2>Or try each scenario on its own</h2><p class="small" style="margin-top:0">Every scenario, grouped by set. Each has its own timer at the exam's pace.</p>
+    <input type="search" id="pkq" class="pkq" placeholder="Filter by topic, e.g. lasso, CUSUM, Q-Q" value="${esc(view.pkq||'')}"><div id="pklist">${scenListHTML(att)}</div></section>`;
+  h+=`<section class="panel noprint"><h2>New attempt</h2><p class="small">Starts every set and scenario fresh. Attempt ${att.n} stays in <b>My grades</b>.</p><div class="row"><button class="btn ghost" id="pxnewall">Start attempt ${att.n+1}</button></div></section>`;
+  return h; }
+function scenListHTML(att){ const q=(view.pkq||'').toLowerCase().trim(); let out='';
+  SETS().forEach((ids,k)=>{ const rows=EXAM.map((s,si)=>({s,si})).filter(({s})=>ids.includes(s.id)).filter(({s})=>!q||(s.title+' '+s.parts.map(p=>p.concept+' '+(p.refs||[]).join(' ')).join(' ')+' '+scenMods(s).join(' ')).toLowerCase().includes(q)).map(({s,si})=>{
+      const R=runDef({kind:'scen',si}), rs=runStats(att,[s.id]), T=(DB.timers||{})[R.key], live=T&&!T.end, done=rs.answered===rs.n||(T&&T.end), tt=timerText(R);
+      const concepts=[...new Set(s.parts.map(p=>p.concept).filter(Boolean))];
+      return `<div class="pk"><div><b class="t">${esc(s.title)}</b><div class="m">${scenMods(s).join(' · ')||'Mixed'} · ${s.parts.length} question${s.parts.length>1?'s':''} (${scenTypes(s)}) · ${R.min} min</div><div class="tags">${concepts.map(c=>`<span>${esc(c)}</span>`).join('')}</div><div class="m">${statusOf(att,[s.id],R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</div></div>
+        <div class="pkbtn">${live?`<button class="btn" data-run="scen:${si}">Continue</button>`:done?`<button class="btn quiet" data-run="scen:${si}">Review</button><button class="btn ghost" data-retake="scen:${si}">Retake</button>`:`<button class="btn" data-run="scen:${si}" data-fresh="1">Start · ${R.min} min</button>`}</div></div>`; }).join('');
+    if(rows) out+=`<h3 class="setlbl">Set ${k+1}</h3>`+rows; });
+  return out||'<p class="small">No scenario matches that topic.</p>'; }
+function runHTML(att){ const R=runDef(view.run), rs=runStats(att,R.ids), tt=timerText(R), T=(DB.timers||{})[R.key], fin=T&&T.end;
+  const list=EXAM.map((s,si)=>({s,si})).filter(({s})=>R.ids.includes(s.id)); let pos=list.findIndex(x=>x.si===view.si); if(pos<0){ pos=0; view.si=list[0].si; }
+  let h=`<section class="panel runbar" id="runbar"><div class="row" style="justify-content:space-between;align-items:center"><button class="btn quiet" id="pxhome">← All sets &amp; scenarios</button><b id="pxtimer" class="timer ${tt.over?'over':''}">${fin?'Finished · '+fmtT(T.end-T.start):tt.txt}</b></div>
+    <h2 style="margin:8px 0 2px">${esc(R.title)}</h2><p class="small" style="margin:0" id="runprog">${rs.answered}/${rs.n} answered · ${rs.ok} correct · ${R.min} minutes allowed</p>
+    ${list.length>1?`<div class="jump">${list.map(({s,si},i)=>{ const sts=PARTS.filter(p=>p.sid===s.id).map(p=>partState(att,p)); const cls=sts.some(x=>x==='miss')?'miss':sts.every(x=>x==='done')?'done':sts.some(x=>x==='done')?'part':sts.some(x=>x==='skip')?'skip':''; return `<button class="${cls} ${si===view.si?'cur':''}" data-si="${si}" title="${esc(s.title)}">${i+1}</button>`; }).join('')}</div>`:''}</section>`;
+  if(fin){ const used=T.end-T.start, wrong=rs.ps.filter(p=>att.ans[p.id]&&!att.ans[p.id].ok);
+    h+=`<section class="panel"><h2>Result: ${rs.ok} / ${rs.n} correct${rs.answered<rs.n?` (${rs.answered} answered)`:''}</h2><p class="small">Time used ${fmtT(used)} of ${R.min}:00${used>R.min*60000?' (over time)':''}. ${wrong.length?`Missed: ${wrong.map(p=>esc(EXAM[p.si].title)+' '+p.letter.toUpperCase()).join(', ')} (saved in My notes).`:'Nothing missed.'}</p><div class="row"><button class="btn" data-retake="${view.run.kind}:${view.run.kind==='set'?view.run.k:view.run.si}">Retake</button><button class="btn ghost" id="pxhome2">Back to all sets &amp; scenarios</button></div></section>`; }
+  const s=EXAM[view.si], ps=PARTS.filter(p=>p.sid===s.id);
+  h+=`<section class="panel" id="pxscen"><p class="small" style="margin:0">${list.length>1?`Scenario ${pos+1} of ${list.length}`:'Scenario'}</p><h2>${esc(s.title)}</h2><div class="setup">${s.setup}</div>`;
+  ps.forEach(p=>{ h+=partHTML(att,p); });
+  h+=`<div class="navrow"><button class="btn quiet" id="pxprev" ${pos<=0?'disabled':''}>← Previous</button>${fin?'':`<button class="btn quiet" id="pxfinish">Finish${view.run.kind==='set'?' set':''}</button>`}<button class="btn" id="pxnext" ${pos>=list.length-1?'disabled':''}>Next →</button></div></section>`;
+  return {h,list,pos}; }
+function runBanner(att){ if(!view.run) return; const R=runDef(view.run), rs=runStats(att,R.ids), el=$('#runprog'); if(el) el.textContent=`${rs.answered}/${rs.n} answered · ${rs.ok} correct · ${R.min} minutes allowed`; }
+function renderExam(){
+  const att=cur(); clearInterval(TICK);
+  if(!view.run){ body().innerHTML=homeHTML(att);
+    const ms=$('#pxmseen'); if(ms) ms.onclick=()=>{ DB.movedSeen=1; save(); renderExam(); };
+    const q=$('#pkq'); q.oninput=()=>{ view.pkq=q.value; $('#pklist').innerHTML=scenListHTML(att); };
+    $('#pxnewall').onclick=()=>{ if(confirm(`Finish attempt ${att.n} and start attempt ${att.n+1}? Every set and scenario starts fresh.`)){ newAttempt(); DB.timers={}; save(); view={si:0,run:null}; draft={}; renderExam(); window.scrollTo(0,0);} };
+    return; }
+  const {h,list,pos}=runHTML(att); body().innerHTML=h;
+  const R=runDef(view.run);
+  TICK=setInterval(()=>{ const T=(DB.timers||{})[R.key], el=$('#pxtimer'); if(!el||!T||T.end) return; const tt=timerText(R); el.textContent=tt.txt; el.classList.toggle('over',tt.over); },1000);
+  const home=()=>{ view.run=null; renderExam(); window.scrollTo(0,0); }; $('#pxhome').onclick=home; if($('#pxhome2')) $('#pxhome2').onclick=home;
   document.querySelectorAll('.pxm .jump button').forEach(b=>b.onclick=()=>{view.si=+b.dataset.si; renderExam(); scrollToEl($('#pxscen'));});
-  const go=d=>{ const l=scenList(); const p=l.findIndex(x=>x.si===view.si); const t=l[p+d]; if(t){ view.si=t.si; renderExam(); scrollToEl($('#pxscen')); return true; } return false; };
-  if($('#pxprev')) $('#pxprev').onclick=()=>go(-1); if($('#pxnext')) $('#pxnext').onclick=()=>go(1);
-  if($('#pxskipall')) $('#pxskipall').onclick=()=>{ const s=EXAM[view.si]; PARTS.filter(p=>p.sid===s.id&&!att.ans[p.id]).forEach(p=>att.skip[p.id]=1); save(); if(!go(1)) renderExam(); };
-  $('#pxnewall').onclick=()=>{ if(confirm(`Finish attempt ${att.n} and start attempt ${att.n+1} with all questions?`)){ newAttempt(); view={si:0,mod:'all',only:'all'}; draft={}; renderExam(); window.scrollTo(0,0);} };
-  $('#pxnewmiss').onclick=()=>{ if(confirm(`Finish attempt ${att.n} and start attempt ${att.n+1} showing only scenarios with a missed question?`)){ newAttempt(); view={si:0,mod:'all',only:'missed'}; draft={}; const l=scenList(); if(l.length) view.si=l[0].si; renderExam(); window.scrollTo(0,0);} };
-  bindPicker(att);
+  const go=d=>{ const t=list[pos+d]; if(t){ view.si=t.si; renderExam(); scrollToEl($('#pxscen')); } };
+  $('#pxprev').onclick=()=>go(-1); $('#pxnext').onclick=()=>go(1);
+  if($('#pxfinish')) $('#pxfinish').onclick=()=>{ const rs=runStats(att,R.ids); if(rs.answered<rs.n&&!confirm(`${rs.n-rs.answered} question(s) not answered yet. Finish anyway? Unanswered questions count as not attempted.`)) return;
+    const T=DB.timers[R.key]||{start:Date.now()}; T.end=Date.now(); DB.timers[R.key]=T; DB.runs=DB.runs||[]; DB.runs.push({attempt:att.n,title:R.title,ok:rs.ok,answered:rs.answered,n:rs.n,ms:T.end-T.start,min:R.min,at:T.end}); save(); renderExam(); window.scrollTo(0,0); };
   bindParts(att);
 }
+function openRun(spec,fresh){ const [kind,x]=spec.split(':'); view.run=kind==='set'?{kind,k:+x}:{kind,si:+x}; const R=runDef(view.run); view.si=EXAM.findIndex(s=>s.id===R.ids[0]); startTimer(R,fresh); renderExam(); window.scrollTo(0,0); }
+document.addEventListener('click',e=>{ const b=e.target.closest('.pxm [data-run], .pxm [data-retake]'); if(!b||!M||!M.contains(b)) return; const att=cur();
+  if(b.dataset.run) return openRun(b.dataset.run,!!b.dataset.fresh);
+  const spec=b.dataset.retake, [kind,x]=spec.split(':'), R=runDef(kind==='set'?{kind,k:+x}:{kind,si:+x});
+  if(!confirm(`Retake ${R.title}? Its answers in this attempt are cleared (your earlier result stays in My grades).`)) return;
+  PARTS.filter(p=>R.ids.includes(p.sid)).forEach(p=>{ delete att.ans[p.id]; delete att.skip[p.id]; delete draft[p.id]; });
+  if(DB.timers) delete DB.timers[R.key]; save(); openRun(spec,true); });
 let msel={};
 function matchHTML(att,p){
   const o=order(p,att); const a=att.ans[p.id]; const sk=att.skip[p.id];
@@ -648,7 +664,7 @@ function bindParts(att){
   document.querySelectorAll('.pxm [data-unskip]').forEach(b=>b.onclick=()=>{ const p=PBYID[b.dataset.unskip]; delete att.skip[p.id]; save(); rerenderTop(att); rerenderPart(att,p); });
 }
 function rerenderPart(att,p){ const el=document.getElementById('p-'+p.id); if(!el) return; const y=window.scrollY; el.outerHTML=partHTML(att,p); bindParts(att); window.scrollTo(0,y); }
-function rerenderTop(att){ const st=stats(att); const box=document.querySelectorAll('.pxm .stat b'); if(box.length===4){ box[0].textContent=st.pct===null?'–':st.pct+'%'; box[1].textContent=st.correct+'/'+st.answered; box[2].textContent=PARTS.length-st.answered; const sp=box[2].nextElementSibling; if(sp) sp.textContent='not attempted'+(st.skipped?` (${st.skipped} skipped)`:''); }
+function rerenderTop(att){ runBanner(att);/*PX3-top*/ const st=stats(att); const box=document.querySelectorAll('.pxm .stat b'); if(box.length===4){ box[0].textContent=st.pct===null?'–':st.pct+'%'; box[1].textContent=st.correct+'/'+st.answered; box[2].textContent=PARTS.length-st.answered; const sp=box[2].nextElementSibling; if(sp) sp.textContent='not attempted'+(st.skipped?` (${st.skipped} skipped)`:''); }
   const s=EXAM[view.si]; const btn=document.querySelector(`.pxm .jump button[data-si="${view.si}"]`); if(btn){ const sts=PARTS.filter(p=>p.sid===s.id).map(p=>partState(att,p)); btn.className=(sts.some(x=>x==='miss')?'miss':sts.every(x=>x==='done')?'done':sts.some(x=>x==='done')?'part':sts.some(x=>x==='skip')?'skip':'')+' cur'; } }
 function renderGrades(){
   const rows=DB.attempts.map(a=>({a,st:stats(a)}));
@@ -656,6 +672,7 @@ function renderGrades(){
   let h=`<section class="panel"><h2>My grades</h2><p class="small">Grade = correct ÷ questions answered in that attempt. Skipped and unseen questions are “not attempted” and don’t count.</p>
    <div style="overflow-x:auto"><table class="g"><tr><th>Attempt</th><th>Date</th><th>Answered</th><th>Correct</th><th>Not attempted</th><th>Grade</th><th></th></tr>
    ${rows.map(({a,st})=>`<tr><td>#${a.n}</td><td>${new Date(a.started).toLocaleDateString()} ${new Date(a.started).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}</td><td>${st.answered}</td><td>${st.correct}</td><td>${PARTS.length-st.answered}</td><td><b>${st.pct===null?'–':st.pct+'%'}</b></td><td><div class="pxbar"><i style="width:${st.pct||0}%"></i></div></td></tr>`).join('')}</table></div></section>
+   ${(DB.runs||[]).length?`<section class="panel"><h2>Timed runs</h2><div style="overflow-x:auto"><table class="g"><tr><th>Date</th><th>Set or scenario</th><th>Score</th><th>Time</th></tr>${DB.runs.slice().reverse().map(r=>`<tr><td>${new Date(r.at).toLocaleDateString()}</td><td>${esc(r.title)}</td><td><b>${r.ok}/${r.n}</b>${r.answered<r.n?` <span class="small">(${r.answered} answered)</span>`:''}</td><td>${Math.round(r.ms/60000)} / ${r.min} min</td></tr>`).join('')}</table></div></section>`:''}/*PX3-runs*/
    ${(DB.archived||[]).length?`<section class="panel"><h2>${esc(CFG.archLabel||'Earlier version')}</h2><p class="small">Grades from the earlier version of this exam. Kept for reference.</p><div style="overflow-x:auto"><table class="g"><tr><th>Attempt</th><th>Date</th><th>Answered</th><th>Correct</th><th>Grade</th></tr>${DB.archived.map(a=>`<tr><td>#${a.n}</td><td>${new Date(a.started).toLocaleDateString()}</td><td>${a.answered}</td><td>${a.correct}</td><td>${a.pct}%</td></tr>`).join('')}</table></div></section>`:''}
    <section class="panel"><h2>By module</h2><p class="small">Grade per module in each attempt (correct/answered).</p><div style="overflow-x:auto"><table class="g"><tr><th>Module</th>${rows.map(({a})=>`<th>#${a.n}</th>`).join('')}</tr>
    ${mods.map(m=>`<tr><td>${m==='MIX'?'Mixed':m}</td>${rows.map(({a})=>{const s=stats(a,p=>p.mod===m); return `<td>${s.answered?`${s.pct}% <span class="small">(${s.correct}/${s.answered})</span>`:'<span class="small">–</span>'}</td>`;}).join('')}</tr>`).join('')}</table></div></section>
@@ -706,7 +723,7 @@ const strip=h=>{ const d=document.createElement('div'); d.innerHTML=h; return d.
 return {
   label:CFG.label, short:CFG.short, sub:CFG.sub, id:CFG.id,
   render,
-  go(si){ sub='exam'; view={si,mod:'all',only:'all'}; },
+  go(si){ sub='exam'; view={si,run:{kind:'scen',si}}; const R=runDef(view.run); startTimer(R,false); },/*PX3-go*/
   scenarios(){ return EXAM.map((s,si)=>{ const raw=strip(s.setup)+' '+s.parts.map(p=>strip(p.q)+' '+p.options.map(strip).join(' ')+' '+(p.cats||[]).map(strip).join(' ')+' '+strip(p.explain)).join(' ');
     return {si,title:s.title,module:s.module,modname:MODNAME[s.module]||s.module,n:s.parts.length,raw}; }); },
   summary(){ const att=cur(); const st=stats(att); const last=DB.attempts.length;

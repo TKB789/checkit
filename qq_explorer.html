@@ -28,7 +28,7 @@ button.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);fo
 .chips button{padding:5px 12px;font-size:.9rem;border-radius:999px}
 .group{font-size:.78rem;color:var(--mute);text-transform:uppercase;letter-spacing:.05em;margin:10px 0 4px}
 .ctl{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;margin-top:12px}
-.ctl label{font-size:.9rem;color:var(--mute);display:flex;gap:8px;align-items:center}
+.ctl label,.ctl .lbl{font-size:.9rem;color:var(--mute);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .ctl .chips button{font-size:.85rem;padding:4px 10px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media (max-width:720px){.grid{grid-template-columns:1fr}}
@@ -117,13 +117,13 @@ table.wk th{background:var(--chip);font-weight:600}
       <div class="group">Continuous</div><div class="chips" id="dc"></div>
       <div class="group">Discrete (counts)</div><div class="chips" id="dd"></div>
       <div class="ctl">
-        <label>Sample size <span class="chips" id="nsz"></span></label>
-        <label>Compare against <span class="chips" id="refd"></span></label>
+        <div class="lbl">Sample size <span class="chips" id="nsz"></span></div>
+        <div class="lbl">Compare against <span class="chips" id="refd"></span></div>
         <button class="primary" id="resample">Draw a new sample</button>
       </div>
-      <div class="ctl"><label class="chk"><input type="checkbox" id="pctOn" checked> Show percentile markers (10%, 20%, …, 90%) on both charts</label><label id="trctl">Transform data <span class="chips" id="trf"></span></label></div>
+      <div class="ctl"><label class="chk"><input type="checkbox" id="pctOn" checked> Show percentile markers (10%, 20%, …, 90%) on both charts</label><div class="lbl" id="trctl">Transform data <span class="chips" id="trf"></span></div></div>
       <div class="box refbox" id="refbox"></div>
-      <div class="ctl hidden" id="wbctl"><label>Weibull shape k <span class="chips" id="wbk"></span></label></div>
+      <div class="ctl hidden" id="wbctl"><div class="lbl">Weibull shape k <span class="chips" id="wbk"></span></div></div>
     </div>
     <div class="card">
       <h2 id="dname"></h2>
@@ -158,6 +158,18 @@ table.wk th{background:var(--chip);font-weight:600}
       <p class="sub" style="margin:4px 0 0">Each round draws 200 values from a random distribution and shows only its Q-Q plot against a normal. Which distribution produced it?</p>
     </div>
     <div class="card plot"><div id="qzplot"></div><div class="opts" id="qzopts"></div><div id="qzfb"></div></div>
+  </div>
+
+  <div class="card" id="takeaways">
+    <h2>Footnote: what the course expects you to know about Q-Q plots</h2>
+    <ul>
+      <li><b>What it compares.</b> Quantiles of two data sets, or of one data set against a theoretical distribution (normal, exponential, …). Points near a straight line mean the two have about the same distribution.</li>
+      <li><b>Why look instead of only testing.</b> A single test statistic can hide where the mismatch is, and with lots of data a test can reject a fit over tiny, unimportant differences. The plot shows <i>where</i> the shapes differ, usually in the tails.</li>
+      <li><b>Read it by reasoning, not memorizing.</b> Ask which side has larger values at the low and high quantiles: e.g. one sample larger at low quantiles and smaller at high ones is squashed toward the middle (lighter tails). The professor stresses understanding over memorizing shapes.</li>
+      <li><b>Use it to check an assumption before relying on a model.</b> Does a quantity fit the distribution you plan to use (arrivals Poisson, gaps exponential, failures Weibull)? Does a simulation's output match the real data (validation)? Are regression residuals roughly normal?</li>
+      <li><b>Don't over-trust fitting software.</b> Treat its suggested distribution as guidance: a Weibull with k = 1.002 is really an exponential, and small samples always wobble.</li>
+    </ul>
+    <p class="refs">Course: Module 13 Lesson 4 (Q-Q plots), Lessons 2–3 (distributions and data fitting), Lessons 6–7 (simulation validation); Modules 8–9 (regression assumptions).</p>
   </div>
 </div>
 <script>
