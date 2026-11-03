@@ -508,11 +508,12 @@ function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.i
 function order(p,att){ const idx=p.options.map((_,i)=>i); if(p.fixed) return idx; const r=rng(hash(p.id+'#'+att.n)); for(let i=idx.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];} return idx; }
 const LET='ABCDEFGHIJKLMNOP';
 function isCorrect(p,picks){ if(p.type==='match') return p.answer.length===picks.length&&p.answer.every((c,i)=>c===picks[i]); return [...p.answer].sort().join(',')===[...picks].sort().join(','); }
-/*PX4*/function maxPts(p){ return p.type==='match'?p.items.length:p.options.length; }
-function gotPts(p,picks){ if(!picks) return 0; if(p.type==='match') return p.items.filter((_,i)=>picks[i]===p.answer[i]).length;
-  if(p.type==='single') return isCorrect(p,picks)?p.options.length:0; return p.options.filter((_,i)=>picks.includes(i)===p.answer.includes(i)).length; }
+/*PX4*//*PX6*/function maxPts(p){ return p.type==='match'?Math.min(13,Math.max(4,Math.round(1.5*p.items.length))):p.type==='multi'&&p.options.length>=5?4:3; }
+const r2=x=>Math.round(x*100)/100;
+function gotPts(p,picks){ if(!picks) return 0; const P=maxPts(p); if(p.type==='match') return r2(P*p.items.filter((_,i)=>picks[i]===p.answer[i]).length/p.items.length);
+  if(p.type==='single') return isCorrect(p,picks)?P:0; return r2(P*p.options.filter((_,i)=>picks.includes(i)===p.answer.includes(i)).length/p.options.length); }
 /*PXPATCH-skip*/function stats(att,filter){ const ids=Object.keys(att.ans).filter(id=>PBYID[id]&&(!filter||filter(PBYID[id]))); const c=ids.filter(id=>att.ans[id].ok).length;
-  const pts=ids.reduce((a,id)=>a+gotPts(PBYID[id],att.ans[id].picks),0), max=ids.reduce((a,id)=>a+maxPts(PBYID[id]),0);
+  const pts=r2(ids.reduce((a,id)=>a+gotPts(PBYID[id],att.ans[id].picks),0)), max=ids.reduce((a,id)=>a+maxPts(PBYID[id]),0);/*PX6-st*/
   return {answered:ids.length,correct:c,pts,max,pct:max?Math.round(1000*pts/max)/10:null,skipped:Object.keys(att.skip).filter(id=>PBYID[id]&&!att.ans[id]&&(!filter||filter(PBYID[id]))).length}; }
 function history(pid){ /*PX5-hist*/ const pr=(DB.prior||{})[pid]||[]; return DB.attempts.flatMap(a=>pr.filter(h=>h.n===a.n).map(h=>({n:h.n,ok:h.ok})).concat(a.ans[pid]?[{n:a.n,ok:a.ans[pid].ok}]:[])); }
 function everMissed(pid){ return history(pid).some(h=>!h.ok); }
@@ -539,11 +540,12 @@ function partState(att,p){ if(att.ans[p.id]) return att.ans[p.id].ok?'done':'mis
 function scenTypes(s){ const c={multi:0,single:0,match:0}; s.parts.forEach(p=>c[p.type]=(c[p.type]||0)+1); return [c.multi?`${c.multi} select-all`:'',c.single?`${c.single} single`:'',c.match?`${c.match} drag-and-drop`:''].filter(Boolean).join(', '); }
 const EXAM_MIN=95, EXAM_Q=25, PER_Q=EXAM_MIN/EXAM_Q;
 const SETS=()=>CFG.sets&&CFG.sets.length?CFG.sets:[EXAM.map(s=>s.id)];
-const scenMin=s=>Math.ceil(s.parts.length*PER_Q);
-function runDef(r){ if(!r) return null; if(r.kind==='set'){ const ids=SETS()[r.k]; return {key:'set'+r.k, title:`${CFG.label} · Set ${r.k+1}`, ids, min:EXAM_MIN}; }
+const MIN_PER_PT=0.95;/*PX6-time*/ const ptsOf=ids=>PARTS.filter(p=>ids.includes(p.sid)).reduce((x,p)=>x+maxPts(p),0);
+const scenMin=s=>Math.max(2,Math.round(ptsOf([s.id])*MIN_PER_PT)); const setMin=ids=>Math.round(ptsOf(ids)*MIN_PER_PT);
+function runDef(r){ if(!r) return null; if(r.kind==='set'){ const ids=SETS()[r.k]; return {key:'set'+r.k, title:`${CFG.label} · Set ${r.k+1}`, ids, min:setMin(ids)}; }
   const s=EXAM[r.si]; return {key:'scen'+s.id, title:s.title, ids:[s.id], min:scenMin(s)}; }
 function runStats(att,ids){ const ps=PARTS.filter(p=>ids.includes(p.sid)), a=ps.filter(p=>att.ans[p.id]), ok=a.filter(p=>att.ans[p.id].ok).length;
-  const pts=a.reduce((x,p)=>x+gotPts(p,att.ans[p.id].picks),0), amax=a.reduce((x,p)=>x+maxPts(p),0), tmax=ps.reduce((x,p)=>x+maxPts(p),0);
+  const pts=r2(a.reduce((x,p)=>x+gotPts(p,att.ans[p.id].picks),0)), amax=a.reduce((x,p)=>x+maxPts(p),0), tmax=ps.reduce((x,p)=>x+maxPts(p),0);
   return {n:ps.length,answered:a.length,ok,ps,pts,amax,tmax,pct:amax?Math.round(100*pts/amax):null}; }/*PX4-run*/
 const fmtT=ms=>{ const t=Math.round(Math.abs(ms)/1000), m=Math.floor(t/60), s=t%60; return m+':'+String(s).padStart(2,'0'); };
 let TICK=null;
@@ -556,17 +558,17 @@ function homeHTML(att){ const st=stats(att); const q=(view.pkq||'').toLowerCase(
    <div class="stat"><div><b>${st.pct===null?'–':st.pct+'%'}</b><span>score (points, answered only)</span></div><div><b>${st.pts}/${st.max}</b><span>points / possible (answered)</span></div><div><b>${PARTS.length-st.answered}</b><span>not attempted${st.skipped?` (${st.skipped} skipped)`:''}</span></div><div><b>${PARTS.length}</b><span>questions in total</span></div></div>
    ${DB.movedNotes&&!DB.movedSeen?`<p class="hint" style="background:var(--warn-bg);padding:8px 10px;border-radius:8px;color:var(--ink)">${DB.movedNotes} notes from your earlier practice exams were carried over into <b>My notes</b>. <button class="xbtn" id="pxmseen" style="float:none">OK</button></p>`:''}
    <details class="how" style="margin-top:10px"><summary>How this works</summary><ul class="small">
-    <li>The real midterm is ${EXAM_Q} questions in ${EXAM_MIN} minutes. Each <b>set</b> below is about that size and mixes every module and question type, so any set works as a mock exam: ${EXAM_MIN} minutes on the clock.</li>
-    <li>Or practice <b>one scenario</b> at a time. Its timer uses the same pace (${PER_Q.toFixed(1)} minutes per question).</li>
+    <li>The real midterm was about 100 points in ${EXAM_MIN} minutes, so time follows points: ${MIN_PER_PT} minute per point. Each <b>set</b> below is about exam size and mixes every module and question type; its clock is its points × ${MIN_PER_PT}.</li>
+    <li>Or practice <b>one scenario</b> at a time, timed the same way (its points × ${MIN_PER_PT} minutes).</li>
     <li>Questions are <b>select all that apply</b>, <b>single best answer</b> or <b>drag-and-drop</b>, as on the real exam. <b>Skip</b> marks a question not attempted; it never counts against you.</li>
-    <li><b>Scoring, as on the real exam:</b> drag-and-drop earns 1 point per card placed correctly; select-all gives partial credit per option (1 point for each option you judge right: ticking a true one or leaving a false one unticked); single best answer is all-or-nothing, worth as many points as it has options. Score = points earned ÷ points possible on the questions you answered.</li>
+    <li><b>Scoring, as on the real exam:</b> each question shows its points in parentheses. Single best answer: 3 points, all-or-nothing. Select all that apply: 3 points (4 with 5+ options), credited by the share of options you judge right (ticking a true one or leaving a false one unticked). Drag-and-drop: about 1.5 points per card (4 to 13), credited by the share of cards placed right. Score = points earned ÷ points possible on the questions you answered.</li>
     <li>The timer keeps running if you leave and come back. Going over time is allowed and shown in red. <b>Finish</b> shows your score; <b>Retake</b> clears that set's or scenario's answers so you can try again.</li>
     <li>Missed questions go into <b>My notes</b>. <b>My grades</b> shows every attempt and every timed run.</li></ul></details></section>
    <section class="panel"><h2>Timed practice sets</h2><div class="setgrid">`;
   SETS().forEach((ids,k)=>{ const R=runDef({kind:'set',k}), rs=runStats(att,ids), T=(DB.timers||{})[R.key], tt=timerText(R), mm=[...new Set(EXAM.filter(s=>ids.includes(s.id)).flatMap(scenMods))].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
     const live=T&&!T.end, done=rs.answered===rs.n||(T&&T.end);
-    h+=`<div class="setcard"><b>${esc(CFG.label)} · Set ${k+1}</b><span class="small">${ids.length} scenarios · ${rs.n} questions · ${rs.tmax} points · ${EXAM_MIN} min</span><span class="small">${mm.join(', ')}</span><span class="small st">${statusOf(att,ids,R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</span>
-      <div class="row">${live?`<button class="btn" data-run="set:${k}">Continue</button>`:done?`<button class="btn" data-run="set:${k}">Review</button><button class="btn ghost" data-retake="set:${k}">Retake</button>`:`<button class="btn" data-run="set:${k}" data-fresh="1">Start Set ${k+1} · ${EXAM_MIN} min</button>`}</div></div>`; });
+    h+=`<div class="setcard"><b>${esc(CFG.label)} · Set ${k+1}</b><span class="small">${ids.length} scenarios · ${rs.n} questions · ${rs.tmax} points · ${R.min} min</span><span class="small">${mm.join(', ')}</span><span class="small st">${statusOf(att,ids,R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</span>
+      <div class="row">${live?`<button class="btn" data-run="set:${k}">Continue</button>`:done?`<button class="btn" data-run="set:${k}">Review</button><button class="btn ghost" data-retake="set:${k}">Retake</button>`:`<button class="btn" data-run="set:${k}" data-fresh="1">Start Set ${k+1} · ${R.min} min</button>`}</div></div>`; });
   h+=`</div></section><section class="panel"><h2>Or try each scenario on its own</h2><p class="small" style="margin-top:0">Every scenario, grouped by set. Each has its own timer at the exam's pace.</p>
     <input type="search" id="pkq" class="pkq" placeholder="Filter by topic, e.g. lasso, CUSUM, Q-Q" value="${esc(view.pkq||'')}"><div id="pklist">${scenListHTML(att)}</div></section>`;
   h+=`<section class="panel noprint"><h2>New attempt</h2><p class="small">Starts every set and scenario fresh. Attempt ${att.n} stays in <b>My grades</b>.</p><div class="row"><button class="btn ghost" id="pxnewall">Start attempt ${att.n+1}</button></div></section>`;
@@ -629,7 +631,7 @@ function matchHTML(att,p){
     if(a){ cls+=' locked '+(asg[i]===p.answer[i]?'right':'wrong'); if(asg[i]!==p.answer[i]) fix=`<span class="mfix">→ ${p.cats[p.answer[i]]}</span>`; }
     else if(sel===i) cls+=' sel';
     return `<div class="${cls}" role="button" tabindex="0" ${a?'':'draggable="true"'} data-mp="${p.id}" data-mi="${i}">${p.items[i]}${fix}</div>`; };
-  let h=`<div class="part" id="p-${p.id}"><div class="phead"><p class="plbl">PART ${p.letter.toUpperCase()} · MATCHING${prev?` <span class="small" style="font-weight:500">· earlier attempts: ${prev}</span>`:''}</p><button class="pin" data-pin="${p.id}" aria-pressed="${pin}">${pin?'★ In my notes':'☆ Add to notes'}</button></div><div class="qtext">${p.q}</div>`;
+  let h=`<div class="part" id="p-${p.id}"><div class="phead"><p class="plbl">PART ${p.letter.toUpperCase()} (${maxPts(p)} points) · MATCHING${prev?` <span class="small" style="font-weight:500">· earlier attempts: ${prev}</span>`:''}</p><button class="pin" data-pin="${p.id}" aria-pressed="${pin}">${pin?'★ In my notes':'☆ Add to notes'}</button></div><div class="qtext">${p.q}</div>`;
   if(!a&&!sk) h+=`<p class="hint" style="margin:0 0 6px">Drag each item into a category, or tap an item and then tap its category. Tap a placed item, then another category (or the item area) to move it.</p>`;
   const pool=o.filter(i=>asg[i]===-1);
   if(!a) h+=`<div class="mpool" data-mp="${p.id}" data-mc="-1">${pool.length?pool.map(chip).join(''):'<span class="small">All items placed.</span>'}</div>`;
@@ -645,7 +647,7 @@ function partHTML(att,p){
   const o=order(p,att); const a=att.ans[p.id]; const sk=att.skip[p.id]; const picks=a?a.picks:(draft[p.id]||[]);
   const prev=DB.attempts.filter(x=>x.n<att.n&&x.ans[p.id]).map(x=>x.ans[p.id].ok?'✓':'✗').join(' ');
   const pin=!!DB.pins[p.id];
-  let h=`<div class="part" id="p-${p.id}"><div class="phead"><p class="plbl">PART ${p.letter.toUpperCase()}${p.type==='multi'?' · SELECT ALL THAT APPLY':''}${prev?` <span class="small" style="font-weight:500">· earlier attempts: ${prev}</span>`:''}</p><button class="pin" data-pin="${p.id}" aria-pressed="${pin}">${pin?'★ In my notes':'☆ Add to notes'}</button></div><div class="qtext">${p.q}</div><div class="opts">`;
+  let h=`<div class="part" id="p-${p.id}"><div class="phead"><p class="plbl">PART ${p.letter.toUpperCase()} (${maxPts(p)} points)${p.type==='multi'?' · SELECT ALL THAT APPLY':''}${prev?` <span class="small" style="font-weight:500">· earlier attempts: ${prev}</span>`:''}</p><button class="pin" data-pin="${p.id}" aria-pressed="${pin}">${pin?'★ In my notes':'☆ Add to notes'}</button></div><div class="qtext">${p.q}</div><div class="opts">`;
   o.forEach((oi,k)=>{ let cls='opt'; if(a){ cls+=' locked'; if(p.answer.includes(oi)) cls+=' right'; else if(a.picks.includes(oi)) cls+=' wrong'; }
     h+=`<button class="${cls}" data-p="${p.id}" data-oi="${oi}" aria-pressed="${picks.includes(oi)}"><span class="l">${p.type==='multi'?(picks.includes(oi)?'☑':'☐'):LET[k]+'.'}</span><span>${p.options[oi]}</span></button>`; });
   h+=`</div>`;
