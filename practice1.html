@@ -145,15 +145,15 @@ function addNote(p,why){if(hasNote(p.id))return false;const pr=PR[p.pr];DB1.note
 const WIP={}; let SEL=null;   // WIP[qid] = {itemIndex: catIndex}; SEL = {q, i}
 function matchOk(p,place){return p.items.every((_,i)=>place[i]===p.answer[i]);}
 // points: each drag-and-drop card is 1 point; each select-all / single question is 1 point (all-or-nothing, as before)
-const maxPts=p=>p.type==='match'?p.items.length:1;
-const gotPts=(p,a)=>!a?0:p.type==='match'?p.items.filter((_,i)=>a.place[i]===p.answer[i]).length:(a.ok?1:0);
+const maxPts=p=>p.type==='match'?p.items.length:p.options.length;  // real-exam style: per card, per option
+const gotPts=(p,a)=>!a?0:p.type==='match'?p.items.filter((_,i)=>a.place[i]===p.answer[i]).length:p.type==='single'?(a.ok?p.options.length:0):p.options.filter((_,i)=>a.picks.includes(i)===p.answer.includes(i)).length;
 function tally(k){const pr=PR[k],att=pr.cur();let got=0,max=0,ans=0;att.ids.forEach(id=>{const p=pr.byId(id),a=att.ans[id];max+=maxPts(p);if(a){got+=gotPts(p,a);ans+=maxPts(p);}});return {got,max,ans,att};}
 
 const EXTRA={p2:`<a class="card resource" href="qq_explorer.html"><b>📈 Q-Q Plot Explorer →</b><span>New to Q-Q plots? Start there: how they're built, every distribution as a histogram and Q-Q plot, what each shape means, and a guess-the-shape quiz.</span></a>`};
 function renderQuiz(k){
   const pr=PR[k],att=pr.cur(),ids=att.ids,done=ids.filter(id=>att.ans[id]).length,right=ids.filter(id=>att.ans[id]&&att.ans[id].ok).length;
   const T=tally(k),pct=T.max?Math.round(100*T.got/T.max):0;
-  let h=(EXTRA[k]||'')+`<div class="card scorebox"><div class="big"><span class="num">${T.got}</span><span class="of">/ ${T.max} points</span><span class="pct">${T.ans?Math.round(100*T.got/T.ans)+'% of answered':''}</span></div><div class="bar2"><i class="g" style="width:${T.max?100*T.got/T.max:0}%"></i><i class="r" style="width:${T.max?100*(T.ans-T.got)/T.max:0}%"></i></div><div class="score"><b>Attempt ${att.n}${att.kind==='missed'?' · missed questions only':''}</b><span>${done} of ${ids.length} questions answered · ${pr.P.every(p=>p.type==='match')?'1 point per card':pr.P.some(p=>p.type==='match')?'1 point per drag-and-drop card or select-all question':'1 point per question'}</span></div></div>`;
+  let h=(EXTRA[k]||'')+`<div class="card scorebox"><div class="big"><span class="num">${T.got}</span><span class="of">/ ${T.max} points</span><span class="pct">${T.ans?Math.round(100*T.got/T.ans)+'% of answered':''}</span></div><div class="bar2"><i class="g" style="width:${T.max?100*T.got/T.max:0}%"></i><i class="r" style="width:${T.max?100*(T.ans-T.got)/T.max:0}%"></i></div><div class="score"><b>Attempt ${att.n}${att.kind==='missed'?' · missed questions only':''}</b><span>${done} of ${ids.length} questions answered · ${pr.P.every(p=>p.type==='match')?'1 point per card':pr.P.some(p=>p.type==='match')?'1 point per drag-and-drop card; select-all: 1 point per option judged right':'select-all: 1 point per option judged right (partial credit, as on the real exam)'}</span></div></div>`;
   let lastSi=-1;
   ids.forEach((id,qi)=>{const p=pr.byId(id),a=att.ans[id];
     if(p.si!==lastSi){lastSi=p.si;const sc=pr.SCS[p.si];h+=`<div class="card setup"><div class="qn">Scenario ${p.si+1} of ${pr.SCS.length}</div><h2>${esc(sc.title)}</h2><div>${sc.setup}</div></div>`;}
@@ -193,7 +193,7 @@ function matchHTML(p,att,a){
 function renderNotes(){
   const F=renderNotes.f||'all', list=DB1.notes.filter(n=>F==='all'||(F==='own'?!n.pid:(n.practice||'Practice 1')===F));
   document.getElementById('nCount').textContent=DB1.notes.length?`(${DB1.notes.length})`:'';
-  let h=`<div class="card nb"><b>Overall notebook</b><p class="hint" style="margin:2px 0 8px">One running page of notes for the whole topic, across all practices. Saved automatically in this browser.</p><textarea id="notebook" placeholder="Big ideas, formulas, things the group discussed…">${esc(DB1.notebook)}</textarea><div class="saved" id="nbSaved"></div></div>`;
+  let h=`<div class="card nb"><b>Overall notebook</b><p class="hint" style="margin:2px 0 8px">One running page of notes for the whole topic, across all practices. Saved automatically in this browser. To see these together with your Midterm 1 and 2 notes, or to back them up, open <a href="index.html#allnotes">All notes on the main site ↗</a>.</p><textarea id="notebook" placeholder="Big ideas, formulas, things the group discussed…">${esc(DB1.notebook)}</textarea><div class="saved" id="nbSaved"></div></div>`;
   h+=`<div class="card notes"><div class="filters">${['all','Practice 1','Practice 2','Practice 3','own'].map(f=>`<button data-filter="${f}" class="${F===f?'on':''}">${f==='all'?'All':f==='own'?'My own notes':f}</button>`).join('')}</div>`;
   if(!list.length) h+=`<p class="empty">No notes here yet. Missed questions are added automatically, and you can add any graded question with "Add to notes".</p>`;
   list.forEach(n=>{h+=`<div class="n"><h3>${esc(n.title||'My note')}</h3>${n.pid?`<div class="meta">${n.why==='missed'?'Missed':'Added'} · ${esc(n.practice||'Practice 1')}${n.sc?' · '+esc(n.sc):''} · ${n.q.replace(/<svg[\s\S]*?<\/svg>/g,'[plot]').replace(/<[^>]+>/g,'')}</div><div class="key"><b>Key idea:</b> ${n.key}</div><div style="margin-top:6px">${n.explain}</div>${refsOf(n).length?`<div class="refs">Lecture: ${esc(refList(refsOf(n)))}</div>`:''}`:''}<textarea data-mine="${n.id}" placeholder="Your own note (saved automatically)">${esc(n.mine||'')}</textarea><div class="row"><button data-del="${n.id}">Remove</button></div></div>`;});

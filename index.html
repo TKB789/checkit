@@ -326,7 +326,7 @@ button.pick{border:1px solid var(--line);background:var(--card)}
 .pxm .jump button.done{background:var(--ok-bg);border-color:var(--ok)}
 .pxm .jump button.part{background:var(--warn-bg);border-top:1px solid var(--line);margin-top:0;padding-top:5px}
 .pxm .jump button.miss{background:var(--bad-bg);border-color:var(--bad)}
-/*PXPATCH-css*/.pxm .pkset{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:10px}.pxm .pkhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:4px 0 8px;border-bottom:1px solid var(--line)}/*PX2-css*/.pxm .setgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.pxm .setcard{display:flex;flex-direction:column;gap:4px;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}.pxm .setcard .row{margin-top:6px}.pxm .pk{grid-template-columns:1fr auto!important}.pxm .pkbtn{display:flex;flex-direction:column;gap:6px;align-items:stretch}.pxm .pkq{width:100%;min-height:38px;border:1px solid var(--line);border-radius:8px;padding:4px 10px;background:var(--card);color:var(--ink);font:inherit;margin:0 0 6px}.pxm .setlbl{margin:14px 0 2px;font-size:.95rem}.pxm .runbar{position:sticky;top:0;z-index:6}.pxm .timer{font-variant-numeric:tabular-nums;font-size:1.1rem}.pxm .over{color:var(--bad)}@media (max-width:560px){.pxm .pk{grid-template-columns:1fr!important}.pxm .pkbtn{flex-direction:row}}/*PX3-css*/.pxm .jump button.skip{border-style:dashed;color:var(--ink-2)}
+/*PXPATCH-css*/.pxm .pkset{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-top:10px}.pxm .pkhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:4px 0 8px;border-bottom:1px solid var(--line)}/*PX2-css*/.pxm .setgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.pxm .setcard{display:flex;flex-direction:column;gap:4px;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}.pxm .setcard .row{margin-top:6px}.pxm .pk{grid-template-columns:1fr auto!important}.pxm .pkbtn{display:flex;flex-direction:column;gap:6px;align-items:stretch}.pxm .pkq{width:100%;min-height:38px;border:1px solid var(--line);border-radius:8px;padding:4px 10px;background:var(--card);color:var(--ink);font:inherit;margin:0 0 6px}.pxm .setlbl{margin:14px 0 2px;font-size:.95rem}.pxm .runbar{position:sticky;top:0;z-index:6}.pxm .timer{font-variant-numeric:tabular-nums;font-size:1.1rem}.pxm .over{color:var(--bad)}@media (max-width:560px){.pxm .pk{grid-template-columns:1fr!important}.pxm .pkbtn{flex-direction:row}}/*PX3-css*/.pxm .ptsb{display:inline-block;font:700 .8rem var(--sans);border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:1px 9px;margin-right:4px}/*PX4-css*/.pxm .jump button.skip{border-style:dashed;color:var(--ink-2)}
 .pxm .picker{margin-top:10px}.pxm .picker summary{cursor:pointer;font-weight:600}
 .pxm .pk{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
 .pxm .pk:first-of-type{border-top:0}.pxm .pk input{width:18px;height:18px;margin-top:3px}
@@ -374,6 +374,7 @@ button.pick{border:1px solid var(--line);background:var(--card)}
       <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall">New student</button>
       <button role="tab" id="tab-guides" aria-selected="false" data-tab="guides">Study guides</button>
       <button role="tab" id="tab-search" aria-selected="false" data-tab="search">Search</button>
+      <button role="tab" id="tab-notes" aria-selected="false" data-tab="notes">All notes</button><!--NH-tab-->
       <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress">Progress</button>
       <a class="tablink" href="practice1.html" title="Study group practice, Q-Q plot explorer and shared notes">Study group ↗</a>
     </nav>
@@ -507,7 +508,12 @@ function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.i
 function order(p,att){ const idx=p.options.map((_,i)=>i); if(p.fixed) return idx; const r=rng(hash(p.id+'#'+att.n)); for(let i=idx.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];} return idx; }
 const LET='ABCDEFGHIJKLMNOP';
 function isCorrect(p,picks){ if(p.type==='match') return p.answer.length===picks.length&&p.answer.every((c,i)=>c===picks[i]); return [...p.answer].sort().join(',')===[...picks].sort().join(','); }
-/*PXPATCH-skip*/function stats(att,filter){ const ids=Object.keys(att.ans).filter(id=>PBYID[id]&&(!filter||filter(PBYID[id]))); const c=ids.filter(id=>att.ans[id].ok).length; return {answered:ids.length,correct:c,pct:ids.length?Math.round(1000*c/ids.length)/10:null,skipped:Object.keys(att.skip).filter(id=>PBYID[id]&&!att.ans[id]&&(!filter||filter(PBYID[id]))).length}; }
+/*PX4*/function maxPts(p){ return p.type==='match'?p.items.length:p.options.length; }
+function gotPts(p,picks){ if(!picks) return 0; if(p.type==='match') return p.items.filter((_,i)=>picks[i]===p.answer[i]).length;
+  if(p.type==='single') return isCorrect(p,picks)?p.options.length:0; return p.options.filter((_,i)=>picks.includes(i)===p.answer.includes(i)).length; }
+/*PXPATCH-skip*/function stats(att,filter){ const ids=Object.keys(att.ans).filter(id=>PBYID[id]&&(!filter||filter(PBYID[id]))); const c=ids.filter(id=>att.ans[id].ok).length;
+  const pts=ids.reduce((a,id)=>a+gotPts(PBYID[id],att.ans[id].picks),0), max=ids.reduce((a,id)=>a+maxPts(PBYID[id]),0);
+  return {answered:ids.length,correct:c,pts,max,pct:max?Math.round(1000*pts/max)/10:null,skipped:Object.keys(att.skip).filter(id=>PBYID[id]&&!att.ans[id]&&(!filter||filter(PBYID[id]))).length}; }
 function history(pid){ return DB.attempts.map(a=>a.ans[pid]?{n:a.n,ok:a.ans[pid].ok}:null).filter(Boolean); }
 function everMissed(pid){ return history(pid).some(h=>!h.ok); }
 function latest(pid){ const h=history(pid); return h.length?h[h.length-1]:null; }
@@ -536,27 +542,30 @@ const SETS=()=>CFG.sets&&CFG.sets.length?CFG.sets:[EXAM.map(s=>s.id)];
 const scenMin=s=>Math.ceil(s.parts.length*PER_Q);
 function runDef(r){ if(!r) return null; if(r.kind==='set'){ const ids=SETS()[r.k]; return {key:'set'+r.k, title:`${CFG.label} · Set ${r.k+1}`, ids, min:EXAM_MIN}; }
   const s=EXAM[r.si]; return {key:'scen'+s.id, title:s.title, ids:[s.id], min:scenMin(s)}; }
-function runStats(att,ids){ const ps=PARTS.filter(p=>ids.includes(p.sid)), a=ps.filter(p=>att.ans[p.id]), ok=a.filter(p=>att.ans[p.id].ok).length; return {n:ps.length,answered:a.length,ok,ps}; }
+function runStats(att,ids){ const ps=PARTS.filter(p=>ids.includes(p.sid)), a=ps.filter(p=>att.ans[p.id]), ok=a.filter(p=>att.ans[p.id].ok).length;
+  const pts=a.reduce((x,p)=>x+gotPts(p,att.ans[p.id].picks),0), amax=a.reduce((x,p)=>x+maxPts(p),0), tmax=ps.reduce((x,p)=>x+maxPts(p),0);
+  return {n:ps.length,answered:a.length,ok,ps,pts,amax,tmax,pct:amax?Math.round(100*pts/amax):null}; }/*PX4-run*/
 const fmtT=ms=>{ const t=Math.round(Math.abs(ms)/1000), m=Math.floor(t/60), s=t%60; return m+':'+String(s).padStart(2,'0'); };
 let TICK=null;
 function timerText(R){ const T=(DB.timers||{})[R.key]; if(!T) return {txt:`${R.min}:00`,over:false,left:R.min*60000};
   const left=T.start+R.min*60000-(T.end||Date.now()); return {txt:left>=0?fmtT(left)+' left':fmtT(left)+' over',over:left<0,left}; }
 function startTimer(R,fresh){ DB.timers=DB.timers||{}; if(fresh||!DB.timers[R.key]||DB.timers[R.key].end) DB.timers[R.key]={start:Date.now()}; save(); }
-function statusOf(att,ids,R){ const st=runStats(att,ids), T=R&&(DB.timers||{})[R.key]; if(T&&T.end) return `finished · ${st.ok}/${st.n} correct · ${fmtT(T.end-T.start)}`; return st.answered===0?'not started':st.answered===st.n?`done · ${st.ok}/${st.n} correct`:`${st.answered}/${st.n} answered · ${st.ok} correct`; }
+function statusOf(att,ids,R){ const st=runStats(att,ids), T=R&&(DB.timers||{})[R.key]; if(T&&T.end) return `finished · ${st.pts}/${st.amax} points (${st.pct}%) · ${fmtT(T.end-T.start)}`; return st.answered===0?'not started':st.answered===st.n?`done · ${st.pts}/${st.amax} points (${st.pct}%)`:`${st.answered}/${st.n} answered · ${st.pts}/${st.amax} points`; }/*PX4-status*/
 function homeHTML(att){ const st=stats(att); const q=(view.pkq||'').toLowerCase().trim();
   let h=`<section class="panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc(CFG.short)} · Attempt ${att.n}</h2><span class="small">started ${new Date(att.started).toLocaleString()}</span></div>
-   <div class="stat"><div><b>${st.pct===null?'–':st.pct+'%'}</b><span>grade (answered only)</span></div><div><b>${st.correct}/${st.answered}</b><span>correct / answered</span></div><div><b>${PARTS.length-st.answered}</b><span>not attempted${st.skipped?` (${st.skipped} skipped)`:''}</span></div><div><b>${PARTS.length}</b><span>questions in total</span></div></div>
+   <div class="stat"><div><b>${st.pct===null?'–':st.pct+'%'}</b><span>score (points, answered only)</span></div><div><b>${st.pts}/${st.max}</b><span>points / possible (answered)</span></div><div><b>${PARTS.length-st.answered}</b><span>not attempted${st.skipped?` (${st.skipped} skipped)`:''}</span></div><div><b>${PARTS.length}</b><span>questions in total</span></div></div>
    ${DB.movedNotes&&!DB.movedSeen?`<p class="hint" style="background:var(--warn-bg);padding:8px 10px;border-radius:8px;color:var(--ink)">${DB.movedNotes} notes from your earlier practice exams were carried over into <b>My notes</b>. <button class="xbtn" id="pxmseen" style="float:none">OK</button></p>`:''}
    <details class="how" style="margin-top:10px"><summary>How this works</summary><ul class="small">
     <li>The real midterm is ${EXAM_Q} questions in ${EXAM_MIN} minutes. Each <b>set</b> below is about that size and mixes every module and question type, so any set works as a mock exam: ${EXAM_MIN} minutes on the clock.</li>
     <li>Or practice <b>one scenario</b> at a time. Its timer uses the same pace (${PER_Q.toFixed(1)} minutes per question).</li>
-    <li>Questions are <b>select all that apply</b>, <b>single best answer</b> or <b>drag-and-drop</b>, as on the real exam. <b>Skip</b> marks a question not attempted; it never counts against you. Grade = correct ÷ answered.</li>
+    <li>Questions are <b>select all that apply</b>, <b>single best answer</b> or <b>drag-and-drop</b>, as on the real exam. <b>Skip</b> marks a question not attempted; it never counts against you.</li>
+    <li><b>Scoring, as on the real exam:</b> drag-and-drop earns 1 point per card placed correctly; select-all gives partial credit per option (1 point for each option you judge right: ticking a true one or leaving a false one unticked); single best answer is all-or-nothing, worth as many points as it has options. Score = points earned ÷ points possible on the questions you answered.</li>
     <li>The timer keeps running if you leave and come back. Going over time is allowed and shown in red. <b>Finish</b> shows your score; <b>Retake</b> clears that set's or scenario's answers so you can try again.</li>
     <li>Missed questions go into <b>My notes</b>. <b>My grades</b> shows every attempt and every timed run.</li></ul></details></section>
    <section class="panel"><h2>Timed practice sets</h2><div class="setgrid">`;
   SETS().forEach((ids,k)=>{ const R=runDef({kind:'set',k}), rs=runStats(att,ids), T=(DB.timers||{})[R.key], tt=timerText(R), mm=[...new Set(EXAM.filter(s=>ids.includes(s.id)).flatMap(scenMods))].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
     const live=T&&!T.end, done=rs.answered===rs.n||(T&&T.end);
-    h+=`<div class="setcard"><b>${esc(CFG.label)} · Set ${k+1}</b><span class="small">${ids.length} scenarios · ${rs.n} questions · ${EXAM_MIN} min</span><span class="small">${mm.join(', ')}</span><span class="small st">${statusOf(att,ids,R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</span>
+    h+=`<div class="setcard"><b>${esc(CFG.label)} · Set ${k+1}</b><span class="small">${ids.length} scenarios · ${rs.n} questions · ${rs.tmax} points · ${EXAM_MIN} min</span><span class="small">${mm.join(', ')}</span><span class="small st">${statusOf(att,ids,R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</span>
       <div class="row">${live?`<button class="btn" data-run="set:${k}">Continue</button>`:done?`<button class="btn" data-run="set:${k}">Review</button><button class="btn ghost" data-retake="set:${k}">Retake</button>`:`<button class="btn" data-run="set:${k}" data-fresh="1">Start Set ${k+1} · ${EXAM_MIN} min</button>`}</div></div>`; });
   h+=`</div></section><section class="panel"><h2>Or try each scenario on its own</h2><p class="small" style="margin-top:0">Every scenario, grouped by set. Each has its own timer at the exam's pace.</p>
     <input type="search" id="pkq" class="pkq" placeholder="Filter by topic, e.g. lasso, CUSUM, Q-Q" value="${esc(view.pkq||'')}"><div id="pklist">${scenListHTML(att)}</div></section>`;
@@ -566,23 +575,23 @@ function scenListHTML(att){ const q=(view.pkq||'').toLowerCase().trim(); let out
   SETS().forEach((ids,k)=>{ const rows=EXAM.map((s,si)=>({s,si})).filter(({s})=>ids.includes(s.id)).filter(({s})=>!q||(s.title+' '+s.parts.map(p=>p.concept+' '+(p.refs||[]).join(' ')).join(' ')+' '+scenMods(s).join(' ')).toLowerCase().includes(q)).map(({s,si})=>{
       const R=runDef({kind:'scen',si}), rs=runStats(att,[s.id]), T=(DB.timers||{})[R.key], live=T&&!T.end, done=rs.answered===rs.n||(T&&T.end), tt=timerText(R);
       const concepts=[...new Set(s.parts.map(p=>p.concept).filter(Boolean))];
-      return `<div class="pk"><div><b class="t">${esc(s.title)}</b><div class="m">${scenMods(s).join(' · ')||'Mixed'} · ${s.parts.length} question${s.parts.length>1?'s':''} (${scenTypes(s)}) · ${R.min} min</div><div class="tags">${concepts.map(c=>`<span>${esc(c)}</span>`).join('')}</div><div class="m">${statusOf(att,[s.id],R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</div></div>
+      return `<div class="pk"><div><b class="t">${esc(s.title)}</b><div class="m">${scenMods(s).join(' · ')||'Mixed'} · ${s.parts.length} question${s.parts.length>1?'s':''} (${scenTypes(s)}) · ${rs.tmax} points · ${R.min} min</div><div class="tags">${concepts.map(c=>`<span>${esc(c)}</span>`).join('')}</div><div class="m">${statusOf(att,[s.id],R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</div></div>
         <div class="pkbtn">${live?`<button class="btn" data-run="scen:${si}">Continue</button>`:done?`<button class="btn quiet" data-run="scen:${si}">Review</button><button class="btn ghost" data-retake="scen:${si}">Retake</button>`:`<button class="btn" data-run="scen:${si}" data-fresh="1">Start · ${R.min} min</button>`}</div></div>`; }).join('');
     if(rows) out+=`<h3 class="setlbl">Set ${k+1}</h3>`+rows; });
   return out||'<p class="small">No scenario matches that topic.</p>'; }
 function runHTML(att){ const R=runDef(view.run), rs=runStats(att,R.ids), tt=timerText(R), T=(DB.timers||{})[R.key], fin=T&&T.end;
   const list=EXAM.map((s,si)=>({s,si})).filter(({s})=>R.ids.includes(s.id)); let pos=list.findIndex(x=>x.si===view.si); if(pos<0){ pos=0; view.si=list[0].si; }
   let h=`<section class="panel runbar" id="runbar"><div class="row" style="justify-content:space-between;align-items:center"><button class="btn quiet" id="pxhome">← All sets &amp; scenarios</button><b id="pxtimer" class="timer ${tt.over?'over':''}">${fin?'Finished · '+fmtT(T.end-T.start):tt.txt}</b></div>
-    <h2 style="margin:8px 0 2px">${esc(R.title)}</h2><p class="small" style="margin:0" id="runprog">${rs.answered}/${rs.n} answered · ${rs.ok} correct · ${R.min} minutes allowed</p>
+    <h2 style="margin:8px 0 2px">${esc(R.title)}</h2><p class="small" style="margin:0" id="runprog">${rs.answered}/${rs.n} answered · ${rs.pts}/${rs.amax} points so far · ${rs.tmax} points in all · ${R.min} minutes allowed</p>
     ${list.length>1?`<div class="jump">${list.map(({s,si},i)=>{ const sts=PARTS.filter(p=>p.sid===s.id).map(p=>partState(att,p)); const cls=sts.some(x=>x==='miss')?'miss':sts.every(x=>x==='done')?'done':sts.some(x=>x==='done')?'part':sts.some(x=>x==='skip')?'skip':''; return `<button class="${cls} ${si===view.si?'cur':''}" data-si="${si}" title="${esc(s.title)}">${i+1}</button>`; }).join('')}</div>`:''}</section>`;
   if(fin){ const used=T.end-T.start, wrong=rs.ps.filter(p=>att.ans[p.id]&&!att.ans[p.id].ok);
-    h+=`<section class="panel"><h2>Result: ${rs.ok} / ${rs.n} correct${rs.answered<rs.n?` (${rs.answered} answered)`:''}</h2><p class="small">Time used ${fmtT(used)} of ${R.min}:00${used>R.min*60000?' (over time)':''}. ${wrong.length?`Missed: ${wrong.map(p=>esc(EXAM[p.si].title)+' '+p.letter.toUpperCase()).join(', ')} (saved in My notes).`:'Nothing missed.'}</p><div class="row"><button class="btn" data-retake="${view.run.kind}:${view.run.kind==='set'?view.run.k:view.run.si}">Retake</button><button class="btn ghost" id="pxhome2">Back to all sets &amp; scenarios</button></div></section>`; }
+    h+=`<section class="panel"><h2>Score: ${rs.pts} / ${rs.amax} points (${rs.pct===null?'–':rs.pct+'%'})</h2><p class="small" style="margin:0 0 4px">${rs.answered} of ${rs.n} questions answered (${rs.tmax} points possible in all; unanswered questions don't count) · ${rs.ok} fully right.</p><p class="small">Time used ${fmtT(used)} of ${R.min}:00${used>R.min*60000?' (over time)':''}. ${wrong.length?`Missed: ${wrong.map(p=>esc(EXAM[p.si].title)+' '+p.letter.toUpperCase()).join(', ')} (saved in My notes).`:'Nothing missed.'}</p><div class="row"><button class="btn" data-retake="${view.run.kind}:${view.run.kind==='set'?view.run.k:view.run.si}">Retake</button><button class="btn ghost" id="pxhome2">Back to all sets &amp; scenarios</button></div></section>`; }
   const s=EXAM[view.si], ps=PARTS.filter(p=>p.sid===s.id);
   h+=`<section class="panel" id="pxscen"><p class="small" style="margin:0">${list.length>1?`Scenario ${pos+1} of ${list.length}`:'Scenario'}</p><h2>${esc(s.title)}</h2><div class="setup">${s.setup}</div>`;
   ps.forEach(p=>{ h+=partHTML(att,p); });
   h+=`<div class="navrow"><button class="btn quiet" id="pxprev" ${pos<=0?'disabled':''}>← Previous</button>${fin?'':`<button class="btn quiet" id="pxfinish">Finish${view.run.kind==='set'?' set':''}</button>`}<button class="btn" id="pxnext" ${pos>=list.length-1?'disabled':''}>Next →</button></div></section>`;
   return {h,list,pos}; }
-function runBanner(att){ if(!view.run) return; const R=runDef(view.run), rs=runStats(att,R.ids), el=$('#runprog'); if(el) el.textContent=`${rs.answered}/${rs.n} answered · ${rs.ok} correct · ${R.min} minutes allowed`; }
+function runBanner(att){ if(!view.run) return; const R=runDef(view.run), rs=runStats(att,R.ids), el=$('#runprog'); if(el) el.textContent=`${rs.answered}/${rs.n} answered · ${rs.pts}/${rs.amax} points so far · ${rs.tmax} points in all · ${R.min} minutes allowed`; }
 function renderExam(){
   const att=cur(); clearInterval(TICK);
   if(!view.run){ body().innerHTML=homeHTML(att);
@@ -598,7 +607,7 @@ function renderExam(){
   const go=d=>{ const t=list[pos+d]; if(t){ view.si=t.si; renderExam(); scrollToEl($('#pxscen')); } };
   $('#pxprev').onclick=()=>go(-1); $('#pxnext').onclick=()=>go(1);
   if($('#pxfinish')) $('#pxfinish').onclick=()=>{ const rs=runStats(att,R.ids); if(rs.answered<rs.n&&!confirm(`${rs.n-rs.answered} question(s) not answered yet. Finish anyway? Unanswered questions count as not attempted.`)) return;
-    const T=DB.timers[R.key]||{start:Date.now()}; T.end=Date.now(); DB.timers[R.key]=T; DB.runs=DB.runs||[]; DB.runs.push({attempt:att.n,title:R.title,ok:rs.ok,answered:rs.answered,n:rs.n,ms:T.end-T.start,min:R.min,at:T.end}); save(); renderExam(); window.scrollTo(0,0); };
+    const T=DB.timers[R.key]||{start:Date.now()}; T.end=Date.now(); DB.timers[R.key]=T; DB.runs=DB.runs||[]; DB.runs.push({attempt:att.n,title:R.title,ok:rs.ok,answered:rs.answered,n:rs.n,pts:rs.pts,amax:rs.amax,tmax:rs.tmax,ms:T.end-T.start,min:R.min,at:T.end}); save(); renderExam(); window.scrollTo(0,0); };
   bindParts(att);
 }
 function openRun(spec,fresh){ const [kind,x]=spec.split(':'); view.run=kind==='set'?{kind,k:+x}:{kind,si:+x}; const R=runDef(view.run); view.si=EXAM.findIndex(s=>s.id===R.ids[0]); startTimer(R,fresh); renderExam(); window.scrollTo(0,0); }
@@ -624,7 +633,7 @@ function matchHTML(att,p){
   if(!a) h+=`<div class="mpool" data-mp="${p.id}" data-mc="-1">${pool.length?pool.map(chip).join(''):'<span class="small">All items placed.</span>'}</div>`;
   h+=`<div class="mbuckets">${p.cats.map((c,ci)=>`<div class="mbucket" data-mp="${p.id}" data-mc="${ci}"><p class="mcat">${c}</p>${o.filter(i=>asg[i]===ci).map(chip).join('')}</div>`).join('')}</div>`;
   if(a){ const why=(p.why||[]).map((w,i)=>w&&asg[i]!==p.answer[i]?`<li><b>${p.items[i]}</b> → ${p.cats[p.answer[i]]}: ${w}</li>`:'').join('');
-    h+=`<div class="fb ${a.ok?'ok':'no'}"><b>${a.ok?'Correct.':`Not quite: ${asg.filter((c,i)=>c===p.answer[i]).length} of ${p.items.length} placed correctly.`}</b> ${p.explain}${why?`<ul class="small" style="margin:6px 0 0;padding-left:18px">${why}</ul>`:''}${p.note?`<div class="refs"><b>Key idea:</b> ${p.note}</div>`:''}<div class="refs"><b>Review:</b> ${p.refs.map(esc).join(' · ')}</div></div>`; }
+    h+=`<div class="fb ${a.ok?'ok':'no'}"><span class="ptsb">${gotPts(p,asg)} / ${maxPts(p)} points</span> <b>${a.ok?'Correct.':`${asg.filter((c,i)=>c===p.answer[i]).length} of ${p.items.length} placed correctly.`}</b> ${p.explain}${why?`<ul class="small" style="margin:6px 0 0;padding-left:18px">${why}</ul>`:''}${p.note?`<div class="refs"><b>Key idea:</b> ${p.note}</div>`:''}<div class="refs"><b>Review:</b> ${p.refs.map(esc).join(' · ')}</div></div>`; }
   else if(sk){ h+=`<div class="fb sk"><b>Not attempted</b> (skipped). It doesn’t count toward your grade. <button class="btn ghost" data-unskip="${p.id}" style="min-height:32px;padding:4px 10px">Answer it now</button></div>`; }
   else h+=`<div class="row" style="margin-top:8px"><button class="btn" data-submit="${p.id}" ${asg.every(c=>c>=0)?'':'disabled'}>Submit</button><button class="btn quiet" data-skip="${p.id}">Skip</button></div>`;
   return h+`</div>`;
@@ -638,7 +647,7 @@ function partHTML(att,p){
   o.forEach((oi,k)=>{ let cls='opt'; if(a){ cls+=' locked'; if(p.answer.includes(oi)) cls+=' right'; else if(a.picks.includes(oi)) cls+=' wrong'; }
     h+=`<button class="${cls}" data-p="${p.id}" data-oi="${oi}" aria-pressed="${picks.includes(oi)}"><span class="l">${p.type==='multi'?(picks.includes(oi)?'☑':'☐'):LET[k]+'.'}</span><span>${p.options[oi]}</span></button>`; });
   h+=`</div>`;
-  if(a){ h+=`<div class="fb ${a.ok?'ok':'no'}"><b>${a.ok?'Correct.':'Not quite.'}</b> ${p.explain}${p.note?`<div class="refs"><b>Key idea:</b> ${p.note}</div>`:''}<div class="refs"><b>Review:</b> ${p.refs.map(esc).join(' · ')}</div></div>`; }
+  if(a){ h+=`<div class="fb ${a.ok?'ok':'no'}"><span class="ptsb">${gotPts(p,a.picks)} / ${maxPts(p)} points</span> <b>${a.ok?'Correct.':p.type==='single'?'Not quite.':'Partly right.'}</b> ${p.explain}${p.note?`<div class="refs"><b>Key idea:</b> ${p.note}</div>`:''}<div class="refs"><b>Review:</b> ${p.refs.map(esc).join(' · ')}</div></div>`; }
   else if(sk){ h+=`<div class="fb sk"><b>Not attempted</b> (skipped). It doesn’t count toward your grade. <button class="btn ghost" data-unskip="${p.id}" style="min-height:32px;padding:4px 10px">Answer it now</button></div>`; }
   else h+=`<div class="row" style="margin-top:8px"><button class="btn" data-submit="${p.id}" ${picks.length?'':'disabled'}>Submit</button><button class="btn quiet" data-skip="${p.id}">Skip</button></div>`;
   return h+`</div>`;
@@ -664,18 +673,18 @@ function bindParts(att){
   document.querySelectorAll('.pxm [data-unskip]').forEach(b=>b.onclick=()=>{ const p=PBYID[b.dataset.unskip]; delete att.skip[p.id]; save(); rerenderTop(att); rerenderPart(att,p); });
 }
 function rerenderPart(att,p){ const el=document.getElementById('p-'+p.id); if(!el) return; const y=window.scrollY; el.outerHTML=partHTML(att,p); bindParts(att); window.scrollTo(0,y); }
-function rerenderTop(att){ runBanner(att);/*PX3-top*/ const st=stats(att); const box=document.querySelectorAll('.pxm .stat b'); if(box.length===4){ box[0].textContent=st.pct===null?'–':st.pct+'%'; box[1].textContent=st.correct+'/'+st.answered; box[2].textContent=PARTS.length-st.answered; const sp=box[2].nextElementSibling; if(sp) sp.textContent='not attempted'+(st.skipped?` (${st.skipped} skipped)`:''); }
+function rerenderTop(att){ runBanner(att);/*PX3-top*/ const st=stats(att); const box=document.querySelectorAll('.pxm .stat b'); if(box.length===4){ box[0].textContent=st.pct===null?'–':st.pct+'%'; box[1].textContent=st.pts+'/'+st.max; box[2].textContent=PARTS.length-st.answered; const sp=box[2].nextElementSibling; if(sp) sp.textContent='not attempted'+(st.skipped?` (${st.skipped} skipped)`:''); }
   const s=EXAM[view.si]; const btn=document.querySelector(`.pxm .jump button[data-si="${view.si}"]`); if(btn){ const sts=PARTS.filter(p=>p.sid===s.id).map(p=>partState(att,p)); btn.className=(sts.some(x=>x==='miss')?'miss':sts.every(x=>x==='done')?'done':sts.some(x=>x==='done')?'part':sts.some(x=>x==='skip')?'skip':'')+' cur'; } }
 function renderGrades(){
   const rows=DB.attempts.map(a=>({a,st:stats(a)}));
   const mods=MODORDER.filter(m=>EXAM.some(s=>s.module===m));
-  let h=`<section class="panel"><h2>My grades</h2><p class="small">Grade = correct ÷ questions answered in that attempt. Skipped and unseen questions are “not attempted” and don’t count.</p>
-   <div style="overflow-x:auto"><table class="g"><tr><th>Attempt</th><th>Date</th><th>Answered</th><th>Correct</th><th>Not attempted</th><th>Grade</th><th></th></tr>
-   ${rows.map(({a,st})=>`<tr><td>#${a.n}</td><td>${new Date(a.started).toLocaleDateString()} ${new Date(a.started).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}</td><td>${st.answered}</td><td>${st.correct}</td><td>${PARTS.length-st.answered}</td><td><b>${st.pct===null?'–':st.pct+'%'}</b></td><td><div class="pxbar"><i style="width:${st.pct||0}%"></i></div></td></tr>`).join('')}</table></div></section>
-   ${(DB.runs||[]).length?`<section class="panel"><h2>Timed runs</h2><div style="overflow-x:auto"><table class="g"><tr><th>Date</th><th>Set or scenario</th><th>Score</th><th>Time</th></tr>${DB.runs.slice().reverse().map(r=>`<tr><td>${new Date(r.at).toLocaleDateString()}</td><td>${esc(r.title)}</td><td><b>${r.ok}/${r.n}</b>${r.answered<r.n?` <span class="small">(${r.answered} answered)</span>`:''}</td><td>${Math.round(r.ms/60000)} / ${r.min} min</td></tr>`).join('')}</table></div></section>`:''}/*PX3-runs*/
+  let h=`<section class="panel"><h2>My grades</h2><p class="small">Score = points earned ÷ points possible on the questions answered in that attempt (real-exam style: 1 point per drag-and-drop card, partial credit per option on select-all, all-or-nothing single answers). Skipped and unseen questions don’t count.</p>
+   <div style="overflow-x:auto"><table class="g"><tr><th>Attempt</th><th>Date</th><th>Answered</th><th>Points</th><th>Not attempted</th><th>Score</th><th></th></tr>
+   ${rows.map(({a,st})=>`<tr><td>#${a.n}</td><td>${new Date(a.started).toLocaleDateString()} ${new Date(a.started).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}</td><td>${st.answered}</td><td>${st.pts}/${st.max}</td><td>${PARTS.length-st.answered}</td><td><b>${st.pct===null?'–':st.pct+'%'}</b></td><td><div class="pxbar"><i style="width:${st.pct||0}%"></i></div></td></tr>`).join('')}</table></div></section>
+   ${(DB.runs||[]).length?`<section class="panel"><h2>Timed runs</h2><div style="overflow-x:auto"><table class="g"><tr><th>Date</th><th>Set or scenario</th><th>Score</th><th>Time</th></tr>${DB.runs.slice().reverse().map(r=>`<tr><td>${new Date(r.at).toLocaleDateString()}</td><td>${esc(r.title)}</td><td><b>${r.amax!=null?`${r.pts}/${r.amax} pts (${r.amax?Math.round(100*r.pts/r.amax):0}%)`:`${r.ok}/${r.n}`}</b>${r.answered<r.n?` <span class="small">(${r.answered}/${r.n} answered)</span>`:''}</td><td>${Math.round(r.ms/60000)} / ${r.min} min</td></tr>`).join('')}</table></div></section>`:''}/*PX3-runs*/
    ${(DB.archived||[]).length?`<section class="panel"><h2>${esc(CFG.archLabel||'Earlier version')}</h2><p class="small">Grades from the earlier version of this exam. Kept for reference.</p><div style="overflow-x:auto"><table class="g"><tr><th>Attempt</th><th>Date</th><th>Answered</th><th>Correct</th><th>Grade</th></tr>${DB.archived.map(a=>`<tr><td>#${a.n}</td><td>${new Date(a.started).toLocaleDateString()}</td><td>${a.answered}</td><td>${a.correct}</td><td>${a.pct}%</td></tr>`).join('')}</table></div></section>`:''}
-   <section class="panel"><h2>By module</h2><p class="small">Grade per module in each attempt (correct/answered).</p><div style="overflow-x:auto"><table class="g"><tr><th>Module</th>${rows.map(({a})=>`<th>#${a.n}</th>`).join('')}</tr>
-   ${mods.map(m=>`<tr><td>${m==='MIX'?'Mixed':m}</td>${rows.map(({a})=>{const s=stats(a,p=>p.mod===m); return `<td>${s.answered?`${s.pct}% <span class="small">(${s.correct}/${s.answered})</span>`:'<span class="small">–</span>'}</td>`;}).join('')}</tr>`).join('')}</table></div></section>
+   <section class="panel"><h2>By module</h2><p class="small">Score per module in each attempt (points earned ÷ possible, answered questions).</p><div style="overflow-x:auto"><table class="g"><tr><th>Module</th>${rows.map(({a})=>`<th>#${a.n}</th>`).join('')}</tr>
+   ${mods.map(m=>`<tr><td>${m==='MIX'?'Mixed':m}</td>${rows.map(({a})=>{const s=stats(a,p=>p.mod===m); return `<td>${s.answered?`${s.pct}% <span class="small">(${s.pts}/${s.max} pts)</span>`:'<span class="small">–</span>'}</td>`;}).join('')}</tr>`).join('')}</table></div></section>
    <section class="panel noprint"><h2>Save or move your progress</h2><p class="small">Progress lives in this browser only. Download it to keep a copy or move it to another device.</p>
    <div class="row"><button class="btn quiet" id="pxexp">Download progress</button><label class="btn quiet" style="display:inline-flex;align-items:center">Load progress<input type="file" id="pximp" accept="application/json" style="display:none"></label><button class="btn danger" id="pxreset">Erase all attempts</button></div></section>`;
   body().innerHTML=h;
@@ -723,6 +732,18 @@ const strip=h=>{ const d=document.createElement('div'); d.innerHTML=h; return d.
 return {
   label:CFG.label, short:CFG.short, sub:CFG.sub, id:CFG.id,
   render,
+  key:KEY,/*NH-api*/
+  notes(){ const out=[];
+    DB.custom.forEach(c=>out.push({kind:'mine',id:c.id,mod:c.mod||'MIX',title:'My note',html:esc(c.text||'').replace(/\n/g,'<br>'),text:c.text||'',ref:c.ref||'',at:c.at||0}));
+    PARTS.forEach(p=>{ const pin=DB.pins[p.id], l=latest(p.id), open=!!(l&&!l.ok); if(!pin&&!open) return;
+      out.push({kind:pin?'saved':'missed',missed:open,id:p.id,mod:p.mod,title:(p.concept||'').replace(/^\[[^\]]*\]\s*/,''),html:p.note||p.explain,text:strip(p.note||p.explain),
+        ref:p.refs.join(' · ')+' · Scenario '+(p.si+1)+p.letter.toUpperCase(),at:typeof pin==='number'?pin:0}); });
+    return out; },
+  openNotes(){ sub='notes'; },
+  mergeNotes(o){ let n=0; if(!o||typeof o!=='object') return 0;
+    (Array.isArray(o.custom)?o.custom:[]).forEach(c=>{ if(c&&c.id&&typeof c.text==='string'&&!DB.custom.some(x=>x.id===c.id)){ DB.custom.push({id:String(c.id),text:c.text,mod:String(c.mod||'MIX'),ref:String(c.ref||''),at:+c.at||Date.now()}); n++; } });
+    Object.entries(o.pins&&typeof o.pins==='object'?o.pins:{}).forEach(([pid,t])=>{ if(PBYID[pid]&&!DB.pins[pid]){ DB.pins[pid]=+t||Date.now(); n++; } });
+    if(n) save(); return n; },
   go(si){ sub='exam'; view={si,run:{kind:'scen',si}}; const R=runDef(view.run); startTimer(R,false); },/*PX3-go*/
   scenarios(){ return EXAM.map((s,si)=>{ const raw=strip(s.setup)+' '+s.parts.map(p=>strip(p.q)+' '+p.options.map(strip).join(' ')+' '+(p.cats||[]).map(strip).join(' ')+' '+strip(p.explain)).join(' ');
     return {si,title:s.title,module:s.module,modname:MODNAME[s.module]||s.module,n:s.parts.length,raw}; }); },
@@ -748,7 +769,11 @@ window.PX={
   go(ei,si){ setAct(ei); INST[ei].go(si); },
   scenarios(){ return INST.flatMap((x,ei)=>x.scenarios().map(s=>Object.assign(s,{ei,exam:x.short}))); },
   summaries(){ return INST.map(x=>Object.assign(x.summary(),{label:x.label,short:x.short})); },
-  summary(){ return INST[0].summary(); }
+  summary(){ return INST[0].summary(); },
+  allNotes(){ return INST.flatMap((x,ei)=>x.notes().map(n=>Object.assign(n,{ei,src:x.label}))); },/*NH-px*/
+  openNotes(ei){ setAct(ei); INST[ei].openNotes(); },
+  mergeNotes(ei,o){ return INST[ei].mergeNotes(o); },
+  keys:INST.map(x=>x.key), modname:MODNAME, modorder:MODORDER
 };
 })();
 </script>
@@ -5797,7 +5822,7 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('clic
   switchTab(b.dataset.tab);
 }));
 function switchTab(t){ tab=t; document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t))); render(); window.scrollTo(0,0); }
-function render(){ if(tab==='mid'){ PX.render(main); return; } if(tab==='slides'){ location.href='slides.html'; return; }/*FCI-tab*/ if(tab==='ss'){ main.innerHTML=`<section class="panel"><h2>Slide summaries</h2><p>Every slide deck for Modules 1–16 is summarized, with a flashcard for each summary, in plain English on its own page, with search, “I understand / Not sure” tracking.</p><p><a class="btn" href="slides.html" style="display:inline-block;text-decoration:none">Open slide summaries →</a></p></section>`; return; } if(tab==='exam'||tab==='slides'||tab==='core'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else if(tab==='search') renderSearch(); else renderProgress(); }
+function render(){ if(tab==='notes'){ NH.render(main); return; }/*NH-route*/ if(tab==='mid'){ PX.render(main); return; } if(tab==='slides'){ location.href='slides.html'; return; }/*FCI-tab*/ if(tab==='ss'){ main.innerHTML=`<section class="panel"><h2>Slide summaries</h2><p>Every slide deck for Modules 1–16 is summarized, with a flashcard for each summary, in plain English on its own page, with search, “I understand / Not sure” tracking.</p><p><a class="btn" href="slides.html" style="display:inline-block;text-decoration:none">Open slide summaries →</a></p></section>`; return; } if(tab==='exam'||tab==='slides'||tab==='core'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else if(tab==='search') renderSearch(); else renderProgress(); }
 // ---------- dialog
 function confirmDlg(msg,okLabel,onOk,cancelLabel='Cancel'){
   const d=$('#dlg'); $('#dlg-msg').textContent=msg; const a=$('#dlg-actions'); a.innerHTML='';
@@ -6310,6 +6335,114 @@ function openFromHash(){ const h=decodeURIComponent(location.hash||''); const m=
 openFromHash(); window.addEventListener('hashchange',openFromHash);
 })();
 
+</script>
+<style>/*NH-css*/
+.nh .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.nh .bar input[type=search],.nh .bar select{border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:inherit;background:var(--card);color:var(--ink)}
+.nh .bar input[type=search]{flex:1 1 220px;min-width:0}
+.nh .bar select{max-width:100%;min-width:0;flex:0 1 auto}
+.nh .lbl{font:600 .78rem var(--sans);color:var(--ink-2);text-transform:uppercase;letter-spacing:.04em;margin-right:2px}
+.nh .chip{border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:999px;padding:5px 11px;font:600 .85rem var(--sans);cursor:pointer}
+.nh .chip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.nh .count{font:600 .9rem var(--sans);color:var(--ink-2);margin:6px 0 0}
+.nh .mod{font:700 1rem var(--sans);margin:18px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.nh .card{border:1px solid var(--line);border-left:4px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px;margin:8px 0}
+.nh .card.k-mine{border-left-color:var(--pen,#6b5bd6)} .nh .card.k-saved{border-left-color:#c8a200} .nh .card.k-missed{border-left-color:#c0392b}
+.nh .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px}
+.nh .tag{font:700 .72rem var(--sans);border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--ink-2)}
+.nh .t{font-weight:700} .nh .r{font-size:.85rem;color:var(--ink-2);margin-top:4px}
+.nh .mine{margin-top:6px;padding:6px 8px;border-radius:8px;background:var(--muted-bg)}
+.nh .edit{margin-left:auto;font:600 .82rem var(--sans);color:var(--ink-2);background:none;border:0;cursor:pointer;text-decoration:underline;padding:0}
+.nh .tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.nh .safe{font-size:.85rem;color:var(--ink-2);margin:8px 0 0}
+.nh .msg{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--muted-bg);font-size:.9rem}
+@media print{.nh .bar,.nh .tools,.nh .safe,.nh .edit,.nh .msg{display:none!important}}
+</style>
+<script>/*NH-js*/
+window.NH=(function(){
+const SGK='study-group-practice-1-m2';
+const EXTRA=['study-group-practice-1-m2','study-group-practice-2','study-group-practice-3','isye-fc-v1','isye-ss-v1','isye6501-slide-summaries-v1','isye6501-active-midterm'];
+const F={src:'all',kinds:{mine:true,saved:true,missed:false},mod:'all',q:''};
+try{ const x=JSON.parse(localStorage.getItem('nh-filter')||'null'); if(x&&x.kinds) Object.assign(F,x,{q:''}); }catch(e){}
+const keep=()=>{ try{ localStorage.setItem('nh-filter',JSON.stringify(F)); }catch(e){} };
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const txt=h=>{ const d=document.createElement('div'); d.innerHTML=String(h||''); return d.textContent.replace(/\s+/g,' ').trim(); };
+const modOf=refs=>{ for(const r of refs||[]){ const m=/\bM(\d+)\b/.exec(r); if(m) return 'M'+m[1]; } return 'MIX'; };
+function read(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } }
+function sgNotes(){ const d=read(SGK); if(!d||typeof d!=='object') return []; const out=[];
+  (Array.isArray(d.notes)?d.notes:[]).forEach(n=>{ if(!n) return; const refs=Array.isArray(n.refs)?n.refs:[];
+    if(n.pid) out.push({src:'Study group',sub:n.practice||'Practice 1',kind:'saved',id:n.id,mod:modOf(refs),title:txt(n.title)||'Saved question',
+      html:(n.key?'<b>Key idea:</b> '+esc(txt(n.key))+'<br>':'')+esc(txt(n.explain)),mine:n.mine||'',ref:refs.join(' · ')+(n.sc?' · '+txt(n.sc):''),at:n.at||0,why:n.why});
+    else out.push({src:'Study group',sub:'My note',kind:'mine',id:n.id,mod:'MIX',title:'My note',html:esc(n.mine||'').replace(/\n/g,'<br>'),ref:'',at:n.at||0}); });
+  if(typeof d.notebook==='string'&&d.notebook.trim()) out.push({src:'Study group',sub:'Overall notebook',kind:'mine',id:'notebook',mod:'MIX',title:'Overall notebook',html:esc(d.notebook.trim()).replace(/\n/g,'<br>'),ref:'',at:0});
+  return out; }
+function all(){ let a=[]; try{ a=PX.allNotes(); }catch(e){} return a.concat(sgNotes()); }
+const MN=()=>Object.assign({},(window.PX&&PX.modname)||{},{MIX:'Not tied to one module'});
+const MO=()=>((window.PX&&PX.modorder)||[]).filter(m=>m!=='MIX').concat(['MIX']);
+function match(n){ if(F.src!=='all'&&n.src!==F.src) return false; if(!F.kinds[n.kind]) return false; if(F.mod!=='all'&&n.mod!==F.mod) return false;
+  if(F.q){ const hay=(n.title+' '+txt(n.html)+' '+(n.mine||'')+' '+n.ref+' '+n.src+' '+(n.sub||'')).toLowerCase(); if(!F.q.toLowerCase().split(/\s+/).every(w=>hay.includes(w))) return false; } return true; }
+const KL={mine:'My writing',saved:'Saved question',missed:'Still missed'};
+let M=null, MSG='';
+function render(el){ M=el||M; const A=all(), L=A.filter(match), mn=MN();
+  const srcs=['all',...new Set(A.map(n=>n.src))]; const mods=MO().filter(m=>A.some(n=>n.mod===m));
+  const cnt=k=>A.filter(n=>n.kind===k).length;
+  let h=`<section class="panel nh"><h2>All notes</h2>
+  <p class="small">Every note from Midterm 1, Midterm 2 and the study group page in one place. This view only reads them: nothing is moved or changed. To edit or delete a note, use <b>Edit</b>, which opens the page that owns it.</p>
+  <div class="bar"><input type="search" id="nhq" placeholder="Search notes…" value="${esc(F.q)}" aria-label="Search notes">
+   <select id="nhmod" aria-label="Module"><option value="all">All modules</option>${mods.map(m=>`<option value="${m}" ${F.mod===m?'selected':''}>${esc(mn[m]||m)}</option>`).join('')}</select></div>
+  <div class="bar"><span class="lbl">From</span>${srcs.map(s=>`<button class="chip" data-src="${esc(s)}" aria-pressed="${F.src===s}">${s==='all'?'Everywhere':esc(s)}</button>`).join('')}</div>
+  <div class="bar"><span class="lbl">Show</span>${['mine','saved','missed'].map(k=>`<button class="chip" data-kind="${k}" aria-pressed="${!!F.kinds[k]}">${KL[k]} (${cnt(k)})</button>`).join('')}</div>
+  <p class="count">${L.length} of ${A.length} notes shown</p>
+  <div class="tools"><button class="btn quiet" id="nhcopy">Copy as text</button><button class="btn quiet" id="nhmd">Download .md</button><button class="btn quiet" id="nhprint">Print / save as PDF</button>
+   <button class="btn quiet" id="nhbak">Back up everything</button><label class="btn quiet" style="display:inline-flex;align-items:center">Add notes from a backup<input type="file" id="nhimp" accept="application/json,.json" style="display:none"></label></div>
+  <p class="safe">A backup saves every note, attempt and flashcard record from this browser in one file. Adding notes from a backup (yours from another device, or a group member's) only adds notes you don't have yet. It never deletes or replaces anything. Close the study group page in other tabs first.</p>
+  ${MSG?`<div class="msg" role="status">${esc(MSG)}</div>`:''}`;
+  if(!A.length) h+=`<p style="margin-top:12px">No notes yet. Use <b>☆ Add to notes</b> on a midterm question or on the study group page, or write your own note in either place.</p>`;
+  else if(!L.length) h+=`<p style="margin-top:12px">No notes match these filters.</p>`;
+  MO().forEach(m=>{ const ns=L.filter(n=>n.mod===m).sort((a,b)=>({mine:0,saved:1,missed:2}[a.kind]-{mine:0,saved:1,missed:2}[b.kind])||(b.at-a.at)); if(!ns.length) return;
+    h+=`<p class="mod">${esc(mn[m]||m)} <span class="small">(${ns.length})</span></p>`;
+    ns.forEach(n=>{ const i=A.indexOf(n);
+      h+=`<div class="card k-${n.kind}"><div class="meta"><span class="tag">${esc(n.src)}${n.sub?' · '+esc(n.sub):''}</span><span class="tag">${KL[n.kind]}${n.kind==='saved'&&n.missed?' · still missed':''}</span>
+       ${n.ei!=null?`<button class="edit" data-ei="${n.ei}">Edit ↗</button>`:`<a class="edit" href="practice1.html#notes">Edit ↗</a>`}</div>
+       ${n.kind==='mine'?'':`<div class="t">${esc(n.title)}</div>`}<div>${n.html}</div>
+       ${n.mine?`<div class="mine"><b>My note:</b> ${esc(n.mine).replace(/\n/g,'<br>')}</div>`:''}${n.ref?`<div class="r">Review: ${esc(n.ref)}</div>`:''}</div>`; }); });
+  h+=`</section>`; M.innerHTML=h; MSG='';
+  const q=M.querySelector('#nhq'); q.oninput=()=>{ F.q=q.value; const pos=q.selectionStart; render(); const q2=M.querySelector('#nhq'); q2.focus(); try{q2.setSelectionRange(pos,pos);}catch(e){} };
+  M.querySelector('#nhmod').onchange=e=>{ F.mod=e.target.value; keep(); render(); };
+  M.querySelectorAll('[data-src]').forEach(b=>b.onclick=()=>{ F.src=b.dataset.src; keep(); render(); });
+  M.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>{ F.kinds[b.dataset.kind]=!F.kinds[b.dataset.kind]; keep(); render(); });
+  M.querySelectorAll('[data-ei]').forEach(b=>b.onclick=()=>{ PX.openNotes(+b.dataset.ei); document.getElementById('tab-mid').click(); });
+  M.querySelector('#nhcopy').onclick=()=>{ const t=asText(L); (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{MSG='Copied '+L.length+' notes.';render();},()=>{ dl(t,'isye6501-notes.md','text/markdown'); }); };
+  M.querySelector('#nhmd').onclick=()=>dl(asText(L),'isye6501-notes.md','text/markdown');
+  M.querySelector('#nhprint').onclick=()=>window.print();
+  M.querySelector('#nhbak').onclick=backup;
+  M.querySelector('#nhimp').onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ MSG=restore(r.result); render(); }; r.readAsText(f); };
+}
+function asText(L){ const mn=MN(); let t=`# ISYE 6501 notes (${new Date().toLocaleDateString()})\n`;
+  MO().forEach(m=>{ const ns=L.filter(n=>n.mod===m); if(!ns.length) return; t+=`\n## ${mn[m]||m}\n`;
+    ns.forEach(n=>{ t+=`\n- **${n.kind==='mine'?n.title:n.title}** _(${n.src}${n.sub?' · '+n.sub:''})_\n  ${txt(n.html).replace(/\n/g,' ')}`;
+      if(n.mine) t+=`\n  My note: ${n.mine.replace(/\n/g,' ')}`; if(n.ref) t+=`\n  Review: ${n.ref}`; t+='\n'; }); });
+  return t; }
+function dl(text,name,type){ const u=URL.createObjectURL(new Blob([text],{type})); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
+function backup(){ const keys=[...new Set(((window.PX&&PX.keys)||[]).concat(EXTRA))]; const stores={};
+  keys.forEach(k=>{ const v=read(k); if(v!=null) stores[k]=v; });
+  dl(JSON.stringify({format:'isye6501-site-backup',version:1,saved:new Date().toISOString(),stores},null,1),'isye6501-backup-'+new Date().toISOString().slice(0,10)+'.json','application/json');
+  MSG='Backup downloaded ('+Object.keys(stores).length+' stores).'; render(); }
+function mergeSG(o){ if(!o||typeof o!=='object') return 0; const cur=read(SGK)||{attempts:[],notes:[]}; if(!Array.isArray(cur.notes)) cur.notes=[]; if(typeof cur.notebook!=='string') cur.notebook=''; let n=0;
+  (Array.isArray(o.notes)?o.notes:[]).forEach(x=>{ if(!x||!x.id) return;
+    const same=cur.notes.find(y=>y.id===x.id)||(x.pid&&cur.notes.find(y=>y.pid===x.pid)); if(same){ const m=String(x.mine||'').trim(); if(m&&!String(same.mine||'').includes(m)){ same.mine=(same.mine?same.mine+'\n\n':'')+m; n++; } return; }
+    cur.notes.push(x); n++; });
+  const nb=typeof o.notebook==='string'?o.notebook.trim():''; if(nb&&!cur.notebook.includes(nb)){ cur.notebook=cur.notebook.trim()?cur.notebook.trim()+'\n\n— added from a backup, '+new Date().toLocaleDateString()+' —\n'+nb:nb; n++; }
+  if(n) try{ localStorage.setItem(SGK,JSON.stringify(cur)); }catch(e){ return 0; } return n; }
+function restore(raw){ let o; try{ o=JSON.parse(raw); }catch(e){ return 'That file isn’t a backup (not valid JSON).'; }
+  if(!o||o.format!=='isye6501-site-backup'||!o.stores) return 'That file isn’t a site backup. Use a file made with “Back up everything”.';
+  let n=0; const keys=(window.PX&&PX.keys)||[];
+  keys.forEach((k,ei)=>{ if(o.stores[k]) n+=PX.mergeNotes(ei,o.stores[k]); });
+  n+=mergeSG(o.stores[SGK]);
+  return n?`Added ${n} note${n>1?'s':''} from the backup. Nothing was deleted or replaced.`:'Nothing new: you already have every note in that backup.'; }
+if(/^#allnotes/.test(location.hash)) setTimeout(()=>{ const b=document.getElementById('tab-notes'); if(b) b.click(); },0);
+return {render,all};
+})();
 </script>
 </body>
 </html>
