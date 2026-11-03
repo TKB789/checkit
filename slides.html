@@ -159,7 +159,9 @@ function fcStats(ids){ const k=ids.filter(i=>fst(i)==='known').length, m=ids.fil
 function fcBar(ids,scope,label){ const t=fcStats(ids); if(!t.n) return '';
   return `<div class="fcbar"><button class="fcb primary" data-deck="${scope}">🃏 Flashcards: ${label} (${t.n})</button>${t.m?`<button class="fcb" data-deck="${scope}" data-miss="1">Redo missed (${t.m})</button>`:''}<span class="stat">${t.k} known · ${t.m} to redo · ${t.u} new</span></div>`; }
 function order(id,n){ let h=2166136261; for(const ch of id+'#'+n) { h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } const r=rng(h>>>0); return shuffle([...Array(FCM[id].o.length).keys()],r); }
-function fcHTML(id,st,where){ const c=FCM[id], [M,L]=lecOf(id), sm=sumOf(id); const ord=order(id,(FS.c[id]?FS.c[id].r+FS.c[id].w:0)+(st.n||0));
+const ORDC={};/*FC-ordfix*/
+function fcHTML(id,st,where){ const c=FCM[id], [M,L]=lecOf(id), sm=sumOf(id); const okey=where+':'+id;
+  if(st.pick==null||!ORDC[okey]) ORDC[okey]=order(id,(FS.c[id]?FS.c[id].r+FS.c[id].w:0)+(st.n||0)); const ord=ORDC[okey];
   let h=`<div class="fc"><p class="fr">${esc(L?L.lec:'')} · slide${/[–-]/.test(id.split('#')[1])?'s':''} ${esc(id.split('#')[1])}${sm?' · '+sm.title:''}</p><p class="fq">${c.q}</p>`;
   if(FS.think&&!st.shown&&st.pick==null) return h+`<button class="fcb" data-fshow="${esc(id)}" data-w="${where}">Show choices</button></div>`;
   ord.forEach(i=>{ const o=c.o[i]; let cls='', why='';
