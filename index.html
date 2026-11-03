@@ -514,7 +514,7 @@ function gotPts(p,picks){ if(!picks) return 0; if(p.type==='match') return p.ite
 /*PXPATCH-skip*/function stats(att,filter){ const ids=Object.keys(att.ans).filter(id=>PBYID[id]&&(!filter||filter(PBYID[id]))); const c=ids.filter(id=>att.ans[id].ok).length;
   const pts=ids.reduce((a,id)=>a+gotPts(PBYID[id],att.ans[id].picks),0), max=ids.reduce((a,id)=>a+maxPts(PBYID[id]),0);
   return {answered:ids.length,correct:c,pts,max,pct:max?Math.round(1000*pts/max)/10:null,skipped:Object.keys(att.skip).filter(id=>PBYID[id]&&!att.ans[id]&&(!filter||filter(PBYID[id]))).length}; }
-function history(pid){ return DB.attempts.map(a=>a.ans[pid]?{n:a.n,ok:a.ans[pid].ok}:null).filter(Boolean); }
+function history(pid){ /*PX5-hist*/ const pr=(DB.prior||{})[pid]||[]; return DB.attempts.flatMap(a=>pr.filter(h=>h.n===a.n).map(h=>({n:h.n,ok:h.ok})).concat(a.ans[pid]?[{n:a.n,ok:a.ans[pid].ok}]:[])); }
 function everMissed(pid){ return history(pid).some(h=>!h.ok); }
 function latest(pid){ const h=history(pid); return h.length?h[h.length-1]:null; }
 // ---- view state
@@ -614,8 +614,10 @@ function openRun(spec,fresh){ const [kind,x]=spec.split(':'); view.run=kind==='s
 document.addEventListener('click',e=>{ const b=e.target.closest('.pxm [data-run], .pxm [data-retake]'); if(!b||!M||!M.contains(b)) return; const att=cur();
   if(b.dataset.run) return openRun(b.dataset.run,!!b.dataset.fresh);
   const spec=b.dataset.retake, [kind,x]=spec.split(':'), R=runDef(kind==='set'?{kind,k:+x}:{kind,si:+x});
-  if(!confirm(`Retake ${R.title}? Its answers in this attempt are cleared (your earlier result stays in My grades).`)) return;
-  PARTS.filter(p=>R.ids.includes(p.sid)).forEach(p=>{ delete att.ans[p.id]; delete att.skip[p.id]; delete draft[p.id]; });
+  /*PX5-retake*/ const T0=(DB.timers||{})[R.key], rs0=runStats(att,R.ids);
+  if(rs0.answered&&!(T0&&T0.end)){ (DB.runs=DB.runs||[]).push({attempt:att.n,title:R.title,ok:rs0.ok,answered:rs0.answered,n:rs0.n,pts:rs0.pts,amax:rs0.amax,tmax:rs0.tmax,ms:T0&&T0.start?Date.now()-T0.start:0,min:R.min,at:Date.now()}); }
+  DB.prior=DB.prior||{};
+  PARTS.filter(p=>R.ids.includes(p.sid)).forEach(p=>{ if(att.ans[p.id]) (DB.prior[p.id]=DB.prior[p.id]||[]).push({n:att.n,ok:att.ans[p.id].ok,at:Date.now()}); delete att.ans[p.id]; delete att.skip[p.id]; delete draft[p.id]; });
   if(DB.timers) delete DB.timers[R.key]; save(); openRun(spec,true); });
 let msel={};
 function matchHTML(att,p){
