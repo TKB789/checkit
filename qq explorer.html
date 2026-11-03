@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>try{var t=localStorage.getItem("sgp-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q-Q Plot Explorer</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2230;--mute:#5b6475;--line:#dde1e8;--accent:#2f5bd3;--accent-ink:#fff;--ok:#1d7a46;--okbg:#e6f4ec;--bad:#b3261e;--badbg:#fbeaea;--warnbg:#fff6e0;--chip:#eef1f6;--pt:#d0473c;--ref:#1d7a46;--bar:#2f5bd3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151b;--card:#1b2029;--ink:#e6e9ef;--mute:#9aa3b2;--line:#2c3340;--accent:#7b9cff;--accent-ink:#0d1222;--ok:#5fd08f;--okbg:#14301f;--bad:#ff8a80;--badbg:#3a1a1a;--warnbg:#332a12;--chip:#252b36;--pt:#ff8a80;--ref:#5fd08f;--bar:#7b9cff}}
+:root[data-theme="dark"]{--bg:#12151b;--card:#1b2029;--ink:#e6e9ef;--mute:#9aa3b2;--line:#2c3340;--accent:#7b9cff;--accent-ink:#0d1222;--ok:#5fd08f;--okbg:#14301f;--bad:#ff8a80;--badbg:#3a1a1a;--warnbg:#332a12;--chip:#252b36;--pt:#ff8a80;--ref:#5fd08f;--bar:#7b9cff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+h1{font-size:1.6rem;margin:0 0 4px}h2{font-size:1.25rem;margin:0 0 8px}h3{font-size:1rem;margin:0 0 6px}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+#theme{flex:none;white-space:nowrap;padding:6px 12px;font-size:.9rem}
+.sub{color:var(--mute);margin:0 0 14px}
+a{color:var(--accent)}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.tabs{display:flex;gap:8px;margin:0 0 14px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+.tabs button{flex:1;min-width:0;padding:8px 6px}.tabs .sm{display:none}@media (max-width:480px){.tabs .lg{display:none}.tabs .sm{display:inline}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{padding:5px 12px;font-size:.9rem;border-radius:999px}
+.group{font-size:.78rem;color:var(--mute);text-transform:uppercase;letter-spacing:.05em;margin:10px 0 4px}
+.ctl{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;margin-top:12px}
+.ctl label{font-size:.9rem;color:var(--mute);display:flex;gap:8px;align-items:center}
+.ctl .chips button{font-size:.85rem;padding:4px 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:720px){.grid{grid-template-columns:1fr}}
+.plot svg{width:100%;height:auto;display:block}
+.plot h3{text-align:center;margin:0 0 4px}
+.cap{font-size:.85rem;color:var(--mute);text-align:center;margin-top:4px}
+.box{border-left:4px solid var(--accent);background:var(--chip);border-radius:0 10px 10px 0;padding:10px 12px;margin:8px 0}
+.box.read{border-color:var(--ok);background:var(--okbg)}
+.box.trap{border-color:var(--bad);background:var(--badbg)}
+.box p{margin:0}.box b.l{display:block;font-size:.85rem;margin-bottom:2px}
+.refs{color:var(--mute);font-size:.82rem;margin-top:6px}
+table.guide{width:100%;border-collapse:collapse;font-size:.92rem}
+table.guide td,table.guide th{border-top:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:middle}
+table.guide th{font-size:.82rem;color:var(--mute);font-weight:600;border-top:0}
+table.guide svg{width:84px;height:84px;display:block}
+.hidden{display:none}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.opts button.right{background:var(--okbg);border-color:var(--ok)}.opts button.wrong{background:var(--badbg);border-color:var(--bad)}
+.score{font-size:1.1rem;font-weight:700}.score span{color:var(--accent);font-size:1.6rem}
+.fb{margin-top:12px;border-radius:10px;padding:12px;background:var(--chip)}
+.fb .v{font-weight:700}.fb .v.ok{color:var(--ok)}.fb .v.no{color:var(--bad)}
+.legend{display:flex;gap:16px;justify-content:center;font-size:.82rem;color:var(--mute);margin-top:2px}
+.legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px}
+:root{--mark:#b7791f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mark:#f6c35b}}
+:root[data-theme="dark"]{--mark:#f6c35b}
+.steps{counter-reset:st;list-style:none;padding:0;margin:8px 0}
+.steps li{counter-increment:st;position:relative;padding:4px 0 8px 36px}
+.steps li::before{content:counter(st);position:absolute;left:0;top:3px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.85rem;display:grid;place-items:center}
+table.wk{border-collapse:collapse;font-size:.9rem;margin:6px 0}
+table.wk td,table.wk th{border:1px solid var(--line);padding:4px 8px;text-align:center}
+table.wk th{background:var(--chip);font-weight:600}
+.two{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;align-items:center}
+@media (max-width:720px){.two{grid-template-columns:1fr}}
+.refbox{margin-top:10px}
+.chk{display:flex;gap:8px;align-items:center;font-size:.9rem;color:var(--mute)}
+.chk input{width:18px;height:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><h1>Q-Q Plot Explorer</h1><p class="sub">See how each distribution looks as a histogram and on a Q-Q plot, then practice reading the shapes. <a href="practice1.html">← Study group practice</a></p></div><button id="theme" aria-label="Switch light or dark mode"></button></div>
+  <div class="tabs"><button data-t="start">Start<span class="lg"> here</span></button><button data-t="explore" class="on">Explore</button><button data-t="guide"><span class="lg">How to read</span><span class="sm">Read</span></button><button data-t="quiz"><span class="lg">Guess the shape</span><span class="sm">Quiz</span></button></div>
+
+  <!-- START HERE -->
+  <div id="v-start" class="hidden">
+    <div class="card">
+      <h2>What is a Q-Q plot?</h2>
+      <p>Many analytics models assume your data follows a particular distribution, for example “errors are normal” or “customers arrive at random”. A <b>Q-Q plot</b> (quantile-quantile plot) is a quick picture that answers: <b>does my data have the shape I'm assuming?</b></p>
+      <p>It lines up your data's percentiles with the percentiles that the assumed distribution would have. If the shapes match, the points form a straight line. If they don't, the <i>way</i> the line bends tells you how they differ.</p>
+      <div class="box"><b class="l">Quantile = percentile</b><p>The 10% quantile is the value that 10% of the data falls below; the 50% quantile is the median. “Q-Q” means we plot quantiles of one thing against quantiles of another.</p></div>
+    </div>
+    <div class="card">
+      <h2>How it's built: a 5-number example</h2>
+      <div class="two"><div>
+      <ol class="steps">
+        <li><b>Sort the data.</b> Five exam scores: 61, 70, 74, 79, 92.</li>
+        <li><b>Give each value a percentile.</b> With 5 values, each one sits in the middle of its fifth of the data: 10%, 30%, 50%, 70%, 90%.</li>
+        <li><b>Look up the same percentiles of the reference distribution.</b> For a standard normal: −1.28, −0.52, 0, 0.52, 1.28.</li>
+        <li><b>Plot each pair</b> (reference percentile, data value) and see whether the points form a straight line.</li>
+      </ol>
+      <table class="wk"><tr><th>Percentile</th><td>10%</td><td>30%</td><td>50%</td><td>70%</td><td>90%</td></tr><tr><th>Normal quantile (x)</th><td>−1.28</td><td>−0.52</td><td>0</td><td>0.52</td><td>1.28</td></tr><tr><th>Score (y)</th><td>61</td><td>70</td><td>74</td><td>79</td><td>92</td></tr></table>
+      <p class="refs">The points are close to a line, with the top score a bit high: five values can't tell you much. Real Q-Q plots use many more points; try the sample sizes in Explore.</p>
+      </div><div class="plot" id="wkplot"></div></div>
+      <div class="box read"><b class="l">Why a straight line means “same shape”</b><p>If your data is just the reference distribution stretched (a different spread) and slid (a different center), every percentile is stretched and slid the same way, so the pairs fall on a straight line. Bends appear only where the <i>shape</i> differs, usually in the tails.</p></div>
+    </div>
+    <div class="card">
+      <h2>Why it matters: what each shape tells you to do</h2>
+      <table class="guide"><tr><th>You see (vs normal)</th><th>It means</th><th>So in analytics you…</th></tr>
+        <tr><td>Straight line</td><td>The normal assumption is reasonable</td><td>Can use methods that assume normality (e.g. regression's p-values and intervals, ±3σ control limits).</td></tr>
+        <tr><td>S-shape (heavy tails)</td><td>Extreme values happen more often than a normal predicts</td><td>Don't trust normal-based risk estimates: they'll understate crashes, outages or very long waits. Plan extra safety stock or staff, or use a heavier-tailed model.</td></tr>
+        <tr><td>Upward bend (right skew)</td><td>A long right tail of large values</td><td>Report the median, not just the mean; try a log or Box-Cox transformation before regression (Module 9); consider an exponential, Weibull or lognormal model.</td></tr>
+        <tr><td>Inverted S (light tails)</td><td>Values stop at limits</td><td>Normal-based ranges will be too wide; a bounded model (e.g. uniform) may fit better.</td></tr>
+        <tr><td>Steps / flat runs</td><td>Whole-number counts</td><td>Use a count model (Poisson, binomial; Poisson regression in Module 10) rather than a continuous one.</td></tr>
+        <tr><td>Straight against an <i>exponential</i></td><td>Gaps between events look random</td><td>Arrivals are likely Poisson, so standard queueing formulas apply (Module 13).</td></tr>
+      </table>
+      <div class="box"><b class="l">Where you'll use it in this course</b><p>Checking which distribution fits a quantity before building a model (Module 13); checking whether regression residuals look normal (Modules 8–9); and validating a simulation by comparing its output with real data, where a Q-Q plot of simulated vs real values should be close to straight (Module 13). Q-Q plots are visual on purpose: with lots of data, formal tests can reject a fit over tiny, unimportant differences.</p></div>
+      <p style="margin:10px 0 0"><button class="primary" data-goto="explore">Try it in Explore →</button></p>
+    </div>
+  </div>
+
+  <!-- EXPLORE -->
+  <div id="v-explore">
+    <div class="card">
+      <div class="group">Continuous</div><div class="chips" id="dc"></div>
+      <div class="group">Discrete (counts)</div><div class="chips" id="dd"></div>
+      <div class="ctl">
+        <label>Sample size <span class="chips" id="nsz"></span></label>
+        <label>Compare against <span class="chips" id="refd"></span></label>
+        <button class="primary" id="resample">Draw a new sample</button>
+      </div>
+      <div class="ctl"><label class="chk"><input type="checkbox" id="pctOn" checked> Show percentile markers (10%, 20%, …, 90%) on both charts</label><label id="trctl">Transform data <span class="chips" id="trf"></span></label></div>
+      <div class="box refbox" id="refbox"></div>
+      <div class="ctl hidden" id="wbctl"><label>Weibull shape k <span class="chips" id="wbk"></span></label></div>
+    </div>
+    <div class="card">
+      <h2 id="dname"></h2>
+      <div class="box"><b class="l">What it is</b><p id="ddesc"></p></div>
+      <div class="box"><b class="l">Example</b><p id="dex"></p></div>
+      <div class="box read"><b class="l" id="dreadl">What the Q-Q plot shows</b><p id="dread"></p></div>
+      <p class="refs" id="drefs"></p>
+    </div>
+    <div class="grid">
+      <div class="card plot"><h3>Histogram</h3><div id="hist"></div><p class="cap" id="hcap"></p></div>
+      <div class="card plot"><h3 id="qqt">Q-Q plot</h3><div id="qq"></div><div class="legend"><span><i style="background:var(--pt);height:8px;width:8px;border-radius:50%"></i>data quantiles</span><span><i style="background:var(--ref)"></i>reference line</span></div><p class="cap" id="qcap"></p></div>
+    </div>
+  </div>
+
+  <!-- GUIDE -->
+  <div id="v-guide" class="hidden">
+    <div class="card">
+      <h2>Reading a Q-Q plot</h2>
+      <p>A Q-Q plot sorts the data and plots each value against the matching quantile of a reference distribution (the 1st percentile against the 1st percentile, the median against the median, and so on). If the data come from that distribution, the points fall along a straight line.</p>
+      <div class="box read"><b class="l">Three questions to ask</b><p>1. <b>Is it straight?</b> Straight means the shapes match. 2. <b>Where does it bend?</b> The ends show the tails. 3. <b>Slope and position</b> of a straight line compare spread and center.</p></div>
+      <div class="box trap"><b class="l">Common traps</b><p>Small samples wobble even when the distribution is right, so judge the overall pattern, not a few points (try sample size 25 in Explore). Steps or flat runs mean discrete data (whole-number counts), not a bad fit. A Q-Q plot only compares with the reference you chose: “not normal” doesn't tell you which distribution it is, so compare with a better candidate next.</p></div>
+      <table class="guide" id="gtable"><tr><th>Shape (data vs normal)</th><th>Pattern</th><th>Meaning</th></tr></table>
+      <p class="refs">About the last row: this explorer draws its dashed line through the data's quartiles, so center and spread are already absorbed and only the shape shows. Steeper or shifted lines matter when the reference line is y = x for a reference with a fixed mean and SD (as in Study group Practice 2).</p>
+      <p class="refs">Course: Module 13 Lesson 4 (Q-Q plots); Lessons 2–3 (the distributions). A visual check is useful because with lots of data a statistical test can reject a fit over tiny, unimportant differences.</p>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="v-quiz" class="hidden">
+    <div class="card">
+      <div class="score">Score: <span id="qs">0</span> / <span id="qn">0</span></div>
+      <p class="sub" style="margin:4px 0 0">Each round draws 200 values from a random distribution and shows only its Q-Q plot against a normal. Which distribution produced it?</p>
+    </div>
+    <div class="card plot"><div id="qzplot"></div><div class="opts" id="qzopts"></div><div id="qzfb"></div></div>
+  </div>
+</div>
+<script>
+(function(){
+// ---------- random numbers and quantile functions
+const rn=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+function qnorm(p){ // Acklam's inverse normal CDF (relative error ~1e-9)
+  const a=[-3.969683028665376e1,2.209460984245205e2,-2.759285104469687e2,1.383577518672690e2,-3.066479806614716e1,2.506628277459239],
+        b=[-5.447609879822406e1,1.615858368580409e2,-1.556989798598866e2,6.680131188771972e1,-1.328068155288572e1],
+        c=[-7.784894002430293e-3,-3.223964580411365e-1,-2.400758277161838,-2.549732539343734,4.374664141464968,2.938163982698783],
+        d=[7.784695709041462e-3,3.224671290700398e-1,2.445134137142996,3.754408661907416];
+  const pl=0.02425;let q,r;
+  if(p<pl){q=Math.sqrt(-2*Math.log(p));return(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}
+  if(p>1-pl){q=Math.sqrt(-2*Math.log(1-p));return-(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}
+  q=p-0.5;r=q*q;return(((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);}
+const REF={normal:{name:'Normal',q:qnorm,ax:'Normal quantiles',
+  desc:'<b>Normal</b>: the symmetric bell curve. Most values sit near the mean; about 68% fall within 1 standard deviation and about 99.7% within 3, so extreme values are rare. It appears when many small, independent effects add up (heights, measurement errors) and is the assumption behind many methods (regression p-values, control limits). Compare against it first, to ask “is my data normal?”'},
+ expo:{name:'Exponential',q:p=>-Math.log(1-p),ax:'Exponential quantiles',
+  desc:'<b>Exponential</b>: the time between random, independent events. It starts at 0, is most likely near 0, and has a long right tail; it is memoryless (having waited already doesn’t change how much longer you’ll wait). Compare against it when you suspect waiting times or gaps between arrivals are random: a straight line supports Poisson arrivals and standard queueing formulas.'},
+ unif:{name:'Uniform',q:p=>p,ax:'Uniform quantiles',
+  desc:'<b>Uniform</b>: every value between a minimum and a maximum is equally likely, so the histogram is flat with hard edges and no tails. Compare against it for quantities that are spread evenly over a fixed range, such as when within a cycle someone arrives, or random numbers used in a simulation.'}};
+function poisson(l){const L=Math.exp(-l);let k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;}
+
+// ---------- distributions (read = what the plot looks like against a NORMAL reference)
+let WBK=1.5, TRF='none', MARKS=true;
+const D=[
+ {id:'normal',name:'Normal',kind:'c',mod:'M13 L2–L3 (normal as the reference)',gen:()=>50+10*rn(),
+  desc:'Symmetric and bell-shaped, clustered around the mean, with thin tails on both sides.',
+  ex:'Adult heights, or measurement error on a scale: many small, independent effects add up.',
+  read:'The points follow the straight line. With a small sample they still wobble a little, especially at the two ends, so judge the overall pattern.',match:'normal'},
+ {id:'heavy',name:'Heavy-tailed (t, 3 df)',kind:'c',mod:'M13 L4',gen:()=>{const c=rn()**2+rn()**2+rn()**2;return rn()/Math.sqrt(c/3);},
+  desc:'Symmetric like the normal, but extreme values on both sides happen much more often.',
+  ex:'Daily stock returns: most days move a little, but crashes and spikes happen far more often than a normal model predicts.',
+  read:'An S-shape: points fall below the line on the left and rise above it on the right, because both tails stretch further than a normal’s.'},
+ {id:'uniform',name:'Light-tailed (uniform)',kind:'c',mod:'M13 L4',gen:()=>Math.random()*100,
+  desc:'Every value in a range is equally likely, with hard limits and no tails at all.',
+  ex:'How long you wait at a light that turns green every 2 minutes, if you arrive at a random moment: anywhere from 0 to 2 minutes, equally likely.',
+  read:'An inverted S: points sit above the line on the left and below it on the right, because the data stop at hard limits where a normal would keep going.',match:'unif'},
+ {id:'right',name:'Right-skewed (lognormal)',kind:'c',mod:'M13 L4',gen:()=>Math.exp(2+0.7*rn()),
+  desc:'Bunched at low values with a long tail to the right.',
+  ex:'Home prices or incomes: most are moderate, a few are very large, and none are below 0.',
+  read:'A curve that bends upward (convex): the left end flattens because values can’t go far below the bulk, and the right end shoots up because of the long right tail.'},
+ {id:'left',name:'Left-skewed',kind:'c',mod:'M13 L4',gen:()=>100*Math.pow(Math.random(),1/5),
+  desc:'Bunched at high values with a long tail to the left.',
+  ex:'Scores on a very easy exam: most students score near 100, a few do much worse.',
+  read:'A curve that bends downward (concave): the right end flattens against the ceiling, and the left end drops because of the few very low values.'},
+ {id:'exponential',name:'Exponential',kind:'c',mod:'M13 L3',gen:()=>-Math.log(1-Math.random())/0.5,
+  desc:'Time between random, independent events (the gaps between Poisson arrivals). Memoryless.',
+  ex:'Minutes between customers joining a line when they arrive at random.',
+  read:'Strongly right-skewed: an upward-bending curve. It starts at 0 and has a long right tail. Switch “Compare against” to Exponential and the points line up.',match:'expo'},
+ {id:'weibull',name:'Weibull',kind:'c',mod:'M13 L3',gen:()=>10*Math.pow(-Math.log(1-Math.random()),1/WBK),
+  desc:'Time to failure. The shape k sets how the failure rate changes: k < 1 failures get less likely over time (early defects), k = 1 constant (exponential), k > 1 more likely (wear-out).',
+  ex:'How long a machine part lasts before it fails.',
+  read:'Depends on k. Small k gives a strong right skew (upward bend); around k = 3.5 it looks almost normal and the points are nearly straight. Try the k buttons.'},
+ {id:'bernoulli',name:'Bernoulli',kind:'d',mod:'M13 L2',gen:()=>Math.random()<0.3?1:0,
+  desc:'One yes/no trial: 1 with probability p (here 0.3), otherwise 0.',
+  ex:'Whether one visitor buys a ticket.',
+  read:'Two flat runs, one at 0 and one at 1. Only two values are possible, so a Q-Q plot against a continuous distribution can’t be straight.'},
+ {id:'binomial',name:'Binomial',kind:'d',mod:'M13 L2',gen:()=>{let s=0;for(let i=0;i<20;i++)s+=Math.random()<0.3?1:0;return s;},
+  desc:'Number of successes in n independent yes/no trials with the same p (here n = 20, p = 0.3).',
+  ex:'How many of 20 inspected parts are defective.',
+  read:'A staircase, because counts are whole numbers. The steps follow the line fairly well: with enough trials the binomial is close to normal (here with a slight right skew, since p < 0.5).'},
+ {id:'geometric',name:'Geometric',kind:'d',mod:'M13 L2',gen:()=>Math.floor(Math.log(1-Math.random())/Math.log(1-0.2))+1,
+  desc:'Number of trials until the first success (here p = 0.2, so 5 on average).',
+  ex:'How many customers you call before the first one says yes.',
+  read:'A staircase that bends sharply upward: whole-number counts, a floor at 1, and a long right tail of runs of bad luck.'},
+ {id:'poisson',name:'Poisson',kind:'d',mod:'M13 L3',gen:()=>poisson(4),
+  desc:'Number of random arrivals in a fixed time window (here 4 on average).',
+  ex:'Support emails arriving in an hour.',
+  read:'A staircase with a slight upward bend: whole-number counts, a floor at 0 and no ceiling. With a larger average it looks more and more normal.'}
+];
+const NS=[25,100,500]; let N=100, REFK='normal', cur='normal', data=[];
+const $=s=>document.querySelector(s);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function chips(el,items,val,on){el.innerHTML=items.map(([k,l])=>`<button data-k="${k}" class="${k==val?'on':''}">${l}</button>`).join('');el.querySelectorAll('button').forEach(b=>b.onclick=()=>on(b.dataset.k));}
+function quant(arr,p){const s=[...arr].sort((a,b)=>a-b),i=(s.length-1)*p,lo=Math.floor(i);return s[lo]+(s[Math.min(lo+1,s.length-1)]-s[lo])*(i-lo);}
+function nice(lo,hi,n){const span=hi-lo||1,step0=span/n,mag=Math.pow(10,Math.floor(Math.log10(step0))),f=step0/mag,step=(f<1.5?1:f<3?2:f<7?5:10)*mag;const out=[];for(let v=Math.ceil(lo/step)*step;v<=hi+1e-9;v+=step)out.push(+v.toFixed(10));return out;}
+const fmt=v=>Math.abs(v)>=1000?Math.round(v).toLocaleString():Math.abs(v)<10&&v%1?(+v.toFixed(1)).toString():Math.round(v*10)/10+'';
+
+// ---------- drawing (plain SVG)
+function frame(W,H,m,xr,yr,xl,yl){
+  const X=v=>m.l+(v-xr[0])/(xr[1]-xr[0])*(W-m.l-m.r), Y=v=>H-m.b-(v-yr[0])/(yr[1]-yr[0])*(H-m.t-m.b);
+  let g=`<rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="none" stroke="${css('--line')}"/>`;
+  nice(xr[0],xr[1],5).forEach(v=>{g+=`<line x1="${X(v)}" y1="${m.t}" x2="${X(v)}" y2="${H-m.b}" stroke="${css('--line')}" stroke-opacity=".6"/><text x="${X(v)}" y="${H-m.b+14}" text-anchor="middle" font-size="11" fill="${css('--mute')}">${fmt(v)}</text>`;});
+  nice(yr[0],yr[1],5).forEach(v=>{g+=`<line x1="${m.l}" y1="${Y(v)}" x2="${W-m.r}" y2="${Y(v)}" stroke="${css('--line')}" stroke-opacity=".6"/><text x="${m.l-5}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="${css('--mute')}">${fmt(v)}</text>`;});
+  g+=`<text x="${(m.l+W-m.r)/2}" y="${H-4}" text-anchor="middle" font-size="12" fill="${css('--mute')}">${xl}</text><text transform="rotate(-90 12 ${(m.t+H-m.b)/2})" x="12" y="${(m.t+H-m.b)/2}" text-anchor="middle" font-size="12" fill="${css('--mute')}">${yl}</text>`;
+  return {g,X,Y};
+}
+const PCT=[.1,.2,.3,.4,.5,.6,.7,.8,.9];
+function histSVG(d,discrete,marks){
+  const W=440,H=320,m={l:50,r:12,t:12,b:40};const lo=Math.min(...d),hi=Math.max(...d);
+  let edges=[];
+  if(discrete){for(let v=Math.floor(lo);v<=Math.ceil(hi)+1;v++)edges.push(v-0.5);}
+  else{const k=Math.max(8,Math.min(30,Math.round(Math.sqrt(d.length)*1.3))),w=(hi-lo)/k||1;for(let i=0;i<=k;i++)edges.push(lo+i*w);}
+  const cnt=new Array(edges.length-1).fill(0);d.forEach(v=>{let i=edges.findIndex((e,j)=>j<edges.length-1&&v>=e&&v<edges[j+1]);if(i<0)i=cnt.length-1;cnt[i]++;});
+  const f=frame(W,H,m,[edges[0],edges[edges.length-1]],[0,Math.max(...cnt)*1.08],'value','count');
+  let g=f.g;cnt.forEach((c,i)=>{const x0=f.X(edges[i]),x1=f.X(edges[i+1]);g+=`<rect x="${x0+0.5}" y="${f.Y(c)}" width="${Math.max(0.5,x1-x0-1)}" height="${f.Y(0)-f.Y(c)}" fill="${css('--bar')}" fill-opacity=".75"><title>${fmt(edges[i])}–${fmt(edges[i+1])}: ${c}</title></rect>`;});
+  if(marks){const s=[...d].sort((a,b)=>a-b);PCT.forEach((p,k)=>{const v=s[Math.min(s.length-1,Math.floor(p*s.length))],x=f.X(v);
+    g+=`<line x1="${x}" y1="${m.t}" x2="${x}" y2="${H-m.b}" stroke="${css('--mark')}" stroke-width="1.4" stroke-dasharray="3 3"><title>${Math.round(p*100)}% of values are below ${fmt(v)}</title></line>`;
+    if(p===0.1||p===0.5||p===0.9)g+=`<text x="${x}" y="${m.t+11}" text-anchor="middle" font-size="10" font-weight="700" fill="${css('--mark')}" paint-order="stroke" stroke="${css('--card')}" stroke-width="3">${Math.round(p*100)}%</text>`;});}
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Histogram">${g}</svg>`;
+}
+function qqSVG(d,refk,small,marks){
+  const R=REF[refk],s=[...d].sort((a,b)=>a-b),n=s.length,th=s.map((_,i)=>R.q((i+0.5)/n));
+  // reference line through the quartiles (as R's qqline does)
+  const q1=quant(s,.25),q3=quant(s,.75),t1=R.q(.25),t3=R.q(.75),sl=(q3-q1)/(t3-t1||1),ic=q1-sl*t1;
+  const W=small?120:440,H=small?120:320,m=small?{l:6,r:6,t:6,b:6}:{l:50,r:12,t:12,b:40};
+  let xr=[Math.min(...th),Math.max(...th)],yr=[Math.min(s[0],ic+sl*xr[0]),Math.max(s[n-1],ic+sl*xr[1])];
+  const px=(xr[1]-xr[0])*.04,py=(yr[1]-yr[0])*.04||1;xr=[xr[0]-px,xr[1]+px];yr=[yr[0]-py,yr[1]+py];
+  let g,X,Y;
+  if(small){X=v=>m.l+(v-xr[0])/(xr[1]-xr[0])*(W-m.l-m.r);Y=v=>H-m.b-(v-yr[0])/(yr[1]-yr[0])*(H-m.t-m.b);g=`<rect x="1" y="1" width="${W-2}" height="${H-2}" rx="6" fill="none" stroke="${css('--line')}"/>`;}
+  else({g,X,Y}=frame(W,H,m,xr,yr,R.ax,'data (sorted)'));
+  g+=`<line x1="${X(xr[0])}" y1="${Y(ic+sl*xr[0])}" x2="${X(xr[1])}" y2="${Y(ic+sl*xr[1])}" stroke="${css('--ref')}" stroke-width="${small?1.5:2.5}" stroke-dasharray="6 4"/>`;
+  const r=small?1.8:n>300?2.4:3.4;
+  s.forEach((v,i)=>{g+=`<circle cx="${X(th[i]).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${r}" fill="${css('--pt')}" fill-opacity=".7">${small?'':`<title>${R.name} quantile ${th[i].toFixed(2)}, data ${fmt(v)}</title>`}</circle>`;});
+  if(marks&&!small)PCT.forEach(p=>{const i=Math.min(n-1,Math.floor(p*n)),x=X(th[i]),y=Y(s[i]);
+    g+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6.5" fill="none" stroke="${css('--mark')}" stroke-width="2.2"><title>${Math.round(p*100)}%: data ${fmt(s[i])} vs ${R.name.toLowerCase()} ${th[i].toFixed(2)}</title></circle>`;
+    if(p===0.1||p===0.5||p===0.9)g+=`<text x="${(x+9).toFixed(1)}" y="${(y-8).toFixed(1)}" font-size="10" font-weight="700" fill="${css('--mark')}" paint-order="stroke" stroke="${css('--card')}" stroke-width="3">${Math.round(p*100)}%</text>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Q-Q plot against ${R.name}">${g}</svg>`;
+}
+
+// ---------- explore
+function sample(dd,n){const a=[];for(let i=0;i<n;i++)a.push(dd.gen());return a;}
+function setDist(id){cur=id;data=sample(D.find(x=>x.id===id),N);drawControls();draw();}
+function drawControls(){
+  chips($('#dc'),D.filter(x=>x.kind==='c').map(x=>[x.id,x.name]),cur,setDist);
+  chips($('#dd'),D.filter(x=>x.kind==='d').map(x=>[x.id,x.name]),cur,setDist);
+  chips($('#nsz'),NS.map(v=>[v,v]),N,v=>{N=+v;setDist(cur);});
+  chips($('#refd'),Object.entries(REF).map(([k,v])=>[k,v.name]),REFK,k=>{REFK=k;drawControls();draw();});
+  $('#wbctl').classList.toggle('hidden',cur!=='weibull');
+  const pos=data.every(v=>v>0);if(!pos)TRF='none';$('#trctl').classList.toggle('hidden',!pos);
+  chips($('#trf'),[['none','None'],['log','Log']],TRF,k=>{TRF=k;drawControls();draw();});
+  $('#refbox').innerHTML='<b class="l">The reference you’re comparing against</b><p>'+REF[REFK].desc+'</p>';
+  chips($('#wbk'),[[0.8,'0.8'],[1,'1'],[1.5,'1.5'],[3.5,'3.5']],WBK,k=>{WBK=+k;setDist('weibull');});
+}
+function draw(){
+  const dd=D.find(x=>x.id===cur),R=REF[REFK];
+  $('#dname').textContent=dd.name+(dd.id==='weibull'?` (k = ${WBK})`:'');
+  $('#ddesc').textContent=dd.desc;$('#dex').textContent=dd.ex;
+  let read;
+  if(REFK==='normal'){$('#dreadl').textContent='What the Q-Q plot against a normal shows';read=dd.read;}
+  else if(dd.match===REFK||(dd.id==='weibull'&&WBK===1&&REFK==='expo')){$('#dreadl').textContent=`Against an ${R.name.toLowerCase()} reference`;read=`This data comes from the reference’s own family, so the points follow the straight line (apart from sampling wobble). That’s how a Q-Q plot confirms a candidate distribution.`;}
+  else{$('#dreadl').textContent=`Against ${/^[AEIOU]/.test(R.name)?'an':'a'} ${R.name.toLowerCase()} reference`;read=`The bends now compare the data with ${R.name.toLowerCase()} quantiles, not normal ones. A bend away from the line means the data's shape differs from the ${R.name.toLowerCase()} in that region; a straight line would mean it matches.`;}
+  if(dd.kind==='d')read+=' The flat runs (steps) come from whole-number values, not from a bad fit.';
+  $('#drefs').textContent='Course: '+(dd.mod==='M13 L4'?'Module 13 Lesson 4 (Q-Q plots).':dd.mod.replace(/M(\d+) L/g,'Module $1 Lesson ')+'; Module 13 Lesson 4 (Q-Q plots).');
+  const dv=TRF==='log'?data.map(Math.log):data;
+  if(TRF==='log')read+=` <b>Log transform on:</b> the plots show log(value). Taking logs pulls in a long right tail${dd.id==='right'?', and this lognormal data becomes exactly normal, so the points straighten out':', so a right-skewed bend usually straightens'}. That's the idea behind Box-Cox transformations (Module 9).`;
+  $('#dread').innerHTML=read;
+  $('#hist').innerHTML=histSVG(dv,dd.kind==='d'&&TRF==='none',MARKS);
+  $('#qqt').textContent=`Q-Q plot vs ${R.name.toLowerCase()}`+(TRF==='log'?' (log of data)':'');
+  $('#qq').innerHTML=qqSVG(dv,REFK,false,MARKS);
+  const m=dv.reduce((a,b)=>a+b,0)/dv.length;
+  $('#hcap').textContent=`${N} values${TRF==='log'?' (log scale)':''} · mean ${fmt(m)} · median ${fmt(quant(dv,.5))}`+(MARKS?'. Dotted lines cut the data into tenths (10%, 20%, … 90%). Where they spread far apart (a long tail), the matching rings on the Q-Q plot climb away from the line.':'');
+  $('#qcap').textContent=(MARKS?'Rings: the same 10%…90% values, each paired with the reference’s 10%…90% quantile. ':'')+'Dashed line: through the data’s quartiles.';
+}
+$('#resample').onclick=()=>setDist(cur);
+$('#pctOn').onchange=e=>{MARKS=e.target.checked;draw();};
+
+// ---------- guide
+const GU=[['normal','Straight along the line','Matches the reference'],['heavy','S-shape: below on the left, above on the right','Heavier tails (more extremes) on both sides'],['uniform','Inverted S: above on the left, below on the right','Lighter tails: data stop at limits'],['right','Bends upward (convex)','Right-skewed: long right tail'],['left','Bends downward (concave)','Left-skewed: long left tail'],['poisson','Flat steps','Discrete (whole-number) data']];
+function drawGuide(){const old=[cur,N];const rows=GU.map(([id,pat,mean])=>{const dd=D.find(x=>x.id===id),s=[];for(let i=0;i<120;i++)s.push(dd.gen());return `<tr><td>${qqSVG(s,'normal',true)}</td><td>${pat}</td><td>${mean} <span class="refs">(e.g. ${dd.name.toLowerCase()})</span></td></tr>`;}).join('');
+  $('#gtable').innerHTML='<tr><th>Shape (data vs normal)</th><th>Pattern</th><th>Meaning</th></tr>'+rows+
+   `<tr><td><span class="refs">against y = x</span></td><td>Straight, but steeper / shallower than y = x, or shifted above / below it</td><td>Same shape, but more / less spread, or a higher / lower center</td></tr>`;}
+
+// ---------- quiz
+const QZ=['normal','heavy','uniform','right','left','exponential','bernoulli','poisson'];let qs=0,qn=0,ans=null,done=false;
+function newQ(){ans=QZ[Math.floor(Math.random()*QZ.length)];done=false;const dd=D.find(x=>x.id===ans),s=sample(dd,200);
+  $('#qzplot').innerHTML=`<h3 style="text-align:center">Mystery data vs normal</h3>`+qqSVG(s,'normal');
+  const others=QZ.filter(x=>x!==ans).sort(()=>Math.random()-.5).slice(0,3),opts=[ans,...others].sort(()=>Math.random()-.5);
+  $('#qzopts').innerHTML=opts.map(id=>`<button data-a="${id}">${D.find(x=>x.id===id).name}</button>`).join('');$('#qzfb').innerHTML='';
+  $('#qzopts').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(done)return;done=true;qn++;const ok=b.dataset.a===ans;if(ok)qs++;$('#qs').textContent=qs;$('#qn').textContent=qn;
+    $('#qzopts').querySelectorAll('button').forEach(x=>{if(x.dataset.a===ans)x.classList.add('right');else if(x===b)x.classList.add('wrong');});
+    $('#qzfb').innerHTML=`<div class="fb"><div class="v ${ok?'ok':'no'}">${ok?'Correct':'Not quite: it was '+dd.name}</div><p style="margin:6px 0 0">${dd.read}</p><div style="max-width:440px;margin:8px auto 0">${histSVG(s,dd.kind==='d')}</div><div class="row" style="margin-top:8px;text-align:center"><button class="primary" id="qznext">Next plot</button></div></div>`;
+    $('#qznext').onclick=newQ;});}
+
+// ---------- tabs, theme
+function tab(t){if(t==='start')$('#wkplot').innerHTML='<h3>The 5 scores vs normal</h3>'+qqSVG([61,70,74,79,92],'normal');['start','explore','guide','quiz'].forEach(v=>$('#v-'+v).classList.toggle('hidden',v!==t));document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  if(t==='guide')drawGuide();if(t==='quiz'&&!ans)newQ();window.scrollTo(0,0);}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+const TB=$('#theme');
+function isDark(){const t=document.documentElement.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+function paint(){TB.textContent=isDark()?'☀️ Light':'🌙 Dark';}
+TB.onclick=()=>{const t=isDark()?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('sgp-theme',t);}catch(e){}paint();draw();if(!$('#v-guide').classList.contains('hidden'))drawGuide();};
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{paint();draw();});}catch(e){}
+paint();setDist('normal');
+document.addEventListener('click',e=>{const b=e.target.closest('[data-goto]');if(b)tab(b.dataset.goto);});
+let seen=false;try{seen=localStorage.getItem('qq-seen')==='1';localStorage.setItem('qq-seen','1');}catch(e){}
+if(/#quiz/.test(location.hash))tab('quiz');else if(/#explore/.test(location.hash))tab('explore');else if(/#start/.test(location.hash)||!seen)tab('start');else if(/#guide/.test(location.hash))tab('guide');
+})();
+</script>
+</body>
+</html>

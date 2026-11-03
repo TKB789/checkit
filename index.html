@@ -325,6 +325,15 @@ button.pick{border:1px solid var(--line);background:var(--card)}
 .pxm .jump button.done{background:var(--ok-bg);border-color:var(--ok)}
 .pxm .jump button.part{background:var(--warn-bg);border-top:1px solid var(--line);margin-top:0;padding-top:5px}
 .pxm .jump button.miss{background:var(--bad-bg);border-color:var(--bad)}
+/*PXPATCH-css*/.pxm .jump button.skip{border-style:dashed;color:var(--ink-2)}
+.pxm .picker{margin-top:10px}.pxm .picker summary{cursor:pointer;font-weight:600}
+.pxm .pk{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
+.pxm .pk:first-of-type{border-top:0}.pxm .pk input{width:18px;height:18px;margin-top:3px}
+.pxm .pk .t{font-weight:600;color:var(--ink);text-decoration:none}.pxm .pk .t:hover{text-decoration:underline}.pxm .pk .m{font-size:.82rem;color:var(--ink-2)}
+.pxm .pk .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.pxm .pk .tags span{font-size:.75rem;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.pxm .pk .st{font-size:.78rem;white-space:nowrap;color:var(--ink-2)}.pxm .pk .st.done{color:var(--ok)}.pxm .pk .st.miss{color:var(--bad)}
+.pxm .pkbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}.pxm .pkbar input[type=search]{flex:1 1 180px;min-height:36px;border:1px solid var(--line);border-radius:8px;padding:4px 10px;background:var(--card);color:var(--ink);font:inherit}
+.pxm .sglink{display:block;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);text-decoration:none}.pxm .sglink b{color:var(--pen)}
 .pxm table.g{border-collapse:collapse;width:100%;font-size:.9rem}
 .pxm table.g th,.pxm table.g td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left}
 .pxm .pxbar{height:8px;border-radius:4px;background:var(--muted-bg);overflow:hidden;min-width:60px}
@@ -497,7 +506,7 @@ function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.i
 function order(p,att){ const idx=p.options.map((_,i)=>i); if(p.fixed) return idx; const r=rng(hash(p.id+'#'+att.n)); for(let i=idx.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];} return idx; }
 const LET='ABCDEFGHIJKLMNOP';
 function isCorrect(p,picks){ if(p.type==='match') return p.answer.length===picks.length&&p.answer.every((c,i)=>c===picks[i]); return [...p.answer].sort().join(',')===[...picks].sort().join(','); }
-function stats(att,filter){ const ids=Object.keys(att.ans).filter(id=>PBYID[id]&&(!filter||filter(PBYID[id]))); const c=ids.filter(id=>att.ans[id].ok).length; return {answered:ids.length,correct:c,pct:ids.length?Math.round(1000*c/ids.length)/10:null,skipped:Object.keys(att.skip).filter(id=>PBYID[id]&&!att.ans[id]&&(!filter||filter(PBYID[id]))).length}; }
+/*PXPATCH-skip*/function stats(att,filter){ const ids=Object.keys(att.ans).filter(id=>PBYID[id]&&(!filter||filter(PBYID[id]))); const c=ids.filter(id=>att.ans[id].ok).length; return {answered:ids.length,correct:c,pct:ids.length?Math.round(1000*c/ids.length)/10:null,skipped:Object.keys(att.skip).filter(id=>PBYID[id]&&!att.ans[id]&&(!filter||filter(PBYID[id]))).length}; }
 function history(pid){ return DB.attempts.map(a=>a.ans[pid]?{n:a.n,ok:a.ans[pid].ok}:null).filter(Boolean); }
 function everMissed(pid){ return history(pid).some(h=>!h.ok); }
 function latest(pid){ const h=history(pid); return h.length?h[h.length-1]:null; }
@@ -509,7 +518,8 @@ function scenList(){ const att=cur();
     if(view.only==='all') return true;
     const ps=PARTS.filter(p=>p.sid===s.id);
     if(view.only==='missed') return ps.some(p=>{const l=latest(p.id); return l&&!l.ok;});
-    if(view.only==='todo') return ps.some(p=>!att.ans[p.id]&&!att.skip[p.id]);
+    if(view.only==='todo') return ps.some(p=>!att.ans[p.id]);
+    if(view.only==='picks') return !!(DB.picks||{})[s.id];
     return true; }); }
 function shell(){ return `<div class="pxm"><div class="pxtabs noprint" role="tablist">${[['exam','Exam'],['grades','My grades'],['notes','My notes']].map(([k,l])=>`<button data-sub="${k}" aria-selected="${sub===k}">${l}</button>`).join('')}</div><div id="pxbody"></div></div>`; }
 function render(el){ M=el||document.getElementById('main'); M.innerHTML=shell();
@@ -517,24 +527,44 @@ function render(el){ M=el||document.getElementById('main'); M.innerHTML=shell();
   if(sub==='exam') renderExam(); else if(sub==='grades') renderGrades(); else renderNotes(); }
 const body=()=>document.getElementById('pxbody');
 function partState(att,p){ if(att.ans[p.id]) return att.ans[p.id].ok?'done':'miss'; if(att.skip[p.id]) return 'skip'; return 'todo'; }
+/*PXPATCH-picker*/function scenMods(s){ const set=new Set(); (s.module==='MIX'?[]:[s.module]).forEach(m=>set.add(m)); s.parts.forEach(p=>(p.refs||[]).forEach(r=>{const m=/^M(\d+)/.exec(r); if(m) set.add('M'+m[1]);})); return [...set].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1))); }
+function scenTypes(s){ const c={multi:0,single:0,match:0}; s.parts.forEach(p=>c[p.type]=(c[p.type]||0)+1); return [c.multi?`${c.multi} select-all`:'',c.single?`${c.single} single`:'',c.match?`${c.match} drag-and-drop`:''].filter(Boolean).join(', '); }
+function pickRows(att){ const q=(view.pkq||'').toLowerCase().trim(); const picks=DB.picks||{};
+  return EXAM.map((s,si)=>({s,si})).filter(({s})=>!q||(s.title+' '+s.parts.map(p=>p.concept+' '+(p.refs||[]).join(' ')).join(' ')+' '+scenMods(s).join(' ')).toLowerCase().includes(q)).map(({s,si})=>{
+    const ps=PARTS.filter(p=>p.sid===s.id), sts=ps.map(p=>partState(att,p)), nd=sts.filter(x=>x==='done'||x==='miss').length;
+    const st=sts.some(x=>x==='miss')?['miss','has a miss']:nd===ps.length?['done','done']:nd?['','in progress']:['','not attempted'];
+    const concepts=[...new Set(s.parts.map(p=>p.concept).filter(Boolean))];
+    return `<label class="pk"><input type="checkbox" data-pick="${s.id}" ${picks[s.id]?'checked':''}><div><a href="#" class="t" data-open="${si}">${si+1}. ${esc(s.title)}</a><div class="m">${scenMods(s).map(m=>m==='MIX'?'Mixed':m).join(' · ')||'Mixed'} · ${s.parts.length} question${s.parts.length>1?'s':''} (${scenTypes(s)})</div><div class="tags">${concepts.map(c=>`<span>${esc(c)}</span>`).join('')}</div></div><span class="st ${st[0]}">${nd}/${ps.length} · ${st[1]}</span></label>`; }).join('')||'<p class="small">No scenario matches that topic.</p>'; }
+function bindPicker(att){ const det=$('#pxpicker'); if(!det) return; det.ontoggle=()=>{view.pickOpen=det.open;};
+  const q=$('#pkq'); q.oninput=()=>{ view.pkq=q.value; $('#pklist').innerHTML=pickRows(att); bindRows(); };
+  function bindRows(){ document.querySelectorAll('#pklist [data-pick]').forEach(c=>c.onchange=()=>{ DB.picks=DB.picks||{}; if(c.checked) DB.picks[c.dataset.pick]=1; else delete DB.picks[c.dataset.pick]; save();
+      const n=Object.keys(DB.picks).length, b=document.querySelector('#only [data-k="picks"]'); if(b) b.textContent=`My picks (${n})`; });
+    document.querySelectorAll('#pklist [data-open]').forEach(a=>a.onclick=e=>{ e.preventDefault(); view.only='all'; view.mod='all'; view.si=+a.dataset.open; view.pickOpen=false; renderExam(); scrollToEl($('#pxscen')); }); }
+  bindRows();
+  $('#pkgo').onclick=()=>{ if(!Object.keys(DB.picks||{}).length){ alert('Tick at least one scenario first.'); return; } view.only='picks'; view.mod='all'; view.pickOpen=false; const l=scenList(); if(l.length) view.si=l[0].si; renderExam(); scrollToEl($('#pxscen')); };
+  $('#pkclr').onclick=()=>{ DB.picks={}; save(); if(view.only==='picks') view.only='all'; renderExam(); }; }
 function renderExam(){
   const att=cur(); const st=stats(att); const list=scenList();
   if(!list.length){ view.si=0; }
   let pos=list.findIndex(x=>x.si===view.si); if(pos<0){ pos=0; if(list[0]) view.si=list[0].si; }
   const mods=MODORDER.filter(m=>EXAM.some(s=>s.module===m));
   let h=`<section class="panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc(CFG.short)} · Attempt ${att.n}</h2><span class="small">started ${new Date(att.started).toLocaleString()}</span></div>
-   <div class="stat"><div><b>${st.pct===null?'–':st.pct+'%'}</b><span>grade (answered only)</span></div><div><b>${st.correct}/${st.answered}</b><span>correct / answered</span></div><div><b>${st.skipped}</b><span>skipped</span></div><div><b>${PARTS.length-st.answered-st.skipped}</b><span>not seen yet</span></div></div>
+   <div class="stat"><div><b>${st.pct===null?'–':st.pct+'%'}</b><span>grade (answered only)</span></div><div><b>${st.correct}/${st.answered}</b><span>correct / answered</span></div><div><b>${PARTS.length-st.answered}</b><span>not attempted${st.skipped?` (${st.skipped} skipped)`:''}</span></div><div><b>${PARTS.length}</b><span>questions in total</span></div></div>
    ${DB.movedNotes&&!DB.movedSeen?`<p class="hint" style="background:var(--warn-bg);padding:8px 10px;border-radius:8px;color:var(--ink)">${DB.movedNotes} notes from your earlier practice exams were carried over into <b>My notes</b>. <button class="xbtn" id="pxmseen" style="float:none">OK</button></p>`:''}
    <details class="how" style="margin-top:10px"><summary>Instructions</summary><ul class="small">
     <li>${EXAM.length} scenarios, ${PARTS.length} questions. Most questions are <b>select all that apply</b> (one or more options can be correct; you need exactly the right set for credit). Some ask for the <b>single best answer</b>, and some are drag-and-drop, as on the real exam.</li>
     <li>Calculators aren't needed; any numbers work out by hand.</li>
-    <li><b>Skip</b> any question; skipped questions don't count. Your grade = correct ÷ answered.</li>
+    <li><b>Skip</b> any question: it's marked <b>not attempted</b> and never counts against you. Your grade = correct ÷ answered. Skipped questions stay under “Not done in this attempt”.</li>
     <li>Missed questions go into <b>My notes</b> with a slide or discussion reference. Tap <b>☆ Add to notes</b> to save any other question.</li>
     <li>Start a new attempt to retake everything or only what you missed. <b>My grades</b> shows every attempt.</li></ul></details>
-   <h3>Show</h3><div class="chips" id="only">${[['all','All scenarios'],['todo','Not done in this attempt'],['missed','Missed last time']].map(([k,l])=>`<button class="chip" data-k="${k}" aria-pressed="${view.only===k}">${l}</button>`).join('')}</div>
+   <h3>Show</h3><div class="chips" id="only">${[['all','All scenarios'],['todo','Not done in this attempt'],['missed','Missed last time'],['picks',`My picks (${Object.keys(DB.picks||{}).filter(k=>EXAM.some(s=>s.id===k)).length})`]].map(([k,l])=>`<button class="chip" data-k="${k}" aria-pressed="${view.only===k}">${l}</button>`).join('')}</div>
    <div class="chips" id="mods" style="margin-top:6px"><button class="chip" data-m="all" aria-pressed="${view.mod==='all'}">All modules</button>${mods.map(m=>`<button class="chip" data-m="${m}" aria-pressed="${view.mod===m}">${m==='MIX'?'Mixed':m}</button>`).join('')}</div>
-   <div class="jump">${list.map(({s,si})=>{ const ps=PARTS.filter(p=>p.sid===s.id); const sts=ps.map(p=>partState(att,p)); const cls=sts.some(x=>x==='miss')?'miss':sts.every(x=>x!=='todo')?'done':sts.some(x=>x!=='todo')?'part':''; return `<button class="${cls} ${si===view.si?'cur':''}" data-si="${si}" title="${esc(s.title)}">${si+1}</button>`; }).join('')}</div>
-   <p class="hint">Numbers = scenarios. Green = finished, yellow = in progress, red = has a miss.</p></section>`;
+   <div class="jump">${list.map(({s,si})=>{ const ps=PARTS.filter(p=>p.sid===s.id); const sts=ps.map(p=>partState(att,p)); const cls=sts.some(x=>x==='miss')?'miss':sts.every(x=>x==='done')?'done':sts.some(x=>x==='done')?'part':sts.some(x=>x==='skip')?'skip':''; return `<button class="${cls} ${si===view.si?'cur':''}" data-si="${si}" title="${esc(s.title)}">${si+1}</button>`; }).join('')}</div>
+   <details class="picker" id="pxpicker" ${view.pickOpen?'open':''}><summary>Choose scenarios by topic (${EXAM.length} scenarios · ${PARTS.length} questions)</summary>
+     <p class="small" style="margin:6px 0 0">Each row shows the modules, what it tests and how many questions it has. Tick the ones you want, then tap <b>Practice my picks</b>. Tap a title to open it.</p>
+     <div class="pkbar"><input type="search" id="pkq" placeholder="Filter by topic, e.g. lasso, CUSUM, Q-Q" value="${esc(view.pkq||'')}"><button class="chip" id="pkgo">Practice my picks</button><button class="chip" id="pkclr">Clear picks</button></div>
+     <div id="pklist">${pickRows(att)}</div></details>
+    <p class="hint">Numbers = scenarios. Green = all answered correctly, yellow = in progress, red = has a miss, dashed = skipped (not attempted).</p></section>`;
   if(list.length){ const s=EXAM[view.si]; const ps=PARTS.filter(p=>p.sid===s.id);
     h+=`<section class="panel" id="pxscen"><p class="small" style="margin:0">Scenario ${view.si+1} of ${EXAM.length}</p><h2>${esc(s.title)}</h2><div class="setup">${s.setup}</div>`;
     ps.forEach(p=>{ h+=partHTML(att,p); });
@@ -551,6 +581,7 @@ function renderExam(){
   if($('#pxskipall')) $('#pxskipall').onclick=()=>{ const s=EXAM[view.si]; PARTS.filter(p=>p.sid===s.id&&!att.ans[p.id]).forEach(p=>att.skip[p.id]=1); save(); if(!go(1)) renderExam(); };
   $('#pxnewall').onclick=()=>{ if(confirm(`Finish attempt ${att.n} and start attempt ${att.n+1} with all questions?`)){ newAttempt(); view={si:0,mod:'all',only:'all'}; draft={}; renderExam(); window.scrollTo(0,0);} };
   $('#pxnewmiss').onclick=()=>{ if(confirm(`Finish attempt ${att.n} and start attempt ${att.n+1} showing only scenarios with a missed question?`)){ newAttempt(); view={si:0,mod:'all',only:'missed'}; draft={}; const l=scenList(); if(l.length) view.si=l[0].si; renderExam(); window.scrollTo(0,0);} };
+  bindPicker(att);
   bindParts(att);
 }
 let msel={};
@@ -570,7 +601,7 @@ function matchHTML(att,p){
   h+=`<div class="mbuckets">${p.cats.map((c,ci)=>`<div class="mbucket" data-mp="${p.id}" data-mc="${ci}"><p class="mcat">${c}</p>${o.filter(i=>asg[i]===ci).map(chip).join('')}</div>`).join('')}</div>`;
   if(a){ const why=(p.why||[]).map((w,i)=>w&&asg[i]!==p.answer[i]?`<li><b>${p.items[i]}</b> → ${p.cats[p.answer[i]]}: ${w}</li>`:'').join('');
     h+=`<div class="fb ${a.ok?'ok':'no'}"><b>${a.ok?'Correct.':`Not quite: ${asg.filter((c,i)=>c===p.answer[i]).length} of ${p.items.length} placed correctly.`}</b> ${p.explain}${why?`<ul class="small" style="margin:6px 0 0;padding-left:18px">${why}</ul>`:''}${p.note?`<div class="refs"><b>Key idea:</b> ${p.note}</div>`:''}<div class="refs"><b>Review:</b> ${p.refs.map(esc).join(' · ')}</div></div>`; }
-  else if(sk){ h+=`<div class="fb sk">Skipped (doesn’t count). <button class="btn ghost" data-unskip="${p.id}" style="min-height:32px;padding:4px 10px">Answer it after all</button></div>`; }
+  else if(sk){ h+=`<div class="fb sk"><b>Not attempted</b> (skipped). It doesn’t count toward your grade. <button class="btn ghost" data-unskip="${p.id}" style="min-height:32px;padding:4px 10px">Answer it now</button></div>`; }
   else h+=`<div class="row" style="margin-top:8px"><button class="btn" data-submit="${p.id}" ${asg.every(c=>c>=0)?'':'disabled'}>Submit</button><button class="btn quiet" data-skip="${p.id}">Skip</button></div>`;
   return h+`</div>`;
 }
@@ -584,7 +615,7 @@ function partHTML(att,p){
     h+=`<button class="${cls}" data-p="${p.id}" data-oi="${oi}" aria-pressed="${picks.includes(oi)}"><span class="l">${p.type==='multi'?(picks.includes(oi)?'☑':'☐'):LET[k]+'.'}</span><span>${p.options[oi]}</span></button>`; });
   h+=`</div>`;
   if(a){ h+=`<div class="fb ${a.ok?'ok':'no'}"><b>${a.ok?'Correct.':'Not quite.'}</b> ${p.explain}${p.note?`<div class="refs"><b>Key idea:</b> ${p.note}</div>`:''}<div class="refs"><b>Review:</b> ${p.refs.map(esc).join(' · ')}</div></div>`; }
-  else if(sk){ h+=`<div class="fb sk">Skipped (doesn’t count). <button class="btn ghost" data-unskip="${p.id}" style="min-height:32px;padding:4px 10px">Answer it after all</button></div>`; }
+  else if(sk){ h+=`<div class="fb sk"><b>Not attempted</b> (skipped). It doesn’t count toward your grade. <button class="btn ghost" data-unskip="${p.id}" style="min-height:32px;padding:4px 10px">Answer it now</button></div>`; }
   else h+=`<div class="row" style="margin-top:8px"><button class="btn" data-submit="${p.id}" ${picks.length?'':'disabled'}>Submit</button><button class="btn quiet" data-skip="${p.id}">Skip</button></div>`;
   return h+`</div>`;
 }
@@ -609,14 +640,14 @@ function bindParts(att){
   document.querySelectorAll('.pxm [data-unskip]').forEach(b=>b.onclick=()=>{ const p=PBYID[b.dataset.unskip]; delete att.skip[p.id]; save(); rerenderTop(att); rerenderPart(att,p); });
 }
 function rerenderPart(att,p){ const el=document.getElementById('p-'+p.id); if(!el) return; const y=window.scrollY; el.outerHTML=partHTML(att,p); bindParts(att); window.scrollTo(0,y); }
-function rerenderTop(att){ const st=stats(att); const box=document.querySelectorAll('.pxm .stat b'); if(box.length===4){ box[0].textContent=st.pct===null?'–':st.pct+'%'; box[1].textContent=st.correct+'/'+st.answered; box[2].textContent=st.skipped; box[3].textContent=PARTS.length-st.answered-st.skipped; }
-  const s=EXAM[view.si]; const btn=document.querySelector(`.pxm .jump button[data-si="${view.si}"]`); if(btn){ const sts=PARTS.filter(p=>p.sid===s.id).map(p=>partState(att,p)); btn.className=(sts.some(x=>x==='miss')?'miss':sts.every(x=>x!=='todo')?'done':'part')+' cur'; } }
+function rerenderTop(att){ const st=stats(att); const box=document.querySelectorAll('.pxm .stat b'); if(box.length===4){ box[0].textContent=st.pct===null?'–':st.pct+'%'; box[1].textContent=st.correct+'/'+st.answered; box[2].textContent=PARTS.length-st.answered; const sp=box[2].nextElementSibling; if(sp) sp.textContent='not attempted'+(st.skipped?` (${st.skipped} skipped)`:''); }
+  const s=EXAM[view.si]; const btn=document.querySelector(`.pxm .jump button[data-si="${view.si}"]`); if(btn){ const sts=PARTS.filter(p=>p.sid===s.id).map(p=>partState(att,p)); btn.className=(sts.some(x=>x==='miss')?'miss':sts.every(x=>x==='done')?'done':sts.some(x=>x==='done')?'part':sts.some(x=>x==='skip')?'skip':'')+' cur'; } }
 function renderGrades(){
   const rows=DB.attempts.map(a=>({a,st:stats(a)}));
   const mods=MODORDER.filter(m=>EXAM.some(s=>s.module===m));
-  let h=`<section class="panel"><h2>My grades</h2><p class="small">Grade = correct ÷ questions answered in that attempt. Skipped questions don’t count.</p>
-   <div style="overflow-x:auto"><table class="g"><tr><th>Attempt</th><th>Date</th><th>Answered</th><th>Correct</th><th>Grade</th><th></th></tr>
-   ${rows.map(({a,st})=>`<tr><td>#${a.n}</td><td>${new Date(a.started).toLocaleDateString()} ${new Date(a.started).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}</td><td>${st.answered}</td><td>${st.correct}</td><td><b>${st.pct===null?'–':st.pct+'%'}</b></td><td><div class="pxbar"><i style="width:${st.pct||0}%"></i></div></td></tr>`).join('')}</table></div></section>
+  let h=`<section class="panel"><h2>My grades</h2><p class="small">Grade = correct ÷ questions answered in that attempt. Skipped and unseen questions are “not attempted” and don’t count.</p>
+   <div style="overflow-x:auto"><table class="g"><tr><th>Attempt</th><th>Date</th><th>Answered</th><th>Correct</th><th>Not attempted</th><th>Grade</th><th></th></tr>
+   ${rows.map(({a,st})=>`<tr><td>#${a.n}</td><td>${new Date(a.started).toLocaleDateString()} ${new Date(a.started).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}</td><td>${st.answered}</td><td>${st.correct}</td><td>${PARTS.length-st.answered}</td><td><b>${st.pct===null?'–':st.pct+'%'}</b></td><td><div class="pxbar"><i style="width:${st.pct||0}%"></i></div></td></tr>`).join('')}</table></div></section>
    ${(DB.archived||[]).length?`<section class="panel"><h2>${esc(CFG.archLabel||'Earlier version')}</h2><p class="small">Grades from the earlier version of this exam. Kept for reference.</p><div style="overflow-x:auto"><table class="g"><tr><th>Attempt</th><th>Date</th><th>Answered</th><th>Correct</th><th>Grade</th></tr>${DB.archived.map(a=>`<tr><td>#${a.n}</td><td>${new Date(a.started).toLocaleDateString()}</td><td>${a.answered}</td><td>${a.correct}</td><td>${a.pct}%</td></tr>`).join('')}</table></div></section>`:''}
    <section class="panel"><h2>By module</h2><p class="small">Grade per module in each attempt (correct/answered).</p><div style="overflow-x:auto"><table class="g"><tr><th>Module</th>${rows.map(({a})=>`<th>#${a.n}</th>`).join('')}</tr>
    ${mods.map(m=>`<tr><td>${m==='MIX'?'Mixed':m}</td>${rows.map(({a})=>{const s=stats(a,p=>p.mod===m); return `<td>${s.answered?`${s.pct}% <span class="small">(${s.correct}/${s.answered})</span>`:'<span class="small">–</span>'}</td>`;}).join('')}</tr>`).join('')}</table></div></section>
@@ -683,7 +714,7 @@ const ACTKEY='isye6501-active-midterm';
 let act=0; try{ const a=+localStorage.getItem(ACTKEY); if(a>=0&&a<INST.length) act=a; }catch(e){}
 function setAct(i){ act=i; try{ localStorage.setItem(ACTKEY,String(i)); }catch(e){} }
 function render(el){ const M=el||document.getElementById('main');
-  M.innerHTML=`<div class="pxm noprint"><div class="pxsel" role="tablist" aria-label="Which midterm">${INST.map((x,i)=>`<button data-ex="${i}" aria-selected="${i===act}"><b>${x.label}</b><span>${x.sub}</span></button>`).join('')}</div></div><div id="pxexam"></div>`;
+  M.innerHTML=`<div class="pxm noprint"><a class="sglink" href="practice1.html"><b>Study group practice →</b> extra scenario sets from the study group (variable selection; distributions, Q-Q plots and experiment design; missing data and optimization), with shared notes.</a><div class="pxsel" role="tablist" aria-label="Which midterm">${INST.map((x,i)=>`<button data-ex="${i}" aria-selected="${i===act}"><b>${x.label}</b><span>${x.sub}</span></button>`).join('')}</div></div><div id="pxexam"></div>`;
   M.querySelectorAll('.pxsel button').forEach(b=>b.onclick=()=>{ setAct(+b.dataset.ex); render(M); window.scrollTo(0,0); });
   INST[act].render(document.getElementById('pxexam')); }
 window.PX={
