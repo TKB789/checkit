@@ -62,7 +62,8 @@ ol.tmpl{margin:6px 0 0;padding-left:1.3em}ol.tmpl li{margin:3px 0}
   if(!/[?&]embed=1/.test(q)) return;
   const R=document.documentElement; R.classList.add('embed'); R.removeAttribute('data-theme');
   const post=m=>{ try{ parent.postMessage(m,'*'); }catch(e){} };
-  window.scrollTo=function(x,y){ if(x&&typeof x==='object') y=x.top; post({ssTop:+y||0}); };
+  let acted=false; ['pointerdown','keydown','touchstart'].forEach(t=>addEventListener(t,()=>{acted=true;},true));
+  window.scrollTo=function(x,y){ if(!acted) return; if(x&&typeof x==='object') y=x.top; post({ssTop:+y||0}); };  // ignore scrolls the page makes on its own while loading
   addEventListener('message',e=>{ if(e.source!==parent) return; const d=e.data||{}; if(d.ssTheme===undefined) return;
     if(d.ssTheme) R.setAttribute('data-theme',d.ssTheme); else R.removeAttribute('data-theme'); });
   const size=()=>{ const w=document.querySelector('.wrap'); if(w) post({ssH:Math.ceil(w.getBoundingClientRect().height)+24}); };
