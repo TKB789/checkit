@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Linear Algebra for Analytics</title>
+<style>
+
+  :root {
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1d2330; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#2563eb; --accent-soft:#e8effd; --accent-ink:#1e40af;
+    --head:#0f172a; --head-ink:#ffffff; --head-sub:#94a3b8;
+    --ok:#15803d; --ok-soft:#dcfce7; --bad:#b91c1c; --bad-soft:#fee2e2;
+    --warn:#92400e; --warn-soft:#fef3c7;
+    --code-bg:#0f172a; --code-ink:#e2e8f0; --gutter:#64748b; --inline-code:#eef2f7;
+    --tag-bg:#eef2ff; --tag-ink:#3730a3;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#0d1117; --card:#161b24; --ink:#e5e9f0; --muted:#94a0b4; --line:#273041;
+    --accent:#6c9cff; --accent-soft:#1a2540; --accent-ink:#b4ccff;
+    --head:#070b14; --head-ink:#ffffff; --head-sub:#8392ab;
+    --ok:#4ade80; --ok-soft:#14301f; --bad:#f87171; --bad-soft:#3b1818;
+    --warn:#fbbf24; --warn-soft:#382a10;
+    --code-bg:#080c15; --code-ink:#e2e8f0; --gutter:#56627a; --inline-code:#222a39;
+    --tag-bg:#1e2547; --tag-ink:#b8c2ff; color-scheme:dark; } }
+  :root[data-theme="dark"] {
+    --bg:#0d1117; --card:#161b24; --ink:#e5e9f0; --muted:#94a0b4; --line:#273041;
+    --accent:#6c9cff; --accent-soft:#1a2540; --accent-ink:#b4ccff;
+    --head:#070b14; --head-ink:#ffffff; --head-sub:#8392ab;
+    --ok:#4ade80; --ok-soft:#14301f; --bad:#f87171; --bad-soft:#3b1818;
+    --warn:#fbbf24; --warn-soft:#382a10;
+    --code-bg:#080c15; --code-ink:#e2e8f0; --gutter:#56627a; --inline-code:#222a39;
+    --tag-bg:#1e2547; --tag-ink:#b8c2ff; color-scheme:dark; }
+
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; font-size:15px; }
+  header { background:var(--head); color:var(--head-ink); padding-block:18px; padding-left:max(24px, env(safe-area-inset-left,0px)); padding-right:max(24px, env(safe-area-inset-right,0px)); }
+  header h1 { margin:0; font-size:20px; }
+  header p { margin:4px 0 0; color:var(--head-sub); font-size:13px; }
+  nav { display:flex; gap:2px; background:var(--card); border-bottom:1px solid var(--line); padding:0 max(12px, env(safe-area-inset-right,0px)) 0 max(12px, env(safe-area-inset-left,0px)); position:sticky; top:0; z-index:5; overflow-x:auto; }
+  nav button { border:none; background:none; padding:12px 14px; cursor:pointer; font-size:14px; color:var(--muted); border-bottom:2px solid transparent; white-space:nowrap; }
+  nav button.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+  main { max-width:980px; margin:0 auto; padding-block:22px 60px; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+  section.tab { display:none; }
+  section.tab.active { display:block; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin-bottom:16px; min-width:0; }
+  h2 { font-size:19px; margin:0 0 10px; text-wrap:balance; }
+  h3 { font-size:16px; margin:20px 0 6px; }
+  .muted { color:var(--muted); font-size:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; }
+  .stat .big { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .bar { height:8px; background:var(--line); border-radius:6px; overflow:hidden; margin-top:8px; }
+  .bar > div { height:100%; background:var(--accent); width:0%; transition:width .3s; }
+  label.item { display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--line); cursor:pointer; }
+  label.item:last-child { border-bottom:none; }
+  label.item input { margin-top:5px; transform:scale(1.15); accent-color:var(--accent); }
+  .item-title { font-weight:600; }
+  .item.done .item-title { color:var(--muted); font-weight:500; }
+  .note { margin-top:6px; font-size:13px; background:var(--warn-soft); color:var(--warn); border-radius:6px; padding:6px 9px; }
+  .tag { display:inline-block; font-size:12px; background:var(--tag-bg); color:var(--tag-ink); border-radius:999px; padding:1px 9px; margin-right:6px; font-variant-numeric:tabular-nums; }
+  pre { background:var(--code-bg); color:var(--code-ink); padding:12px 14px; border-radius:8px; overflow-x:auto; font-size:13px; margin:8px 0; }
+  code, .mono { font-family:ui-monospace,Menlo,Consolas,monospace; }
+  p code, li code, td code, .muted code, .note code, .nudge code, .explain code { background:var(--inline-code); color:var(--ink); padding:1px 5px; border-radius:4px; font-size:13px; }
+  a { color:var(--accent); }
+  ul, ol { padding-left:22px; }
+  li { margin:3px 0; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+  button { font:inherit; }
+  button.run { background:var(--accent); color:#fff; border:none; border-radius:7px; padding:8px 16px; cursor:pointer; font-size:14px; font-weight:600; }
+  :root[data-theme="dark"] button.run { color:#0b1220; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) button.run { color:#0b1220; } }
+  button.run:disabled { opacity:.5; cursor:wait; }
+  button.ghost, label.ghost, a.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:7px; padding:6px 12px; cursor:pointer; font-size:13px; text-decoration:none; }
+  button.ghost.danger { color:var(--bad); border-color:var(--bad); }
+  button:disabled { cursor:default; opacity:.6; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .pill { font-size:12px; border-radius:999px; padding:2px 10px; background:var(--line); color:var(--ink); white-space:nowrap; }
+  .pill.done { background:var(--ok-soft); color:var(--ok); }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:5px 12px; cursor:pointer; font-size:13px; font-variant-numeric:tabular-nums; }
+  .chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  :root[data-theme="dark"] .chip.active { color:#0b1220; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.active { color:#0b1220; } }
+  .chip .ct { opacity:.75; margin-left:4px; }
+
+  .ed { display:flex; border-radius:8px; overflow:hidden; border:1px solid var(--line); background:var(--code-bg); }
+  .ed .gut { margin:0; padding:12px 8px 12px 10px; border-radius:0; background:transparent; color:var(--gutter); text-align:right; user-select:none; overflow:hidden; font-size:13px; line-height:1.5; font-family:ui-monospace,Menlo,Consolas,monospace; min-width:2.6em; }
+  .ed textarea { flex:1; min-width:0; min-height:120px; border:none; outline:none; resize:vertical; background:transparent; color:var(--code-ink); padding:12px 12px 12px 4px; font-size:13px; line-height:1.5; font-family:ui-monospace,Menlo,Consolas,monospace; white-space:pre; overflow:auto; tab-size:4; }
+  .ed textarea:focus-visible { outline:none; }
+  .ed:focus-within { outline:2px solid var(--accent); outline-offset:1px; }
+  textarea.plain { width:100%; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; padding:8px 10px; border:1px solid var(--line); border-radius:7px; background:var(--card); color:var(--ink); min-height:38px; resize:vertical; }
+  .fieldlabel { font-size:13px; font-weight:600; margin:12px 0 4px; display:block; }
+  .out { white-space:pre-wrap; background:var(--inline-code); border-radius:8px; padding:10px 12px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; min-height:38px; margin-top:10px; overflow-x:auto; }
+  .results { margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+  .res { border-radius:8px; padding:8px 10px; font-size:13.5px; }
+  .res.ok { background:var(--ok-soft); }
+  .res.bad { background:var(--bad-soft); }
+  .res .lbl { font-weight:600; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; overflow-wrap:anywhere; }
+  .res.ok .lbl::before { content:"✓ "; color:var(--ok); }
+  .res.bad .lbl::before { content:"✗ "; color:var(--bad); }
+  .res pre { margin:6px 0 0; font-size:12.5px; background:var(--card); color:var(--ink); border:1px solid var(--line); }
+  .explain { margin-top:8px; font-size:13.5px; background:var(--warn-soft); color:var(--ink); border-left:3px solid var(--warn); border-radius:6px; padding:8px 10px; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; white-space:normal; }
+  .explain b { color:var(--warn); }
+  .summary-line { font-weight:600; margin-top:10px; }
+  .summary-line.ok { color:var(--ok); }
+  .summary-line.bad { color:var(--bad); }
+  .nudge { margin-top:8px; font-size:14px; background:var(--accent-soft); border-radius:6px; padding:8px 10px; }
+  .prob-head { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+  .prob-head h2 { margin:0; }
+  .prompt { margin:10px 0; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .tablewrap { overflow-x:auto; }
+  .snip { margin:10px 0 14px; }
+  .snip .row { margin-top:6px; }
+  .snip .out { margin-top:6px; }
+  .quiz { border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:12px 0; }
+  .quiz .opts { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .quiz .opt { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:7px; padding:6px 12px; cursor:pointer; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; }
+  .quiz .opt.right { background:var(--ok-soft); border-color:var(--ok); }
+  .quiz .opt.wrong { background:var(--bad-soft); border-color:var(--bad); }
+  .quiz .why { margin-top:8px; font-size:14px; }
+  .missing { display:flex; flex-direction:column; gap:8px; }
+  .miss { border:1px solid var(--line); border-left:3px solid var(--warn); border-radius:8px; padding:10px 12px; }
+  .miss .t { font-weight:600; }
+  .miss .row { margin-top:6px; }
+  .steps { counter-reset:s; list-style:none; padding:0; }
+  .steps li { counter-increment:s; position:relative; padding-left:34px; margin:10px 0; }
+  .steps li::before { content:counter(s); position:absolute; left:0; top:0; width:24px; height:24px; border-radius:50%; background:var(--accent-soft); color:var(--accent-ink); font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  textarea.journal { width:100%; min-height:260px; padding:12px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:inherit; background:var(--card); color:var(--ink); }
+  .themebtn { float:right; background:transparent; border:1px solid var(--head-sub); color:var(--head-ink); border-radius:7px; padding:4px 10px; cursor:pointer; font-size:12px; }
+  .confirm { display:inline-flex; gap:6px; align-items:center; font-size:13px; flex-wrap:wrap; }
+  @media (max-width:520px){ .card { padding:14px; } header h1 { font-size:18px; } }
+  @media (prefers-reduced-motion: reduce){ .bar > div { transition:none; } }
+
+  /* Linear algebra page: burnt-orange accent, same shell as the CSE 6040 and CS50P pages. */
+  :root {
+    --accent:#c2410c; --accent-soft:#fdeee6; --accent-ink:#9a3412; --head:#2a1409; --head-sub:#d8b39e;
+    --tag-bg:#fbeadf; --tag-ink:#9a3412; --jhat:#0e7490; --grid:#e3d8d1;
+    --p1:#b91c1c; --p1-soft:#fde4e4; --p2:#a16207; --p2-soft:#fdf2d3; --p3:#475569; --p3-soft:#eceff3;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --accent:#fb8a4c; --accent-soft:#3a1e10; --accent-ink:#fdba8c; --head:#140904; --head-sub:#b58e78;
+    --tag-bg:#3a1e10; --tag-ink:#fdba8c; --jhat:#22d3ee; --grid:#33292a;
+    --p1:#f87171; --p1-soft:#3b1818; --p2:#facc15; --p2-soft:#352a0c; --p3:#a5b1c2; --p3-soft:#222833; } }
+  :root[data-theme="dark"] {
+    --accent:#fb8a4c; --accent-soft:#3a1e10; --accent-ink:#fdba8c; --head:#140904; --head-sub:#b58e78;
+    --tag-bg:#3a1e10; --tag-ink:#fdba8c; --jhat:#22d3ee; --grid:#33292a;
+    --p1:#f87171; --p1-soft:#3b1818; --p2:#facc15; --p2-soft:#352a0c; --p3:#a5b1c2; --p3-soft:#222833; }
+  .prio { font-size:12px; font-weight:600; border-radius:999px; padding:2px 10px; white-space:nowrap; }
+  .prio.p1 { background:var(--p1-soft); color:var(--p1); }
+  .prio.p2 { background:var(--p2-soft); color:var(--p2); }
+  .prio.p3 { background:var(--p3-soft); color:var(--p3); }
+  .used { font-size:13.5px; background:var(--accent-soft); border-radius:8px; padding:8px 12px; margin:6px 0 12px; }
+  .used b { color:var(--accent-ink); }
+  .math { font-family:"Cambria Math","STIX Two Math",Georgia,serif; font-size:16px; background:var(--inline-code); border-radius:8px; padding:10px 14px; margin:8px 0; overflow-x:auto; white-space:nowrap; }
+  .lesson-head { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px; }
+  .lesson-head h2 { margin:0; }
+  .viz { display:grid; grid-template-columns:minmax(0, 360px) minmax(0, 1fr); gap:16px; align-items:start; margin:12px 0; }
+  .viz canvas { width:100%; max-width:360px; aspect-ratio:1; border:1px solid var(--line); border-radius:8px; background:var(--card); }
+  .mat { display:grid; grid-template-columns:repeat(2, 80px); gap:6px; margin:6px 0 10px; }
+  .mat input { width:80px; font:inherit; font-family:ui-monospace,Menlo,Consolas,monospace; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); text-align:center; }
+  .legend { display:flex; gap:12px; flex-wrap:wrap; font-size:13px; margin-top:8px; }
+  .legend span::before { content:""; display:inline-block; width:12px; height:3px; vertical-align:middle; margin-right:5px; background:currentColor; }
+  .road td:first-child { white-space:nowrap; }
+  @media (max-width:640px){ .viz { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="themebtn" id="theme-btn" type="button">Theme: auto</button>
+  <h1>Linear Algebra for Analytics</h1>
+  <p>From zero to PCA and SVD · Built for CSE 6040 and ISYE 6501 · Progress and code save automatically in this browser</p>
+</header>
+
+<nav>
+  <button class="active" data-tab="dash">Dashboard</button>
+  <button data-tab="road">Roadmap</button>
+  <button data-tab="learn">Learn</button>
+  <button data-tab="lab">Practice Lab</button>
+  <button data-tab="resources">Resources</button>
+  <button data-tab="notes">Notes</button>
+</nav>
+
+<main>
+
+<!-- ============ DASHBOARD ============ -->
+<section class="tab active" id="tab-dash">
+  <div class="grid">
+    <div class="stat"><div class="muted">Lessons understood</div><div class="big" id="les-count">0 / 0</div><div class="bar"><div id="les-bar"></div></div></div>
+    <div class="stat"><div class="muted">Essential lessons understood</div><div class="big" id="ess-count">0 / 0</div><div class="bar"><div id="ess-bar"></div></div></div>
+    <div class="stat"><div class="muted">Exercises passed</div><div class="big" id="ex-count">0 / 0</div><div class="bar"><div id="ex-bar"></div></div></div>
+    <div class="stat"><div class="muted">Check questions answered</div><div class="big" id="quiz-count">0 / 0</div><div class="bar"><div id="quiz-bar"></div></div></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>Next up</h2>
+    <div id="next-up" class="muted">Loading…</div>
+  </div>
+
+  <div class="card">
+    <h2>How to study each lesson</h2>
+    <ol class="steps">
+      <li><b>Read the idea</b>, then redo the worked example by hand on paper before looking at the code.</li>
+      <li><b>Run the examples.</b> Change one number and predict what the output will do before pressing Run.</li>
+      <li>Answer the <b>Check yourself</b> questions without running anything.</li>
+      <li>Do the <b>exercise</b>. Early exercises use plain Python on purpose: writing the loops yourself is how the rules stick. Later ones use NumPy, like CSE 6040.</li>
+      <li>Tick <b>I understand this</b> when you could explain the lesson to a classmate in two sentences.</li>
+    </ol>
+    <p class="muted">Each lesson has a priority tag. <span class="prio p1">Essential</span> concepts appear directly in CSE 6040 notebooks, exams, or ISYE models. <span class="prio p2">Important</span> ones power specific topics. <span class="prio p3">Intuition</span> lessons make the rest make sense but are tested less.</p>
+  </div>
+
+  <div class="card">
+    <h2>Plan: Nov 10 → Dec 31</h2>
+    <p class="muted">About 2–3 hours a week, so it fits beside CS50P and ISYE. Lighter weeks line up with your ISYE Midterm 2 and final.</p>
+    <div id="plan"></div>
+  </div>
+
+  <div class="card">
+    <h2>Backup and transfer</h2>
+    <p class="muted">Progress and your code live in this browser only. Export before clearing browser data or switching computers.</p>
+    <div class="row">
+      <button class="ghost" id="export-btn" type="button">Export progress</button>
+      <label class="ghost">Import progress<input type="file" id="import-file" accept="application/json" hidden></label>
+      <span id="reset-wrap"><button class="ghost danger" id="reset-btn" type="button">Reset everything</button></span>
+      <span class="muted" id="backup-msg"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section class="tab" id="tab-road">
+  <div class="card">
+    <h2>What analytics actually uses</h2>
+    <p class="muted">Lessons build on each other, so go in order. If time runs short, finish every Essential lesson first and skim the rest. The CSE 6040 syllabus names linear algebra as one of the two gaps students struggle with most.</p>
+    <div class="tablewrap"><table class="road" id="road-table"></table></div>
+  </div>
+  <div class="card">
+    <h2>What you can safely skip for now</h2>
+    <ul>
+      <li><b>Proofs.</b> Analytics courses test whether you can compute and interpret, not prove theorems.</li>
+      <li><b>Computing determinants and inverses of big matrices by hand.</b> Know what they mean; let NumPy compute them.</li>
+      <li><b>Cross products, abstract vector spaces, complex eigenvalues, Jordan form.</b> These rarely appear in data analysis.</li>
+      <li><b>Row-reduction drills beyond 3×3.</b> Know the idea of solving Ax = b; <code>np.linalg.solve</code> does the work.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ LEARN ============ -->
+<section class="tab" id="tab-learn">
+  <div class="card">
+    <div class="prob-head"><h2 style="margin:0">Learn</h2><span class="pill py-status">Python not loaded yet</span></div>
+    <p class="muted" style="margin-bottom:10px">Every example is editable and runs real Python. NumPy downloads the first time an example imports it.</p>
+    <div class="chips" id="learn-chips"></div>
+  </div>
+  <div id="learn-body"></div>
+</section>
+
+<!-- ============ PRACTICE LAB ============ -->
+<section class="tab" id="tab-lab">
+  <div class="card">
+    <div class="prob-head"><h2 style="margin:0">Practice lab</h2><span class="pill py-status">Python not loaded yet</span></div>
+    <p class="muted">All twelve exercises in one place. They also appear at the end of each lesson, and your code is shared between both spots. <b>Tab</b> indents, <b>Shift+Tab</b> un-indents, <b>Ctrl+Enter</b> (or ⌘+Enter) runs checks.</p>
+  </div>
+  <div id="exercises"></div>
+  <div class="card">
+    <h2>Free scratchpad</h2>
+    <p class="muted">Try anything. NumPy loads automatically when imported.</p>
+    <div id="scratch-host"></div>
+  </div>
+</section>
+
+<!-- ============ RESOURCES ============ -->
+<section class="tab" id="tab-resources">
+  <div class="card">
+    <h2>Watch</h2>
+    <ul>
+      <li><a href="https://www.3blue1brown.com/topics/linear-algebra" target="_blank" rel="noopener">3Blue1Brown: Essence of Linear Algebra</a>. Short animated videos and the best place to build intuition. Each lesson here names the chapter that matches.</li>
+      <li><a href="https://www.youtube.com/c/joshstarmer" target="_blank" rel="noopener">StatQuest</a>. Search "PCA step by step" and "linear regression" for the analytics side.</li>
+      <li><a href="https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/" target="_blank" rel="noopener">MIT 18.06SC with Gilbert Strang</a>. Full lectures if you want to go deeper later.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Read and practice</h2>
+    <ul>
+      <li><a href="https://web.stanford.edu/~boyd/vmls/" target="_blank" rel="noopener">Introduction to Applied Linear Algebra: Vectors, Matrices, and Least Squares</a> (Boyd and Vandenberghe). Free PDF. The closest book to this page's focus: every chapter ties back to data.</li>
+      <li><a href="https://ulaff.net/" target="_blank" rel="noopener">LAFF: Linear Algebra Foundations to Frontiers</a>. Free, with exercises. Recommended by the CSE 6040 syllabus.</li>
+      <li><a href="https://www.khanacademy.org/math/linear-algebra" target="_blank" rel="noopener">Khan Academy: Linear Algebra</a>. Slower-paced videos with practice if a lesson here feels too fast.</li>
+      <li><a href="https://immersivemath.com/ila/index.html" target="_blank" rel="noopener">Immersive Linear Algebra</a>. A free online book with interactive figures.</li>
+      <li><a href="https://numpy.org/doc/stable/reference/routines.linalg.html" target="_blank" rel="noopener">NumPy linear algebra reference</a>. <code>solve</code>, <code>lstsq</code>, <code>eig</code>, <code>eigh</code>, <code>svd</code>, <code>qr</code>.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ NOTES ============ -->
+<section class="tab" id="tab-notes">
+  <div class="card">
+    <h2>Study journal</h2>
+    <p class="muted">Write each idea in your own words. If you can't, that's the lesson to reread. Saved automatically.</p>
+    <textarea class="journal" id="journal" placeholder="Dot product: multiply matching entries and add. Big when vectors point the same way…"></textarea>
+  </div>
+</section>
+
+</main>
+
+<script type="text/plain" id="py-harness">
+import sys, io, os, json, types, random, builtins, traceback, shutil, math
+import re as _re
+
+FILENAME = "<your code>"
+
+class TookTooLong(BaseException):
+    pass
+
+class _Raises:
+    def __init__(self, exc):
+        self.exc = exc
+    def __enter__(self):
+        return self
+    def __exit__(self, t, v, tb):
+        if t is None:
+            raise AssertionError("DID NOT RAISE " + self.exc.__name__)
+        return issubclass(t, self.exc)
+
+_pytest = types.ModuleType("pytest")
+_pytest.raises = lambda exc, match=None: _Raises(exc)
+sys.modules["pytest"] = _pytest
+
+def _err_info(e):
+    info = {"type": type(e).__name__, "msg": str(e), "line": None}
+    if isinstance(e, SyntaxError) and e.filename == FILENAME:
+        info["line"] = e.lineno
+        info["msg"] = e.msg
+    else:
+        for fr in traceback.extract_tb(e.__traceback__):
+            if fr.filename == FILENAME:
+                info["line"] = fr.lineno
+    if isinstance(e, TookTooLong):
+        info["type"] = "TookTooLong"
+    return info
+
+def _make_tracer(limit):
+    counter = [0]
+    def local(frame, event, arg):
+        if event == "line":
+            counter[0] += 1
+            if counter[0] > limit:
+                raise TookTooLong("Stopped after too many steps")
+        return local
+    def glob(frame, event, arg):
+        if frame.f_code.co_filename == FILENAME:
+            return local
+        return None
+    return glob
+
+def _run(code, inputs=(), argv=None, files=None, echo=False, name="__main__", patches=None, limit=2000000):
+    out = io.StringIO()
+    q = list(inputs)
+    st = {"eof": 0}
+    def fake_input(prompt=""):
+        prompt = "" if prompt is None else str(prompt)
+        if echo:
+            out.write(prompt)
+        if not q:
+            st["eof"] += 1
+            if st["eof"] > 25:
+                raise TookTooLong("Kept asking for input after input ran out")
+            if echo:
+                out.write("\n")
+            raise EOFError("no more input")
+        v = q.pop(0)
+        if echo:
+            out.write(v + "\n")
+        return v
+    wd = "/tmp/cs50run"
+    shutil.rmtree(wd, ignore_errors=True)
+    os.makedirs(wd)
+    for fn, content in (files or {}).items():
+        with open(os.path.join(wd, fn), "w", newline="") as f:
+            f.write(content)
+    saved = (builtins.input, sys.argv, sys.stdout, sys.stderr, os.getcwd())
+    saved_rand = {}
+    res = {"exit": None, "exited": False, "error": None, "files": {}}
+    ns = {"__name__": name}
+    try:
+        builtins.input = fake_input
+        sys.argv = list(argv or ["program.py"])
+        sys.stdout = out
+        sys.stderr = out
+        os.chdir(wd)
+        for k, v in (patches or {}).items():
+            saved_rand[k] = getattr(random, k)
+            setattr(random, k, eval(v))
+        compiled = compile(code, FILENAME, "exec")
+        sys.settrace(_make_tracer(limit))
+        try:
+            exec(compiled, ns)
+        finally:
+            sys.settrace(None)
+    except SystemExit as e:
+        res["exited"] = True
+        if isinstance(e.code, str):
+            out.write(e.code + "\n")
+            res["exit"] = e.code
+        else:
+            res["exit"] = e.code
+    except BaseException as e:
+        res["error"] = _err_info(e)
+    finally:
+        builtins.input, sys.argv, sys.stdout, sys.stderr, cwd = saved
+        for k, v in saved_rand.items():
+            setattr(random, k, v)
+        try:
+            for fn in os.listdir(wd):
+                p = os.path.join(wd, fn)
+                if os.path.isfile(p) and os.path.getsize(p) < 200000:
+                    with open(p, newline="") as f:
+                        res["files"][fn] = f.read()
+        except Exception:
+            pass
+        os.chdir(cwd)
+    res["out"] = out.getvalue()
+    res["eof"] = st["eof"]
+    res["ns"] = ns
+    return res
+
+def _call(ns, setup, call, limit=2000000):
+    out = io.StringIO()
+    saved = (sys.stdout, builtins.input)
+    def no_input(prompt=""):
+        raise EOFError("input() was called inside a function test")
+    sys.stdout = out
+    builtins.input = no_input
+    sys.settrace(_make_tracer(limit))
+    try:
+        if setup:
+            exec(compile(setup, "<test>", "exec"), ns)
+        val = eval(compile(call, "<test>", "eval"), ns)
+        return {"ok": True, "val": val}
+    except BaseException as e:
+        return {"ok": False, "exc": e}
+    finally:
+        sys.settrace(None)
+        sys.stdout, builtins.input = saved
+
+def _norm(s):
+    lines = [l.rstrip() for l in s.replace("\r\n", "\n").replace("\r", "\n").split("\n")]
+    while lines and not lines[0]:
+        lines.pop(0)
+    while lines and not lines[-1]:
+        lines.pop()
+    return "\n".join(lines)
+
+def _show(s):
+    return s if s != "" else "(nothing printed)"
+
+def _io_label(t):
+    if t.get("label"):
+        return t["label"]
+    parts = []
+    if t.get("argv"):
+        parts.append("Command: python " + " ".join(t["argv"]))
+    if t.get("in"):
+        parts.append("Input: " + "  ⏎  ".join(repr(x) for x in t["in"]))
+    if "exit" in t:
+        parts.append("→ exits with an error message")
+    elif "out" in t:
+        parts.append("→ prints " + (repr(t["out"]) if t["out"] else "nothing"))
+    elif "last" in t:
+        parts.append("→ last line " + repr(t["last"]))
+    elif "ends" in t:
+        parts.append("→ last line ends with " + repr(t["ends"]))
+    elif "file" in t:
+        parts.append("→ writes " + t["file"])
+    return "  ".join(parts) if parts else "Runs without errors"
+
+def _grade_io(code, t):
+    r = _run(code, t.get("in", []), t.get("argv"), t.get("files"), patches=t.get("patch"))
+    got = _norm(r["out"])
+    last = got.split("\n")[-1] if got else ""
+    item = {"label": _io_label(t), "ok": False, "detail": "", "err": None}
+    if "exit" in t:
+        ok = r["exited"] and r["exit"] not in (0, None)
+        if not ok:
+            item["detail"] = "Expected the program to stop with sys.exit(\"some message\").\nGot: " + _show(got)
+            if r["error"]:
+                item["err"] = r["error"]
+        item["ok"] = bool(ok)
+        return item
+    if r["error"]:
+        item["err"] = r["error"]
+        item["detail"] = "Printed before the error:\n" + _show(got)
+        if r["error"]["type"] == "EOFError" and r["eof"]:
+            item["detail"] += "\n\nThe test ran out of inputs while your program was still asking for more."
+        return item
+    if r["exited"] and r["exit"] not in (0, None):
+        item["detail"] = "Your program called sys.exit with: " + str(r["exit"])
+        return item
+    if "out" in t:
+        exp = _norm(t["out"])
+        item["ok"] = got == exp
+        item["detail"] = "Expected:\n" + _show(exp) + "\nGot:\n" + _show(got)
+    elif "last" in t:
+        item["ok"] = last == t["last"]
+        item["detail"] = "Expected last line: " + repr(t["last"]) + "\nGot: " + (repr(last) if got else "(nothing printed)")
+    elif "ends" in t:
+        item["ok"] = last.endswith(t["ends"])
+        item["detail"] = "Expected the last line to end with: " + repr(t["ends"]) + "\nGot: " + (repr(last) if got else "(nothing printed)")
+    elif "file" in t:
+        content = r["files"].get(t["file"])
+        if content is None:
+            item["detail"] = "Your program didn't create " + t["file"] + "."
+        else:
+            exp = _norm(t["content"])
+            gotc = _norm(content)
+            item["ok"] = gotc == exp
+            item["detail"] = "Expected " + t["file"] + ":\n" + exp + "\nGot:\n" + _show(gotc)
+    if item["ok"] and t.get("has"):
+        if t["has"] not in got:
+            item["ok"] = False
+            item["detail"] = "Expected the output to include: " + repr(t["has"]) + "\nGot:\n" + _show(got)
+    return item
+
+def _same(a, b):
+    if hasattr(a, "tolist") and not isinstance(a, (str, bytes)):
+        a = a.tolist()
+    if isinstance(a, bool) or isinstance(b, bool):
+        return a is b or a == b and type(a) == type(b)
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9)
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+        return len(a) == len(b) and all(_same(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return set(a) == set(b) and all(_same(a[k], b[k]) for k in a)
+    return a == b
+
+def _grade_fn(code, t, cache):
+    label = t.get("label") or (t["call"] + ("  → raises " + t["raises"] if "raises" in t else "  → " + repr(t.get("want"))))
+    if t.get("setup") and not t.get("label"):
+        label = t["setup"] + ";  " + label
+    item = {"label": label, "ok": False, "detail": "", "err": None}
+    if "student" not in cache:
+        cache["student"] = _run(code, name="student")
+    s = cache["student"]
+    if s["error"]:
+        item["err"] = s["error"]
+        if s["error"]["type"] == "EOFError":
+            item["detail"] = "Your code called input() as soon as it was loaded. Put the call to main() inside:\nif __name__ == \"__main__\":\n    main()"
+        else:
+            item["detail"] = "Your code crashed while loading, so the function couldn't be tested."
+        return item
+    if s["exited"]:
+        item["detail"] = "Your code called sys.exit while loading. Put the call to main() inside if __name__ == \"__main__\":"
+        return item
+    c = _call(s["ns"], t.get("setup"), t["call"])
+    if "raises" in t:
+        if c["ok"]:
+            item["detail"] = "Expected " + t["raises"] + " to be raised, but it returned " + repr(c["val"])
+        elif type(c["exc"]).__name__ == t["raises"] or any(k.__name__ == t["raises"] for k in type(c["exc"]).__mro__):
+            item["ok"] = True
+        else:
+            item["detail"] = "Expected " + t["raises"] + ", but got " + type(c["exc"]).__name__
+            item["err"] = _err_info(c["exc"])
+        return item
+    if not c["ok"]:
+        item["err"] = _err_info(c["exc"])
+        item["detail"] = "The call raised " + type(c["exc"]).__name__ + " instead of returning a value."
+        return item
+    item["ok"] = _same(c["val"], t.get("want"))
+    item["detail"] = "Expected: " + repr(t.get("want")) + "\nGot: " + repr(c["val"])
+    return item
+
+def _grade_unit(code, p):
+    mod = p["module"]
+    results = []
+    for im in p["impls"]:
+        m = types.ModuleType(mod)
+        exec(im["src"], m.__dict__)
+        sys.modules[mod] = m
+        r = _run(code, name="student")
+        item = {"label": im["label"], "ok": False, "detail": "", "err": None}
+        if r["error"]:
+            item["err"] = r["error"]
+            item["detail"] = "Your test file crashed when it was loaded."
+            results.append(item)
+            continue
+        tests = [(k, v) for k, v in r["ns"].items() if k.startswith("test_") and callable(v)]
+        if not tests:
+            item["detail"] = "No functions whose names start with test_ were found."
+            results.append(item)
+            break
+        failed = []
+        for k, v in tests:
+            c = _call(r["ns"], None, k + "()")
+            if not c["ok"]:
+                failed.append(k)
+        if im["correct"]:
+            item["ok"] = not failed
+            item["detail"] = "These tests failed even though the code is correct: " + ", ".join(failed) + "\nCheck the expected values in those asserts."
+        else:
+            item["ok"] = bool(failed)
+            item["detail"] = "All of your tests passed, so none of them noticed this bug. Add an assert that would catch it."
+        results.append(item)
+    sys.modules.pop(mod, None)
+    return results
+
+def grade(payload):
+    p = json.loads(payload)
+    code = p["code"]
+    if p.get("kind") == "unittest":
+        return json.dumps(_grade_unit(code, p))
+    cache = {}
+    results = []
+    for t in p["tests"]:
+        try:
+            if "call" in t:
+                results.append(_grade_fn(code, t, cache))
+            else:
+                results.append(_grade_io(code, t))
+        except BaseException as e:
+            results.append({"label": "Test harness", "ok": False, "detail": repr(e), "err": None})
+    return json.dumps(results)
+
+def tryit(payload):
+    p = json.loads(payload)
+    r = _run(p["code"], p.get("in", []), p.get("argv"), p.get("files"), echo=True)
+    return json.dumps({"out": r["out"], "error": r["error"], "exited": r["exited"], "exit": r["exit"] if isinstance(r["exit"], (int, str, type(None))) else str(r["exit"]), "eof": r["eof"], "files": r["files"] if p.get("showFiles") else {}})
+</script>
+
+<!-- ================= STARTER CODE ================= -->
+<script type="text/plain" class="src" data-id="e1">def linear_combination(a, u, b, v):
+    # Return a*u + b*v as a list. Plain Python, no NumPy.
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e2">import math
+
+
+def nearest_index(p, points):
+    # Return the index of the point closest to p (Euclidean distance).
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e3">def get_shape(M):
+    # Return (rows, cols) for a list of lists.
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e4">def matmul(A, B):
+    # Multiply two matrices stored as lists of lists. Plain Python.
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e5">def transpose(M):
+    # Plain Python, no NumPy.
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e6">import numpy as np
+
+
+def rotate(points, degrees):
+    # points is an (n, 2) array, one point per row.
+    # Return the points rotated counterclockwise around the origin.
+    points = np.asarray(points, dtype=float)
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e7">import numpy as np
+
+
+def solve_or_none(A, b):
+    # Return x with A @ x == b, or None if A is singular.
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e8">import numpy as np
+
+
+def fit_line(x, y):
+    # Return (intercept, slope) of the least-squares line.
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e9">def project(u, v):
+    # Return the projection of u onto v as a list.
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e10">import numpy as np
+
+
+def stationary(P, steps=100):
+    n = P.shape[0]
+    x = np.ones(n) / n
+    # your code here
+    return x
+</script>
+<script type="text/plain" class="src" data-id="e11">import numpy as np
+
+
+def explained_variance(X):
+    # Return the share of variance along each principal component, largest first.
+    X = np.asarray(X, dtype=float)
+    pass
+</script>
+<script type="text/plain" class="src" data-id="e12">import numpy as np
+
+
+def rank_k(A, k):
+    # Return the best rank-k approximation of A using the SVD.
+    pass
+</script>
+<script type="text/plain" class="src" data-id="scratch">import numpy as np
+
+A = np.array([[2, 1], [1, 2]])
+values, vectors = np.linalg.eigh(A)
+print(values)
+print(vectors)
+</script>
+
+<script>
+const STORE_KEY = "linalg-tracker-v1";
+const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
+function src(id){ const el = document.querySelector(`script.src[data-id="${id}"]`); return el ? el.textContent : ""; }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+/* =================== LESSONS =================== */
+const PRIO = { 1:["p1","Essential"], 2:["p2","Important"], 3:["p3","Intuition"] };
+const LESSONS = [
+ { id:"vec", name:"Vectors", prio:1, ex:"e1", watch:"Chapters 1–2",
+   used:"Every row of a dataset is a vector: one number per feature. k-nearest neighbors, k-means, and regression all treat observations this way." },
+ { id:"dot", name:"Dot product and distance", prio:1, ex:"e2", watch:"Chapter 9",
+   used:"Distances drive k-NN and k-means (ISYE). A regression prediction is a dot product of a row with the coefficients. Cosine similarity compares text documents (CSE 6040 Topic 5)." },
+ { id:"mat", name:"Matrices and shapes", prio:1, ex:"e3", watch:"Chapter 3 (first half)",
+   used:"Your data matrix X is n × d: n observations, d features. Most NumPy and pandas bugs in CSE 6040 come down to a shape mismatch." },
+ { id:"mul", name:"Matrix multiplication", prio:1, ex:"e4", watch:"Chapters 3–4",
+   used:"Predictions for every row at once are X @ β. One PageRank step is P @ x (Topic 11). CSE 6040 Midterm 2 tests matrix multiplication and broadcasting." },
+ { id:"tr", name:"Transpose and XᵀX", prio:1, ex:"e5", watch:"Chapter 8 for non-square matrices",
+   used:"Regression's normal equations use XᵀX and Xᵀy. The covariance matrix behind PCA is XᵀX after centering, divided by n − 1." },
+ { id:"geo", name:"Transformations and determinants", prio:3, ex:"e6", watch:"Chapters 3 and 6",
+   used:"Pure intuition: what a matrix does to space. It explains why a zero determinant means \"can't be undone\" and makes eigenvectors (Lesson 10) visual." },
+ { id:"sys", name:"Systems, inverses, and rank", prio:2, ex:"e7", watch:"Chapter 7",
+   used:"Tells you when regression has one answer. Two nearly identical features (multicollinearity) make XᵀX nearly singular, which is why ISYE covers variable selection, LASSO, and ridge." },
+ { id:"ls", name:"Least squares and regression", prio:1, ex:"e8", watch:"StatQuest: linear regression",
+   used:"CSE 6040 Topic 12 (linear regression, QR) and every regression model in ISYE 6501." },
+ { id:"proj", name:"Projections and orthogonality", prio:3, ex:"e9", watch:"Chapter 9",
+   used:"The geometry behind least squares: predictions are the projection of y onto the columns of X, and residuals are perpendicular to them. QR decomposition builds on this." },
+ { id:"eig", name:"Eigenvectors and PageRank", prio:2, ex:"e10", watch:"Chapter 14",
+   used:"PageRank is the eigenvector of a link matrix (CSE 6040 Topic 11). Principal components are eigenvectors of a covariance matrix (Topic 15, ISYE PCA)." },
+ { id:"pca", name:"Covariance and PCA", prio:1, ex:"e11", watch:"StatQuest: PCA step by step",
+   used:"PCA appears in both courses: ISYE 6501 uses it before regression, and CSE 6040 Topic 15 covers PCA and compression." },
+ { id:"svd", name:"SVD and compression", prio:2, ex:"e12", watch:"StatQuest or Strang's SVD lecture",
+   used:"CSE 6040 Topic 15 (compression with the SVD). SVD is also how NumPy computes PCA and least squares reliably." },
+];
+const LMAP = Object.fromEntries(LESSONS.map((l, i) => [l.id, i]));
+
+const PLAN = [
+  ["Nov 10–16", "Lessons 1–2: vectors, dot product, distance"],
+  ["Nov 17–23", "Lesson 3: matrices and shapes (light week: ISYE Midterm 2 closes Nov 22)"],
+  ["Nov 24–30", "Lessons 4–5: matrix multiplication, transpose and XᵀX"],
+  ["Dec 1–7", "Lessons 6–7: transformations, systems and rank"],
+  ["Dec 8–14", "Lesson 8: least squares (light week: ISYE final closes Dec 13)"],
+  ["Dec 15–21", "Lessons 9–10: projections, eigenvectors and PageRank"],
+  ["Dec 22–31", "Lessons 11–12: PCA and SVD, then redo any exercise you needed nudges for"],
+];
+
+/* =================== EXERCISES =================== */
+const EXERCISES = [
+  { id:"e1", title:"1. Linear combination", lesson:"vec",
+    prompt:"Write <code>linear_combination(a, u, b, v)</code> that returns the list <code>a·u + b·v</code>. Raise <code>ValueError</code> if <code>u</code> and <code>v</code> have different lengths. Plain Python only.",
+    tests:[ {call:"linear_combination(2, [1, 2], -1, [3, -1])", want:[-1,5]}, {call:"linear_combination(0.5, [2, 4], 0, [9, 9])", want:[1,2]}, {call:"linear_combination(1, [1, 2, 3], 1, [1, 1, 1])", want:[2,3,4]}, {call:"linear_combination(1, [1, 2], 1, [1])", raises:"ValueError"} ],
+    nudges:["Go through the positions one at a time. <code>zip(u, v)</code> pairs them up.", "<code>[a * x + b * y for x, y in zip(u, v)]</code>, after checking <code>len(u) != len(v)</code>."] },
+  { id:"e2", title:"2. Nearest neighbor", lesson:"dot",
+    prompt:"Write <code>nearest_index(p, points)</code> that returns the index of the point in <code>points</code> closest to <code>p</code> by Euclidean distance (the first one if there's a tie). This is the core of k-nearest neighbors.",
+    tests:[ {call:"nearest_index([0, 0], [[3, 4], [1, 1], [-2, 0]])", want:1}, {call:"nearest_index([5, 5], [[0, 0], [5, 6], [10, 10]])", want:1}, {call:"nearest_index([1, 2, 3], [[1, 2, 3], [0, 0, 0]])", want:0}, {call:"nearest_index([0, 0], [[1, 0], [0, 1]])", want:0, label:"Tie → first index"} ],
+    nudges:["Write a small <code>distance(a, b)</code> helper: square the differences, add them, take <code>math.sqrt</code>.", "Track the best index and best distance as you loop, or use <code>min(range(len(points)), key=...)</code>."] },
+  { id:"e3", title:"3. Shape of a matrix", lesson:"mat",
+    prompt:"Write <code>get_shape(M)</code> that returns <code>(rows, cols)</code> for a matrix stored as a list of rows. Return <code>(0, 0)</code> for <code>[]</code>. Raise <code>ValueError</code> if the rows have different lengths.",
+    tests:[ {call:"get_shape([[1, 2, 3], [4, 5, 6]])", want:[2,3]}, {call:"get_shape([[1], [2]])", want:[2,1]}, {call:"get_shape([])", want:[0,0]}, {call:"get_shape([[1, 2], [3]])", raises:"ValueError"} ],
+    nudges:["Rows is <code>len(M)</code>. Columns is the length of the first row.", "Check every row's length against the first one."] },
+  { id:"e4", title:"4. Matrix multiplication by hand", lesson:"mul",
+    prompt:"Write <code>matmul(A, B)</code> for matrices stored as lists of rows. Raise <code>ValueError</code> if the inner dimensions don't match. Plain Python: writing the loops yourself is the point.",
+    tests:[ {call:"matmul([[1, 2], [3, 4]], [[0, 1], [1, 0]])", want:[[2,1],[4,3]]}, {call:"matmul([[1, 2, 3], [4, 5, 6]], [[1], [0], [2]])", want:[[7],[16]]}, {call:"matmul([[1, 2]], [[3], [4]])", want:[[11]]}, {call:"matmul([[1, 2]], [[1, 2]])", raises:"ValueError"} ],
+    nudges:["The result has <code>len(A)</code> rows and <code>len(B[0])</code> columns. Entry (i, j) is row i of A dotted with column j of B.", "Column j of B is <code>[row[j] for row in B]</code>. Three nested loops, or two loops plus a <code>sum(...)</code>."] },
+  { id:"e5", title:"5. Transpose", lesson:"tr",
+    prompt:"Write <code>transpose(M)</code> that swaps rows and columns of a list-of-rows matrix. Plain Python.",
+    tests:[ {call:"transpose([[1, 2, 3], [4, 5, 6]])", want:[[1,4],[2,5],[3,6]]}, {call:"transpose([[1]])", want:[[1]]}, {call:"transpose([[1, 2]])", want:[[1],[2]]} ],
+    nudges:["Row j of the answer is column j of M.", "<code>[[row[j] for row in M] for j in range(len(M[0]))]</code>, or look up what <code>zip(*M)</code> does."] },
+  { id:"e6", title:"6. Rotate points", lesson:"geo",
+    prompt:"Write <code>rotate(points, degrees)</code>. <code>points</code> is an (n, 2) array with one point per row. Return the points rotated counterclockwise around the origin, as an (n, 2) array.",
+    tests:[ {call:"rotate([[1, 0]], 90)", want:[[0,1]]}, {call:"rotate([[1, 1], [2, 0]], 180)", want:[[-1,-1],[-2,0]]}, {call:"rotate([[0, 2]], -90)", want:[[2,0]]}, {call:"tuple(rotate([[1, 2], [3, 4], [5, 6]], 30).shape)", want:[3,2], label:"Keeps the shape (3, 2)"} ],
+    nudges:["Build <code>R = [[cos θ, −sin θ], [sin θ, cos θ]]</code> with <code>np.radians(degrees)</code>. R rotates a column vector: <code>R @ p</code>.", "Your points are rows, so rotate them all at once with <code>points @ R.T</code>."] },
+  { id:"e7", title:"7. Solve, or detect a singular system", lesson:"sys",
+    prompt:"Write <code>solve_or_none(A, b)</code> that returns the solution of <code>A x = b</code>, or <code>None</code> if A is singular (its rank is less than its number of columns).",
+    tests:[ {call:"solve_or_none([[2, 1], [1, -1]], [5, 1])", want:[2,1]}, {call:"solve_or_none([[1, 1, 1], [0, 2, 5], [2, 5, -1]], [6, -4, 27])", want:[5,3,-2]}, {call:"solve_or_none([[1, 2], [2, 4]], [3, 6])", want:null, label:"Dependent columns → None"} ],
+    nudges:["<code>np.linalg.matrix_rank(A)</code> tells you whether A is invertible.", "Otherwise <code>np.linalg.solve(A, b)</code>. (Catching <code>np.linalg.LinAlgError</code> also works.)"] },
+  { id:"e8", title:"8. Fit a line with least squares", lesson:"ls",
+    prompt:"Write <code>fit_line(x, y)</code> that returns <code>(intercept, slope)</code> of the least-squares line. Build the design matrix with a column of ones yourself.",
+    tests:[ {call:"fit_line([0, 1, 2], [1, 3, 5])", want:[1,2], label:"Points on y = 1 + 2x → (1, 2)"}, {call:"fit_line([0, 1, 2, 3], [1, 2, 2, 4])", want:[0.9,0.9]}, {call:"fit_line([1, 2], [2, 5])", want:[-1,3]} ],
+    nudges:["<code>X = np.column_stack([np.ones(len(x)), x])</code>", "Solve the normal equations <code>np.linalg.solve(X.T @ X, X.T @ y)</code>, or use <code>np.linalg.lstsq(X, y, rcond=None)[0]</code>."] },
+  { id:"e9", title:"9. Projection", lesson:"proj",
+    prompt:"Write <code>project(u, v)</code> that returns the projection of <code>u</code> onto <code>v</code> as a list. Raise <code>ValueError</code> if <code>v</code> is all zeros.",
+    tests:[ {call:"project([2, 3], [1, 0])", want:[2,0]}, {call:"project([1, 1], [2, 2])", want:[1,1]}, {call:"project([1, 2, 3], [0, 0, 1])", want:[0,0,3]}, {call:"project([3, 4], [0, 0])", raises:"ValueError"} ],
+    nudges:["The formula is <code>(u·v / v·v) · v</code>.", "Compute the scalar first, then multiply each entry of v by it."] },
+  { id:"e10", title:"10. Stationary distribution (mini PageRank)", lesson:"eig",
+    prompt:"P is a column-stochastic matrix (each column sums to 1). Starting from the uniform vector, apply <code>x = P @ x</code> for <code>steps</code> steps and return x. This is power iteration, the method behind PageRank.",
+    tests:[ {setup:"import numpy as np\nP = np.array([[0.9, 0.5], [0.1, 0.5]])", call:"stationary(P)", want:[5/6, 1/6], label:"Two states → [5/6, 1/6]"},
+      {setup:"import numpy as np\nP = np.array([[0.5, 0.2, 0.1], [0.3, 0.6, 0.1], [0.2, 0.2, 0.8]])", call:"bool(np.allclose(P @ stationary(P), stationary(P)))", want:true, label:"Three states: one more step doesn't change the answer"},
+      {setup:"import numpy as np\nP = np.array([[0.5, 0.2, 0.1], [0.3, 0.6, 0.1], [0.2, 0.2, 0.8]])", call:"round(float(stationary(P).sum()), 9)", want:1, label:"The result still sums to 1"} ],
+    nudges:["A <code>for</code> loop that runs <code>steps</code> times.", "Inside it: <code>x = P @ x</code>."] },
+  { id:"e11", title:"11. Explained variance (PCA)", lesson:"pca",
+    prompt:"Write <code>explained_variance(X)</code>: center the columns of X, compute the covariance matrix, and return the share of total variance along each principal component, largest first, as a list.",
+    tests:[ {call:"explained_variance([[1, 2], [2, 4], [3, 6]])", want:[1,0], label:"Points on a line → [1, 0]"}, {call:"explained_variance([[1, 0], [-1, 0], [0, 1], [0, -1]])", want:[0.5,0.5]}, {call:"explained_variance([[2, 0], [-2, 0], [0, 1], [0, -1]])", want:[0.8,0.2]} ],
+    nudges:["<code>Xc = X - X.mean(axis=0)</code>, then <code>C = Xc.T @ Xc / (len(X) - 1)</code>.", "<code>np.linalg.eigh(C)</code> returns eigenvalues in ascending order. Reverse them and divide by their sum."] },
+  { id:"e12", title:"12. Low-rank approximation (SVD)", lesson:"svd",
+    prompt:"Write <code>rank_k(A, k)</code> that returns the best rank-k approximation of A by keeping the top k singular values.",
+    tests:[ {setup:"import numpy as np\nA = np.array([[3., 0.], [0., 1.]])", call:"rank_k(A, 1)", want:[[3,0],[0,0]]}, {setup:"import numpy as np\nA = np.array([[3., 0.], [0., 1.]])", call:"rank_k(A, 2)", want:[[3,0],[0,1]]},
+      {setup:"import numpy as np\nM = np.array([[1., 2., 3.], [4., 5., 6.], [7., 8., 10.]])", call:"int(np.linalg.matrix_rank(rank_k(M, 1)))", want:1, label:"rank_k(M, 1) has rank 1"},
+      {setup:"import numpy as np\nM = np.array([[1., 2., 3.], [4., 5., 6.], [7., 8., 10.]])", call:"round(float(np.linalg.norm(M - rank_k(M, 3))), 6)", want:0, label:"Keeping all 3 rebuilds M exactly"} ],
+    nudges:["<code>U, s, Vt = np.linalg.svd(A)</code> gives singular values in <code>s</code>, largest first.", "Keep the first k of each: <code>U[:, :k] @ np.diag(s[:k]) @ Vt[:k, :]</code>."] },
+];
+const EXMAP = Object.fromEntries(EXERCISES.map(e => [e.id, e]));
+
+/* =================== LESSON CONTENT =================== */
+const LEARN = {
+vec: `
+<p>A <b>vector</b> is an ordered list of numbers. <code>[1, 2]</code> has 2 entries, so it lives in 2 dimensions. You can draw a 2D vector as an arrow from the origin to the point (1, 2), but in analytics most vectors have many entries: a customer described by age, income, and visits is the vector <code>[34, 72000, 12]</code>.</p>
+<p>Two operations do almost everything:</p>
+<ul>
+<li><b>Addition</b> adds matching entries: <code>[1, 2] + [3, −1] = [4, 1]</code>. Both vectors must have the same length.</li>
+<li><b>Scalar multiplication</b> multiplies every entry by one number: <code>2 · [1, 2] = [2, 4]</code>. It stretches the arrow.</li>
+</ul>
+<p>Combine them and you get a <b>linear combination</b>, the most important pattern in this whole page:</p>
+<div class="math">a·u + b·v &nbsp;&nbsp; e.g. &nbsp;&nbsp; 2·[1, 2] − 1·[3, −1] = [2, 4] − [3, −1] = [−1, 5]</div>
+<p><b>Python gotcha:</b> plain lists don't do vector math. <code>+</code> joins lists and <code>*</code> repeats them. NumPy arrays do the math you expect.</p>
+<div class="snip"><pre>import numpy as np
+
+u = [1, 2]
+v = [3, -1]
+print(u + v)          # list: joined, not added
+print(2 * u)          # list: repeated
+
+u = np.array(u)
+v = np.array(v)
+print(u + v)          # vector addition
+print(2 * u - v)      # a linear combination</pre></div>`,
+dot: `
+<p>The <b>dot product</b> multiplies matching entries and adds the results. It turns two vectors into one number.</p>
+<div class="math">u · v = u₁v₁ + u₂v₂ + … + uₙvₙ &nbsp;&nbsp; e.g. &nbsp;&nbsp; [1, 2] · [3, 4] = 3 + 8 = 11</div>
+<p>From it come the three measurements analytics uses constantly:</p>
+<ul>
+<li><b>Length (norm):</b> <code>‖u‖ = √(u · u)</code>. For [3, 4]: √(9 + 16) = 5.</li>
+<li><b>Distance:</b> <code>‖u − v‖</code>, the length of the difference. This is the Euclidean distance in k-NN and k-means.</li>
+<li><b>Cosine similarity:</b> <code>u · v / (‖u‖ ‖v‖)</code>, between −1 and 1. It's 1 when vectors point the same way, 0 when they're perpendicular (<b>orthogonal</b>), and −1 when they point in opposite directions.</li>
+</ul>
+<p><b>Why scaling matters:</b> distance adds up squared differences, so a feature measured in large units drowns out the others. That's why ISYE tells you to standardize before k-NN.</p>
+<div class="snip"><pre>import numpy as np
+
+a = np.array([30, 50000])     # [age, income]
+b = np.array([60, 51000])
+c = np.array([31, 60000])
+print("a to b:", np.linalg.norm(a - b))   # 30 years apart, but "close"
+print("a to c:", np.linalg.norm(a - c))   # same age, but "far"
+
+# Standardize each column, then compare again
+X = np.array([a, b, c], dtype=float)
+Z = (X - X.mean(axis=0)) / X.std(axis=0)
+print("scaled a to b:", np.linalg.norm(Z[0] - Z[1]))
+print("scaled a to c:", np.linalg.norm(Z[0] - Z[2]))
+
+u, v = np.array([1, 2]), np.array([3, 4])
+print(u @ v, np.dot(u, v))                                   # two ways to write a dot product
+print(u @ v / (np.linalg.norm(u) * np.linalg.norm(v)))       # cosine similarity</pre></div>`,
+mat: `
+<p>A <b>matrix</b> is a rectangular grid of numbers. A matrix with m rows and n columns is <b>m × n</b> (rows always come first). The entry in row i, column j is written <code>A[i, j]</code>, counting from 0 in Python.</p>
+<p>In analytics, the main matrix is your <b>data matrix X</b>: each row is one observation (a vector from Lesson 1) and each column is one feature. 100 customers with 5 features is a 100 × 5 matrix.</p>
+<div class="math">X = [[34, 72, 12], [28, 55, 3]] &nbsp;&nbsp; is 2 × 3: two customers, three features</div>
+<p>In NumPy, <code>.shape</code> gives (rows, columns). <code>axis=0</code> means "down the rows", which gives one result per column. <code>axis=1</code> means "across the columns", one result per row.</p>
+<div class="snip"><pre>import numpy as np
+
+X = np.array([[34, 72, 12],
+              [28, 55, 3],
+              [45, 90, 7],
+              [51, 61, 20]])
+print(X.shape)            # (4, 3): 4 observations, 3 features
+print(X[0])               # first row: one customer
+print(X[:, 1])            # second column: one feature for everyone
+print(X.mean(axis=0))     # mean of each column -> shape (3,)
+print(X.mean(axis=1))     # mean of each row    -> shape (4,)
+print(X[X[:, 0] &gt; 40])    # rows where the first feature is over 40</pre></div>`,
+mul: `
+<p><b>Matrix times vector</b> can be read two ways, and both are worth knowing:</p>
+<ul>
+<li><b>Row view:</b> each output entry is one row of A dotted with x. This is how regression predicts: row i of X dotted with the coefficients β gives prediction i.</li>
+<li><b>Column view:</b> the output is a linear combination of A's columns, weighted by the entries of x.</li>
+</ul>
+<div class="math">[[1, 2], [3, 4]] · [1, 1] = [1·1 + 2·1, 3·1 + 4·1] = [3, 7] &nbsp;= 1·[1, 3] + 1·[2, 4]</div>
+<p><b>Matrix times matrix:</b> an (m × n) matrix times an (n × p) matrix gives an (m × p) matrix. The inside numbers must match. Entry (i, j) is row i of A dotted with column j of B.</p>
+<div class="math">(m × <b>n</b>) · (<b>n</b> × p) → (m × p)</div>
+<p><b>Order matters:</b> AB usually differs from BA. In NumPy, <code>A @ B</code> is matrix multiplication and <code>A * B</code> multiplies entry by entry, a common exam trap.</p>
+<div class="snip"><pre>import numpy as np
+
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[0, 1], [1, 0]])     # swaps things
+print(A @ B)        # swaps A's columns
+print(B @ A)        # swaps A's rows: different!
+print(A * B)        # element-wise, not matrix multiplication
+
+X = np.array([[1, 2.0], [1, 3.5], [1, 5.0]])   # column of ones + one feature
+beta = np.array([10, 4])                         # intercept 10, slope 4
+print(X @ beta)                                  # all predictions at once</pre></div>`,
+tr: `
+<p>The <b>transpose</b> Aᵀ swaps rows and columns: row i becomes column i. A 2 × 3 matrix becomes 3 × 2. In NumPy it's <code>A.T</code>.</p>
+<ul>
+<li><code>(AB)ᵀ = BᵀAᵀ</code>: the order flips.</li>
+<li>The <b>identity</b> matrix I has 1s on the diagonal and 0s elsewhere. <code>AI = A</code>, just as 1 · x = x.</li>
+<li>A <b>symmetric</b> matrix equals its own transpose. Covariance matrices are always symmetric.</li>
+</ul>
+<p><b>XᵀX</b> shows up everywhere in analytics. If X is n × d, then XᵀX is d × d, and entry (i, j) is the dot product of feature i's column with feature j's column. After centering the columns and dividing by n − 1, it becomes the covariance matrix (Lesson 11).</p>
+<div class="snip"><pre>import numpy as np
+
+X = np.array([[1, 2, 0],
+              [3, 1, 1],
+              [0, 4, 2],
+              [2, 2, 1]])
+print(X.shape, X.T.shape)
+G = X.T @ X
+print(G.shape)                       # (3, 3): features x features
+print(G)
+print(np.array_equal(G, G.T))        # symmetric
+print(G[0, 1], X[:, 0] @ X[:, 1])    # entry = dot product of two columns
+print(np.eye(3))                     # identity</pre></div>`,
+geo: `
+<p>A 2 × 2 matrix moves every point in the plane. The <b>columns tell you everything</b>: the first column is where the arrow [1, 0] lands, the second is where [0, 1] lands, and the grid follows along.</p>
+<p>The <b>determinant</b> is the factor by which areas grow or shrink. The unit square's area becomes |det A|. A negative determinant means the plane got flipped. A determinant of <b>0</b> squashes the plane onto a line or a point: information is lost and the transformation can't be undone, so the matrix has <b>no inverse</b>.</p>
+<div class="math">det [[a, b], [c, d]] = ad − bc</div>
+<div class="viz">
+  <canvas id="viz-canvas" width="720" height="720" aria-label="Grid transformed by the matrix"></canvas>
+  <div>
+    <div class="fieldlabel" style="margin-top:0">Matrix [[a, b], [c, d]]</div>
+    <div class="mat">
+      <input id="m-a" type="number" step="0.1" value="1" aria-label="a"><input id="m-b" type="number" step="0.1" value="1" aria-label="b">
+      <input id="m-c" type="number" step="0.1" value="0" aria-label="c"><input id="m-d" type="number" step="0.1" value="1" aria-label="d">
+    </div>
+    <div class="row" id="viz-presets" style="margin-top:0"></div>
+    <p id="viz-det" style="margin:10px 0 0"></p>
+    <div class="legend"><span style="color:var(--accent)">[1, 0] lands at first column</span><span style="color:var(--jhat)">[0, 1] lands at second column</span></div>
+  </div>
+</div>
+<p>Try the presets. Then set the matrix to <code>[[1, 2], [2, 4]]</code>: the second column is twice the first, everything collapses onto a line, and the determinant is 0. Lesson 7 picks up from there.</p>
+<p>A <b>rotation</b> by angle θ counterclockwise is <code>[[cos θ, −sin θ], [sin θ, cos θ]]</code>. Its determinant is 1 because rotating doesn't change area.</p>
+<div class="snip"><pre>import numpy as np
+
+theta = np.radians(90)
+R = np.array([[np.cos(theta), -np.sin(theta)],
+              [np.sin(theta),  np.cos(theta)]])
+print(np.round(R @ np.array([1, 0]), 6))     # [1, 0] -> [0, 1]
+print(round(np.linalg.det(R), 6))            # 1.0: area unchanged
+print(np.linalg.det(np.array([[2, 0], [0, 3]])))   # 6: area x 6
+print(np.linalg.det(np.array([[1, 2], [2, 4]])))   # 0: collapses</pre></div>`,
+sys: `
+<p>A system of linear equations is just <b>A x = b</b>. For example:</p>
+<div class="math">2x + y = 5, &nbsp; x − y = 1 &nbsp;&nbsp;⟺&nbsp;&nbsp; [[2, 1], [1, −1]] · [x, y] = [5, 1] &nbsp;&nbsp;→&nbsp;&nbsp; x = 2, y = 1</div>
+<p>Add the two equations to get 3x = 6, so x = 2, and then y = 1. NumPy does the same elimination for big systems.</p>
+<ul>
+<li>Columns are <b>linearly dependent</b> if one is a combination of the others, like [1, 2] and [2, 4]. They add no new direction.</li>
+<li>The <b>rank</b> is the number of independent columns, which is how many real dimensions the data spans.</li>
+<li>A square matrix has an <b>inverse</b> A⁻¹ (so x = A⁻¹b) exactly when its rank is full, which is exactly when its determinant isn't 0.</li>
+<li>In practice, never compute <code>inv(A) @ b</code>. <code>np.linalg.solve(A, b)</code> is faster and more accurate.</li>
+</ul>
+<p><b>Why analytics cares:</b> if two features are nearly copies of each other (say, height in inches and height in cm with a bit of noise), the columns of X are nearly dependent. Then XᵀX is nearly singular and regression coefficients swing wildly. This is <b>multicollinearity</b>.</p>
+<div class="snip"><pre>import numpy as np
+
+A = np.array([[2, 1], [1, -1]])
+print(np.linalg.solve(A, [5, 1]))              # [2. 1.]
+print(np.linalg.matrix_rank(A))                # 2: full rank
+
+S = np.array([[1, 2], [2, 4]])
+print(np.linalg.matrix_rank(S))                # 1: dependent columns
+try:
+    np.linalg.solve(S, [3, 6])
+except np.linalg.LinAlgError as e:
+    print("Error:", e)
+
+# Nearly duplicate features
+rng = np.random.default_rng(0)
+h = rng.normal(170, 10, 50)
+X = np.column_stack([np.ones(50), h, h / 2.54 + rng.normal(0, 0.01, 50)])
+print("condition number:", f"{np.linalg.cond(X.T @ X):.2e}")   # huge = unstable</pre></div>`,
+ls: `
+<p>With real data you have more rows (observations) than unknowns (coefficients), so <b>X β = y</b> has no exact solution. Least squares picks the β that makes the total squared error as small as possible:</p>
+<div class="math">minimize ‖X β − y‖² &nbsp;&nbsp;→&nbsp;&nbsp; solution satisfies the normal equations &nbsp; XᵀX β = Xᵀy</div>
+<ul>
+<li>Add a <b>column of ones</b> to X so the model gets an intercept: the prediction is β₀·1 + β₁·x.</li>
+<li>The normal equations are a d × d system (Lesson 7), solvable when the columns of X are independent.</li>
+<li>Libraries don't form XᵀX directly, because it can lose precision. They use <b>QR decomposition</b> or the SVD, which is what CSE 6040 Topic 12 covers. <code>np.linalg.lstsq</code> does this for you.</li>
+</ul>
+<p><b>By hand:</b> the points (0, 1), (1, 3), (2, 5) lie exactly on y = 1 + 2x, so least squares returns intercept 1 and slope 2 with zero error.</p>
+<div class="snip"><pre>import numpy as np
+
+x = np.array([0, 1, 2, 3, 4], dtype=float)
+y = np.array([1.1, 2.9, 5.2, 6.8, 9.1])
+X = np.column_stack([np.ones(len(x)), x])     # design matrix
+
+beta = np.linalg.solve(X.T @ X, X.T @ y)       # normal equations
+print("normal equations:", beta)
+print("lstsq:           ", np.linalg.lstsq(X, y, rcond=None)[0])
+
+Q, R = np.linalg.qr(X)                         # the QR route (Topic 12)
+print("QR:              ", np.linalg.solve(R, Q.T @ y))
+
+residuals = y - X @ beta
+print("residuals:", np.round(residuals, 3))
+print("X^T residuals:", np.round(X.T @ residuals, 10))   # zero: see Lesson 9</pre></div>`,
+proj: `
+<p>The <b>projection</b> of u onto v is the shadow u casts on the line through v: the point on that line closest to u.</p>
+<div class="math">proj_v(u) = (u · v / v · v) · v &nbsp;&nbsp; e.g. &nbsp;&nbsp; proj of [2, 3] onto [1, 0] = (2 / 1)·[1, 0] = [2, 0]</div>
+<p>What's left over, <code>u − proj</code>, is <b>orthogonal</b> (perpendicular) to v: their dot product is 0.</p>
+<p>This is least squares in disguise. The predictions <code>Xβ</code> are the projection of y onto the space spanned by X's columns, and the residuals are orthogonal to every column. That's exactly what the normal equations Xᵀ(y − Xβ) = 0 say.</p>
+<p>Vectors that are mutually orthogonal and have length 1 are <b>orthonormal</b>. A matrix Q with orthonormal columns has <code>QᵀQ = I</code>, which makes calculations simple and stable. QR decomposition rewrites X = QR with such a Q.</p>
+<div class="snip"><pre>import numpy as np
+
+u = np.array([2.0, 3.0])
+v = np.array([1.0, 1.0])
+p = (u @ v) / (v @ v) * v
+r = u - p
+print("projection:", p)
+print("leftover:  ", r)
+print("dot with v:", r @ v)                 # 0: orthogonal
+
+X = np.array([[1, 0], [1, 1], [1, 2], [1, 3]], dtype=float)
+Q, R = np.linalg.qr(X)
+print(np.round(Q.T @ Q, 10))                # identity: orthonormal columns</pre></div>`,
+eig: `
+<p>Most vectors change direction when a matrix multiplies them. An <b>eigenvector</b> is a special vector that only gets stretched or shrunk. The stretch factor is its <b>eigenvalue</b> λ:</p>
+<div class="math">A v = λ v &nbsp;&nbsp; e.g. &nbsp;&nbsp; [[2, 1], [1, 2]] · [1, 1] = [3, 3] = 3·[1, 1] &nbsp;→&nbsp; λ = 3</div>
+<p>The same matrix sends [1, −1] to [1, −1], so that's an eigenvector with λ = 1. Try both in the Lesson 6 visualizer with <code>[[2, 1], [1, 2]]</code>.</p>
+<p><b>Power iteration:</b> multiply any starting vector by A over and over, and it turns toward the eigenvector with the largest |λ|. That's how PageRank works:</p>
+<ul>
+<li>Build a matrix P where column j says how a random web surfer on page j spreads to other pages. Each column sums to 1.</li>
+<li>Start with equal probability on every page and repeat <code>x = P @ x</code>.</li>
+<li>x settles on the eigenvector with λ = 1. Its entries are the long-run share of time spent on each page: the ranking.</li>
+</ul>
+<p>Real link graphs have millions of pages and few links each, so CSE 6040 stores P as a <b>sparse matrix</b> that keeps only the nonzero entries.</p>
+<div class="snip"><pre>import numpy as np
+
+A = np.array([[2, 1], [1, 2]])
+values, vectors = np.linalg.eigh(A)     # eigh: for symmetric matrices
+print("eigenvalues:", values)           # smallest first: [1, 3]
+print("eigenvectors (columns):")
+print(np.round(vectors, 3))
+
+# Mini PageRank: 3 pages. Column j = where a surfer on page j goes next.
+P = np.array([[0.0, 0.5, 1.0],
+              [0.5, 0.0, 0.0],
+              [0.5, 0.5, 0.0]])
+x = np.ones(3) / 3
+for step in range(50):
+    x = P @ x
+print("ranking:", np.round(x, 3))
+print("P @ x == x:", np.allclose(P @ x, x))</pre></div>`,
+pca: `
+<p>PCA finds the directions in which the data varies most, so you can describe many correlated features with a few new ones.</p>
+<ol>
+<li><b>Center</b> each column by subtracting its mean. If features use different units, also divide by the standard deviation (standardize).</li>
+<li>Compute the <b>covariance matrix</b> <code>C = XcᵀXc / (n − 1)</code>. It's d × d and symmetric. The diagonal holds each feature's variance; the off-diagonal entries are covariances between pairs of features.</li>
+<li>Find C's <b>eigenvectors</b>. These are the principal components: perpendicular directions, sorted by eigenvalue.</li>
+<li>Each <b>eigenvalue</b> is the variance along its component. Eigenvalue ÷ sum of eigenvalues is the <b>explained variance ratio</b>.</li>
+<li>Keep the first k components and project the data onto them: <code>scores = Xc @ V[:, :k]</code>.</li>
+</ol>
+<p>If two eigenvalues are 4.0 and 1.0, the first component explains 4 / 5 = 80% of the variance.</p>
+<div class="snip"><pre>import numpy as np
+
+rng = np.random.default_rng(1)
+t = rng.normal(0, 1, 200)
+X = np.column_stack([t + rng.normal(0, 0.3, 200),        # two features that
+                     2 * t + rng.normal(0, 0.3, 200)])   # move together
+
+Xc = X - X.mean(axis=0)
+C = Xc.T @ Xc / (len(X) - 1)
+print("covariance:\\n", np.round(C, 3))
+
+values, vectors = np.linalg.eigh(C)          # eigh: for symmetric matrices, ascending order
+values, vectors = values[::-1], vectors[:, ::-1]
+print("eigenvalues:", np.round(values, 3))
+print("explained ratio:", np.round(values / values.sum(), 3))
+print("first component:", np.round(vectors[:, 0], 3))
+
+scores = Xc @ vectors[:, :1]                 # 2 features -> 1
+print(scores.shape)</pre></div>`,
+svd: `
+<p>Every matrix, of any shape, can be written as a <b>singular value decomposition</b>:</p>
+<div class="math">A = U Σ Vᵀ &nbsp;&nbsp; (U and V have orthonormal columns, Σ is diagonal with σ₁ ≥ σ₂ ≥ … ≥ 0)</div>
+<p>Read it as: rotate (Vᵀ), stretch along the axes (Σ), rotate again (U). The <b>singular values</b> σ say how important each piece is.</p>
+<ul>
+<li><b>Compression:</b> keep only the top k singular values. The result is the best possible rank-k approximation of A. An m × n matrix then needs only k(m + n + 1) numbers instead of mn.</li>
+<li><b>Link to PCA:</b> for centered data Xc, the columns of V are the principal components, and σᵢ² / (n − 1) are the eigenvalues of the covariance matrix. This is how libraries actually compute PCA.</li>
+<li>The number of nonzero singular values is the <b>rank</b>.</li>
+</ul>
+<div class="snip"><pre>import numpy as np
+
+# A small "image": a smooth gradient plus a little noise
+rng = np.random.default_rng(2)
+img = np.add.outer(np.arange(20), np.arange(30)) / 50 + rng.normal(0, 0.02, (20, 30))
+
+U, s, Vt = np.linalg.svd(img, full_matrices=False)
+print("top singular values:", np.round(s[:5], 2))
+for k in [1, 2, 5]:
+    approx = U[:, :k] @ np.diag(s[:k]) @ Vt[:k, :]
+    err = np.linalg.norm(img - approx) / np.linalg.norm(img)
+    print(f"k={k}: stores {k * (20 + 30 + 1)} of {20 * 30} numbers, relative error {err:.3f}")
+
+# SVD vs PCA
+X = rng.normal(0, 1, (100, 3)) @ np.array([[3, 0, 0], [1, 1, 0], [0, 0, 0.2]])
+Xc = X - X.mean(axis=0)
+s = np.linalg.svd(Xc, compute_uv=False)
+print(np.round(s**2 / (len(X) - 1), 3))
+print(np.round(np.linalg.eigvalsh(np.cov(X.T))[::-1], 3))   # same numbers</pre></div>`,
+};
+
+const QUIZ = {
+ vec: [ {id:"q-vec1", code:'[1, 2] + [3, 4]      # plain Python lists', opts:["[4, 6]","[1, 2, 3, 4]","Error"], a:1, why:"+ joins lists. Use NumPy arrays for vector addition."},
+        {id:"q-vec2", code:'3 · [2, −1] − [1, 1]', opts:["[5, −4]","[6, −3]","[7, −2]"], a:0, why:"3·[2, −1] = [6, −3], then subtract [1, 1]."} ],
+ dot: [ {id:"q-dot1", code:'[1, 0] · [0, 1]', opts:["1","0","−1"], a:1, why:"1·0 + 0·1 = 0. A dot product of 0 means the vectors are perpendicular."},
+        {id:"q-dot2", code:'Distance from [1, 1] to [4, 5]', opts:["5","7","25"], a:0, why:"The difference is [3, 4]; √(9 + 16) = 5."} ],
+ mat: [ {id:"q-mat1", code:'X.shape == (500, 8)\nX.mean(axis=0).shape', opts:["(500,)","(8,)","(500, 8)"], a:1, why:"axis=0 collapses the rows, leaving one mean per column: 8 features."} ],
+ mul: [ {id:"q-mul1", code:'(3 × 2 matrix) @ (3 × 2 matrix)', opts:["3 × 2","2 × 2","Error"], a:2, why:"The inner numbers (2 and 3) don't match. You'd need a transpose: (2 × 3) @ (3 × 2) works."},
+        {id:"q-mul2", code:'A = np.array([[1, 2], [3, 4]])\n(A @ A)[0, 0]', opts:["1","7"], a:1, why:"Row 0 · column 0 = 1·1 + 2·3 = 7. A * A would give 1."} ],
+ tr: [ {id:"q-tr1", code:'X is 100 × 5. What shape is XᵀX?', opts:["100 × 100","5 × 5","100 × 5"], a:1, why:"(5 × 100)(100 × 5) = 5 × 5: one row and column per feature."} ],
+ geo: [ {id:"q-geo1", code:'det [[2, 0], [0, 3]]', opts:["5","6","0"], a:1, why:"ad − bc = 2·3 − 0 = 6. Areas grow 6 times."},
+        {id:"q-geo2", code:'det [[1, 2], [2, 4]]', opts:["0","8","−2"], a:0, why:"1·4 − 2·2 = 0. The columns point the same way, so the plane collapses to a line."} ],
+ sys: [ {id:"q-sys1", code:'Rank of [[1, 2], [2, 4], [3, 6]]', opts:["1","2","3"], a:0, why:"The second column is twice the first, so only one independent direction."} ],
+ ls: [ {id:"q-ls1", code:'Why add a column of ones to X?', opts:["To avoid dividing by zero","To give the model an intercept","To make X square"], a:1, why:"The coefficient on the ones column is added to every prediction: the intercept."} ],
+ proj: [ {id:"q-proj1", code:'r = u − proj_v(u)\nr · v = ?', opts:["0","‖u‖","Depends on u"], a:0, why:"The leftover is always perpendicular to v. In regression: residuals are orthogonal to every feature column."} ],
+ eig: [ {id:"q-eig1", code:'Eigenvalues of [[3, 0], [0, 2]]', opts:["3 and 2","5 and 0","6 and 1"], a:0, why:"A diagonal matrix just stretches the axes, so its diagonal entries are its eigenvalues."} ],
+ pca: [ {id:"q-pca1", code:'Covariance matrix diagonal holds…', opts:["Each feature's variance","Each feature's mean","Correlations"], a:0, why:"Entry (i, i) is the covariance of feature i with itself, which is its variance."},
+        {id:"q-pca2", code:'Eigenvalues 6, 3, 1\nShare explained by the first two?', opts:["60%","90%","100%"], a:1, why:"(6 + 3) / 10 = 90%."} ],
+ svd: [ {id:"q-svd1", code:'Rank-k approximation of an m × n matrix\nHow many numbers to store?', opts:["m · n","k(m + n + 1)","k²"], a:1, why:"k columns of U (k·m), k singular values, and k rows of Vᵀ (k·n)."} ],
+};
+const ALLQ = Object.values(QUIZ).flat();
+
+/* =================== STATE =================== */
+const blank = () => ({ got:{}, ex:{}, plan:{}, journal:"", code:{}, quiz:{}, lesson:0, theme:"auto" });
+let state = blank();
+function load(){ try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); if(s) state = Object.assign(blank(), s); } catch(e){} }
+let saveTimer = null;
+function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){} }
+function saveSoon(){ clearTimeout(saveTimer); saveTimer = setTimeout(save, 300); }
+
+/* =================== THEME =================== */
+function applyTheme(){
+  const t = state.theme || "auto";
+  if(t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t);
+  document.getElementById("theme-btn").textContent = "Theme: " + t;
+  if(window.drawViz) drawViz();
+}
+document.getElementById("theme-btn").addEventListener("click", () => {
+  const order = ["auto","light","dark"]; state.theme = order[(order.indexOf(state.theme || "auto") + 1) % 3]; applyTheme(); save();
+});
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => window.drawViz && drawViz()); } catch(e){}
+
+/* =================== TABS =================== */
+function showTab(name){
+  document.querySelectorAll("nav button").forEach(x => x.classList.toggle("active", x.dataset.tab === name));
+  document.querySelectorAll("section.tab").forEach(x => x.classList.toggle("active", x.id === "tab-" + name));
+  window.scrollTo({top:0});
+  if(name === "learn" || name === "lab") loadPy().catch(()=>{});
+  if(name === "learn" && window.drawViz) drawViz();
+}
+document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+function goLesson(id){ const i = LMAP[id]; if(i === undefined) return; state.lesson = i; save(); renderLearn(); showTab("learn"); }
+
+/* =================== PYTHON (Pyodide) =================== */
+let pyPromise = null, py = null;
+function setPyStatus(t, done){ document.querySelectorAll(".py-status").forEach(el => { el.textContent = t; el.className = "pill py-status " + (done ? "done" : ""); }); }
+function loadPy(){
+  if(pyPromise) return pyPromise;
+  setPyStatus("Loading Python…", false);
+  pyPromise = (async () => {
+    if(!window.loadPyodide){
+      await new Promise((res, rej) => {
+        const s = document.createElement("script"); s.src = PYODIDE_URL + "pyodide.js"; s.onload = res;
+        s.onerror = () => rej(new Error("Couldn't download Python. Check your internet connection, then reload the page."));
+        document.head.appendChild(s);
+      });
+    }
+    py = await loadPyodide({ indexURL: PYODIDE_URL });
+    py.runPython(document.getElementById("py-harness").textContent);
+    setPyStatus("Python ready", true);
+    return py;
+  })().catch(e => { setPyStatus("Python failed to load", false); pyPromise = null; throw e; });
+  return pyPromise;
+}
+async function pyCall(fn, payload, codeForImports){
+  const p = await loadPy();
+  if(codeForImports && /import\s+numpy|from\s+numpy/.test(codeForImports)){ setPyStatus("Loading NumPy…", false); try { await p.loadPackagesFromImports(codeForImports); } catch(e){} setPyStatus("Python ready", true); }
+  p.globals.set("_payload", JSON.stringify(payload));
+  return JSON.parse(p.runPython(`${fn}(_payload)`));
+}
+
+/* =================== FRIENDLY ERRORS =================== */
+const EXPLAIN = {
+  SyntaxError:"Python couldn't read this line. Look for a missing colon at the end of <code>if</code>/<code>for</code>/<code>while</code>/<code>def</code>, an unclosed quote or parenthesis, or <code>=</code> where you meant <code>==</code>.",
+  IndentationError:"Lines inside an <code>if</code>, loop, <code>def</code>, or <code>try</code> must be indented by 4 spaces, and lines in the same block must line up exactly.",
+  TabError:"The indentation mixes tabs and spaces. On this page Tab inserts 4 spaces; re-indent the line.",
+  NameError:"Python doesn't recognize a name. Usually a typo, a variable used before it was created, a function defined below where it's called at the top level, or text missing its quotes.",
+  TypeError:"An operation got the wrong kind of value, like adding a <code>str</code> to an <code>int</code>, or calling a function with the wrong number of arguments. Remember <code>input()</code> always returns text.",
+  ValueError:"The type was right but the value wasn't, like <code>int(\"cat\")</code> or unpacking 2 items into 3 variables. If users might type this, catch it with <code>try</code>/<code>except ValueError</code>.",
+  ZeroDivisionError:"Something was divided by 0. Check for that case before dividing, or catch the error.",
+  KeyError:"You looked up a dictionary key that isn't there. Check with <code>if key in d:</code> or use <code>d.get(key)</code>. Watch capitalization.",
+  IndexError:"You asked for a position past the end of a list or string. Positions start at 0, so the last item of 3 is <code>[2]</code>.",
+  AttributeError:"That value doesn't have the method or attribute you used. Common causes: a typo (<code>.lowr()</code>), calling a string method on a number, or a value that is <code>None</code> because a function didn't <code>return</code>.",
+  UnboundLocalError:"A variable was used inside a function before it got a value there. Give it a starting value first.",
+  EOFError:"Your program called <code>input()</code> more times than there were inputs. In a check, that usually means it asked again when it should have accepted the answer, or it reads until Ctrl-D without catching <code>EOFError</code>.",
+  FileNotFoundError:"The file doesn't exist in the current folder. Check the name, and catch <code>FileNotFoundError</code> if the user might give a bad name.",
+  ModuleNotFoundError:"This page only has Python's standard library. Libraries installed with pip (emoji, inflect, requests…) work on cs50.dev.",
+  RecursionError:"A function kept calling itself without stopping.",
+  TookTooLong:"Your code ran for too long and was stopped. Usually that's an infinite loop: check that every <code>while</code> loop can end. It can also mean the approach is too slow, like a loop inside a loop over a big input.",
+  AssertionError:"An <code>assert</code> was false.",
+};
+function explainHtml(err, ta){
+  if(!err) return "";
+  const lineBtn = err.line ? ` <button class="ghost goline" data-line="${err.line}" type="button">Go to line ${err.line}</button>` : "";
+  const head = err.type === "TookTooLong" ? "Stopped: probably an infinite loop" : `${esc(err.type)}${err.msg ? ": " + esc(err.msg) : ""}${err.line ? ` (line ${err.line})` : ""}`;
+  return `<div class="explain"><b>${head}</b><br>${EXPLAIN[err.type] || "Read the error type and message, then look at the line it points to."}${lineBtn}</div>`;
+}
+function wireGoLine(box, ta){
+  box.querySelectorAll(".goline").forEach(b => b.addEventListener("click", () => {
+    const n = +b.dataset.line, lines = ta.value.split("\n");
+    let start = 0; for(let i = 0; i < n - 1 && i < lines.length; i++) start += lines[i].length + 1;
+    const end = start + (lines[n-1] || "").length;
+    ta.focus(); ta.setSelectionRange(start, end);
+    const lh = parseFloat(getComputedStyle(ta).lineHeight) || 19;
+    ta.scrollTop = Math.max(0, (n - 4) * lh);
+  }));
+}
+
+/* =================== EDITOR =================== */
+function insertText(ta, text, from, to){
+  ta.focus();
+  if(from !== undefined) ta.setSelectionRange(from, to);
+  if(!document.execCommand || !document.execCommand("insertText", false, text)){
+    ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, "end");
+    ta.dispatchEvent(new Event("input"));
+  }
+}
+function makeEditor(value, opts={}){
+  const wrap = document.createElement("div");
+  wrap.className = "ed" + (opts.small ? " small" : "");
+  const gut = document.createElement("pre"); gut.className = "gut"; gut.setAttribute("aria-hidden","true");
+  const ta = document.createElement("textarea");
+  ta.spellcheck = false; ta.setAttribute("autocapitalize","off"); ta.setAttribute("autocomplete","off"); ta.setAttribute("autocorrect","off");
+  if(opts.id) ta.id = opts.id;
+  if(opts.label) ta.setAttribute("aria-label", opts.label);
+  ta.value = value;
+  if(opts.rows) ta.style.height = (opts.rows * 19.5 + 26) + "px";
+  wrap.append(gut, ta);
+  const syncGut = () => { const n = ta.value.split("\n").length; let s = ""; for(let i = 1; i <= n; i++) s += i + "\n"; gut.textContent = s; gut.scrollTop = ta.scrollTop; };
+  ta.addEventListener("input", () => { syncGut(); opts.onChange && opts.onChange(ta.value); });
+  ta.addEventListener("scroll", () => { gut.scrollTop = ta.scrollTop; });
+  ta.addEventListener("keydown", e => {
+    const v = ta.value, s = ta.selectionStart, en = ta.selectionEnd;
+    const lineStart = v.lastIndexOf("\n", s - 1) + 1;
+    if((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); opts.onRun && opts.onRun(); return; }
+    if(e.key === "Tab" && !e.shiftKey){
+      e.preventDefault();
+      if(s !== en && v.slice(s, en).includes("\n")){
+        const block = v.slice(lineStart, en).split("\n").map(l => "    " + l).join("\n");
+        insertText(ta, block, lineStart, en);
+      } else insertText(ta, "    ");
+      return;
+    }
+    if(e.key === "Tab" && e.shiftKey){
+      e.preventDefault();
+      const endLine = v.indexOf("\n", en); const stop = endLine === -1 ? v.length : endLine;
+      const block = v.slice(lineStart, stop).split("\n").map(l => l.replace(/^ {1,4}/, "")).join("\n");
+      insertText(ta, block, lineStart, stop);
+      return;
+    }
+    if(e.key === "Enter" && !e.shiftKey && !e.altKey){
+      const line = v.slice(lineStart, s);
+      let indent = (line.match(/^ */) || [""])[0];
+      if(/:\s*(#.*)?$/.test(line)) indent += "    ";
+      e.preventDefault(); insertText(ta, "\n" + indent);
+      return;
+    }
+    if(e.key === "Backspace" && s === en && s > lineStart){
+      const before = v.slice(lineStart, s);
+      if(/^ +$/.test(before)){
+        const rm = before.length % 4 === 0 ? 4 : before.length % 4;
+        e.preventDefault(); insertText(ta, "", s - rm, s);
+      }
+    }
+  });
+  syncGut();
+  return { wrap, ta, set(v){ ta.value = v; syncGut(); } };
+}
+
+
+
+/* =================== VISUALIZER =================== */
+function setupViz(){
+  const cv = document.getElementById("viz-canvas"); if(!cv) { window.drawViz = null; return; }
+  const ids = ["m-a","m-b","m-c","m-d"].map(id => document.getElementById(id));
+  const saved = state.viz || [1, 1, 0, 1];
+  ids.forEach((el, i) => { el.value = saved[i]; el.addEventListener("input", () => { state.viz = ids.map(x => +x.value || 0); saveSoon(); drawViz(); }); });
+  const presets = [["Identity",[1,0,0,1]],["Stretch",[2,0,0,1]],["Rotate 45°",[0.71,-0.71,0.71,0.71]],["Shear",[1,1,0,1]],["Flip",[-1,0,0,1]],["[[2,1],[1,2]]",[2,1,1,2]],["Singular",[1,2,2,4]]];
+  const host = document.getElementById("viz-presets");
+  presets.forEach(([name, v]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = name;
+    b.addEventListener("click", () => { ids.forEach((el, i) => el.value = v[i]); state.viz = v.slice(); save(); drawViz(); });
+    host.appendChild(b);
+  });
+  window.drawViz = function(){
+    const css = getComputedStyle(document.documentElement);
+    const col = n => css.getPropertyValue(n).trim();
+    const [a, b, c, d] = ids.map(x => +x.value || 0);
+    const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, s = W / 10;
+    const P = (x, y) => [W / 2 + (a * x + b * y) * s, H / 2 - (c * x + d * y) * s];
+    const O = (x, y) => [W / 2 + x * s, H / 2 - y * s];
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = col("--card"); ctx.fillRect(0, 0, W, H);
+    ctx.lineWidth = 1; ctx.strokeStyle = col("--grid");
+    for(let i = -5; i <= 5; i++){ let p = O(i, -5), q = O(i, 5); ctx.beginPath(); ctx.moveTo(...p); ctx.lineTo(...q); ctx.stroke(); p = O(-5, i); q = O(5, i); ctx.beginPath(); ctx.moveTo(...p); ctx.lineTo(...q); ctx.stroke(); }
+    ctx.globalAlpha = 0.45; ctx.strokeStyle = col("--muted"); ctx.lineWidth = 1.5;
+    for(let i = -8; i <= 8; i++){ let p = P(i, -8), q = P(i, 8); ctx.beginPath(); ctx.moveTo(...p); ctx.lineTo(...q); ctx.stroke(); p = P(-8, i); q = P(8, i); ctx.beginPath(); ctx.moveTo(...p); ctx.lineTo(...q); ctx.stroke(); }
+    ctx.globalAlpha = 0.22; ctx.fillStyle = col("--accent");
+    ctx.beginPath(); ctx.moveTo(...P(0,0)); ctx.lineTo(...P(1,0)); ctx.lineTo(...P(1,1)); ctx.lineTo(...P(0,1)); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = 1;
+    const arrow = (x, y, color) => {
+      const [x0, y0] = O(0, 0), [x1, y1] = O(x, y);
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+      const ang = Math.atan2(y1 - y0, x1 - x0), h = 20;
+      if(Math.hypot(x1 - x0, y1 - y0) > 4){ ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 - h * Math.cos(ang - 0.4), y1 - h * Math.sin(ang - 0.4)); ctx.lineTo(x1 - h * Math.cos(ang + 0.4), y1 - h * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill(); }
+    };
+    arrow(a, c, col("--accent")); arrow(b, d, col("--jhat"));
+    const det = a * d - b * c;
+    const msg = Math.abs(det) < 1e-9 ? "Determinant 0: the plane collapses, so this matrix has no inverse." : det < 0 ? `Determinant ${+det.toFixed(3)}: areas scale by ${+Math.abs(det).toFixed(3)} and the plane is flipped.` : `Determinant ${+det.toFixed(3)}: the shaded unit square now has area ${+det.toFixed(3)}.`;
+    document.getElementById("viz-det").innerHTML = `<b>${esc(msg)}</b>`;
+  };
+  drawViz();
+}
+
+/* =================== LEARN =================== */
+function makeSnippet(el){
+  const code = el.querySelector("pre").textContent;
+  el.innerHTML = "";
+  const ed = makeEditor(code, { rows: Math.min(code.split("\n").length, 26), label:"Example code" });
+  el.appendChild(ed.wrap);
+  const row = document.createElement("div"); row.className = "row";
+  const run = document.createElement("button"); run.type = "button"; run.className = "run"; run.textContent = "Run";
+  const reset = document.createElement("button"); reset.type = "button"; reset.className = "ghost"; reset.textContent = "Reset example";
+  row.append(run, reset);
+  const out = document.createElement("div"); out.className = "out"; out.textContent = "Press Run (or Ctrl+Enter in the code).";
+  el.append(row, out);
+  const doRun = async () => {
+    run.disabled = true; out.textContent = py ? "Running…" : "Loading Python (first time only)…";
+    try {
+      const r = await pyCall("tryit", { code: ed.ta.value, in: [] }, ed.ta.value);
+      out.innerHTML = esc(r.out || (r.error ? "" : "(no output)")) + explainHtml(r.error);
+      wireGoLine(out, ed.ta);
+    } catch(e){ out.textContent = e.message; }
+    run.disabled = false;
+  };
+  run.addEventListener("click", doRun);
+  ed.ta.addEventListener("keydown", e => { if((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); doRun(); } });
+  reset.addEventListener("click", () => { ed.set(code); out.textContent = "Press Run."; });
+}
+function renderQuiz(lid){
+  const qs = QUIZ[lid] || [];
+  if(!qs.length) return null;
+  const card = document.createElement("div"); card.className = "card";
+  card.innerHTML = `<h2>Check yourself</h2><p class="muted">Work it out on paper before you click.</p>`;
+  qs.forEach(q => {
+    const box = document.createElement("div"); box.className = "quiz";
+    box.innerHTML = `<pre>${esc(q.code)}</pre><div class="muted">What's the answer?</div><div class="opts"></div><div class="why" hidden></div>`;
+    const opts = box.querySelector(".opts"), why = box.querySelector(".why");
+    const show = picked => {
+      opts.querySelectorAll(".opt").forEach((b, i) => { b.classList.toggle("right", i === q.a); b.classList.toggle("wrong", i === picked && picked !== q.a); });
+      why.hidden = false;
+      why.innerHTML = (picked === q.a ? `<b style="color:var(--ok)">Right.</b> ` : `<b style="color:var(--bad)">Not quite.</b> `) + esc(q.why);
+    };
+    q.opts.forEach((o, i) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.textContent = o;
+      b.addEventListener("click", () => { state.quiz[q.id] = { picked:i, right: i === q.a }; save(); show(i); renderDash(); });
+      opts.appendChild(b);
+    });
+    if(state.quiz[q.id]) show(state.quiz[q.id].picked);
+    card.appendChild(box);
+  });
+  const row = document.createElement("div"); row.className = "row";
+  const reset = document.createElement("button"); reset.type = "button"; reset.className = "ghost"; reset.textContent = "Clear my answers";
+  reset.addEventListener("click", () => { qs.forEach(q => delete state.quiz[q.id]); save(); renderLearn(); renderDash(); });
+  row.appendChild(reset); card.appendChild(row);
+  return card;
+}
+function prioTag(p){ const [c, t] = PRIO[p]; return `<span class="prio ${c}">${t}</span>`; }
+function renderChips(){
+  const host = document.getElementById("learn-chips"); host.innerHTML = "";
+  LESSONS.forEach((l, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip" + (i === state.lesson ? " active" : "");
+    b.innerHTML = `${i + 1}. ${esc(l.name)}${state.got[l.id] ? " ✓" : ""}`;
+    b.title = PRIO[l.prio][1];
+    b.addEventListener("click", () => { state.lesson = i; save(); renderLearn(); });
+    host.appendChild(b);
+  });
+}
+function renderLearn(){
+  renderChips();
+  const i = Math.min(state.lesson || 0, LESSONS.length - 1), l = LESSONS[i];
+  const body = document.getElementById("learn-body");
+  unregister(body);
+  const card = document.createElement("div"); card.className = "card";
+  card.innerHTML = `<div class="lesson-head"><span class="tag">Lesson ${i + 1}</span><h2>${esc(l.name)}</h2>${prioTag(l.prio)}</div>
+    <div class="used"><b>Where it's used:</b> ${esc(l.used)}</div>${LEARN[l.id]}
+    <p class="muted">Watch: 3Blue1Brown, ${esc(l.watch)} (Resources tab).</p>
+    <label class="item" style="border-top:1px solid var(--line);margin-top:10px"><input type="checkbox" id="got-${l.id}" ${state.got[l.id] ? "checked" : ""}><div><b>I understand this</b> <span class="muted">(I could explain it to a classmate in two sentences)</span></div></label>`;
+  body.innerHTML = ""; body.appendChild(card);
+  card.querySelectorAll(".snip").forEach(makeSnippet);
+  card.querySelector(`#got-${l.id}`).addEventListener("change", e => { state.got[l.id] = e.target.checked; save(); renderDash(); renderChips(); renderRoad(); });
+  const q = renderQuiz(l.id); if(q) body.appendChild(q);
+  body.appendChild(renderExercise(EXMAP[l.ex], "learn"));
+  const nav = document.createElement("div"); nav.className = "row"; nav.style.marginBottom = "16px";
+  if(i > 0) nav.insertAdjacentHTML("beforeend", `<button class="ghost" type="button" data-prev>← ${esc(LESSONS[i - 1].name)}</button>`);
+  if(i < LESSONS.length - 1) nav.insertAdjacentHTML("beforeend", `<button class="ghost" type="button" data-next>Next: ${esc(LESSONS[i + 1].name)} →</button>`);
+  body.appendChild(nav);
+  const pv = nav.querySelector("[data-prev]"), nx = nav.querySelector("[data-next]");
+  if(pv) pv.addEventListener("click", () => { state.lesson = i - 1; save(); renderLearn(); window.scrollTo({top:0}); });
+  if(nx) nx.addEventListener("click", () => { state.lesson = i + 1; save(); renderLearn(); window.scrollTo({top:0}); });
+  setupViz();
+}
+
+/* =================== EXERCISES =================== */
+const EDITORS = {};
+function unregister(root){ for(const id in EDITORS) EDITORS[id] = EDITORS[id].filter(x => !root.contains(x.root)); }
+function syncPills(id){ document.querySelectorAll(`[data-status="${id}"]`).forEach(p => { p.textContent = state.ex[id] ? "Passed" : "Not yet"; p.className = "pill " + (state.ex[id] ? "done" : ""); }); }
+function renderExercise(ex, where){
+  const div = document.createElement("div"); div.className = "card";
+  const starter = src(ex.id);
+  const l = LESSONS[LMAP[ex.lesson]];
+  div.innerHTML = `
+    <div class="prob-head"><h2>${where === "learn" ? "Exercise " : ""}${esc(ex.title)}</h2><span class="pill" data-status="${ex.id}"></span></div>
+    <p class="prompt">${ex.prompt}</p>
+    ${where === "lab" ? `<p class="muted" style="margin-top:-4px">${prioTag(l.prio)} <a href="#" data-lesson>Lesson ${LMAP[ex.lesson] + 1}: ${esc(l.name)}</a></p>` : ""}
+    <div data-ed></div>
+    <div class="row">
+      <button class="run" data-check type="button">Run checks</button>
+      <button class="ghost" data-tryit type="button">Run my code</button>
+      <button class="ghost" data-nudge type="button">Nudge (0/${ex.nudges.length})</button>
+      <span data-resetwrap><button class="ghost danger" data-reset type="button">Reset code</button></span>
+    </div>
+    <div data-nudges></div>
+    <div data-out></div>`;
+  const code0 = state.code[ex.id] ?? starter;
+  const ed = makeEditor(code0, { label: ex.title + " code", rows: Math.min(20, Math.max(7, code0.split("\n").length + 2)),
+    onChange: v => { state.code[ex.id] = v; saveSoon(); (EDITORS[ex.id] || []).forEach(o => { if(o.ed !== ed) o.ed.set(v); }); },
+    onRun: () => check() });
+  div.querySelector("[data-ed]").appendChild(ed.wrap);
+  (EDITORS[ex.id] = EDITORS[ex.id] || []).push({ ed, root: div });
+  const out = div.querySelector("[data-out]");
+  const checkBtn = div.querySelector("[data-check]"), tryBtn = div.querySelector("[data-tryit]");
+  const lk = div.querySelector("[data-lesson]"); if(lk) lk.addEventListener("click", e => { e.preventDefault(); goLesson(ex.lesson); });
+  async function check(){
+    checkBtn.disabled = true; out.innerHTML = `<div class="out">${py ? "Checking…" : "Loading Python (first time only)…"}</div>`;
+    try {
+      const scan = ed.ta.value + "\n" + ex.tests.map(t => t.setup || "").join("\n");
+      const results = await pyCall("grade", { code: ed.ta.value, tests: ex.tests }, scan);
+      const nOk = results.filter(r => r.ok).length, all = nOk === results.length && results.length > 0;
+      let html = `<div class="summary-line ${all ? "ok" : "bad"}">${all ? `All ${results.length} checks passed.` : `${nOk} of ${results.length} checks passed.`}</div><div class="results">`;
+      let explained = false;
+      results.forEach((r, i) => {
+        const label = ex.tests[i] && ex.tests[i].label ? ex.tests[i].label : r.label;
+        html += `<div class="res ${r.ok ? "ok" : "bad"}"><div class="lbl">${esc(label)}</div>`;
+        if(!r.ok){
+          let d = r.detail;
+          if(d && d.startsWith("Your code called input()")) d = "Your code ran into input() while loading.";
+          if(d) html += `<pre>${esc(d)}</pre>`;
+          if(r.err && !explained){ html += explainHtml(r.err); explained = true; }
+        }
+        html += `</div>`;
+      });
+      out.innerHTML = html + "</div>";
+      wireGoLine(out, ed.ta);
+      if(all && !state.ex[ex.id]){ state.ex[ex.id] = true; save(); }
+      syncPills(ex.id); renderDash(); renderRoad();
+    } catch(e){ out.innerHTML = `<div class="out">${esc(e.message)}</div>`; }
+    checkBtn.disabled = false;
+  }
+  async function tryIt(){
+    tryBtn.disabled = true; out.innerHTML = `<div class="out">${py ? "Running…" : "Loading Python (first time only)…"}</div>`;
+    try {
+      const r = await pyCall("tryit", { code: ed.ta.value, in: [] }, ed.ta.value);
+      out.innerHTML = `<div class="out">${esc(r.out || (r.error ? "" : "(no output: your code only defines a function. Add a print(...) call at the bottom to see a result.)"))}${explainHtml(r.error)}</div>`;
+      wireGoLine(out, ed.ta);
+    } catch(e){ out.innerHTML = `<div class="out">${esc(e.message)}</div>`; }
+    tryBtn.disabled = false;
+  }
+  checkBtn.addEventListener("click", check);
+  tryBtn.addEventListener("click", tryIt);
+  let shown = 0;
+  const nudgeBtn = div.querySelector("[data-nudge]"), nudgeBox = div.querySelector("[data-nudges]");
+  nudgeBtn.addEventListener("click", () => {
+    if(shown >= ex.nudges.length) return;
+    nudgeBox.insertAdjacentHTML("beforeend", `<div class="nudge"><b>Nudge ${shown + 1}:</b> ${ex.nudges[shown]}</div>`);
+    shown++; nudgeBtn.textContent = `Nudge (${shown}/${ex.nudges.length})`;
+    if(shown >= ex.nudges.length) nudgeBtn.disabled = true;
+  });
+  const resetWrap = div.querySelector("[data-resetwrap]");
+  function wireReset(){
+    resetWrap.querySelector("[data-reset]").addEventListener("click", () => {
+      resetWrap.innerHTML = `<span class="confirm">Erase your code? <button class="ghost danger" data-yes type="button">Yes, reset</button><button class="ghost" data-no type="button">Keep it</button></span>`;
+      resetWrap.querySelector("[data-yes]").addEventListener("click", () => { delete state.code[ex.id]; save(); (EDITORS[ex.id] || []).forEach(o => o.ed.set(starter)); restore(); });
+      resetWrap.querySelector("[data-no]").addEventListener("click", restore);
+    });
+  }
+  function restore(){ resetWrap.innerHTML = `<button class="ghost danger" data-reset type="button">Reset code</button>`; wireReset(); }
+  wireReset();
+  setTimeout(() => syncPills(ex.id));
+  return div;
+}
+function renderLab(){
+  const box = document.getElementById("exercises");
+  unregister(box); box.innerHTML = "";
+  EXERCISES.forEach(ex => box.appendChild(renderExercise(ex, "lab")));
+}
+function renderScratch(){
+  const host = document.getElementById("scratch-host"); host.innerHTML = "";
+  const ed = makeEditor(state.scratch ?? src("scratch"), { label:"Scratchpad code", rows:8, onChange: v => { state.scratch = v; saveSoon(); }, onRun: () => run() });
+  host.appendChild(ed.wrap);
+  host.insertAdjacentHTML("beforeend", `<div class="row"><button class="run" type="button" id="scratch-run">Run</button></div><div class="out" id="scratch-out">Output appears here.</div>`);
+  const out = document.getElementById("scratch-out"), btn = document.getElementById("scratch-run");
+  async function run(){
+    btn.disabled = true; out.textContent = py ? "Running…" : "Loading Python (first time only)…";
+    try { const r = await pyCall("tryit", { code: ed.ta.value, in: [] }, ed.ta.value); out.innerHTML = esc(r.out || (r.error ? "" : "(no output)")) + explainHtml(r.error); wireGoLine(out, ed.ta); }
+    catch(e){ out.textContent = e.message; }
+    btn.disabled = false;
+  }
+  btn.addEventListener("click", run);
+}
+
+/* =================== ROADMAP =================== */
+function renderRoad(){
+  const t = document.getElementById("road-table");
+  t.innerHTML = `<tr><th>#</th><th>Lesson</th><th>Priority</th><th>Where analytics uses it</th><th>Status</th></tr>` +
+    LESSONS.map((l, i) => `<tr><td>${i + 1}</td><td><a href="#" data-go="${l.id}">${esc(l.name)}</a></td><td>${prioTag(l.prio)}</td><td>${esc(l.used)}</td>
+      <td><span class="pill ${state.got[l.id] ? "done" : ""}">${state.got[l.id] ? "Understood" : "To do"}</span> <span class="pill ${state.ex[l.ex] ? "done" : ""}">${state.ex[l.ex] ? "Exercise passed" : "Exercise to do"}</span></td></tr>`).join("");
+  t.querySelectorAll("[data-go]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); goLesson(a.dataset.go); }));
+}
+
+/* =================== PLAN / DASH =================== */
+function renderPlan(){
+  const box = document.getElementById("plan"); box.innerHTML = "";
+  PLAN.forEach(([d, t], i) => {
+    const lab = document.createElement("label"); lab.className = "item";
+    lab.innerHTML = `<input type="checkbox" ${state.plan[i] ? "checked" : ""}><div><span class="tag">${d}</span>${esc(t)}</div>`;
+    lab.querySelector("input").addEventListener("change", e => { state.plan[i] = e.target.checked; save(); });
+    box.appendChild(lab);
+  });
+}
+function setStat(id, bar, n, d){ document.getElementById(id).textContent = `${n} / ${d}`; document.getElementById(bar).style.width = (d ? n / d * 100 : 0) + "%"; }
+function renderDash(){
+  setStat("les-count", "les-bar", LESSONS.filter(l => state.got[l.id]).length, LESSONS.length);
+  const ess = LESSONS.filter(l => l.prio === 1);
+  setStat("ess-count", "ess-bar", ess.filter(l => state.got[l.id]).length, ess.length);
+  setStat("ex-count", "ex-bar", EXERCISES.filter(e => state.ex[e.id]).length, EXERCISES.length);
+  setStat("quiz-count", "quiz-bar", ALLQ.filter(q => state.quiz[q.id]).length, ALLQ.length);
+  const nu = document.getElementById("next-up");
+  const i = LESSONS.findIndex(l => !state.got[l.id] || !state.ex[l.ex]);
+  if(i === -1){ nu.innerHTML = `<b>All 12 lessons understood and exercises passed.</b> Redo exercises 4, 8, and 11 from a blank file in a week to lock them in.`; return; }
+  const l = LESSONS[i];
+  const what = !state.got[l.id] ? "Read the lesson and run the examples" : "Pass the exercise";
+  nu.innerHTML = `<b>Lesson ${i + 1}: ${esc(l.name)}</b> ${prioTag(l.prio)}<div style="margin-top:4px">${what}. ${esc(l.used)}</div><div class="row"><button class="run" type="button" id="next-go">Open Lesson ${i + 1}</button></div>`;
+  document.getElementById("next-go").addEventListener("click", () => goLesson(l.id));
+}
+
+/* =================== BACKUP =================== */
+const msg = t => { const m = document.getElementById("backup-msg"); m.textContent = t; setTimeout(() => { if(m.textContent === t) m.textContent = ""; }, 4000); };
+document.getElementById("export-btn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "linalg-progress.json";
+  document.body.appendChild(a); a.click(); a.remove(); msg("Exported linalg-progress.json");
+});
+document.getElementById("import-file").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try { state = Object.assign(blank(), JSON.parse(await f.text())); save(); renderAll(); msg("Progress imported."); }
+  catch(err){ msg("That file isn't a valid progress export."); }
+  e.target.value = "";
+});
+function wireResetAll(){
+  document.getElementById("reset-btn").addEventListener("click", () => {
+    const w = document.getElementById("reset-wrap");
+    w.innerHTML = `<span class="confirm">Erase all progress, code, and notes? <button class="ghost danger" id="reset-yes" type="button">Yes, erase</button><button class="ghost" id="reset-no" type="button">Cancel</button></span>`;
+    const back = () => { w.innerHTML = `<button class="ghost danger" id="reset-btn" type="button">Reset everything</button>`; wireResetAll(); };
+    document.getElementById("reset-yes").addEventListener("click", () => { try { localStorage.removeItem(STORE_KEY); } catch(e){} state = blank(); renderAll(); back(); msg("Everything was reset."); });
+    document.getElementById("reset-no").addEventListener("click", back);
+  });
+}
+wireResetAll();
+
+const journal = document.getElementById("journal");
+journal.addEventListener("input", () => { state.journal = journal.value; saveSoon(); });
+
+function renderAll(){
+  applyTheme(); renderDash(); renderPlan(); renderRoad(); renderLearn(); renderLab(); renderScratch();
+  journal.value = state.journal || "";
+}
+load();
+renderAll();
+</script>
+</body>
+</html>
