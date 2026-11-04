@@ -6124,7 +6124,7 @@ function renderRecall(){
   <p class="small" style="margin-top:0">A classmate just joined and missed everything so far. Pick a concept and explain it to them in plain words, without looking at your notes. Then check your explanation against the key points they'd need. If you left any out, review them and try again the next time you open this page.</p></section>`;
   const lab=s=>({new:'Not tried',solid:'Solid',review:'Needs another try',locked:'Try again next session'}[s]);
   const profs=RC.filter(r=>r.prof); const ps=profs.filter(r=>rStatus(r)==='solid').length;
-  html+=`<section class="panel prof"><h2><span class="mark">Discuss Topics</span></h2>
+  html+=`<section class="panel prof"><h2><span class="mark">Discussion Topics</span></h2>
    <p class="small" style="margin-top:0">Open-ended questions worth being able to discuss. Explain each one as you would to a classmate who just joined, then check it against the key points. (${ps} of ${profs.length} solid)</p><div class="clist">`;
   profs.forEach(r=>{ const s=rStatus(r); html+=`<button class="citem" data-r="${r.id}" ${s==='locked'?'disabled':''}><span>${r.title}</span><span class="st ${s}">${lab(s)}</span></button>`; });
   html+=`</div></section>`;
