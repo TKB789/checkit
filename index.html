@@ -358,9 +358,10 @@ button.pick{border:1px solid var(--line);background:var(--card)}
 .pxm .mfix{display:block;font-size:.78rem;color:var(--bad);margin-top:2px}
 /*PX:CSS:END*/
 </style>
-<style>/*AI-notice*/.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style><style>/*NAV-wrap*/nav.tabs{flex-wrap:wrap}nav.tabs button,nav.tabs a.tablink{flex:1 1 auto}</style><style>/*DASH-css*/.bar.go,.cov .go{cursor:pointer;border-radius:8px}.bar.go:hover,.cov .go:hover{background:var(--muted-bg,rgba(127,127,127,.08))}.bar.go .lab span:first-child::after,.cov .go b::after{content:" ›";color:var(--pen,#2F5BD3);font-weight:700}.dash .dcard{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px}.dash .dtop{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;justify-content:space-between}.dash .dacts,.modmenu{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.modmenu{margin:4px 0 12px}</style></head>
+<style>/*AI-notice*/.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style><style>/*NAV-wrap*/nav.tabs{flex-wrap:wrap}nav.tabs button,nav.tabs a.tablink{flex:1 1 auto}</style><style>/*DASH-css*/.bar.go,.cov .go{cursor:pointer;border-radius:8px}.bar.go:hover,.cov .go:hover{background:var(--muted-bg,rgba(127,127,127,.08))}.bar.go .lab span:first-child::after,.cov .go b::after{content:" ›";color:var(--pen,#2F5BD3);font-weight:700}.dash .dcard{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px}.dash .dtop{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;justify-content:space-between}.dash .dacts,.modmenu{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.modmenu{margin:4px 0 12px}</style><style>/*GSEARCH-css*/.gsearch{position:sticky;top:0;z-index:30;display:flex;gap:8px;padding:8px 0;margin:-8px 0 4px;background:var(--bg)}.gsearch input{flex:1 1 auto;min-width:0;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card,#fff);color:inherit}.gsearch select{flex:0 1 38%;min-width:0;font-size:15px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--card,#fff);color:inherit}.gcontents{border:1px solid var(--line);border-radius:12px;padding:8px 14px;margin:0 0 14px;background:var(--card,#fff)}.gcontents summary{cursor:pointer;font-weight:700}.gcontents ol{margin:8px 0 4px;padding-left:1.4em}.gcontents li{margin:4px 0}.gcontents .gk{font-size:.78rem;color:var(--ink-2,#566);font-weight:600}.gcontents a{color:var(--pen,#2F5BD3);text-decoration:none}.gcontents a:hover{text-decoration:underline}.guide [id],#pxscen,section[id]{scroll-margin-top:64px}</style></head>
 <body>
 <div class="wrap">
+  <div class="gsearch" id="gsearch" role="search"><input type="search" id="gq" placeholder="Search everything (e.g. CUSUM threshold, lasso)" aria-label="Search the whole site" autocomplete="off"><select id="gtopics" aria-label="Common topics"><option value="">Common topics</option><optgroup label="Midterm 1 (Modules 1–10)"><option>CUSUM</option><option>SVM margin</option><option>k-nearest neighbor</option><option>k-means</option><option>cross-validation</option><option>outliers</option><option>scaling</option><option>Holt-Winters</option><option>ARIMA</option><option>GARCH</option><option>AIC</option><option>p-value</option><option>Box-Cox</option><option>PCA</option><option>regression tree</option><option>random forest</option><option>logistic</option><option>confusion matrix</option></optgroup><optgroup label="Midterm 2 (Modules 11–16)"><option>lasso</option><option>ridge</option><option>stepwise</option><option>A/B test</option><option>factorial</option><option>bandit</option><option>Poisson</option><option>exponential</option><option>Weibull</option><option>Q-Q plot</option><option>queuing</option><option>simulation</option><option>Markov chain</option><option>imputation</option><option>binary variables</option><option>constraint</option><option>McNemar</option><option>Wilcoxon</option><option>Bayesian</option><option>Louvain</option><option>neural network</option><option>game theory</option><option>survival</option><option>gradient boosting</option></optgroup></select></div>
   <header class="top">
     <div class="titlerow"><div>
       <h1>Midterm practice: Modules 1–16</h1>
@@ -373,7 +374,6 @@ button.pick{border:1px solid var(--line);background:var(--card)}
       <button role="tab" id="tab-ss" aria-selected="false" data-tab="ss">Slide summaries</button>
       <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall">New student</button>
       <button role="tab" id="tab-guides" aria-selected="false" data-tab="guides">Study guides</button>
-      <button role="tab" id="tab-search" aria-selected="false" data-tab="search">Search</button>
       <button role="tab" id="tab-notes" aria-selected="false" data-tab="notes">Notes</button><!--NH-tab-->
       <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress">Progress</button>
       <button role="tab" id="tab-sg" aria-selected="false" data-tab="sg">Study group</button>
@@ -5862,8 +5862,22 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('clic
   if(exam && exam.active && b.dataset.tab!==tab){ confirmDlg('Leave the exam? Your answers so far are saved, but the timer stops and the rest of this exam ends.','Leave exam',()=>{endExam(true); switchTab(b.dataset.tab);}); return; }
   switchTab(b.dataset.tab);
 }));
-function switchTab(t){ tab=t; document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t))); render(); window.scrollTo(0,0); }
+/*GSEARCH*/let prevTab='mid';
+function switchTab(t){ if(t==='search'&&tab!=='search') prevTab=tab; const gq=document.getElementById('gq'); if(gq&&t==='search') gq.value=searchQ; tab=t; document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t))); render(); window.scrollTo(0,0); }
 function render(){ if(tab==='notes'){ NH.render(main); return; }/*NH-route*/ if(tab==='mid'){ PX.render(main); return; } if(tab==='slides'){ tab='ss'; }/*FCI-tab*/ if(tab==='ss'||tab==='sg'||tab==='code'){ const src={ss:'slides.html',sg:'study_group.html',code:'code_practice.html'}[tab]; main.innerHTML=`<iframe id="ssframe" src="${src}?embed=1${window.SUBHASH||''}" title="${tab}" style="width:100%;border:0;display:block;min-height:70vh;background:transparent"></iframe>`; window.SUBHASH=''; return; }/*EMBED-render*/ if(tab==='exam'||tab==='slides'||tab==='core'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else if(tab==='search') renderSearch(); else renderProgress(); }
+
+// ---------- persistent search bar (GSEARCH)
+function closeSearch(){ switchTab(prevTab&&prevTab!=='search'?prevTab:'mid'); }
+(function(){ const gq=document.getElementById('gq'), sel=document.getElementById('gtopics'); if(!gq) return; let tmr=null;
+  const go=()=>{ const v=gq.value.trim(); searchQ=gq.value; searchMore={};
+    if(!v){ if(tab==='search') closeSearch(); return; }
+    if(tab==='search'){ renderResults(); return; }
+    if(exam && exam.active){ confirmDlg('Leave the exam to search? Your answers so far are saved, but the timer stops and the rest of this exam ends.','Leave exam',()=>{ endExam(true); switchTab('search'); }); return; }
+    switchTab('search'); };
+  gq.addEventListener('input',()=>{ clearTimeout(tmr); tmr=setTimeout(go,220); });
+  gq.addEventListener('keydown',e=>{ if(e.key==='Enter'){ clearTimeout(tmr); go(); gq.blur(); } });
+  sel.addEventListener('change',()=>{ if(!sel.value) return; gq.value=sel.value; sel.value=''; go(); });
+})();
 // ---------- dialog
 function confirmDlg(msg,okLabel,onOk,cancelLabel='Cancel'){
   const d=$('#dlg'); $('#dlg-msg').textContent=msg; const a=$('#dlg-actions'); a.innerHTML='';
@@ -6224,11 +6238,13 @@ function renderReader(){
   main.innerHTML=`<div class="greader-bar"><button class="btn quiet" id="gback" style="min-height:38px;padding:6px 12px">← All guides</button>
     ${g.toc.length?`<select id="gtoc" aria-label="Jump to section"><option value="">Jump to section…</option>${g.toc.map(t=>`<option value="${t.id}">${esc((t.kicker?t.kicker.charAt(0)+t.kicker.slice(1).toLowerCase()+' · ':'')+t.title)}</option>`).join('')}</select>`:''}
     ${g.id==='rscript'?'<button class="btn" id="gcopy" style="min-height:38px;padding:6px 12px">Copy script</button>':''}${g.print?'<button class="btn" id="gprint" style="min-height:38px;padding:6px 12px">Print / save as PDF</button>':''}</div>
+    ${g.toc.length>2?`<details class="gcontents" open><summary>Contents · ${g.toc.length} sections</summary><ol>${g.toc.map(t=>`<li><a href="#" class="g-jump" data-to="${t.id}">${t.kicker?`<span class="gk">${esc(t.kicker.charAt(0)+t.kicker.slice(1).toLowerCase())}</span> `:''}${esc(t.title)}</a></li>`).join('')}</ol></details>`:''}
     <article class="guide">${g.id==='rscript'?`<h2 class="g-h1">${esc(g.title)}</h2><p class="g-sub">${esc(g.desc)}. Copy it into RStudio and run one section at a time.</p>`:''}${g.html}</article>`;
   $('#gback').onclick=()=>{ gview=null; renderGuides(); window.scrollTo(0,0); };
   const sel=$('#gtoc'); if(sel) sel.onchange=()=>{ const el=document.getElementById(sel.value); if(el) el.scrollIntoView({behavior:'smooth'}); sel.value=''; };
   const gp=$('#gprint'); if(gp) gp.onclick=()=>{ const u=URL.createObjectURL(new Blob([g.print],{type:'text/html'})); const w=window.open(u,'_blank'); if(!w) location.href=u; };
   const cp=$('#gcopy'); if(cp) cp.onclick=async()=>{ const pre=document.querySelector('.guide pre'); try{ await navigator.clipboard.writeText(pre.textContent); cp.textContent='Copied'; }catch(e){ const r=document.createRange(); r.selectNodeContents(pre); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); cp.textContent='Selected: copy it'; } };
+  document.querySelectorAll('.gcontents a.g-jump').forEach(l=>l.onclick=e=>{ e.preventDefault(); const el=document.getElementById(l.dataset.to); if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),2200);} });
   const art=document.querySelector('article.guide');
   if(art) art.addEventListener('click',e=>{ const a=e.target.closest('a.g-jump,a.g-xref'); if(!a) return; e.preventDefault();
     if(a.classList.contains('g-jump')){ const el=document.getElementById(a.dataset.to); if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),2200);} }
@@ -6281,21 +6297,18 @@ function goGuide(g,id){ gview={g,a:id}; switchTab('guides');
   setTimeout(()=>{ const el=document.getElementById(id); if(el){ el.scrollIntoView({block:'start'}); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),2200);} },60); }
 function goSlides(lec,m){ location.href='#ss-cards='+encodeURIComponent(lec||('M'+String(m).replace(/^m/,''))); }/*FCI-go*/
 function renderSearch(){
-  main.innerHTML=`<section class="panel"><h2>Search everything</h2>
-    <p class="small" style="margin-top:0">Find a topic in the study guides, the practice-midterm scenarios that test it, slide summaries, slide-test lectures, and explain-it concepts.</p>
-    <input type="search" id="sq" class="sq" placeholder="e.g. CUSUM threshold, Box-Cox, overfitting" value="${esc(searchQ)}" autocomplete="off" aria-label="Search topics">
-    <div class="chips" style="margin-top:10px">${['CUSUM','SVM margin','k-means','cross-validation','outliers','Holt-Winters','ARIMA','AIC','p-value','PCA','Box-Cox','logistic','random forest','confusion matrix'].map(t=>`<button class="chip sugg" data-t="${t}">${t}</button>`).join('')}</div>
+  main.innerHTML=`<section class="panel"><div class="row" style="justify-content:space-between;align-items:center;margin:0"><h2 style="margin:0">Search results</h2><button class="btn quiet" id="sclose" style="min-height:36px;padding:6px 12px">✕ Close search</button></div>
+    <p class="small" style="margin:6px 0 0">Guides, practice-midterm scenarios, slide summaries and explain-it concepts that mention “${esc(searchQ)}”. Edit the bar at the top to refine.</p>
+    <input type="hidden" id="sq" value="${esc(searchQ)}">
   </section><div id="sres"></div>`;
-  const inp=$('#sq'); let tmr=null;
-  inp.oninput=()=>{ clearTimeout(tmr); tmr=setTimeout(()=>{ searchQ=inp.value; searchMore={}; renderResults(); },160); };
-  document.querySelectorAll('.sugg').forEach(b=>b.onclick=()=>{ inp.value=b.dataset.t; searchQ=b.dataset.t; searchMore={}; renderResults(); });
+  $('#sclose').onclick=closeSearch;
   renderResults();
 }
 function renderResults(){
   const box=$('#sres'); if(!box) return; const I=buildIndex(); const terms=qTerms(searchQ);
   const modTag=m=>SHORT[m]?`<span class="tag">${m==='mix'?'Pick the tool':SHORT[m]}</span>`:'';
-  if(!terms.length){
-    // browse: every topic, grouped
+  if(!terms.length){ box.innerHTML=`<section class="panel"><p style="margin:0">Type a topic in the search bar at the top, or pick one from Common topics. Each study guide also has a Contents list at its top.</p></section>`; return; }
+  if(false){
     const G=loadGuides().filter(g=>g.html);
     box.innerHTML=`<section class="panel"><h2>All study-guide topics</h2><p class="small" style="margin-top:0">Tap a topic to read it.</p>
       ${G.map(g=>{ const items=I.gs.filter(x=>x.g===g.id); return `<details class="rev"><summary><span class="revq"><b>${esc(g.title)}</b> <span class="small">· ${items.length} topics</span></span></summary><div class="revbody"><ul class="toplist">${items.map(x=>`<li><a href="#" class="gl" data-g="${x.g}" data-id="${x.id}">${esc(x.title)}</a></li>`).join('')}</ul></div></details>`; }).join('')}</section>
