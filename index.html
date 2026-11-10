@@ -358,7 +358,7 @@ button.pick{border:1px solid var(--line);background:var(--card)}
 .pxm .mfix{display:block;font-size:.78rem;color:var(--bad);margin-top:2px}
 /*PX:CSS:END*/
 </style>
-<style>/*AI-notice*/.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style><style>/*NAV-wrap*/nav.tabs{flex-wrap:wrap}nav.tabs button,nav.tabs a.tablink{flex:1 1 auto}</style></head>
+<style>/*AI-notice*/.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style><style>/*NAV-wrap*/nav.tabs{flex-wrap:wrap}nav.tabs button,nav.tabs a.tablink{flex:1 1 auto}</style><style>/*DASH-css*/.bar.go,.cov .go{cursor:pointer;border-radius:8px}.bar.go:hover,.cov .go:hover{background:var(--muted-bg,rgba(127,127,127,.08))}.bar.go .lab span:first-child::after,.cov .go b::after{content:" ›";color:var(--pen,#2F5BD3);font-weight:700}.dash .dcard{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 10px}.dash .dtop{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;justify-content:space-between}.dash .dacts,.modmenu{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.modmenu{margin:4px 0 12px}</style></head>
 <body>
 <div class="wrap">
   <header class="top">
@@ -6327,6 +6327,63 @@ function renderResults(){
 function fcState(){ let c={}; try{ c=(JSON.parse(localStorage.getItem('isye-fc-v1')||'null')||{}).c||{}; }catch(e){} const by={}; Object.keys(FCN).forEach(m=>by[m]={k:0,x:0});
   Object.entries(c).forEach(([id,r])=>{ const mm=/^M(\d+)/.exec(id); if(!mm) return; const m='m'+mm[1]; if(!by[m]) return; if(r.last==='r') by[m].k++; else by[m].x++; });
   const k=Object.values(by).reduce((a,b)=>a+b.k,0), x=Object.values(by).reduce((a,b)=>a+b.x,0); return {by,k,x}; }
+/*DASH*/
+const DKEY='isye-dash-focus'; let dashFocus='all'; try{ dashFocus=localStorage.getItem(DKEY)||'all'; }catch(e){}
+const DMODS=()=>['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12','m13','m14','m15','m16'];
+const mUp=m=>'M'+m.slice(1);
+function firstScen(ei,M){ const sc=PX.scenarios().filter(x=>(ei==null||x.ei===ei)&&(!M||x.module===M)); return sc.length?sc[0]:null; }
+function modStats(m){
+  const M=mUp(m); let pa=0,pc=0,pt=0;
+  PX.summaries().forEach(P=>P.byMod.forEach(x=>{ if(x.m===M){ pa+=x.answered; pc+=x.correct; pt+=x.total; } }));
+  const F=fcState().by[m]||{k:0,x:0}, fn=FCN[m]||0;
+  const rr=RC.filter(r=>r.m===m), rs=rr.filter(r=>rStatus(r)==='solid').length, rv=rr.filter(r=>['review','locked'].includes(rStatus(r))).length;
+  const total=pt+fn+rr.length, good=pc+F.k+rs, miss=(pa-pc)+F.x+rv, touched=pa+F.k+F.x+rs+rv;
+  return {m,M,pa,pc,pt,pmiss:pa-pc,pnew:pt-pa,fk:F.k,fx:F.x,fnew:Math.max(0,fn-F.k-F.x),fn,rt:rr.length,rs,rv,rnew:rr.length-rs-rv,total,good,miss,touched,comfort:total?good/total:1};
+}
+function dashPick(){
+  const inF=m=>{ const n=+m.slice(1); return dashFocus==='all'||(dashFocus==='mid1'?n<=10:n>=11); };
+  const st=DMODS().filter(inF).map(modStats).filter(x=>x.total);
+  const weak=st.filter(x=>x.miss>0).sort((a,b)=>a.comfort-b.comfort||b.miss-a.miss);
+  const fresh=st.filter(x=>x.miss===0&&x.comfort<0.8).sort((a,b)=>(a.touched?0:1)-(b.touched?0:1)||a.comfort-b.comfort||(+a.m.slice(1))-(+b.m.slice(1)));
+  return weak.concat(fresh).slice(0,3);
+}
+function dashPanel(){
+  const pick=dashPick(), chip=(k,t)=>`<button class="chip" data-dash="${k}" aria-pressed="${dashFocus===k}">${t}</button>`;
+  let h=`<section class="panel dash"><h2>Study next</h2><p class="small" style="margin-top:0">Your three best next steps, from what you've missed and what you haven't tried yet. Tap a button to start.</p><div class="chips" style="margin-bottom:10px">${chip('all','All modules')}${chip('mid1','Midterm 1 (M1–M10)')}${chip('mid2','Midterm 2 (M11–M16)')}</div>`;
+  if(!pick.length) h+=`<p class="small">Nothing flagged here: everything you've tried is going well. Switch the focus or keep reviewing.</p>`;
+  pick.forEach(x=>{
+    const why=[]; if(x.pmiss) why.push(`${x.pmiss} practice part${x.pmiss>1?'s':''} missed`); if(x.fx) why.push(`${x.fx} flashcard${x.fx>1?'s':''} to redo`); if(x.rv) why.push(`${x.rv} explain-it to retry`);
+    if(!why.length) why.push(x.touched?`${Math.round(100*x.comfort)}% comfortable so far`:'not started yet');
+    const acts=[]; const sc=firstScen(null,x.M);
+    if(sc&&(x.pmiss||x.pnew)) acts.push([`Practice questions (${x.pnew} new${x.pmiss?`, ${x.pmiss} missed`:''})`,`scen:${sc.ei}:${sc.si}`]);
+    if(x.fx||x.fnew) acts.push([`Flashcards (${x.fx?x.fx+' to redo, ':''}${x.fnew} new)`,`fc:${x.m}`]);
+    if(x.rv||x.rnew) acts.push([`Explain it (${x.rnew+x.rv} to do)`,`rc:${x.m}`]);
+    const first=x.pmiss?0:(x.fx?acts.findIndex(a=>a[1].startsWith('fc')):0);
+    h+=`<div class="dcard"><div class="dtop"><b>${esc(MODS[x.m]||x.m)}</b><span class="small">${why.join(' · ')}</span></div><div class="bar"><div class="t"><i class="m" style="width:${100*x.comfort}%"></i></div></div><div class="dacts">${acts.map((a,i)=>`<button class="btn ${i===Math.max(0,first)?'primary':'quiet'}" data-go="${a[1]}">${a[0]}</button>`).join('')}</div></div>`;
+  });
+  return h+`</section>`;
+}
+function modMenu(m){ const x=modStats(m), sc=firstScen(null,x.M); const b=[];
+  if(sc) b.push(`<button class="btn quiet" data-go="scen:${sc.ei}:${sc.si}">Practice questions (${x.pt})</button>`);
+  if(x.fn) b.push(`<button class="btn quiet" data-go="fc:${m}">Flashcards (${x.fn})</button>`);
+  if(x.rt) b.push(`<button class="btn quiet" data-go="rc:${m}">Explain it (${x.rt})</button>`);
+  return `<div class="modmenu">${b.join('')||'<span class="small">Nothing to practice here yet.</span>'}</div>`; }
+function goDash(g){ const p=g.split(':');
+  if(p[0]==='mid'){ const sc=firstScen(+p[1]); if(sc) goMid(sc.ei,sc.si); else switchTab('mid'); }
+  else if(p[0]==='scen') goMid(+p[1],+p[2]);
+  else if(p[0]==='pm'){ const sc=firstScen(+p[1],p[2]); if(sc) goMid(sc.ei,sc.si); }
+  else if(p[0]==='fc') goSlides(null,p[1]);
+  else if(p[0]==='ss') location.href='#ss';
+  else if(p[0]==='recall'){ drill=null; switchTab('recall'); }
+  else if(p[0]==='rc'){ const rr=RC.filter(r=>r.m===p[1]); const r=rr.find(r=>!['solid','locked'].includes(rStatus(r)))||rr[0]; drill=r?{r,text:'',checked:false}:null; switchTab('recall'); }
+}
+function wireProgress(){
+  main.querySelectorAll('[data-dash]').forEach(b=>b.onclick=()=>{ dashFocus=b.dataset.dash; try{ localStorage.setItem(DKEY,dashFocus); }catch(e){} renderProgress(); });
+  main.querySelectorAll('[data-go]').forEach(el=>{ const fire=e=>{ const g=el.dataset.go;
+      if(g.startsWith('mod:')){ const nx=el.nextElementSibling; if(nx&&nx.classList.contains('modmenu')){ nx.remove(); return; } main.querySelectorAll('.modmenu').forEach(x=>x.remove()); el.insertAdjacentHTML('afterend',modMenu(g.slice(4))); el.nextElementSibling.querySelectorAll('[data-go]').forEach(b=>b.onclick=ev=>{ ev.stopPropagation(); goDash(b.dataset.go); }); return; }
+      goDash(g); };
+    el.onclick=fire; el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fire(e); } }; });
+}
 function renderProgress(){
   const ACT=MQ; const FCS=fcState();
   const isM=q=>qStatus(q)==='mastered', isP=q=>['review','due','missed'].includes(qStatus(q));
@@ -6334,25 +6391,25 @@ function renderProgress(){
   const rs=RC.filter(rOk).length, rr=RC.filter(rP).length;
   const overall=Math.round(100*(ACT.filter(isM).length+rs+FCS.k)/((ACT.length+RC.length+FCT)||1));
   const dq=MQ.filter(q=>q.disc), dr=RC.filter(r=>r.disc);
-  let html=`<section class="panel"><h2>What you're comfortable with</h2>
+  let html=dashPanel()+`<section class="panel"><h2>What you're comfortable with</h2>
    <p class="big">${overall}%</p><p class="small">of all ${FCT} slide flashcards and ${RC.length} explain-it concepts combined (the practice midterm is graded separately below)</p>
-   <div class="bars">${PX.summaries().map(P=>bar(P.label+' practice (attempt '+P.attempt+'): correct',P.correct,P.answered-P.correct,P.total)).join('')}${bar('Slide flashcards known',FCS.k,FCS.x,FCT)}${bar('Explain-it concepts solid',rs,rr,RC.length)}${bar("Discussion topics",dq.filter(isM).length+dr.filter(rOk).length,dq.filter(isP).length+dr.filter(rP).length,dq.length+dr.length)}</div>
+   <div class="bars">${PX.summaries().map((P,ei)=>bar(P.label+' practice (attempt '+P.attempt+'): correct',P.correct,P.answered-P.correct,P.total,'mid:'+ei)).join('')}${bar('Slide flashcards known',FCS.k,FCS.x,FCT,'ss')}${bar('Explain-it concepts solid',rs,rr,RC.length,'recall')}${bar("Discussion topics",dq.filter(isM).length+dr.filter(rOk).length,dq.filter(isP).length+dr.filter(rP).length,dq.length+dr.length,'recall')}</div>
    <div class="legend"><span style="--c:var(--ok)">Comfortable</span><span style="--c:var(--warn)">In progress (missed questions or missed explain-it points)</span></div></section>
    <section class="panel"><h2>By module</h2><p class="small" style="margin-top:0">Slide flashcards plus explain-it concepts, grouped by module.</p><div class="bars">`;
   [...MOD_KEYS.filter(k=>/^m\d+$/.test(k)),'m10','m11','m12','m13','m14','m15','m16'].forEach(m=>{
     const qq=ACT.filter(q=>q.m===m), rr2=RC.filter(r=>r.m===m), f=FCS.by[m]||{k:0,x:0}, fn=FCN[m]||0; if(!qq.length&&!rr2.length&&!fn) return;
-    html+=bar(MODS[m],qq.filter(isM).length+rr2.filter(rOk).length+f.k,qq.filter(isP).length+rr2.filter(rP).length+f.x,qq.length+rr2.length+fn);/*FCI-bymod*/
+    html+=bar(MODS[m],qq.filter(isM).length+rr2.filter(rOk).length+f.k,qq.filter(isP).length+rr2.filter(rP).length+f.x,qq.length+rr2.length+fn,'mod:'+m);/*FCI-bymod*/
   });
   html+=`</div><p class="small" style="margin-bottom:0">Weakest modules first: ${weakest()}</p></section>
-   ${PX.summaries().map(P=>`<section class="panel"><h2>${esc(P.label)} practice</h2><p class="small" style="margin-top:0">Attempt ${P.attempt}: ${P.answered} of ${P.total} questions answered, grade <b>${P.pct===null?'–':P.pct+'%'}</b> (correct ÷ answered)${P.best.length>1?` · earlier attempts: ${P.best.slice(0,-1).map(x=>x+'%').join(', ')}`:''}${P.open?` · ${P.open} still missed`:''}.</p><div class="cov">${P.byMod.map(x=>`<div><b>${esc(x.name)}</b>${x.answered?`${x.pct}% (${x.correct}/${x.answered} answered)`:`not started`} · ${x.total} questions<i style="--w:${x.answered?Math.round(100*x.correct/x.total):0}%"></i></div>`).join('')}</div></section>`).join('')}
+   ${PX.summaries().map((P,ei)=>`<section class="panel"><h2>${esc(P.label)} practice</h2><p class="small" style="margin-top:0">Attempt ${P.attempt}: ${P.answered} of ${P.total} questions answered, grade <b>${P.pct===null?'–':P.pct+'%'}</b> (correct ÷ answered)${P.best.length>1?` · earlier attempts: ${P.best.slice(0,-1).map(x=>x+'%').join(', ')}`:''}${P.open?` · ${P.open} still missed`:''}.</p><div class="cov">${P.byMod.map(x=>`<div class="go" data-go="pm:${ei}:${x.m}" role="button" tabindex="0"><b>${esc(x.name)}</b>${x.answered?`${x.pct}% (${x.correct}/${x.answered} answered)`:`not started`} · ${x.total} questions<i style="--w:${x.answered?Math.round(100*x.correct/x.total):0}%"></i></div>`).join('')}</div></section>`).join('')}
    <section class="panel"><h2>Slide flashcards</h2><p class="small" style="margin-top:0">${FCS.k} of ${FCT} known, ${FCS.x} to redo. One card per slide summary; practice them on the <a href="#ss">Slide summaries</a> page (each deck and module has a Flashcards button).</p>
-   <div class="cov">${Object.keys(FCN).sort((a,b)=>+a.slice(1)-+b.slice(1)).map(m=>{const f=FCS.by[m]; return `<div><b>${esc(MODS[m]||m)}</b>${f.k}/${FCN[m]} known${f.x?` · ${f.x} to redo`:''}<i style="--w:${Math.round(100*f.k/FCN[m])}%"></i></div>`;}).join('')}</div></section>
+   <div class="cov">${Object.keys(FCN).sort((a,b)=>+a.slice(1)-+b.slice(1)).map(m=>{const f=FCS.by[m]; return `<div class="go" data-go="fc:${m}" role="button" tabindex="0"><b>${esc(MODS[m]||m)}</b>${f.k}/${FCN[m]} known${f.x?` · ${f.x} to redo`:''}<i style="--w:${Math.round(100*f.k/FCN[m])}%"></i></div>`;}).join('')}</div></section>
    <section class="panel"><h2>Start over</h2><p class="small" style="margin-top:0">Clears every saved answer and explain-it result on this page.</p><button class="btn danger" id="reset">Reset all progress</button></section>`;
-  main.innerHTML=html;
+  main.innerHTML=html; wireProgress();
   $('#reset').onclick=()=>confirmDlg('Reset all progress? This can\'t be undone.','Reset everything',()=>{ st={v:1,updatedAt:0,q:{},r:{}}; save(); renderProgress(); });
 }
-function bar(label,c,p,t){ const pc=t?100*c/t:0, pp=t?100*p/t:0;
-  return `<div class="bar"><div class="lab"><span>${label}</span><span>${Math.round(pc)}% · ${c}/${t}</span></div><div class="t" role="img" aria-label="${label}: ${c} of ${t} comfortable"><i class="m" style="width:${pc}%"></i><i class="r" style="width:${pp}%"></i></div></div>`; }
+function bar(label,c,p,t,go){ const pc=t?100*c/t:0, pp=t?100*p/t:0;
+  return `<div class="bar${go?' go':''}"${go?` data-go="${go}" role="button" tabindex="0"`:''}><div class="lab"><span>${label}</span><span>${Math.round(pc)}% · ${c}/${t}</span></div><div class="t" role="img" aria-label="${label}: ${c} of ${t} comfortable"><i class="m" style="width:${pc}%"></i><i class="r" style="width:${pp}%"></i></div></div>`; }
 function weakest(){
   const ACT=MQ; const FCS=fcState();/*FCI-weak*/
   return [...MOD_KEYS.filter(k=>/^m\d+$/.test(k)),'m10','m11','m12','m13','m14','m15','m16'].map(m=>{const qq=ACT.filter(q=>q.m===m), rr=RC.filter(r=>r.m===m); const f=FCS.by[m]||{k:0}; const t=qq.length+rr.length+(FCN[m]||0); const c=qq.filter(q=>qStatus(q)==='mastered').length+rr.filter(r=>rStatus(r)==='solid').length+f.k; return [m,t?c/t:1,t];})
