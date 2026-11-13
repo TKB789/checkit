@@ -195,7 +195,11 @@ function fcHTML(id,st,where){ const c=FCM[id], [M,L]=lecOf(id), sm=sumOf(id); co
     h+=`<button class="fo ${cls}" data-fa="${esc(id)}" data-oi="${i}" data-w="${where}" ${st.pick!=null?'disabled':''}>${o[0]}${why?`<span class="why">${why}</span>`:''}</button>`; });
   if(st.pick!=null) h+=`<p class="verdict ${st.pick===0?'ok':'no'}">${st.pick===0?'Correct':'Not quite: the green answer is right'}</p>`;
   return h+`</div>`; }
-function record(id,ok){ const r=FS.c[id]||{r:0,w:0}; ok?r.r++:r.w++; r.last=ok?'r':'w'; r.t=Date.now(); FS.c[id]=r; fsave(); }
+function record(id,ok){ const r=FS.c[id]||{r:0,w:0}; ok?r.r++:r.w++; r.last=ok?'r':'w'; r.t=Date.now(); FS.c[id]=r; if(!ok) snap(id); fsave(); }
+/*FC-notes*/function snap(id){ const c=FCM[id]; if(!c) return; const sm=sumOf(id); FS.snap=FS.snap||{}; FS.snap[id]={q:c.q,a:c.o[0][0],why:c.o[0][1]||'',t:sm?String(sm.title||'').replace(/<[^>]+>/g,''):''}; }
+const saved=id=>!!(FS.saved&&FS.saved[id]);
+const saveBtn=id=>`<button class="fcb" data-fsave="${esc(id)}" aria-pressed="${saved(id)}">${saved(id)?'★ In notes':'☆ Add to notes'}</button>`;
+(function(){ let ch=false; Object.keys(FS.c||{}).filter(id=>FS.c[id]&&FS.c[id].last==='w').concat(Object.keys(FS.saved||{})).forEach(id=>{ if(!(FS.snap&&FS.snap[id])&&FCM[id]){ try{ snap(id); ch=true; }catch(e){} } }); if(ch) fsave(); })();
 function startDeck(scope,missOnly){ let ids,title,back; const M=MODS[V.m];
   if(scope==='lec'){ const L=M.lectures[V.l]; ids=cardsOf([L]); title=L.lec+' · '+L.title; back={mode:'lec',m:V.m,l:V.l}; }
   else if(scope==='mod'){ ids=cardsOf(M.lectures); title='Module '+M.n+' · '+M.title; back={mode:'mod',m:V.m,l:null}; }
@@ -212,14 +216,14 @@ function renderDeck(){ if(!DK){ V.mode='mod'; return render(); } const n=DK.ids.
   const id=DK.ids[DK.i];
   h+=`<p class="sub">Card ${DK.i+1} of ${n} · ${DK.ok} correct so far</p><div class="dprog"><i style="width:${100*DK.i/n}%"></i></div>`;
   h+='<div id="dslot">'+fcHTML(id,{pick:DK.pick,shown:DK.shown,n:0},'deck');
-  if(DK.pick!=null){ const sm=sumOf(id),[M,L]=lecOf(id); h+=`<details style="margin-top:10px"><summary class="small">Read the slide summary</summary>${sm?card(L,sm,true):''}</details><div class="fcbar" style="margin-top:10px"><button class="fcb primary" data-dnext="1">${DK.i<n-1?'Next card →':'See score'}</button></div>`; }
+  if(DK.pick!=null){ const sm=sumOf(id),[M,L]=lecOf(id); h+=`<details style="margin-top:10px"><summary class="small">Read the slide summary</summary>${sm?card(L,sm,true):''}</details><div class="fcbar" style="margin-top:10px"><button class="fcb primary" data-dnext="1">${DK.i<n-1?'Next card →':'See score'}</button>${saveBtn(id)}</div>`; }
   view.innerHTML=h+'</div>'; deckSlot(); }
 /*DECK-slot*/
 let DSLOT={key:'',h:0};
 function deckSlot(){ const s=document.getElementById('dslot'); if(!s||!DK) return; const W=Math.round(s.getBoundingClientRect().width); if(!W) return;
   const key=W+'|'+DK.ids.join(',');
   if(DSLOT.key!==key){ const g=document.createElement('div'); g.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;width:'+W+'px'; document.body.appendChild(g); let mx=0;
-    const after='<details style="margin-top:10px"><summary class="small">Read the slide summary</summary></details><div class="fcbar" style="margin-top:10px"><button class="fcb primary">Next card →</button></div>';
+    const after='<details style="margin-top:10px"><summary class="small">Read the slide summary</summary></details><div class="fcbar" style="margin-top:10px"><button class="fcb primary">Next card →</button><button class="fcb">☆ Add to notes</button></div>';
     DK.ids.forEach(id=>{ const c=FCM[id]; if(!c) return; for(let p=0;p<c.o.length;p++){ g.innerHTML=fcHTML(id,{pick:p,shown:true,n:0},'meas')+after; mx=Math.max(mx,g.getBoundingClientRect().height); } });
     g.remove(); DSLOT={key,h:Math.ceil(mx)}; }
   s.style.minHeight=DSLOT.h+'px'; }
@@ -227,6 +231,7 @@ function deckTop(){ const el=document.querySelector('[data-dback]'); scrollTo(0,
 try{ document.fonts&&document.fonts.ready.then(()=>{ DSLOT.key=''; deckSlot(); }); }catch(e){}
 addEventListener('resize',()=>{ if(DK) deckSlot(); });
 function fcClick(b,d){
+  if(d.fsave){ const id=d.fsave; FS.saved=FS.saved||{}; if(FS.saved[id]) delete FS.saved[id]; else { FS.saved[id]=Date.now(); snap(id); } fsave(); const on=saved(id); b.setAttribute('aria-pressed',String(on)); b.textContent=on?'★ In notes':'☆ Add to notes'; return true; }
   if(d.deck){ startDeck(d.deck,!!d.miss); keep(); render(); deckTop(); return true; }
   if(d.fshow){ if(d.w==='deck') DK.shown=true; else (FIN[d.fshow]=FIN[d.fshow]||{}).shown=true; d.w==='deck'?render():paintInline(d.fshow); return true; }
   if(d.fa){ const id=d.fa, oi=+d.oi, ok=oi===0; record(id,ok);
@@ -238,7 +243,7 @@ function fcClick(b,d){
   if(d.fct){ const id=d.fct, box=document.getElementById('fcin-'+cssId(id)); if(!box) return true; if(box.innerHTML){ box.innerHTML=''; delete FIN[id]; b.textContent='🃏 Test yourself'; } else { FIN[id]={}; paintInline(id); b.textContent='Hide card'; } return true; }
   return false; }
 const cssId=id=>id.replace(/[^a-zA-Z0-9]/g,'_');
-function paintInline(id){ const box=document.getElementById('fcin-'+cssId(id)); if(!box) return; const st=FIN[id]||{}; box.innerHTML=fcHTML(id,{pick:st.pick,shown:st.shown,n:1},'in')+(st.pick!=null?`<div class="fcbar" style="margin-top:6px"><button class="fcb" data-fct="${esc(id)}">Close</button><span class="stat">${fst(id)==='known'?'Marked known':'Saved to redo'}</span></div>`:''); }
+function paintInline(id){ const box=document.getElementById('fcin-'+cssId(id)); if(!box) return; const st=FIN[id]||{}; box.innerHTML=fcHTML(id,{pick:st.pick,shown:st.shown,n:1},'in')+(st.pick!=null?`<div class="fcbar" style="margin-top:6px"><button class="fcb" data-fct="${esc(id)}">Close</button>${saveBtn(id)}<span class="stat">${fst(id)==='known'?'Marked known':'Saved to redo'}</span></div>`:''); }
 document.addEventListener('change',e=>{ if(e.target.id==='think'){ FS.think=e.target.checked; fsave(); if(DK){ DK.shown=false; render(); } } });
 // ---------- events
 document.addEventListener('click',e=>{ const b=e.target.closest('button,.chip,[data-zone]'); if(!b) return; const d=b.dataset;
