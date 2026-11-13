@@ -6533,7 +6533,7 @@ openFromHash(); window.addEventListener('hashchange',openFromHash);
 <script>/*NH-js*//*NH3-js*/
 window.NH=(function(){
 const SGK='study-group-practice-1-m2', CK='isye-notes-v1', FK='isye-fc-v1';
-const EXTRA=['isye-notes-v1','study-group-practice-1-m2','study-group-practice-2','study-group-practice-3','isye-fc-v1','isye-ss-v1','isye6501-slide-summaries-v1','isye6501-active-midterm','isye-code-v1'];
+const EXTRA=['isye-notes-v1','study-group-practice-1-m2','study-group-practice-2','study-group-practice-3','study-group-practice-4-v8','isye-fc-v1','isye-ss-v1','isye6501-slide-summaries-v1','isye6501-active-midterm','isye-code-v1'];
 const F={kind:'all',q:''}; let M=null, MSG='', EDIT=null, ASK=null, FCD=null, FCTRY=false;
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const txt=h=>{ const d=document.createElement('div'); d.innerHTML=String(h||''); return d.textContent.replace(/\s+/g,' ').trim(); };
@@ -6559,7 +6559,7 @@ function migrate(){ const c=cload(); let n=0, px=[]; try{ px=PX.allNotes(); }cat
     const nb=typeof d.notebook==='string'?d.notebook.trim():''; if(nb){ const k='sgbook:'+hsh(nb); if(!c.moved[k]){ c.notes.push({id:'s-nb-'+hsh(nb),text:nb,mod:'MIX',ref:'',from:'Study group notebook',at:Date.now()}); c.moved[k]=Date.now(); n++; } } }
   if(n) csave(c); return n; }
 function hsh(t){ let h=2166136261; for(const ch of t){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
-const SGP={'Practice 1':'study-group-practice-1-m2','Practice 2':'study-group-practice-2','Practice 3':'study-group-practice-3','Practice 4':'study-group-practice-4-v5'};
+const SGP={'Practice 1':'study-group-practice-1-m2','Practice 2':'study-group-practice-2','Practice 3':'study-group-practice-3','Practice 4':'study-group-practice-4-v8'};
 function sgLatest(pid,practice){ const d=read(SGP[practice||'Practice 1']); let last=null; ((d&&d.attempts)||[]).forEach(a=>{ const r=a&&a.ans&&a.ans[pid]; if(r) last=!!r.ok; }); return last; }
 // ---- flashcard text: saved by the slide page; otherwise read from slides.html once
 function fcCard(id,fs){ const s=fs.snap&&fs.snap[id]; if(s) return s; const c=FCD&&FCD[id]; if(c) return {q:c.q,a:c.o[0][0],why:c.o[0][1]}; return null; }
