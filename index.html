@@ -363,6 +363,7 @@ button.pick{border:1px solid var(--line);background:var(--card)}
 .nh .msg2{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--muted-bg);font-size:.9rem}
 .nh .card.k-mine .meta{margin-bottom:2px}.nh .card .acts{margin-left:auto}
 .nh .bar input[type=search]{flex:1;min-width:0;width:100%;font-size:16px}
+.nh .ask{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;font:600 .9rem var(--sans);color:var(--ink);background:var(--muted-bg);border-radius:8px;padding:8px 10px}.nh .ask button{font:600 .85rem var(--sans);border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}.nh .ask button.yes{background:#c0392b;border-color:#c0392b;color:#fff}
 </style>
 </head>
 <body>
@@ -6518,7 +6519,7 @@ openFromHash(); window.addEventListener('hashchange',openFromHash);
 window.NH=(function(){
 const SGK='study-group-practice-1-m2', CK='isye-notes-v1', FK='isye-fc-v1';
 const EXTRA=['isye-notes-v1','study-group-practice-1-m2','study-group-practice-2','study-group-practice-3','isye-fc-v1','isye-ss-v1','isye6501-slide-summaries-v1','isye6501-active-midterm','isye-code-v1'];
-const F={kind:'all',q:''}; let M=null, MSG='', EDIT=null, FCD=null, FCTRY=false;
+const F={kind:'all',q:''}; let M=null, MSG='', EDIT=null, ASK=null, FCD=null, FCTRY=false;
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const txt=h=>{ const d=document.createElement('div'); d.innerHTML=String(h||''); return d.textContent.replace(/\s+/g,' ').trim(); };
 const modOf=refs=>{ for(const r of refs||[]){ const m=/\bM(\d+)\b/.exec(r); if(m) return 'M'+m[1]; } return 'MIX'; };
@@ -6583,13 +6584,13 @@ function render(el){ M=el||M; const A=gather(), mn=MN();
     if(!mine.length) h+=`<p class="empty">${A.mine.length?'No notes match.':'Nothing yet. Write a note above.'}</p>`;
     mine.forEach(n=>{ const k=n.src+':'+n.id, ed=EDIT===k;
       h+=`<div class="card k-mine">${ed?`<textarea class="ed" id="nhedtext">${esc(n.text)}</textarea><div class="row" style="margin-top:6px;display:flex;gap:8px"><button class="btn" data-save="${esc(k)}">Save</button><button class="btn quiet" data-cancel="1">Cancel</button></div>`
-        :`<div class="meta"><span class="acts"><button data-ed="${esc(k)}">Edit</button><button data-del="${esc(k)}">Delete</button></span></div><div>${esc(n.text).replace(/\n/g,'<br>')}</div>`}${(n.from||n.ref)&&!ed?`<div class="r">${n.from?esc('From '+n.from):''}${n.from&&n.ref?' · ':''}${n.ref?'Review: '+esc(n.ref):''}</div>`:''}</div>`; }); }
+        :`<div class="meta">${ASK==='del:'+k?`<span class="ask" role="alert">Delete this note? <button class="yes" data-yes="${esc('del:'+k)}">Delete</button><button data-no="1">Cancel</button></span>`:`<span class="acts"><button data-ed="${esc(k)}">Edit</button><button data-del="${esc(k)}">Delete</button></span>`}</div><div>${esc(n.text).replace(/\n/g,'<br>')}</div>`}${(n.from||n.ref)&&!ed?`<div class="r">${n.from?esc('From '+n.from):''}${n.from&&n.ref?' · ':''}${n.ref?'Review: '+esc(n.ref):''}</div>`:''}</div>`; }); }
   if(F.kind!=='mine'){
     h+=`<h3 class="sec">Questions to review <span class="small">(${qs.length})</span></h3><p class="small" style="margin:0">Questions you missed, plus any you saved with ☆ Add to notes. They can't be edited; a missed one drops off once you answer it correctly.</p>`;
     let any=false;
     GROUPS.forEach(g=>{ const ns=qs.filter(n=>n.group===g).sort((a,b)=>MO().indexOf(a.mod)-MO().indexOf(b.mod)); if(!ns.length) return; any=true;
       h+=`<h4 class="grp">${esc(GLABEL[g])} <span class="small">(${ns.length})</span></h4>`;
-      ns.forEach(n=>{ const acts=(n.ei!=null&&n.si!=null?`<button data-go="${n.ei}:${n.si}">Open ↗</button>`:n.sg?`<a href="#sg-p${n.sg}">Open ↗</a>`:'')+(n.saved&&(n.ei!=null||n.fc||n.sgid)?`<button data-uns="${n.fc?'fc:'+esc(n.fc):n.sgid?'sg:'+esc(n.sgid):'px:'+n.ei+':'+esc(n.pid)}">Unsave</button>`:'');
+      ns.forEach(n=>{ const uk=n.fc?'fc:'+n.fc:n.sgid?'sg:'+n.sgid:'px:'+n.ei+':'+n.pid; if(ASK==='uns:'+uk){ h+=`<div class="card k-${n.missed?'missed':'saved'}"><div class="meta"><span class="ask" role="alert">Remove “${esc(n.title.slice(0,60))}${n.title.length>60?'…':''}” from Saved? <button class="yes" data-yes="${esc('uns:'+uk)}">Unsave</button><button data-no="1">Cancel</button></span></div></div>`; return; } const acts=(n.ei!=null&&n.si!=null?`<button data-go="${n.ei}:${n.si}">Open ↗</button>`:n.sg?`<a href="#sg-p${n.sg}">Open ↗</a>`:'')+(n.saved&&(n.ei!=null||n.fc||n.sgid)?`<button data-uns="${n.fc?'fc:'+esc(n.fc):n.sgid?'sg:'+esc(n.sgid):'px:'+n.ei+':'+esc(n.pid)}">Unsave</button>`:'');
         h+=`<div class="card k-${n.missed?'missed':'saved'}"><div class="meta">${n.missed?'<span class="tag">Missed</span>':''}${n.saved?'<span class="tag">Saved</span>':''}<span class="tag">${esc(mn[n.mod]||n.mod)}</span>${acts?`<span class="acts">${acts}</span>`:''}</div><div class="t">${esc(n.title)}</div><div>${n.body}</div>${n.mine?`<div class="mine"><b>My note:</b> ${esc(n.mine).replace(/\n/g,'<br>')}</div>`:''}${n.ref?`<div class="r">Review: ${esc(n.ref)}</div>`:''}</div>`; }); });
     if(!any) h+=`<p class="empty">${A.qs.length?'Nothing here for this filter.':'Nothing to review yet. Missed questions land here automatically.'}</p>`; }
   h+=`<details class="more"><summary>Backup and export</summary><div class="tools"><button class="btn quiet" id="nhcopy">Copy all as text</button><button class="btn quiet" id="nhmd">Download .md</button><button class="btn quiet" id="nhprint">Print / save as PDF</button><button class="btn quiet" id="nhbak">Back up everything</button><label class="btn quiet" style="display:inline-flex;align-items:center">Add notes from a backup<input type="file" id="nhimp" accept="application/json,.json" style="display:none"></label></div>
@@ -6600,20 +6601,24 @@ function render(el){ M=el||M; const A=gather(), mn=MN();
   const add=M.querySelector('#nhadd'); if(add) add.onclick=()=>{ const t=M.querySelector('#nhnew').value.trim(); if(!t) return; const c=cload(); c.notes.push({id:'w'+Date.now().toString(36),text:t,mod:'MIX',at:Date.now()}); csave(c); render(); };
   M.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{ EDIT=b.dataset.ed; render(); const t=M.querySelector('#nhedtext'); if(t){ t.focus(); t.style.height=Math.max(90,t.scrollHeight+4)+'px'; } });
   M.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{ setText(b.dataset.save,M.querySelector('#nhedtext').value); EDIT=null; render(); });
-  M.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(!confirm('Delete this note?')) return; delNote(b.dataset.del); render(); });
+  M.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ ASK='del:'+b.dataset.del; EDIT=null; render(); });
+  M.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>{ ASK=null; render(); });
+  M.querySelectorAll('[data-yes]').forEach(b=>b.onclick=()=>{ const v=b.dataset.yes; ASK=null; if(v.startsWith('del:')) delNote(v.slice(4)); else unsave(v.slice(4)); render(); });
   M.querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>{ EDIT=null; render(); });
   M.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ const [ei,si]=b.dataset.go.split(':').map(Number); document.getElementById('tab-mid').click(); setTimeout(()=>{ try{ PX.go(ei,si); PX.render(document.getElementById('main')); window.scrollTo(0,0); }catch(e){} },0); });
-  M.querySelectorAll('[data-uns]').forEach(b=>b.onclick=()=>{ const v=b.dataset.uns;
-    if(v.startsWith('fc:')){ const fs=read(FK)||{}; if(fs.saved){ delete fs.saved[v.slice(3)]; write(FK,fs); } }
-    else if(v.startsWith('sg:')){ const d=read(SGK); if(d&&Array.isArray(d.notes)){ d.notes=d.notes.filter(x=>!(x&&x.id===v.slice(3))); write(SGK,d); } }
-    else { const p=v.split(':'); try{ PX.unpin(+p[1],p.slice(2).join(':')); }catch(e){} }
-    render(); });
+  M.querySelectorAll('[data-uns]').forEach(b=>b.onclick=()=>{ ASK='uns:'+b.dataset.uns; render(); });
+  M.querySelectorAll('[data-k]').forEach(b=>b.addEventListener('click',()=>{ ASK=null; }));
   const L=()=>({mine,qs:qa});
   M.querySelector('#nhcopy').onclick=()=>{ const t=asText(L()); (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{MSG='Copied.';render();},()=>dl(t,'isye6501-notes.md','text/markdown')); };
   M.querySelector('#nhmd').onclick=()=>dl(asText(L()),'isye6501-notes.md','text/markdown');
   M.querySelector('#nhprint').onclick=()=>{ M.querySelectorAll('details.more').forEach(d=>d.open=false); window.print(); };
   M.querySelector('#nhbak').onclick=backup;
   M.querySelector('#nhimp').onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ MSG=restore(r.result); render(); }; r.readAsText(f); };
+}
+function unsave(v){
+    if(v.startsWith('fc:')){ const fs=read(FK)||{}; if(fs.saved){ delete fs.saved[v.slice(3)]; write(FK,fs); } }
+    else if(v.startsWith('sg:')){ const d=read(SGK); if(d&&Array.isArray(d.notes)){ d.notes=d.notes.filter(x=>!(x&&x.id===v.slice(3))); write(SGK,d); } }
+    else { const p=v.split(':'); try{ PX.unpin(+p[1],p.slice(2).join(':')); }catch(e){} }
 }
 // ---- edit / delete for every written note, wherever it was written
 function setText(k,t){ const i=k.indexOf(':'), src=k.slice(0,i), id=k.slice(i+1);
