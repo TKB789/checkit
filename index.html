@@ -400,7 +400,7 @@ nav.tabs .tabnote{grid-column:1/-1;margin:3px 2px 0;padding:7px 4px 2px;border-t
     <nav class="tabs" role="tablist"><!--FCI-notab-->
       <button role="tab" id="tab-mid" aria-selected="true" data-tab="mid"><span class="ic" aria-hidden="true">📝</span><span class="tl">Midterm practice</span></button>
       <button role="tab" id="tab-ss" aria-selected="false" data-tab="ss"><span class="ic" aria-hidden="true">🗂️</span><span class="tl">Slide summaries</span></button>
-      <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall"><span class="ic" aria-hidden="true">🧑‍🏫</span><span class="tl">New student</span></button>
+      <button role="tab" id="tab-recall" aria-selected="false" data-tab="recall"><span class="ic" aria-hidden="true">🤓</span><span class="tl">ELI5</span></button>
       <button role="tab" id="tab-guides" aria-selected="false" data-tab="guides"><span class="ic" aria-hidden="true">📘</span><span class="tl">Study guides</span></button>
       <button role="tab" id="tab-notes" aria-selected="false" data-tab="notes"><span class="ic" aria-hidden="true">🗒️</span><span class="tl">Notes</span></button><!--NH-tab-->
       <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress"><span class="ic" aria-hidden="true">📈</span><span class="tl">Progress</span></button>
@@ -6186,12 +6186,12 @@ function renderSummary(){
 let drill=null;
 function renderRecall(){
   if(drill) return renderDrill();
-  let html=`<section class="panel"><h2>Help a new student understand</h2>
-  <p class="small" style="margin-top:0">A classmate just joined and missed everything so far. Pick a concept and explain it to them in plain words, without looking at your notes. Then check your explanation against the key points they'd need. If you left any out, review them and try again the next time you open this page.</p></section>`;
+  let html=`<section class="panel"><h2>Explain Like I'm 5</h2>
+  <p class="small" style="margin-top:0">Pick a concept, close your notes, and explain it in plain words. Then check your explanation against the key points. If you miss one, the concept is marked “Try again next session”, so you retry it later from memory instead of right after seeing the answer.</p></section>`;
   const lab=s=>({new:'Not tried',solid:'Solid',review:'Needs another try',locked:'Try again next session'}[s]);
   const profs=RC.filter(r=>r.prof); const ps=profs.filter(r=>rStatus(r)==='solid').length;
   html+=`<section class="panel prof"><h2><span class="mark">Discussion Topics</span></h2>
-   <p class="small" style="margin-top:0">Open-ended questions worth being able to discuss. Explain each one as you would to a classmate who just joined, then check it against the key points. (${ps} of ${profs.length} solid)</p><div class="clist">`;
+   <p class="small" style="margin-top:0">Open-ended questions worth being able to discuss. Explain each one simply, from memory, then check it against the key points. (${ps} of ${profs.length} solid)</p><div class="clist">`;
   profs.forEach(r=>{ const s=rStatus(r); html+=`<button class="citem" data-r="${r.id}" ${s==='locked'?'disabled':''}><span>${r.title}</span><span class="st ${s}">${lab(s)}</span></button>`; });
   html+=`</div></section>`;
   [...MOD_KEYS,'m10','m11','m12','m13','m14','m15','m16'].forEach(m=>{
@@ -6236,11 +6236,11 @@ function renderDrill(){
   if(!drill.checked){
     if(r.prof) html+=`<p class="small" style="margin-top:0">Tip: explaining it plainly here is good practice for discussing it.</p>`;
     html+=guideHelp(r);
-    html+=`<textarea id="ta" placeholder="Explain it like you&#39;re talking to a classmate who just joined. Skip jargon, or define it when you use it. Aim for 3–6 sentences.">${esc(drill.text)}</textarea>
+    html+=`<textarea id="ta" placeholder="Explain it like I&#39;m 5. Use the key terms, and say what each one means in plain words. Aim for 3–6 sentences.">${esc(drill.text)}</textarea>
     <div class="actions"><button class="btn" id="chk">Check my answer</button><button class="btn quiet" id="back">Back to list</button></div>`;
   } else {
     html+=`<h3>Your explanation</h3><div class="note" style="white-space:pre-wrap;font-family:var(--serif)">${esc(drill.text)||'<i>(blank)</i>'}</div>
-    <h3>Key points a new student would need</h3><p class="small" style="margin:0">Tick each point you genuinely covered. Points with a matching keyword are pre-ticked as a hint, so double-check them.</p>
+    <h3>Key points your explanation needs</h3><p class="small" style="margin:0">Tick each point you genuinely covered. Points with a matching keyword are pre-ticked as a hint, so double-check them.</p>
     <ul class="points">${r.points.map((p,i)=>`<li><label><input type="checkbox" data-i="${i}" ${drill.ticks[i]?'checked':''}><span>${esc(p[0])}${drill.auto[i]?'<span class="hint">keyword found</span>':''}</span></label></li>`).join('')}</ul>
     <div class="actions"><button class="btn" id="savr">Save result</button><button class="btn quiet" id="redo">Edit my answer</button></div>`+guideHelp(r).replace('Don’t know this one yet?</b> Read up first, then come back and explain it.','Missed some points?</b> Review them in the study guide.');
   }
@@ -6263,7 +6263,7 @@ function renderDrill(){
 function showRecallResult(r,missed){
   main.innerHTML=`<section class="panel">${missed.length?
     `<h2>Review these points</h2><p class="small" style="margin-top:0">You covered ${r.points.length-missed.length} of ${r.points.length}. Your new classmate would still be missing these. Reread them in your guide, then try explaining this concept again the next time you open the page.</p><ul class="missed">${missed.map(i=>`<li>${esc(r.points[i][0])}</li>`).join('')}</ul>`:
-    `<h2>Solid</h2><p>Your explanation covered all ${r.points.length} key points for <b>${esc(r.title)}</b>. A new student would get it. This counts toward your comfort score.</p>`}
+    `<h2>Solid</h2><p>Your explanation covered all ${r.points.length} key points for <b>${esc(r.title)}</b>. This counts toward your comfort score.</p>`}
     <div class="actions"><button class="btn" id="bk">Back to concepts</button></div></section>`;
   $('#bk').onclick=()=>{drill=null; renderRecall(); window.scrollTo(0,0);};
 }
@@ -6377,7 +6377,7 @@ function renderResults(){
     +(gs.length?`<section class="panel"><h2>Read about it: study guides <span class="small">(${gs.length})</span></h2><div class="srlist">${lim('g',gs,8).map(x=>`<button class="sr srbtn gl" data-g="${x.g}" data-id="${x.id}"><div class="sr-h"><b>${esc(x.title)}</b></div><div class="small">${esc(x.gt)}${x.top?' · '+esc(x.top):''}</div><p class="sr-s">${snippet(x.raw||x.title,terms)}</p></button>`).join('')}</div>${more('g',gs,8)}</section>`:'')
     +(sss.length?`<section class="panel"><h2>Slide summaries <span class="small">(${sss.length})</span></h2><div class="srlist">${lim('ss',sss,6).map(x=>`<button class="sr srbtn ssr" data-li="${x.li}" data-id="${esc(x.id)}"><div class="sr-h"><b>${esc(x.title)}</b> <span class="tag">${esc(x.lec)}</span></div><div class="small">${esc(x.snip.slice(0,160))}</div></button>`).join('')}</div>${more('ss',sss,6)}</section>`:'')
     +(lecs.length?`<section class="panel"><h2>Slide flashcards by lecture <span class="small">(${lecs.length})</span></h2><div class="srlist">${lim('s',lecs,6).map(x=>`<button class="sr srbtn sl" data-l="${x.lec}" data-m="${x.m}"><div class="sr-h"><b>${esc(x.lec)}</b> ${modTag(x.m)}</div><div class="small">Flashcards for this lecture · tap to open them on the Slide summaries page</div><p class="sr-s">${snippet(x.raw,terms)}</p></button>`).join('')}</div>${more('s',lecs,6)}</section>`:'')
-    +(rcs.length?`<section class="panel"><h2>Explain it to a new student <span class="small">(${rcs.length})</span></h2><div class="srlist">${lim('r',rcs,6).map(x=>`<button class="sr srbtn rl" data-r="${x.r.id}" ${rStatus(x.r)==='locked'?'disabled':''}><div class="sr-h"><b>${esc(x.title)}</b> ${modTag(x.r.m)}</div><p class="sr-s">${snippet(x.raw,terms)}</p></button>`).join('')}</div>${more('r',rcs,6)}</section>`:'');
+    +(rcs.length?`<section class="panel"><h2>ELI5 <span class="small">(${rcs.length})</span></h2><div class="srlist">${lim('r',rcs,6).map(x=>`<button class="sr srbtn rl" data-r="${x.r.id}" ${rStatus(x.r)==='locked'?'disabled':''}><div class="sr-h"><b>${esc(x.title)}</b> ${modTag(x.r.m)}</div><p class="sr-s">${snippet(x.raw,terms)}</p></button>`).join('')}</div>${more('r',rcs,6)}</section>`:'');
   }
   box.querySelectorAll('.gl').forEach(a=>a.onclick=e=>{ e.preventDefault(); goGuide(a.dataset.g,a.dataset.id); });
   box.querySelectorAll('.ml').forEach(a=>a.onclick=e=>{ e.preventDefault(); goMid(+a.dataset.ei,+a.dataset.si); });
