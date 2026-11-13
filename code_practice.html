@@ -56,14 +56,15 @@ ol.tmpl{margin:6px 0 0;padding-left:1.3em}ol.tmpl li{margin:3px 0}
 </style>
 <style>/*GRID-bg*/:root{--gpaper:#F7F9FC;--gline:#E1E8F3;--bg:#F7F9FC}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}}:root[data-theme="dark"]{--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}body{background-color:var(--gpaper);background-image:linear-gradient(var(--gline) 1px,transparent 1px),linear-gradient(90deg,var(--gline) 1px,transparent 1px);background-size:24px 24px;min-height:100vh}</style><script>/*EMBED*/
 (function(){
-  const PAGE={'slides.html':'ss','study_group.html':'sg','code_practice.html':'code'}[location.pathname.split('/').pop()];
+  const PAGE={'slides.html':'ss','study_group.html':'sg','code_practice.html':'code','case_studies.html':'cases','cases.html':'cases'}[location.pathname.split('/').pop()];
   const q=location.search;
   if(window.parent===window){ if(PAGE&&!/[?&]standalone=1/.test(q)) location.replace('index.html#'+PAGE+(location.hash.length>1?'-'+location.hash.slice(1):'')); return; }
   if(!/[?&]embed=1/.test(q)) return;
   const R=document.documentElement; R.classList.add('embed'); R.removeAttribute('data-theme');
   const post=m=>{ try{ parent.postMessage(m,'*'); }catch(e){} };
   let acted=false; ['pointerdown','keydown','touchstart'].forEach(t=>addEventListener(t,()=>{acted=true;},true));
-  window.scrollTo=function(x,y){ if(!acted) return; if(x&&typeof x==='object') y=x.top; post({ssTop:+y||0}); };  // ignore scrolls the page makes on its own while loading
+  const realScroll=window.scrollTo.bind(window);
+  window.scrollTo=function(x,y){ if(!acted) return; if(x&&typeof x==='object') y=x.top; try{ realScroll(0,0); }catch(e){} size(); post({ssTop:+y||0}); };  // ignore scrolls the page makes on its own while loading; send the new height first, then ask index to scroll
   addEventListener('message',e=>{ if(e.source!==parent) return; const d=e.data||{}; if(d.ssTheme===undefined) return;
     if(d.ssTheme) R.setAttribute('data-theme',d.ssTheme); else R.removeAttribute('data-theme'); });
   const size=()=>{ const w=document.querySelector('.wrap'); if(w) post({ssH:Math.ceil(w.getBoundingClientRect().height)+24}); };

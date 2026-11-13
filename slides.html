@@ -70,16 +70,17 @@ mark{background:var(--warnbg);color:inherit}
 button.fcb{border:1px solid var(--pen);color:var(--pen);background:var(--card);border-radius:10px;padding:7px 12px;font:600 .9rem inherit;cursor:pointer}
 button.fcb.primary{background:var(--pen);color:var(--penink)}
 </style>
-<style>/*AI-notice*/.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style><style>/*GRID-bg*/:root{--gpaper:#F7F9FC;--gline:#E1E8F3;--bg:#F7F9FC}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}}:root[data-theme="dark"]{--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}body{background-color:var(--gpaper);background-image:linear-gradient(var(--gline) 1px,transparent 1px),linear-gradient(90deg,var(--gline) 1px,transparent 1px);background-size:24px 24px;min-height:100vh}</style><script>/*EMBED*/
+<style>/*AI-notice*/.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}</style><style>/*GRID-bg*/:root{--gpaper:#F7F9FC;--gline:#E1E8F3;--bg:#F7F9FC}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}}:root[data-theme="dark"]{--gpaper:#0F1522;--gline:#172033;--bg:#0F1522}body{background-color:var(--gpaper);background-image:linear-gradient(var(--gline) 1px,transparent 1px),linear-gradient(90deg,var(--gline) 1px,transparent 1px);background-size:24px 24px;min-height:100vh}</style><style>/*KC*/.kcsec{margin:18px 0 8px}.kcsec h3{margin:0 0 4px}.kcsec .kcnote{font-size:.85rem;color:var(--ink2);margin:0 0 10px}.kcq{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--pen);border-radius:14px;padding:12px 16px;margin:0 0 12px}.kcsrc{font-size:.78rem;font-weight:600;color:var(--pen);margin:0 0 6px;text-transform:none}.kcq ol{margin:8px 0;padding-left:1.6em}.kcq li{margin:3px 0}.kcq details summary{cursor:pointer;font-weight:600;color:var(--pen)}.kcq .kcans{margin:8px 0 0;background:var(--okbg);border-radius:10px;padding:8px 12px}.kcq li.kcok{font-weight:600}.lec .kccount{color:var(--pen);font-weight:600}</style><script>/*EMBED*/
 (function(){
-  const PAGE={'slides.html':'ss','study_group.html':'sg','code_practice.html':'code'}[location.pathname.split('/').pop()];
+  const PAGE={'slides.html':'ss','study_group.html':'sg','code_practice.html':'code','case_studies.html':'cases','cases.html':'cases'}[location.pathname.split('/').pop()];
   const q=location.search;
   if(window.parent===window){ if(PAGE&&!/[?&]standalone=1/.test(q)) location.replace('index.html#'+PAGE+(location.hash.length>1?'-'+location.hash.slice(1):'')); return; }
   if(!/[?&]embed=1/.test(q)) return;
   const R=document.documentElement; R.classList.add('embed'); R.removeAttribute('data-theme');
   const post=m=>{ try{ parent.postMessage(m,'*'); }catch(e){} };
   let acted=false; ['pointerdown','keydown','touchstart'].forEach(t=>addEventListener(t,()=>{acted=true;},true));
-  window.scrollTo=function(x,y){ if(!acted) return; if(x&&typeof x==='object') y=x.top; post({ssTop:+y||0}); };  // ignore scrolls the page makes on its own while loading
+  const realScroll=window.scrollTo.bind(window);
+  window.scrollTo=function(x,y){ if(!acted) return; if(x&&typeof x==='object') y=x.top; try{ realScroll(0,0); }catch(e){} size(); post({ssTop:+y||0}); };  // ignore scrolls the page makes on its own while loading; send the new height first, then ask index to scroll
   addEventListener('message',e=>{ if(e.source!==parent) return; const d=e.data||{}; if(d.ssTheme===undefined) return;
     if(d.ssTheme) R.setAttribute('data-theme',d.ssTheme); else R.removeAttribute('data-theme'); });
   const size=()=>{ const w=document.querySelector('.wrap'); if(w) post({ssH:Math.ceil(w.getBoundingClientRect().height)+24}); };
@@ -90,7 +91,7 @@ button.fcb.primary{background:var(--pen);color:var(--penink)}
 })();
 </script>
 <style>/*EMBED-css*/html.embed .sitebar,html.embed .top,html.embed .aidisc{display:none!important}html.embed body{background:transparent!important;min-height:0!important}html.embed .wrap{padding:0 0 12px!important;max-width:none!important}</style>
-<style>/*KC*/.kcsec{margin:18px 0 8px}.kcsec h3{margin:0 0 4px}.kcsec .kcnote{font-size:.85rem;color:var(--ink2);margin:0 0 10px}.kcq{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--pen);border-radius:14px;padding:12px 16px;margin:0 0 12px}.kcsrc{font-size:.78rem;font-weight:600;color:var(--pen);margin:0 0 6px;text-transform:none}.kcq ol{margin:8px 0;padding-left:1.6em}.kcq li{margin:3px 0}.kcq details summary{cursor:pointer;font-weight:600;color:var(--pen)}.kcq .kcans{margin:8px 0 0;background:var(--okbg);border-radius:10px;padding:8px 12px}.kcq li.kcok{font-weight:600}.lec .kccount{color:var(--pen);font-weight:600}</style></head>
+</head>
 <body>
 <div class="wrap">
  <nav class="sitebar"><a href="index.html">← ISYE 6501 study site</a><span>·</span><a href="study_group.html">Study group practice</a><span>·</span><a href="code_practice.html">R practice</a><!--CP-link--></nav>

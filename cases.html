@@ -66,7 +66,8 @@ a.solve{display:inline-block;background:var(--accent);color:var(--accent-ink);bo
   const R=document.documentElement; R.classList.add('embed'); R.removeAttribute('data-theme');
   const post=m=>{ try{ parent.postMessage(m,'*'); }catch(e){} };
   let acted=false; ['pointerdown','keydown','touchstart'].forEach(t=>addEventListener(t,()=>{acted=true;},true));
-  window.scrollTo=function(x,y){ if(!acted) return; if(x&&typeof x==='object') y=x.top; post({ssTop:+y||0}); };  // ignore scrolls the page makes on its own while loading
+  const realScroll=window.scrollTo.bind(window);
+  window.scrollTo=function(x,y){ if(!acted) return; if(x&&typeof x==='object') y=x.top; try{ realScroll(0,0); }catch(e){} size(); post({ssTop:+y||0}); };  // ignore scrolls the page makes on its own while loading; send the new height first, then ask index to scroll
   addEventListener('message',e=>{ if(e.source!==parent) return; const d=e.data||{}; if(d.ssTheme===undefined) return;
     if(d.ssTheme) R.setAttribute('data-theme',d.ssTheme); else R.removeAttribute('data-theme'); });
   const size=()=>{ const w=document.querySelector('.wrap'); if(w) post({ssH:Math.ceil(w.getBoundingClientRect().height)+24}); };

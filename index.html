@@ -6599,14 +6599,18 @@ if(/^#(all)?notes/.test(location.hash)) setTimeout(()=>{ const b=document.getEle
 return {render};
 })();
 </script>
-<script>/*SS-embed-msg*/
+<script>/*SS-embed-msg*//*v2*/
 (function(){
   const fr=()=>document.getElementById('ssframe');
   const theme=()=>document.documentElement.getAttribute('data-theme')||'';
   const send=()=>{ const f=fr(); if(f&&f.contentWindow) try{ f.contentWindow.postMessage({ssTheme:theme()},'*'); }catch(e){} };
+  let pend=null;
+  const go=()=>{ const f=fr(); if(!pend||!f||Date.now()>pend.until) return; const y=Math.max(0,Math.round(f.getBoundingClientRect().top+window.scrollY+pend.off-8));
+    window.scrollTo(0,y); const se=document.scrollingElement||document.documentElement; if(Math.abs(se.scrollTop-y)>2) se.scrollTop=y; };
+  ['touchstart','wheel','keydown'].forEach(t=>addEventListener(t,()=>{ pend=null; },{passive:true}));
   addEventListener('message',e=>{ const f=fr(); if(!f||e.source!==f.contentWindow) return; const d=e.data||{};
-    if(d.ssH) f.style.height=Math.max(300,d.ssH)+'px';
-    if(d.ssTop!=null) window.scrollTo(0,Math.max(0,f.getBoundingClientRect().top+window.scrollY+d.ssTop-8));
+    if(d.ssH){ f.style.height=Math.max(300,d.ssH)+'px'; go(); }
+    if(d.ssTop!=null){ pend={off:+d.ssTop||0,until:Date.now()+900}; go(); [60,200,450,800].forEach(t=>setTimeout(go,t)); requestAnimationFrame(go); }
     if(d.ssReady) send(); });
   new MutationObserver(send).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',send); }catch(e){}
