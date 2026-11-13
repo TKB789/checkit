@@ -210,17 +210,30 @@ function renderDeck(){ if(!DK){ V.mode='mod'; return render(); } const n=DK.ids.
     h+=`<div class="card"><p class="fcdone">${DK.ok} / ${n} correct (${pct}%)</p><p class="small">Missed cards are saved as “to redo” and come first next time.</p><div class="fcbar">${DK.missed.length?`<button class="fcb primary" data-dredo="1">Redo the ${DK.missed.length} I missed</button>`:''}<button class="fcb" data-drestart="1">Run all ${n} again</button><button class="fcb" data-dback="1">Back</button></div></div>`;
     view.innerHTML=h; return; }
   const id=DK.ids[DK.i];
-  h+=`<p class="sub">Card ${DK.i+1} of ${n} · ${DK.ok} correct so far</p><div class="dprog"><i style="width:${100*DK.i/n}%"></i></div>`+fcHTML(id,{pick:DK.pick,shown:DK.shown,n:0},'deck');
+  h+=`<p class="sub">Card ${DK.i+1} of ${n} · ${DK.ok} correct so far</p><div class="dprog"><i style="width:${100*DK.i/n}%"></i></div>`;
+  h+='<div id="dslot">'+fcHTML(id,{pick:DK.pick,shown:DK.shown,n:0},'deck');
   if(DK.pick!=null){ const sm=sumOf(id),[M,L]=lecOf(id); h+=`<details style="margin-top:10px"><summary class="small">Read the slide summary</summary>${sm?card(L,sm,true):''}</details><div class="fcbar" style="margin-top:10px"><button class="fcb primary" data-dnext="1">${DK.i<n-1?'Next card →':'See score'}</button></div>`; }
-  view.innerHTML=h; }
+  view.innerHTML=h+'</div>'; deckSlot(); }
+/*DECK-slot*/
+let DSLOT={key:'',h:0};
+function deckSlot(){ const s=document.getElementById('dslot'); if(!s||!DK) return; const W=Math.round(s.getBoundingClientRect().width); if(!W) return;
+  const key=W+'|'+DK.ids.join(',');
+  if(DSLOT.key!==key){ const g=document.createElement('div'); g.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;width:'+W+'px'; document.body.appendChild(g); let mx=0;
+    const after='<details style="margin-top:10px"><summary class="small">Read the slide summary</summary></details><div class="fcbar" style="margin-top:10px"><button class="fcb primary">Next card →</button></div>';
+    DK.ids.forEach(id=>{ const c=FCM[id]; if(!c) return; for(let p=0;p<c.o.length;p++){ g.innerHTML=fcHTML(id,{pick:p,shown:true,n:0},'meas')+after; mx=Math.max(mx,g.getBoundingClientRect().height); } });
+    g.remove(); DSLOT={key,h:Math.ceil(mx)}; }
+  s.style.minHeight=DSLOT.h+'px'; }
+function deckTop(){ const el=document.querySelector('[data-dback]'); scrollTo(0,el?Math.max(0,el.getBoundingClientRect().top+window.scrollY-10):0); }
+try{ document.fonts&&document.fonts.ready.then(()=>{ DSLOT.key=''; deckSlot(); }); }catch(e){}
+addEventListener('resize',()=>{ if(DK) deckSlot(); });
 function fcClick(b,d){
-  if(d.deck){ startDeck(d.deck,!!d.miss); keep(); render(); scrollTo(0,0); return true; }
+  if(d.deck){ startDeck(d.deck,!!d.miss); keep(); render(); deckTop(); return true; }
   if(d.fshow){ if(d.w==='deck') DK.shown=true; else (FIN[d.fshow]=FIN[d.fshow]||{}).shown=true; d.w==='deck'?render():paintInline(d.fshow); return true; }
   if(d.fa){ const id=d.fa, oi=+d.oi, ok=oi===0; record(id,ok);
     if(d.w==='deck'){ DK.pick=oi; ok?DK.ok++:(DK.no++,DK.missed.push(id)); render(); } else { const st=FIN[id]=FIN[id]||{}; st.pick=oi; paintInline(id); } return true; }
-  if(d.dnext){ DK.i++; DK.pick=null; DK.shown=false; render(); scrollTo(0,0); return true; }
-  if(d.dredo){ const ids=DK.missed.slice(); DK={...DK,ids,i:0,ok:0,no:0,pick:null,shown:false,missOnly:true,missed:[]}; render(); scrollTo(0,0); return true; }
-  if(d.drestart){ DK={...DK,i:0,ok:0,no:0,pick:null,shown:false,missed:[]}; render(); scrollTo(0,0); return true; }
+  if(d.dnext){ DK.i++; DK.pick=null; DK.shown=false; render(); deckTop(); return true; }
+  if(d.dredo){ const ids=DK.missed.slice(); DK={...DK,ids,i:0,ok:0,no:0,pick:null,shown:false,missOnly:true,missed:[]}; render(); deckTop(); return true; }
+  if(d.drestart){ DK={...DK,i:0,ok:0,no:0,pick:null,shown:false,missed:[]}; render(); deckTop(); return true; }
   if(d.dback){ V.mode=DK?DK.back.mode:'mod'; if(DK){ V.m=DK.back.m; V.l=DK.back.l; } DK=null; keep(); render(); scrollTo(0,0); return true; }
   if(d.fct){ const id=d.fct, box=document.getElementById('fcin-'+cssId(id)); if(!box) return true; if(box.innerHTML){ box.innerHTML=''; delete FIN[id]; b.textContent='🃏 Test yourself'; } else { FIN[id]={}; paintInline(id); b.textContent='Hide card'; } return true; }
   return false; }
