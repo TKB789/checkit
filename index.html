@@ -378,6 +378,7 @@ button.pick{border:1px solid var(--line);background:var(--card)}
       <button role="tab" id="tab-progress" aria-selected="false" data-tab="progress">Progress</button>
       <button role="tab" id="tab-sg" aria-selected="false" data-tab="sg">Study group</button>
       <button role="tab" id="tab-code" aria-selected="false" data-tab="code">R practice</button><!--EMBED-tabs-->
+      <button role="tab" id="tab-cases" aria-selected="false" data-tab="cases">Case studies</button><!--CASES-tab-->
     </nav>
   </header>
   <main id="main"></main>
@@ -5879,7 +5880,7 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('clic
 }));
 /*GSEARCH*/let prevTab='mid';
 function switchTab(t){ if(t==='search'&&tab!=='search') prevTab=tab; const gq=document.getElementById('gq'); if(gq&&t==='search') gq.value=searchQ; tab=t; document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t))); render(); window.scrollTo(0,0); }
-function render(){ if(tab==='notes'){ NH.render(main); return; }/*NH-route*/ if(tab==='mid'){ PX.render(main); return; } if(tab==='slides'){ tab='ss'; }/*FCI-tab*/ if(tab==='ss'||tab==='sg'||tab==='code'){ const src={ss:'slides.html',sg:'study_group.html',code:'code_practice.html'}[tab]; main.innerHTML=`<iframe id="ssframe" src="${src}?embed=1${window.SUBHASH||''}" title="${tab}" style="width:100%;border:0;display:block;min-height:70vh;background:transparent"></iframe>`; window.SUBHASH=''; return; }/*EMBED-render*/ if(tab==='exam'||tab==='slides'||tab==='core'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else if(tab==='search') renderSearch(); else renderProgress(); }
+function render(){ if(tab==='notes'){ NH.render(main); return; }/*NH-route*/ if(tab==='mid'){ PX.render(main); return; } if(tab==='slides'){ tab='ss'; }/*FCI-tab*/ if(tab==='ss'||tab==='sg'||tab==='code'||tab==='cases'){ const src={ss:'slides.html',sg:'study_group.html',code:'code_practice.html',cases:'cases.html'}[tab]; main.innerHTML=`<iframe id="ssframe" src="${src}?embed=1${window.SUBHASH||''}" title="${tab}" style="width:100%;border:0;display:block;min-height:70vh;background:transparent"></iframe>`; window.SUBHASH=''; return; }/*EMBED-render*/ if(tab==='exam'||tab==='slides'||tab==='core'){ POOL=tab==='slides'?'slide':tab==='core'?'core':tab==='mid'?'mid':'concept'; setup=POOL==='slide'?setupS:POOL==='core'?setupK:POOL==='mid'?setupM:setupC; renderExam(); } else if(tab==='recall') renderRecall(); else if(tab==='guides') renderGuides(); else if(tab==='search') renderSearch(); else renderProgress(); }
 
 // ---------- persistent search bar (GSEARCH)
 function closeSearch(){ switchTab(prevTab&&prevTab!=='search'?prevTab:'mid'); }
@@ -6612,7 +6613,7 @@ return {render};
 })();
 </script>
 <script>/*EMBED-route*/
-(function(){ function route(){ const m=(location.hash||'').match(/^#(ss|sg|code)(?:-(.*))?$/); if(!m) return; window.SUBHASH=m[2]?'#'+m[2]:''; const b=document.getElementById('tab-'+m[1]); if(b) b.click(); }
+(function(){ function route(){ const m=(location.hash||'').match(/^#(ss|sg|code|cases)(?:-(.*))?$/); if(!m) return; window.SUBHASH=m[2]?'#'+m[2]:''; const b=document.getElementById('tab-'+m[1]); if(b) b.click(); }
   addEventListener('hashchange',route); setTimeout(route,0); })();
 </script>
 </body>
