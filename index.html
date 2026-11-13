@@ -388,6 +388,7 @@ nav.tabs .tabnote{grid-column:1/-1;margin:3px 2px 0;padding:7px 4px 2px;border-t
 .gtopmenu .gtc .gtl{flex:0 0 58px;margin:0;font:600 .78rem var(--sans)}
 .gtopmenu .gtg{margin:10px 0 2px;padding:0 6px}
 </style>
+<style>/*SRCH-filt*/.sfilt{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}.sfilt .chip{border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:999px;padding:6px 12px;font:600 .86rem var(--sans);cursor:pointer;min-height:34px}.sfilt .chip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}</style>
 </head>
 <body>
 <div class="wrap">
@@ -6350,8 +6351,8 @@ function goGuide(g,id){ gview={g,a:id}; switchTab('guides');
 function goSlides(lec,m){ location.href='#ss-cards='+encodeURIComponent(lec||('M'+String(m).replace(/^m/,''))); }/*FCI-go*/
 function renderSearch(){
   main.innerHTML=`<section class="panel"><div class="row" style="justify-content:space-between;align-items:center;margin:0"><h2 style="margin:0">Search results</h2><button class="btn quiet" id="sclose" style="min-height:36px;padding:6px 12px">✕ Close search</button></div>
-    <p class="small" style="margin:6px 0 0">Guides, practice-midterm scenarios, slide summaries and explain-it concepts that mention “${esc(searchQ)}”. Edit the bar at the top to refine.</p>
-    <input type="hidden" id="sq" value="${esc(searchQ)}">
+    <p class="small" style="margin:6px 0 0">Study guides, practice-midterm scenarios, slide summaries and ELI5 concepts that mention “${esc(searchQ)}”. Edit the bar at the top to refine.</p>
+    <input type="hidden" id="sq" value="${esc(searchQ)}"><div id="sfbox"></div>
   </section><div id="sres"></div>`;
   $('#sclose').onclick=closeSearch;
   renderResults();
@@ -6372,12 +6373,15 @@ function renderResults(){
     const lim=(k,arr,n)=>searchMore[k]?arr:arr.slice(0,n);
     const more=(k,arr,n)=>arr.length>n&&!searchMore[k]?`<button class="btn quiet morebtn" data-k="${k}" style="margin-top:8px">Show all ${arr.length}</button>`:'';
     const total=gs.length+scs.length+lecs.length+rcs.length+sss.length;
+    /*SRCH-filt*/const CN={all:total,mid:scs.length,guide:gs.length,slides:sss.length+lecs.length,eli5:rcs.length}; if(!CN[window.SFILT||'all']) window.SFILT='all'; const SF=window.SFILT||'all'; const show=k=>SF==='all'||SF===k;
+    const chips=total?`<div class="sfilt" role="group" aria-label="Show">${[['all','All'],['mid','Midterm'],['guide','Guides'],['slides','Slides'],['eli5','ELI5']].filter(([k])=>CN[k]).map(([k,l])=>`<button class="chip" data-sf="${k}" aria-pressed="${SF===k}">${l} (${CN[k]})</button>`).join('')}</div>`:'';
+    { const fb=$('#sfbox'); if(fb){ fb.innerHTML=chips; fb.querySelectorAll('[data-sf]').forEach(b=>b.onclick=()=>{ window.SFILT=b.dataset.sf; renderResults(); }); } }
     box.innerHTML=(total?'':`<section class="panel"><p style="margin:0">No matches for “${esc(searchQ)}”. Try a shorter or different word (e.g., “margin” instead of “wide margins”).</p></section>`)
-    +(scs.length?`<section class="panel"><h2>Test yourself: practice midterm <span class="small">(${scs.length})</span></h2><div class="srlist">${lim('m',scs,6).map(x=>`<div class="sr"><div class="sr-h"><b>${esc(x.title)}</b> <span class="tag">${esc(x.modname)}</span></div><div class="small">${esc(x.exam)} · Scenario ${x.si+1} · ${x.n} parts</div><p class="sr-s">${snippet(x.raw,terms)}</p><div class="row"><button class="btn mgo" data-ei="${x.ei}" data-si="${x.si}" style="min-height:38px;padding:6px 14px">Practice this scenario</button></div></div>`).join('')}</div>${more('m',scs,6)}</section>`:'')
-    +(gs.length?`<section class="panel"><h2>Read about it: study guides <span class="small">(${gs.length})</span></h2><div class="srlist">${lim('g',gs,8).map(x=>`<button class="sr srbtn gl" data-g="${x.g}" data-id="${x.id}"><div class="sr-h"><b>${esc(x.title)}</b></div><div class="small">${esc(x.gt)}${x.top?' · '+esc(x.top):''}</div><p class="sr-s">${snippet(x.raw||x.title,terms)}</p></button>`).join('')}</div>${more('g',gs,8)}</section>`:'')
-    +(sss.length?`<section class="panel"><h2>Slide summaries <span class="small">(${sss.length})</span></h2><div class="srlist">${lim('ss',sss,6).map(x=>`<button class="sr srbtn ssr" data-li="${x.li}" data-id="${esc(x.id)}"><div class="sr-h"><b>${esc(x.title)}</b> <span class="tag">${esc(x.lec)}</span></div><div class="small">${esc(x.snip.slice(0,160))}</div></button>`).join('')}</div>${more('ss',sss,6)}</section>`:'')
-    +(lecs.length?`<section class="panel"><h2>Slide flashcards by lecture <span class="small">(${lecs.length})</span></h2><div class="srlist">${lim('s',lecs,6).map(x=>`<button class="sr srbtn sl" data-l="${x.lec}" data-m="${x.m}"><div class="sr-h"><b>${esc(x.lec)}</b> ${modTag(x.m)}</div><div class="small">Flashcards for this lecture · tap to open them on the Slide summaries page</div><p class="sr-s">${snippet(x.raw,terms)}</p></button>`).join('')}</div>${more('s',lecs,6)}</section>`:'')
-    +(rcs.length?`<section class="panel"><h2>ELI5 <span class="small">(${rcs.length})</span></h2><div class="srlist">${lim('r',rcs,6).map(x=>`<button class="sr srbtn rl" data-r="${x.r.id}" ${rStatus(x.r)==='locked'?'disabled':''}><div class="sr-h"><b>${esc(x.title)}</b> ${modTag(x.r.m)}</div><p class="sr-s">${snippet(x.raw,terms)}</p></button>`).join('')}</div>${more('r',rcs,6)}</section>`:'');
+    +(show('mid')&&scs.length?`<section class="panel"><h2>Test yourself: practice midterm <span class="small">(${scs.length})</span></h2><div class="srlist">${lim('m',scs,6).map(x=>`<div class="sr"><div class="sr-h"><b>${esc(x.title)}</b> <span class="tag">${esc(x.modname)}</span></div><div class="small">${esc(x.exam)} · Scenario ${x.si+1} · ${x.n} parts</div><p class="sr-s">${snippet(x.raw,terms)}</p><div class="row"><button class="btn mgo" data-ei="${x.ei}" data-si="${x.si}" style="min-height:38px;padding:6px 14px">Practice this scenario</button></div></div>`).join('')}</div>${more('m',scs,6)}</section>`:'')
+    +(show('guide')&&gs.length?`<section class="panel"><h2>Read about it: study guides <span class="small">(${gs.length})</span></h2><div class="srlist">${lim('g',gs,8).map(x=>`<button class="sr srbtn gl" data-g="${x.g}" data-id="${x.id}"><div class="sr-h"><b>${esc(x.title)}</b></div><div class="small">${esc(x.gt)}${x.top?' · '+esc(x.top):''}</div><p class="sr-s">${snippet(x.raw||x.title,terms)}</p></button>`).join('')}</div>${more('g',gs,8)}</section>`:'')
+    +(show('slides')&&sss.length?`<section class="panel"><h2>Slide summaries <span class="small">(${sss.length})</span></h2><div class="srlist">${lim('ss',sss,6).map(x=>`<button class="sr srbtn ssr" data-li="${x.li}" data-id="${esc(x.id)}"><div class="sr-h"><b>${esc(x.title)}</b> <span class="tag">${esc(x.lec)}</span></div><div class="small">${esc(x.snip.slice(0,160))}</div></button>`).join('')}</div>${more('ss',sss,6)}</section>`:'')
+    +(show('slides')&&lecs.length?`<section class="panel"><h2>Slide flashcards by lecture <span class="small">(${lecs.length})</span></h2><div class="srlist">${lim('s',lecs,6).map(x=>`<button class="sr srbtn sl" data-l="${x.lec}" data-m="${x.m}"><div class="sr-h"><b>${esc(x.lec)}</b> ${modTag(x.m)}</div><div class="small">Flashcards for this lecture · tap to open them on the Slide summaries page</div><p class="sr-s">${snippet(x.raw,terms)}</p></button>`).join('')}</div>${more('s',lecs,6)}</section>`:'')
+    +(show('eli5')&&rcs.length?`<section class="panel"><h2>ELI5 <span class="small">(${rcs.length})</span></h2><div class="srlist">${lim('r',rcs,6).map(x=>`<button class="sr srbtn rl" data-r="${x.r.id}" ${rStatus(x.r)==='locked'?'disabled':''}><div class="sr-h"><b>${esc(x.title)}</b> ${modTag(x.r.m)}</div><p class="sr-s">${snippet(x.raw,terms)}</p></button>`).join('')}</div>${more('r',rcs,6)}</section>`:'');
   }
   box.querySelectorAll('.gl').forEach(a=>a.onclick=e=>{ e.preventDefault(); goGuide(a.dataset.g,a.dataset.id); });
   box.querySelectorAll('.ml').forEach(a=>a.onclick=e=>{ e.preventDefault(); goMid(+a.dataset.ei,+a.dataset.si); });
@@ -6386,6 +6390,7 @@ function renderResults(){
   box.querySelectorAll('.ssr').forEach(b=>b.onclick=()=>{ location.href='slides.html'; });
   box.querySelectorAll('.rl').forEach(b=>b.onclick=()=>{ drill={r:RC.find(r=>r.id===b.dataset.r),text:'',checked:false}; switchTab('recall'); });
   box.querySelectorAll('.morebtn').forEach(b=>b.onclick=()=>{ searchMore[b.dataset.k]=true; renderResults(); });
+  box.querySelectorAll('[data-sf]').forEach(b=>b.onclick=()=>{ window.SFILT=b.dataset.sf; renderResults(); });
 }
 // ---------- progress
 /*FCI-fc*/const FCN={"m1": 5, "m2": 36, "m3": 20, "m4": 19, "m5": 13, "m6": 14, "m7": 29, "m8": 35, "m9": 19, "m10": 50, "m11": 30, "m12": 14, "m13": 49, "m14": 11, "m15": 57, "m16": 53}; const FCT=Object.values(FCN).reduce((a,b)=>a+b,0);
