@@ -410,6 +410,7 @@ nav.tabs .tabnote{grid-column:1/-1;margin:3px 2px 0;padding:7px 4px 2px;border-t
 </style>
 <style>/*SMART*/.pxm .smart .smcount{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 10px;font-size:.92rem}.pxm .smart .smcount b{font-size:1.05rem}.pxm .smart .smbtns .btn{flex:1;min-width:62px;padding-left:6px;padding-right:6px}.pxm .smart .smnote{margin:6px 0 0}.pxm .smcur{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.pxm .smcur ol{margin:6px 0;padding-left:20px}.pxm .smcur li{margin:3px 0}.pxm .smwhy{display:inline-block;font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-left:4px;color:var(--ink-2)}</style>
 <style>/*GBAR*/.greader-bar{flex-wrap:wrap}.greader-bar #gtoc{order:3;flex:1 1 100%;min-width:0}</style>
+<style>/*GFILT*/.gfilt{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.gfilt .chip{border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:999px;padding:7px 12px;font:600 .88rem var(--sans);cursor:pointer;min-height:36px}.gfilt .chip span{font-weight:500;opacity:.75;margin-left:2px}.gfilt .chip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}</style>
 </head>
 <body>
 <div class="wrap">
@@ -6346,15 +6347,19 @@ function renderGuides(){
   const wf=G.find(g=>g.id==='wf'); if(wf) stories.push({g:'wf',a:null,title:wf.title,from:'Step-by-step workflow with charts and a decision tree'});
   G.filter(g=>g.story).forEach(g=>stories.push({g:g.id,a:null,title:g.title,from:g.desc}));/*WF-stories*/
   /*QREF*/const card=g=>`<button class="gcard" data-g="${g.id}"><b>${esc(g.title)}</b><span>${esc(g.desc)}</span></button>`;
-  main.innerHTML=`<section class="panel"><h2>Module guides</h2><p class="small" style="margin-top:0">One guide per module, in course order. Blue underlined links open Google searches.</p>
+  /*GFILT*/const GF=window.GFILT||'all', on=k=>GF==='all'||GF===k, mods=G.filter(g=>/^m\d+$|^mod16$/.test(g.id)), qr=QREF.map(id=>G.find(g=>g.id===id)).filter(Boolean);
+  const gchips=`<div class="gfilt" role="group" aria-label="Show">${[['all','All',mods.length+qr.length+stories.length+2],['mod','Modules',mods.length],['qr','Quick Reference',qr.length],['pov','New Analyst POV',stories.length],['r','R Examples',2]].map(([k,l,n])=>`<button class="chip" data-gf="${k}" aria-pressed="${GF===k}">${l} <span>${n}</span></button>`).join('')}</div>`;
+  main.innerHTML=gchips+`<section class="panel" data-gs="mod"><h2>Module guides</h2><p class="small" style="margin-top:0">One guide per module, in course order. Blue underlined links open Google searches.</p>
     <div class="clist">${G.filter(g=>/^m\d+$|^mod16$/.test(g.id)).map(card).join('')}</div></section>
-   <section class="panel"><h2>Quick Reference</h2><p class="small" style="margin-top:0">Notes sheets, big-picture maps and the Knob Lab, all cutting across modules. The sheets and maps have <b>Print / save as PDF</b>.</p>
+   <section class="panel" data-gs="qr"><h2>Quick Reference</h2><p class="small" style="margin-top:0">Notes sheets, big-picture maps and the Knob Lab, all cutting across modules. The sheets and maps have <b>Print / save as PDF</b>.</p>
     <div class="clist">${QREF.map(id=>G.find(g=>g.id===id)).filter(Boolean).map(card).join('')}</div></section>
-   <section class="panel"><h2>Maya's stories</h2><p class="small" style="margin-top:0">Meet Maya, a fictional analyst whose job keeps running into exactly what you're learning. Each story follows one lesson through her project: the wrong turn she almost takes, the idea that saves her, and the R code for each step.</p>
+   <section class="panel" data-gs="pov"><h2>New Analyst POV</h2><p class="small" style="margin-top:0">Meet Maya, a fictional analyst whose job keeps running into exactly what you're learning. Each story follows one lesson through her project: the wrong turn she almost takes, the idea that saves her, and the R code for each step.</p>
     <div class="clist">${stories.map(s=>`<button class="gcard" data-g="${s.g}" data-a="${s.a||''}"><b>${esc(s.title)}</b><span>${esc(s.from)}</span></button>`).join('')}</div></section>
-   <section class="panel"><h2>R examples</h2><p class="small" style="margin-top:0">Every Maya story includes "In R" boxes. The full forecasting walkthrough script is here too.</p>
+   <section class="panel" data-gs="r"><h2>R Examples</h2><p class="small" style="margin-top:0">Every New Analyst POV story includes “In R” boxes. The full forecasting walkthrough script is here too.</p>
     <div class="clist"><a class="gcard" href="#code" style="text-decoration:none;color:inherit"><b>R code practice ↗</b><span>Plan, assemble, write and run R yourself: 15 exercises across Modules 1–16</span></a><button class="gcard" data-g="rscript"><b>R walkthrough script</b><span>${esc((G.find(g=>g.id==='rscript')||{}).desc||'')}</span></button></div></section>`;
   document.querySelectorAll('button.gcard').forEach(b=>b.onclick=()=>{ gview={g:b.dataset.g,a:b.dataset.a||null}; renderReader(); });
+  main.querySelectorAll('[data-gs]').forEach(x=>x.hidden=!on(x.dataset.gs));
+  main.querySelectorAll('[data-gf]').forEach(b=>b.onclick=()=>{ window.GFILT=b.dataset.gf; main.querySelectorAll('[data-gf]').forEach(c=>c.setAttribute('aria-pressed',String(c===b))); main.querySelectorAll('[data-gs]').forEach(x=>x.hidden=!(b.dataset.gf==='all'||b.dataset.gf===x.dataset.gs)); });
 }
 function renderReader(){
   const g=loadGuides().find(x=>x.id===gview.g); if(!g){ gview=null; return renderGuides(); }
