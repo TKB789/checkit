@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Knob Lab</title>
+<style>
+:root{--bg:#F7F9FC;--card:#fff;--ink:#14213d;--ink-2:#55627a;--line:#d6deea;--muted-bg:#eef2f8;--pen:#2f5bd3;--a:#2f6fdb;--b:#e07b24;--ok:#2e8b57;--bad:#c0392b;--grid:#e8edf5;--sans:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1522;--card:#182132;--ink:#e6ecf7;--ink-2:#a3b0c6;--line:#2c3a52;--muted-bg:#1f2a3e;--pen:#7aa2ff;--a:#5b93ff;--b:#f0943f;--ok:#4cc38a;--bad:#ff6b5e;--grid:#24304a}}
+:root[data-theme="dark"]{--bg:#0F1522;--card:#182132;--ink:#e6ecf7;--ink-2:#a3b0c6;--line:#2c3a52;--muted-bg:#1f2a3e;--pen:#7aa2ff;--a:#5b93ff;--b:#f0943f;--ok:#4cc38a;--bad:#ff6b5e;--grid:#24304a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans)}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+.top a{color:var(--pen);font-weight:600;text-decoration:none}
+h1{font-size:1.6rem;margin:6px 0 4px}
+.intro{color:var(--ink-2);margin:0 0 14px}
+.jumps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.jumps a{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 11px;font:600 .85rem var(--sans);text-decoration:none}
+.k{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 16px;scroll-margin-top:10px}
+.k h2{font-size:1.15rem;margin:0}
+.k .ref{font:600 .78rem var(--sans);color:var(--ink-2);margin:2px 0 6px}
+.k .what{margin:0 0 10px;color:var(--ink-2);font-size:.95rem}
+.ctl{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;margin:6px 0}
+.ctl label{font-weight:600;font-size:.92rem;white-space:nowrap}
+.ctl output{font:600 .95rem ui-monospace,Menlo,Consolas,monospace;min-width:3.5em;text-align:right}
+input[type=range]{width:100%;accent-color:var(--pen);height:28px}
+svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+.read{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.92rem;margin:4px 0}
+.read b{font-variant-numeric:tabular-nums}
+.try{margin:8px 0 0;padding:8px 12px;background:var(--muted-bg);border-radius:10px;font-size:.9rem}
+.try b{color:var(--pen)}
+.try ul{margin:4px 0 0;padding-left:18px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.85rem;color:var(--ink-2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.cm{border-collapse:collapse;font-size:.88rem;margin:6px 0}
+.cm td,.cm th{border:1px solid var(--line);padding:4px 8px;text-align:center}
+.cm th{background:var(--muted-bg)}
+.num{width:5.5em;font:inherit;border:1px solid var(--line);border-radius:8px;padding:3px 6px;background:var(--card);color:var(--ink);font-size:16px}
+.toggle{display:flex;gap:6px;margin:4px 0}
+.toggle button{border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:999px;padding:5px 12px;font:600 .85rem var(--sans);cursor:pointer}
+.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.foot{font-size:.8rem;color:var(--ink-2);margin:10px 0 20px}
+.aidisc{font-size:.82rem;opacity:.75;margin:4px 0 0}
+</style>
+<script>/*EMBED*/
+(function(){
+  const PAGE={'slides.html':'ss','study_group.html':'sg','code_practice.html':'code','case_studies.html':'cases','cases.html':'cases'}[location.pathname.split('/').pop()];
+  const q=location.search;
+  if(window.parent===window){ if(PAGE&&!/[?&]standalone=1/.test(q)) location.replace('index.html#'+PAGE+(location.hash.length>1?'-'+location.hash.slice(1):'')); return; }
+  if(!/[?&]embed=1/.test(q)) return;
+  const R=document.documentElement; R.classList.add('embed'); R.removeAttribute('data-theme');
+  const post=m=>{ try{ parent.postMessage(m,'*'); }catch(e){} };
+  let acted=false; ['pointerdown','keydown','touchstart'].forEach(t=>addEventListener(t,()=>{acted=true;},true));
+  const realScroll=window.scrollTo.bind(window);
+  window.scrollTo=function(x,y){ if(!acted) return; if(x&&typeof x==='object') y=x.top; try{ realScroll(0,0); }catch(e){} size(); post({ssTop:+y||0}); };  // ignore scrolls the page makes on its own while loading; send the new height first, then ask index to scroll
+  addEventListener('message',e=>{ if(e.source!==parent) return; const d=e.data||{}; if(d.ssTheme===undefined) return;
+    if(d.ssTheme) R.setAttribute('data-theme',d.ssTheme); else R.removeAttribute('data-theme'); });
+  const size=()=>{ const w=document.querySelector('.wrap'); if(w) post({ssH:Math.ceil(w.getBoundingClientRect().height)+24}); };
+  addEventListener('DOMContentLoaded',()=>{ const w=document.querySelector('.wrap'); if(w&&window.ResizeObserver) new ResizeObserver(size).observe(w); size(); post({ssReady:1}); });
+  addEventListener('load',size);
+  document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const h=a.getAttribute('href');
+    if(!h||h.charAt(0)==='#'||a.hasAttribute('download')) return; e.preventDefault(); try{ top.location.href=new URL(h,location.href).href; }catch(x){ location.href=h; } },true);
+})();
+</script>
+<style>/*EMBED-css*/html.embed .sitebar,html.embed .top,html.embed .aidisc{display:none!important}html.embed body{background:transparent!important;min-height:0!important}html.embed .wrap{padding:0 0 12px!important;max-width:none!important}</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><a href="index.html">← ISYE 6501 study site</a></div>
+<h1>Knob Lab</h1>
+<p class="aidisc">Made by AI as a study aid. Verify for accuracy.</p>
+<p class="intro">Move each slider and watch what the setting does. The data are made up and fixed, so the same setting always gives the same picture.</p>
+<nav class="jumps"><a href="#knn">k in KNN</a><a href="#svm">λ in SVM</a><a href="#smooth">α in smoothing</a><a href="#cusum">C and T in CUSUM</a><a href="#lasso">λ in lasso</a><a href="#thr">Classification threshold</a></nav>
+
+<section class="k" id="knn"><h2>k in k-nearest neighbors</h2><p class="ref">M2 L8 · KNN</p>
+<p class="what">Each shaded cell takes the majority class of its k nearest training points. Small k follows every point; large k smooths the boundary.</p>
+<div class="ctl"><label for="knnk">k</label><input type="range" id="knnk" min="1" max="31" step="2" value="1"><output id="knnko"></output></div>
+<svg id="knnsvg" viewBox="0 0 300 300" role="img" aria-label="KNN decision regions"></svg>
+<div class="legend"><span><i style="background:var(--a)"></i>class A (circles)</span><span><i style="background:var(--b)"></i>class B (squares)</span><span>hollow = validation points</span></div>
+<div class="read"><span>Training accuracy <b id="knntr"></b></span><span>Validation accuracy <b id="knnva"></b></span></div>
+<div class="try"><b>Try this</b><ul><li>k = 1: training accuracy is 100% (each point is its own nearest neighbor), but validation is lower. That gap is overfitting.</li><li>Raise k until validation stops improving; very large k blurs the two groups together.</li></ul></div></section>
+
+<section class="k" id="svm"><h2>λ in a soft-margin SVM</h2><p class="ref">M2 L4 · Support vector machines</p>
+<p class="what">Minimize (errors) + λ·Σaⱼ². A bigger λ cares more about a wide margin and accepts more points inside it or on the wrong side.</p>
+<div class="ctl"><label for="svml">λ</label><input type="range" id="svml" min="-4.5" max="-1.5" step="0.05" value="-3.5"><output id="svmlo"></output></div>
+<svg id="svmsvg" viewBox="0 0 300 300" role="img" aria-label="SVM line and margins"></svg>
+<div class="legend"><span><i style="background:var(--a)"></i>y = +1</span><span><i style="background:var(--b)"></i>y = −1</span><span>solid = classifier, dashed = margins</span></div>
+<div class="read"><span>Margin width <b id="svmw"></b></span><span>Inside the margin <b id="svmin"></b></span><span>Wrong side <b id="svmwr"></b></span></div>
+<div class="try"><b>Try this</b><ul><li>Slide λ up: the margin widens and more points fall inside it.</li><li>Software such as R's ksvm uses C the other way round: a big C acts like a small λ (narrow margin, fewer training errors).</li></ul></div></section>
+
+<section class="k" id="smooth"><h2>α in exponential smoothing</h2><p class="ref">M7 L1–L2 · Exponential smoothing</p>
+<p class="what">Sₜ = α·xₜ + (1 − α)·Sₜ₋₁. The series has noise and a real jump at period 35.</p>
+<div class="ctl"><label for="smal">α</label><input type="range" id="smal" min="0.05" max="1" step="0.05" value="0.2"><output id="smalo"></output></div>
+<svg id="smsvg" viewBox="0 0 320 200" role="img" aria-label="Series and smoothed line"></svg>
+<div class="legend"><span><i style="background:var(--ink-2)"></i>observed</span><span><i style="background:var(--pen)"></i>smoothed Sₜ</span></div>
+<div class="read"><span>One-step error (MAE) <b id="smmae"></b></span><span>Catches the jump after <b id="smlag"></b></span></div>
+<div class="try"><b>Try this</b><ul><li>Small α trusts the baseline: a calm line, but slow to catch the jump.</li><li>α = 1 copies the last value: no smoothing at all, every bump passes through.</li></ul></div></section>
+
+<section class="k" id="cusum"><h2>C and T in CUSUM</h2><p class="ref">M6 L2 · CUSUM</p>
+<p class="what">Sₜ = max{0, Sₜ₋₁ + (xₜ − μ − C)}, alarm when Sₜ ≥ T (then S restarts at 0). μ = 20; the true mean moves to 21.5 at period 40.</p>
+<div class="ctl"><label for="cuc">C</label><input type="range" id="cuc" min="0" max="3" step="0.1" value="0.5"><output id="cuco"></output></div>
+<div class="ctl"><label for="cut">T</label><input type="range" id="cut" min="1" max="20" step="0.5" value="5"><output id="cuto"></output></div>
+<svg id="cusvg" viewBox="0 0 320 200" role="img" aria-label="CUSUM statistic"></svg>
+<div class="legend"><span><i style="background:var(--pen)"></i>Sₜ</span><span><i style="background:var(--bad)"></i>threshold T, alarms</span><span>gray line = real change</span></div>
+<div class="read"><span>False alarms before the change <b id="cufa"></b></span><span>First alarm after the change <b id="cudet"></b></span></div>
+<div class="try"><b>Try this</b><ul><li>Lower C or T: the change is caught sooner, but false alarms appear.</li><li>Raise them: fewer false alarms, slower detection. Pick by which mistake costs more.</li></ul></div></section>
+
+<section class="k" id="lasso"><h2>λ in lasso (and ridge)</h2><p class="ref">M11 L2 · Variable selection</p>
+<p class="what">Minimize (squared error) + λ·penalty on the coefficients. Five scaled predictors; only x₁–x₃ really matter. A bigger λ is the same as a smaller budget τ.</p>
+<div class="toggle" role="group" aria-label="Penalty"><button id="pl1" aria-pressed="true">Lasso: λΣ|a|</button><button id="pl2" aria-pressed="false">Ridge: λΣa²</button></div>
+<div class="ctl"><label for="lal">λ</label><input type="range" id="lal" min="0" max="1" step="0.01" value="0"><output id="lalo"></output></div>
+<svg id="lasvg" viewBox="0 0 320 200" role="img" aria-label="Coefficient bars"></svg>
+<div class="legend"><span><i style="background:var(--pen)"></i>fitted coefficient</span><span>tick = true value</span></div>
+<div class="read"><span>Nonzero coefficients <b id="lanz"></b></span><span>Validation error (MSE) <b id="lamse"></b></span></div>
+<div class="try"><b>Try this</b><ul><li>Lasso: as λ grows, the useless x₄ and x₅ hit exactly 0 first; then x₃.</li><li>Ridge: everything shrinks toward 0 but nothing reaches it, so ridge doesn't select.</li><li>Watch the validation error: a little shrinkage often helps, too much hurts.</li></ul></div></section>
+
+<section class="k" id="thr"><h2>The classification threshold</h2><p class="ref">M10 L5 · Confusion matrix and cost</p>
+<p class="what">A model gives each case a score. Everything at or above the threshold is called positive. 50 real positives, 200 real negatives.</p>
+<div class="ctl"><label for="thv">Threshold</label><input type="range" id="thv" min="0" max="1" step="0.01" value="0.5"><output id="thvo"></output></div>
+<div class="read"><label>Cost of a missed positive (FN) $<input class="num" id="cfn" type="number" min="0" value="100"></label><label>Cost of a false alarm (FP) $<input class="num" id="cfp" type="number" min="0" value="10"></label></div>
+<svg id="thsvg" viewBox="0 0 320 180" role="img" aria-label="Score histograms"></svg>
+<div class="legend"><span><i style="background:var(--b)"></i>real positives</span><span><i style="background:var(--a)"></i>real negatives</span><span>red line = your threshold, dotted = cheapest</span></div>
+<table class="cm"><tr><th></th><th>called +</th><th>called −</th></tr><tr><th>real +</th><td id="ctp"></td><td id="cfnv"></td></tr><tr><th>real −</th><td id="cfpv"></td><td id="ctn"></td></tr></table>
+<div class="read"><span>Sensitivity <b id="tsen"></b></span><span>Specificity <b id="tspe"></b></span><span>Accuracy <b id="tacc"></b></span><span>Total cost <b id="tcost"></b></span><span>Cheapest threshold <b id="tbest"></b></span></div>
+<svg id="rocsvg" viewBox="0 0 200 200" role="img" aria-label="ROC curve" style="max-width:240px"></svg>
+<div class="legend"><span>ROC curve: up = sensitivity, right = 1 − specificity; red dot = your threshold</span></div>
+<div class="try"><b>Try this</b><ul><li>Lower the threshold: more positives caught (sensitivity ↑) but more false alarms (specificity ↓).</li><li>Make a missed positive expensive and the cheapest threshold moves down. Accuracy alone would pick a different threshold.</li><li>The ROC curve and its AUC don't change as you slide; only your point on the curve moves.</li></ul></div></section>
+<p class="foot">Made-up data, fixed seed. The formulas match the lessons; the pictures are simplified.</p>
+</div>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function gauss(r){ let u=0,v=0; while(!u) u=r(); while(!v) v=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+function clear(s){ while(s.firstChild) s.removeChild(s.firstChild); }
+const pct=x=>Math.round(100*x)+'%';
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+// ---------- KNN
+(function(){ const r=rng(11); const mk=n=>{ const pts=[]; for(let i=0;i<n;i++){ const c=i%2; const cx=c?0.62:0.38, cy=c?0.58:0.42; pts.push({x:Math.min(.98,Math.max(.02,cx+gauss(r)*0.16)),y:Math.min(.98,Math.max(.02,cy+gauss(r)*0.16)),c}); } return pts; };
+  const tr=mk(70), va=mk(70), G=30;
+  function vote(px,py,k,skip){ const d=tr.map(p=>({d:(p.x-px)**2+(p.y-py)**2,c:p.c,p})).filter(o=>o.p!==skip).sort((a,b)=>a.d-b.d).slice(0,k); const s=d.reduce((a,o)=>a+o.c,0); return s*2>k?1:0; }
+  function draw(){ const k=+$('knnk').value; $('knnko').textContent=k; const s=$('knnsvg'); clear(s); const W=300, cs=W/G;
+    for(let i=0;i<G;i++) for(let j=0;j<G;j++){ const c=vote((i+.5)/G,(j+.5)/G,k); el('rect',{x:i*cs,y:W-(j+1)*cs,width:cs+.4,height:cs+.4,fill:c?css('--b'):css('--a'),opacity:.18},s); }
+    const dot=(p,hollow)=>{ const X=p.x*W, Y=W-p.y*W, col=p.c?css('--b'):css('--a'); if(p.c) el('rect',{x:X-3.6,y:Y-3.6,width:7.2,height:7.2,fill:hollow?'none':col,stroke:col,'stroke-width':1.4},s); else el('circle',{cx:X,cy:Y,r:3.8,fill:hollow?'none':col,stroke:col,'stroke-width':1.4},s); };
+    va.forEach(p=>dot(p,true)); tr.forEach(p=>dot(p,false));
+    const trAcc=tr.filter(p=>vote(p.x,p.y,k)===p.c).length/tr.length, vaAcc=va.filter(p=>vote(p.x,p.y,k)===p.c).length/va.length;
+    $('knntr').textContent=pct(trAcc); $('knnva').textContent=pct(vaAcc); }
+  $('knnk').oninput=draw; draw(); window.KNN_draw=draw; })();
+
+// ---------- SVM
+(function(){ const r=rng(7), pts=[]; for(let i=0;i<44;i++){ const y=i%2?1:-1; pts.push({x1:(y>0?0.62:0.38)+gauss(r)*0.12, x2:(y>0?0.62:0.38)+gauss(r)*0.12, y}); }
+  const n=pts.length, cx=0.5;
+  function fit(lam){ let w1=0,w2=0,b=0, best=null, bf=Infinity;
+    for(let t=1;t<=6000;t++){ let g1=2*lam*w1, g2=2*lam*w2, gb=0; for(const p of pts){ const m=p.y*(w1*(p.x1-cx)+w2*(p.x2-cx)+b); if(m<1){ g1-=p.y*(p.x1-cx)/n; g2-=p.y*(p.x2-cx)/n; gb-=p.y/n; } }
+      const st=1/Math.sqrt(t); w1-=st*g1; w2-=st*g2; b-=st*gb;
+      if(t%50===0){ let f=lam*(w1*w1+w2*w2); for(const p of pts) f+=Math.max(0,1-p.y*(w1*(p.x1-cx)+w2*(p.x2-cx)+b))/n; if(f<bf){ bf=f; best=[w1,w2,b]; } } }
+    return best; }
+  const cache={};
+  function draw(){ const lg=+$('svml').value, lam=Math.pow(10,lg); $('svmlo').textContent=lam.toPrecision(2);
+    const [w1,w2,b]=cache[lg]||(cache[lg]=fit(lam)); const s=$('svmsvg'); clear(s); const W=300;
+    const line=(off,dash)=>{ // w1(x-cx)+w2(y-cx)+b=off
+      const P=[]; if(Math.abs(w2)<1e-9){ const x=cx+(off-b)/w1; P.push([x*W,0],[x*W,W]); } else for(const x of [0,1]){ const y=cx+(off-b-w1*(x-cx))/w2; P.push([x*W,W-y*W]); } el('line',{x1:P[0][0],y1:P[0][1],x2:P[1][0],y2:P[1][1],stroke:css('--ink'),'stroke-width':dash?1.2:2,'stroke-dasharray':dash?'5 4':'none'},s); };
+    line(0,false); line(1,true); line(-1,true);
+    let inside=0, wrong=0; pts.forEach(p=>{ const m=p.y*(w1*(p.x1-cx)+w2*(p.x2-cx)+b); if(m<0) wrong++; else if(m<1) inside++;
+      const X=p.x1*W, Y=W-p.x2*W, col=p.y>0?css('--a'):css('--b'); if(p.y>0) el('circle',{cx:X,cy:Y,r:4,fill:col},s); else el('rect',{x:X-3.6,y:Y-3.6,width:7.2,height:7.2,fill:col},s);
+      if(m<1) el('circle',{cx:X,cy:Y,r:7,fill:'none',stroke:css('--ink-2'),'stroke-width':1},s); });
+    const width=2/Math.sqrt(w1*w1+w2*w2); $('svmw').textContent=Math.round(100*width)+'% of the plot'; $('svmin').textContent=inside; $('svmwr').textContent=wrong; }
+  $('svml').oninput=draw; draw(); })();
+
+// ---------- exponential smoothing
+(function(){ const r=rng(5), xs=[]; for(let t=0;t<70;t++) xs.push((t<35?50:62)+gauss(r)*4+(t===20?14:0));
+  function draw(){ const a=+$('smal').value; $('smalo').textContent=a.toFixed(2); const S=[xs[0]]; for(let t=1;t<xs.length;t++) S.push(a*xs[t]+(1-a)*S[t-1]);
+    let mae=0; for(let t=1;t<xs.length;t++) mae+=Math.abs(xs[t]-S[t-1]); mae/=xs.length-1;
+    let lag='—'; for(let t=35;t<xs.length;t++){ if(S[t]>=59){ lag=(t-35)+' periods'; break; } }
+    const s=$('smsvg'); clear(s); const W=320,H=200,lo=35,hi=80, X=t=>10+t*(W-20)/(xs.length-1), Y=v=>H-10-(v-lo)/(hi-lo)*(H-20);
+    el('line',{x1:X(35),y1:10,x2:X(35),y2:H-10,stroke:css('--line'),'stroke-width':1.5},s);
+    xs.forEach((v,t)=>el('circle',{cx:X(t),cy:Y(v),r:2.2,fill:css('--ink-2')},s));
+    el('polyline',{points:S.map((v,t)=>X(t)+','+Y(v)).join(' '),fill:'none',stroke:css('--pen'),'stroke-width':2.2},s);
+    $('smmae').textContent=mae.toFixed(2); $('smlag').textContent=lag; }
+  $('smal').oninput=draw; draw(); })();
+
+// ---------- CUSUM
+(function(){ const r=rng(3), xs=[]; for(let t=0;t<80;t++) xs.push((t<40?20:21.5)+gauss(r)*1.5);
+  function draw(){ const C=+$('cuc').value, T=+$('cut').value; $('cuco').textContent=C.toFixed(1); $('cuto').textContent=T.toFixed(1);
+    const S=[], al=[]; let s0=0; xs.forEach((x,t)=>{ s0=Math.max(0,s0+(x-20-C)); S.push(s0); if(s0>=T){ al.push(t); s0=0; } });
+    const fa=al.filter(t=>t<40).length, det=al.find(t=>t>=40);
+    const s=$('cusvg'); clear(s); const W=320,H=200, hi=Math.max(T*1.4,8), X=t=>10+t*(W-20)/(xs.length-1), Y=v=>H-10-Math.min(v,hi)/hi*(H-20);
+    el('line',{x1:X(40),y1:10,x2:X(40),y2:H-10,stroke:css('--line'),'stroke-width':2},s);
+    el('line',{x1:10,y1:Y(T),x2:W-10,y2:Y(T),stroke:css('--bad'),'stroke-width':1.4,'stroke-dasharray':'6 4'},s);
+    el('polyline',{points:S.map((v,t)=>X(t)+','+Y(v)).join(' '),fill:'none',stroke:css('--pen'),'stroke-width':2},s);
+    al.forEach(t=>el('circle',{cx:X(t),cy:Y(T),r:4.5,fill:css('--bad')},s));
+    $('cufa').textContent=fa; $('cudet').textContent=det===undefined?'none (missed)':(det-40)+' periods'; }
+  $('cuc').oninput=draw; $('cut').oninput=draw; draw(); })();
+
+// ---------- lasso / ridge
+(function(){ const r=rng(9), TRUE=[3,1.5,0.6,0,0];
+  const mk=n=>{ const X=[],y=[]; for(let i=0;i<n;i++){ const z=gauss(r); const row=[gauss(r),0.7*z+0.7*gauss(r),gauss(r),0.6*z+0.8*gauss(r),gauss(r)]; X.push(row); y.push(row.reduce((a,v,j)=>a+v*TRUE[j],0)+gauss(r)*2.2); } return {X,y}; };
+  const tr=mk(40), va=mk(200), p=5, n=tr.X.length;
+  const mean=j=>tr.X.reduce((a,row)=>a+row[j],0)/n, sd=j=>{ const m=mean(j); return Math.sqrt(tr.X.reduce((a,row)=>a+(row[j]-m)**2,0)/n); };
+  const M=[...Array(p).keys()].map(mean), SD=[...Array(p).keys()].map(sd), ym=tr.y.reduce((a,b)=>a+b,0)/n;
+  const Z=tr.X.map(row=>row.map((v,j)=>(v-M[j])/SD[j]));
+  const lmax=Math.max(...[...Array(p).keys()].map(j=>Math.abs(Z.reduce((a,row,i)=>a+row[j]*(tr.y[i]-ym),0)/n)));
+  let mode=1;
+  function fit(lam){ const b=new Array(p).fill(0); for(let it=0;it<400;it++){ for(let j=0;j<p;j++){ let rho=0; for(let i=0;i<n;i++){ let pr=ym; for(let k=0;k<p;k++) if(k!==j) pr+=Z[i][k]*b[k]; rho+=Z[i][j]*(tr.y[i]-pr); } rho/=n;
+        b[j]=mode===1?Math.sign(rho)*Math.max(0,Math.abs(rho)-lam):rho/(1+2*lam); } } return b; }
+  function draw(){ const f=+$('lal').value, lam=f*(mode===1?lmax:5); $('lalo').textContent=lam.toFixed(2);
+    const bz=fit(lam), b=bz.map((v,j)=>v/SD[j]); const a0=ym-b.reduce((a,v,j)=>a+v*M[j],0);
+    let mse=0; va.X.forEach((row,i)=>{ const yh=a0+row.reduce((a,v,j)=>a+v*b[j],0); mse+=(va.y[i]-yh)**2; }); mse/=va.X.length;
+    const s=$('lasvg'); clear(s); const W=320,H=200, lo=-1, hi=3.6, Y=v=>H-34-(v-lo)/(hi-lo)*(H-46), bw=40;
+    el('line',{x1:10,y1:Y(0),x2:W-10,y2:Y(0),stroke:css('--line'),'stroke-width':1.5},s);
+    b.forEach((v,j)=>{ const x=30+j*58; el('rect',{x,y:Math.min(Y(v),Y(0)),width:bw,height:Math.max(1,Math.abs(Y(v)-Y(0))),fill:Math.abs(v)<1e-6?css('--line'):css('--pen'),rx:3},s);
+      el('line',{x1:x-4,y1:Y(TRUE[j]),x2:x+bw+4,y2:Y(TRUE[j]),stroke:css('--b'),'stroke-width':2.4},s);
+      const t=el('text',{x:x+bw/2,y:H-18,'text-anchor':'middle','font-size':12,'font-weight':600,fill:css('--ink')},s); t.textContent='x'+(j+1);
+      const t2=el('text',{x:x+bw/2,y:H-4,'text-anchor':'middle','font-size':12,fill:css('--ink-2')},s); t2.textContent=Math.abs(v)<5e-3?'0':v.toFixed(2); });
+    $('lanz').textContent=b.filter(v=>Math.abs(v)>1e-6).length+' of 5'; $('lamse').textContent=mse.toFixed(2); }
+  const setMode=m=>{ mode=m; $('pl1').setAttribute('aria-pressed',m===1); $('pl2').setAttribute('aria-pressed',m===2); draw(); };
+  $('pl1').onclick=()=>setMode(1); $('pl2').onclick=()=>setMode(2); $('lal').oninput=draw; draw(); })();
+
+// ---------- threshold
+(function(){ const r=rng(21), pos=[], neg=[]; const cl=v=>Math.min(.995,Math.max(.005,v));
+  for(let i=0;i<50;i++) pos.push(cl(0.66+gauss(r)*0.14)); for(let i=0;i<200;i++) neg.push(cl(0.38+gauss(r)*0.14));
+  const cm=t=>{ const TP=pos.filter(v=>v>=t).length, FN=50-TP, FP=neg.filter(v=>v>=t).length, TN=200-FP; return {TP,FN,FP,TN}; };
+  const roc=[]; for(let t=1;t>=0;t-=0.01){ const c=cm(t); roc.push([c.FP/200,c.TP/50]); }
+  let auc=0; for(let i=1;i<roc.length;i++) auc+=(roc[i][0]-roc[i-1][0])*(roc[i][1]+roc[i-1][1])/2;
+  function draw(){ const t=+$('thv').value, cfn=Math.max(0,+$('cfn').value||0), cfp=Math.max(0,+$('cfp').value||0); $('thvo').textContent=t.toFixed(2);
+    const c=cm(t); $('ctp').textContent='TP '+c.TP; $('cfnv').textContent='FN '+c.FN; $('cfpv').textContent='FP '+c.FP; $('ctn').textContent='TN '+c.TN;
+    $('tsen').textContent=pct(c.TP/50); $('tspe').textContent=pct(c.TN/200); $('tacc').textContent=pct((c.TP+c.TN)/250); $('tcost').textContent='$'+(c.FN*cfn+c.FP*cfp).toLocaleString();
+    let best=0, bc=Infinity; for(let u=0;u<=1.0001;u+=0.01){ const k=cm(u), cost=k.FN*cfn+k.FP*cfp; if(cost<bc){ bc=cost; best=u; } } $('tbest').textContent=best.toFixed(2)+' ($'+bc.toLocaleString()+')';
+    const s=$('thsvg'); clear(s); const W=320,H=180,B=25, X=v=>10+v*(W-20); const hp=new Array(B).fill(0), hn=new Array(B).fill(0); pos.forEach(v=>hp[Math.min(B-1,Math.floor(v*B))]++); neg.forEach(v=>hn[Math.min(B-1,Math.floor(v*B))]++);
+    const mx=Math.max(...hn,...hp), bw=(W-20)/B, Y=v=>(v/mx)*(H-30);
+    for(let i=0;i<B;i++){ el('rect',{x:X(i/B)+1,y:H-10-Y(hn[i]),width:bw-2,height:Y(hn[i]),fill:css('--a'),opacity:.55},s); el('rect',{x:X(i/B)+bw*0.25,y:H-10-Y(hp[i]),width:bw*0.5,height:Y(hp[i]),fill:css('--b'),opacity:.9},s); }
+    el('line',{x1:X(best),y1:6,x2:X(best),y2:H-10,stroke:css('--ink-2'),'stroke-width':1.5,'stroke-dasharray':'2 3'},s);
+    el('line',{x1:X(t),y1:6,x2:X(t),y2:H-10,stroke:css('--bad'),'stroke-width':2.4},s);
+    const R=$('rocsvg'); clear(R); const S=200, P=v=>10+v*(S-20);
+    el('line',{x1:P(0),y1:S-P(0),x2:P(1),y2:S-P(1),stroke:css('--line'),'stroke-dasharray':'4 4'},R);
+    el('polyline',{points:roc.map(([x,y])=>P(x)+','+(S-P(y))).join(' '),fill:'none',stroke:css('--pen'),'stroke-width':2},R);
+    el('circle',{cx:P(c.FP/200),cy:S-P(c.TP/50),r:5,fill:css('--bad')},R);
+    const tx=el('text',{x:S-12,y:S-14,'text-anchor':'end','font-size':12,fill:css('--ink')},R); tx.textContent='AUC '+auc.toFixed(2);
+ }
+  $('thv').oninput=draw; $('cfn').oninput=draw; $('cfp').oninput=draw; draw(); })();
+
+// redraw when the theme changes (colors are read from CSS)
+new MutationObserver(()=>document.querySelectorAll('input[type=range]').forEach(i=>i.dispatchEvent(new Event('input')))).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>document.querySelectorAll('input[type=range]').forEach(i=>i.dispatchEvent(new Event('input')))); }catch(e){}
+})();
+</script>
+</body>
+</html>
