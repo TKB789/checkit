@@ -408,7 +408,7 @@ nav.tabs .tabnote{grid-column:1/-1;margin:3px 2px 0;padding:7px 4px 2px;border-t
 .onotes .ex{background:rgba(46,139,87,.13);border-left:3px solid #2e8b57;padding:5px 8px;border-radius:0 6px 6px 0;margin:6px 10px 2px}
 .onotes .trap ul,.onotes .ex ul{margin:2px 0 0}
 </style>
-<style>/*SMART*/.pxm .smart .smcount{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 10px;font-size:.92rem}.pxm .smart .smcount b{font-size:1.05rem}.pxm .smart .smbtns .btn{flex:1;min-width:62px;padding-left:6px;padding-right:6px}.pxm .smart .smnote{margin:6px 0 0}.pxm .smcur{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.pxm .smcur ol{margin:6px 0;padding-left:20px}.pxm .smcur li{margin:3px 0}.pxm .smwhy{display:inline-block;font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-left:4px;color:var(--ink-2)}</style>
+<style>/*SMART*/.pxm .smart .smcount{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 10px;font-size:.92rem}.pxm .smart .smcount b{font-size:1.05rem}.pxm .smart .smbtns{margin-top:8px}.pxm .smart .smbtns .btn{flex:1;min-width:62px;padding-left:6px;padding-right:6px}.pxm .smart .smnote{margin:6px 0 0}.pxm .smcur{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.pxm .smcur ol{margin:6px 0;padding-left:20px}.pxm .smcur li{margin:3px 0}.pxm .smwhy{display:inline-block;font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-left:4px;color:var(--ink-2)}</style>
 <style>/*GBAR*/.greader-bar{flex-wrap:wrap}.greader-bar #gtoc{order:3;flex:1 1 100%;min-width:0}</style>
 <style>/*GFILT*/.gfilt{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.gfilt .chip{border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:999px;padding:7px 12px;font:600 .88rem var(--sans);cursor:pointer;min-height:36px}.gfilt .chip span{font-weight:500;opacity:.75;margin-left:2px}.gfilt .chip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}</style>
 </head>
@@ -618,7 +618,7 @@ function homeHTML(att){ const st=stats(att); const q=(view.pkq||'').toLowerCase(
     <li><b>Scoring, as on the real exam:</b> each question shows its points in parentheses. Single best answer: 3 points, all-or-nothing. Select all that apply: 3 points (4 with 5+ options), credited by the share of options you judge right (ticking a true one or leaving a false one unticked). Drag-and-drop: about 1.5 points per card (4 to 13), credited by the share of cards placed right. Score = points earned ÷ points possible on the questions you answered.</li>
     <li>The timer keeps running if you leave and come back. Going over time is allowed and shown in red. <b>Finish</b> shows your score; <b>Retake</b> clears that set's or scenario's answers so you can try again.</li>
     <li>Missed questions and anything you tap <b>☆ Add to notes</b> on go into the <b>Notes</b> tab. <b>My grades</b> shows every attempt and every timed run.</li></ul></details></section>
-   ${smartHTML(att)}<section class="panel"><h2>Timed practice sets</h2><div class="setgrid">`;
+   ${smartHTML(att)}<section class="panel"><h2>Timed practice sets</h2><p class="small" style="margin-top:0">Fixed sets, the same every time: they don't use your history. For a set built from your history, use the smart review set above.</p><div class="setgrid">`;
   SETS().forEach((ids,k)=>{ const R=runDef({kind:'set',k}), rs=runStats(att,ids), T=(DB.timers||{})[R.key], tt=timerText(R), mm=[...new Set(EXAM.filter(s=>ids.includes(s.id)).flatMap(scenMods))].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
     const live=T&&!T.end, done=rs.answered===rs.n||(T&&T.end);
     h+=`<div class="setcard"><b>${esc(CFG.label)} · Set ${k+1}</b><span class="small">${ids.length} scenarios · ${rs.n} questions · ${rs.tmax} points · ${R.min} min</span><span class="small">${mm.join(', ')}</span><span class="small st">${statusOf(att,ids,R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</span>
@@ -674,22 +674,25 @@ function wasOver(p,a){ if(a.over!==undefined) return !!a.over; if(!a.at) return 
 function recsOf(p){ const out=((DB.prior||{})[p.id]||[]).map(h=>({ok:!!h.ok,at:h.at||0,over:!!h.over}));
   DB.attempts.forEach(a=>{ const r=a.ans[p.id]; if(r) out.push({ok:!!r.ok,at:r.at||a.started||0,over:wasOver(p,r)}); });
   return out.sort((x,y)=>x.at-y.at); }
-const SM_IV=[1,3,7,14,30];
+const SM_IV=[1,3,7,14];
 function partPri(p,now){ const rs=recsOf(p), last=rs[rs.length-1];
   if(!last) return {s:120,why:'new'};
   if(!last.ok) return {s:1000,why:'missed'};
-  if(last.over) return {s:30,why:'over'};
   let k=0; for(let i=rs.length-1;i>=0&&rs[i].ok;i--) k++;
+  const fixedOnce=k===1&&rs.length>1; // missed before, redone right once
+  if(fixedOnce&&now-last.at>=3*864e5) return {s:110,why:'recheck'};
+  if(last.over) return {s:30,why:'over'};
+  if(fixedOnce) return {s:0.5,why:''};
   const iv=SM_IV[Math.min(k,SM_IV.length)-1]*864e5, due=(now-last.at)/iv;
   if(due>=1) return {s:8*(1+Math.min(due-1,2)/2),why:'due'};
   return {s:0.5,why:''}; }
-function smartCounts(){ const now=Date.now(), c={missed:0,new:0,over:0,due:0}; PARTS.forEach(p=>{ const w=partPri(p,now).why; if(w) c[w]++; }); return c; }
+function smartCounts(){ const now=Date.now(), c={missed:0,new:0,recheck:0,over:0,due:0}; PARTS.forEach(p=>{ const w=partPri(p,now).why; if(w) c[w]++; }); return c; }
 function smartPlan(target){ const now=Date.now(), B=target/MIN_PER_PT;
-  const sc=EXAM.map(s=>{ const ps=PARTS.filter(p=>p.sid===s.id), why={missed:0,new:0,over:0,due:0}; let sum=0;
+  const sc=EXAM.map(s=>{ const ps=PARTS.filter(p=>p.sid===s.id), why={missed:0,new:0,recheck:0,over:0,due:0}; let sum=0;
     ps.forEach(p=>{ const r=partPri(p,now); sum+=r.s; if(r.why) why[r.why]++; });
     return {s, pts:ptsOf([s.id]), why, score:sum*(0.85+0.3*Math.random())}; }).sort((a,b)=>b.score-a.score)
-    .filter((x,i,all)=>target>15||x.pts*MIN_PER_PT<=target*1.1||!all.some(y=>y.pts*MIN_PER_PT<=target*1.1));
-  const pick=[], modPts={}; let tot=0; const cap=Math.max(B*0.35,1);
+    .filter((x,i,all)=>target>20||x.pts*MIN_PER_PT<=target*1.1||!all.some(y=>y.pts*MIN_PER_PT<=target*1.1));
+  const pick=[], modPts={}; let tot=0; const cap=Math.max(B*(target>=95?0.2:0.35),1);
   const tryAdd=(x,useCap)=>{ if(pick.includes(x)) return; if(tot+x.pts>B*1.06&&pick.length) return; const m=x.s.module;
     if(useCap&&m!=='MIX'&&(modPts[m]||0)+x.pts>cap&&pick.length) return; pick.push(x); tot+=x.pts; modPts[m]=(modPts[m]||0)+x.pts; };
   for(const x of sc){ if(tot>=B*0.92) break; tryAdd(x,!x.why.missed); }
@@ -699,11 +702,11 @@ function smartPlan(target){ const now=Date.now(), B=target/MIN_PER_PT;
 function startSmart(target){ const att=cur(), P=smartPlan(target); DB.prior=DB.prior||{};
   PARTS.filter(p=>P.ids.includes(p.sid)).forEach(p=>{ const a=att.ans[p.id]; if(a) (DB.prior[p.id]=DB.prior[p.id]||[]).push({n:att.n,ok:a.ok,at:a.at||Date.now(),over:wasOver(p,a)}); delete att.ans[p.id]; delete att.skip[p.id]; delete draft[p.id]; });
   DB.smart=P; if(DB.timers) delete DB.timers.smart; save(); openRun('smart:0',true); }
-const whyTxt=w=>[w.missed?`${w.missed} missed`:'',w.new?`${w.new} new`:'',w.over?`${w.over} over time`:'',w.due?`${w.due} due again`:''].filter(Boolean).join(' · ')||'review';
+const whyTxt=w=>[w.missed?`${w.missed} missed`:'',w.new?`${w.new} new`:'',w.recheck?`${w.recheck} to recheck`:'',w.over?`${w.over} over time`:'',w.due?`${w.due} due again`:''].filter(Boolean).join(' · ')||'review';
 function smartHTML(att){ const c=smartCounts(), S=DB.smart, R=S&&S.ids.length?runDef({kind:'smart'}):null, T=R&&(DB.timers||{})[R.key], live=T&&!T.end, tt=R?timerText(R):null;
-  let h=`<section class="panel smart"><h2>Smart review set</h2><p class="small" style="margin-top:0">A timed set built from your own history on this midterm. It picks, in this order: questions you <b>still miss</b>, questions you <b>haven't tried</b>, questions you got right but <b>over time</b>, and questions you got right a while ago that are <b>due again</b> (1, 3, 7, 14, then 30 days after each right answer in a row). Whole scenarios, no module more than about a third of the set, and a little randomness so each set is different.</p>
-   <p class="smcount"><span><b>${c.missed}</b> still missed</span><span><b>${c.new}</b> not tried</span><span><b>${c.over}</b> over time</span><span><b>${c.due}</b> due again</span></p>
-   <div class="row smbtns">${[10,30,60,90].map(m=>`<button class="btn${live?' ghost':''}" data-smart="${m}">${m} min</button>`).join('')}</div><p class="small smnote">The 10-minute set uses only short scenarios (about 10 points or less), so a missed question inside a longer scenario waits for a 30-minute or longer set.</p>`;
+  let h=`<section class="panel smart"><h2>Smart review set</h2><p class="small" style="margin-top:0">A timed set built from your own history on this midterm. It picks, in this order: questions you <b>still miss</b>; questions you <b>haven't tried</b>; questions you missed and then fixed, to <b>recheck</b> 3 days after the fix; questions you got right but <b>over time</b>; and questions you got right a while ago that are <b>due again</b> (1, 3, 7, then 14 days after each right answer in a row). Whole scenarios, no module more than about a third of the set (a fifth in the full exam), and a little randomness so each set is different.</p>
+   <p class="smcount"><span><b>${c.missed}</b> still missed</span><span><b>${c.new}</b> not tried</span><span><b>${c.recheck}</b> to recheck</span><span><b>${c.over}</b> over time</span><span><b>${c.due}</b> due again</span></p>
+   ${[[10,15,20],[30,45,60]].map(r=>`<div class="row smbtns">${r.map(m=>`<button class="btn${live?' ghost':''}" data-smart="${m}">${m} min</button>`).join('')}</div>`).join('')}<div class="row smbtns"><button class="btn${live?' ghost':''}" data-smart="95">Full exam · 95 min</button></div><p class="small smnote">The 10, 15 and 20-minute sets are limited to short scenarios. The full exam spreads across more modules, like the real midterm.</p>`;
   if(R){ const rs=runStats(att,R.ids);
     h+=`<div class="smcur"><div class="row" style="justify-content:space-between;align-items:baseline;margin:0"><b>Your ${S.target}-minute set</b><span class="small">${statusOf(att,R.ids,R)}${live?` · <b class="${tt.over?'over':''}">${tt.txt}</b>`:''}</span></div>
       <ol class="small">${S.ids.map(id=>{ const s=EXAM.find(x=>x.id===id); return s?`<li>${esc(s.title)} <span class="smwhy">${whyTxt(S.why[id]||{})}</span></li>`:''; }).join('')}</ol>
