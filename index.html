@@ -6669,7 +6669,7 @@ function gather(){ const mine=[], qs=[];
     else if(n.kind!=='mine') qs.push({group:n.src,missed:!!n.missed,saved:n.kind==='saved',title:n.title,body:n.html,ref:n.ref,mod:n.mod,ei:n.ei,pid:n.id,si:n.si}); });
   const d=read(SGK);
   if(d&&typeof d==='object'){ (Array.isArray(d.notes)?d.notes:[]).forEach(n=>{ if(!n) return; const refs=Array.isArray(n.refs)?n.refs:[];
-      if(!n.pid) return; const last=sgLatest(n.pid,n.practice), saved=n.why!=='missed', missed=last===null?n.why==='missed':!last; if(!saved&&!missed) return;
+      if(!n.pid) return; const last=sgLatest(n.pid,n.practice), saved=n.why!=='missed'||!!n.saved, missed=last===null?n.why==='missed':!last; if(!saved&&!missed) return;
       qs.push({group:'Study group practice',missed,saved,title:txt(n.title),body:(n.key?'<b>Key idea:</b> '+esc(txt(n.key))+'<br>':'')+esc(txt(n.explain)),ref:[n.practice||'Practice 1',refs.join(' · ')].filter(Boolean).join(' · '),mod:modOf(refs),sg:(/Practice (\d)/.exec(n.practice||'Practice 1')||[0,1])[1],sgid:n.id}); }); }
   const fs=read(FK)||{}; const fc=fs.c||{}, fsv=fs.saved||{}; let need=false;
   new Set(Object.keys(fc).filter(id=>fc[id]&&fc[id].last==='w').concat(Object.keys(fsv))).forEach(id=>{ const c=fcCard(id,fs); if(!c){ need=true; return; }
@@ -6726,7 +6726,7 @@ function render(el){ M=el||M; const A=gather(), mn=MN();
 }
 function unsave(v){
     if(v.startsWith('fc:')){ const fs=read(FK)||{}; if(fs.saved){ delete fs.saved[v.slice(3)]; write(FK,fs); } }
-    else if(v.startsWith('sg:')){ const d=read(SGK); if(d&&Array.isArray(d.notes)){ d.notes=d.notes.filter(x=>!(x&&x.id===v.slice(3))); write(SGK,d); } }
+    else if(v.startsWith('sg:')){ const d=read(SGK); if(d&&Array.isArray(d.notes)){ const x=d.notes.find(y=>y&&y.id===v.slice(3)); if(x&&x.why==='missed') x.saved=false; else d.notes=d.notes.filter(y=>!(y&&y.id===v.slice(3))); write(SGK,d); } }
     else { const p=v.split(':'); try{ PX.unpin(+p[1],p.slice(2).join(':')); }catch(e){} }
 }
 // ---- edit / delete for every written note, wherever it was written

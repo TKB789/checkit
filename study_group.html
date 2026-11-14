@@ -166,6 +166,7 @@ const findP=id=>{for(const k in PR){const p=PR[k].byId(id);if(p)return p;}return
 const saveNotes=()=>put(K1,DB1);
 function refsOf(n){const p=n.pid&&findP(n.pid);return n.refs||(p&&p.refs)||[];}
 function hasNote(pid){return DB1.notes.some(n=>n.pid===pid);}
+function isSaved(pid){const n=DB1.notes.find(x=>x.pid===pid);return !!(n&&(n.why==='added'||n.saved));}/* 2026-11-14: a missed question can also be saved; it stays in Notes after it's fixed */
 function addNote(p,why){if(hasNote(p.id))return false;const pr=PR[p.pr];DB1.notes.push({id:'n'+Date.now()+Math.random().toString(36).slice(2,6),pid:p.id,practice:pr.name,refs:p.refs||[],sc:pr.SCS[p.si].title,title:p.concept,key:p.note,explain:p.explain,q:p.q,why,mine:'',at:Date.now()});saveNotes();return true;}
 
 // ---- drag-and-drop working state (not saved until submitted)
@@ -186,7 +187,7 @@ function renderQuiz(k){
     if(p.si!==lastSi){lastSi=p.si;const sc=pr.SCS[p.si];h+=`<div class="card setup"><div class="qn">Scenario ${p.si+1} of ${pr.SCS.length}</div><h2>${esc(sc.title)}</h2><div>${sc.setup}</div></div>`;}
     h+=`<div class="card" id="c-${id}"><div class="qn">Question ${qi+1} of ${ids.length}</div><div class="q">${p.q}</div>`;
     if(p.type==='match') h+=matchHTML(p,att,a); else h+=multiHTML(p,att,a);
-    if(a){h+=`<div class="fb"><div class="v ${a.ok?'ok':'no'}"><span class="pts">${gotPts(p,a)} / ${maxPts(p)} ${maxPts(p)===1?'point':'points'}</span> ${a.ok?'Correct':'Not quite'}${a.ok?'':' · added to your notes'}</div><div>${p.explain}</div><div class="key"><b>Key idea:</b> ${p.note}</div>${p.refs&&p.refs.length?`<div class="refs">Lecture: ${esc(refList(p.refs))}</div>`:''}<div class="row">${hasNote(id)?`<button disabled>In your notes ✓</button>`:`<button data-add="${id}">Add to notes</button>`}</div></div>`;}
+    if(a){h+=`<div class="fb"><div class="v ${a.ok?'ok':'no'}"><span class="pts">${gotPts(p,a)} / ${maxPts(p)} ${maxPts(p)===1?'point':'points'}</span> ${a.ok?'Correct':'Not quite'}${a.ok?'':' · added to your notes'}</div><div>${p.explain}</div><div class="key"><b>Key idea:</b> ${p.note}</div>${p.refs&&p.refs.length?`<div class="refs">Lecture: ${esc(refList(p.refs))}</div>`:''}<div class="row">${isSaved(id)?`<button disabled>★ Saved to notes</button>`:`<button data-add="${id}">☆ Save to notes</button>`}</div></div>`;}
     h+=`</div>`;});
   if(done===ids.length){const missed=ids.filter(id=>!att.ans[id].ok),D=pr.db();
     h+=`<div class="card done"><h2 style="margin:0 0 6px;font-size:1.6rem">Final score: ${T.got} / ${T.max} points (${pct}%)</h2><p style="margin:0">${missed.length?`You missed ${missed.length}. ${missed.length===1?'It is':'They are'} in your notes.`:'All correct. Nice work.'}</p><div class="row"><button class="primary" data-retest="all" data-pr="${k}">Retest all questions</button>${missed.length?`<button data-retest="missed" data-pr="${k}">Retest missed only (${missed.length})</button>`:''}<button data-goto="notes">Review notes</button></div>`;
@@ -241,7 +242,7 @@ document.addEventListener('click',e=>{
       const ok=same(picks,p.answer);pr.cur().ans[id]={picks,ok};if(!ok)addNote(p,'missed');}
     pr.save();render();document.getElementById('c-'+id).scrollIntoView({block:'nearest'});}
   else if(b.dataset.clear){delete WIP[b.dataset.clear];SEL=null;renderQuiz(findP(b.dataset.clear).pr);}
-  else if(b.dataset.add){if(addNote(findP(b.dataset.add),'added'))toast('Added to notes');render();document.getElementById('c-'+b.dataset.add).scrollIntoView({block:'nearest'});}
+  else if(b.dataset.add){const ex=DB1.notes.find(n=>n.pid===b.dataset.add);if(ex){ex.saved=true;saveNotes();toast('Saved to notes');}else if(addNote(findP(b.dataset.add),'added'))toast('Saved to notes');render();document.getElementById('c-'+b.dataset.add).scrollIntoView({block:'nearest'});}
   else if(b.dataset.retest){const pr=PR[b.dataset.pr],att=pr.cur(),ids=b.dataset.retest==='missed'?att.ids.filter(id=>!att.ans[id].ok):pr.P.map(p=>p.id);pr.newAttempt(ids,b.dataset.retest);render();window.scrollTo(0,0);toast('New attempt started. Options are reshuffled.');}
   else if(b.dataset.goto){tab(b.dataset.goto);}
   else if(b.dataset.filter){renderNotes.f=b.dataset.filter;renderNotes();}
