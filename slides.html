@@ -92,6 +92,7 @@ button.fcb.primary{background:var(--pen);color:var(--penink)}
 </script>
 <style>/*EMBED-css*/html.embed .sitebar,html.embed .top,html.embed .aidisc{display:none!important}html.embed body{background:transparent!important;min-height:0!important}html.embed .wrap{padding:0 0 12px!important;max-width:none!important}</style>
 <style>/*SS-nosearch*/html.embed #q{display:none!important}</style>
+<style>/*FCPAN*/.fcpan{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px 12px;margin:0 0 12px}.fcpan .fcrow{display:flex;gap:8px;align-items:stretch}.fcpan .fcb.primary{flex:1 1 auto;min-width:0;font-size:1rem;padding:10px 12px;border-radius:12px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fcpan.has-redo .fcb.primary{font-size:.9rem;padding:10px 8px}.fcpan .fcb.redo{flex:0 0 auto;border-color:var(--warn);color:var(--warn);background:transparent;border-radius:12px;font-size:.88rem;padding:8px 10px;white-space:nowrap}.fcseg{display:flex;height:8px;border-radius:6px;overflow:hidden;background:var(--muted);margin-top:10px}.fcseg i{display:block}.fcseg .k{background:var(--ok)}.fcseg .r{background:var(--warn)}.fcleg{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;font-size:.8rem;color:var(--ink2);margin-top:6px}.fcleg b{color:var(--ink);font-weight:600}.fcleg .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:0}.fcleg .dot.k{background:var(--ok)}.fcleg .dot.r{background:var(--warn)}.fcleg .dot.u{background:var(--line)}.fcleg .pct{margin-left:auto;font-weight:600;color:var(--ink)}.fcleg .pct.all{color:var(--ok)}</style>
 </head>
 <body>
 <div class="wrap">
@@ -184,7 +185,10 @@ function lecOf(id){ const lec=id.split('#')[0]; for(const M of MODS) for(const L
 function sumOf(id){ const [M,L]=lecOf(id); return L?L.slides.find(s=>sid(L,s)===id):null; }
 function fcStats(ids){ const k=ids.filter(i=>fst(i)==='known').length, m=ids.filter(i=>fst(i)==='missed').length; return {n:ids.length,k,m,u:ids.length-k-m}; }
 function fcBar(ids,scope,label){ const t=fcStats(ids); if(!t.n) return '';
-  return `<div class="fcbar"><button class="fcb primary" data-deck="${scope}">🃏 Flashcards: ${label} (${t.n})</button>${t.m?`<button class="fcb" data-deck="${scope}" data-miss="1">Redo missed (${t.m})</button>`:''}<span class="stat">${t.k} known · ${t.m} to redo · ${t.u} new</span></div>`; }
+  /*FCPAN*/const pk=100*t.k/t.n, pm=100*t.m/t.n;
+  return `<div class="fcpan${t.m?' has-redo':''}"><div class="fcrow"><button class="fcb primary" data-deck="${scope}">🃏 Flashcards: ${label} (${t.n})</button>${t.m?`<button class="fcb redo" data-deck="${scope}" data-miss="1">Redo (${t.m})</button>`:''}</div>`+
+   `<div class="fcseg" role="img" aria-label="${t.k} known, ${t.m} to redo, ${t.u} remaining"><i class="k" style="width:${pk}%"></i><i class="r" style="width:${pm}%"></i></div>`+
+   `<div class="fcleg"><span><i class="dot k"></i><b>${t.k}</b> known</span><span><i class="dot r"></i><b>${t.m}</b> to redo</span><span><i class="dot u"></i><b>${t.u}</b> remaining</span><span class="pct${t.k===t.n?' all':''}">${t.k===t.n?'All known ✓':Math.round(pk)+'%'}</span></div></div>`; }
 function order(id,n){ let h=2166136261; for(const ch of id+'#'+n) { h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } const r=rng(h>>>0); return shuffle([...Array(FCM[id].o.length).keys()],r); }
 const ORDC={};/*FC-ordfix*/
 function fcHTML(id,st,where){ const c=FCM[id], [M,L]=lecOf(id), sm=sumOf(id); const okey=where+':'+id;
