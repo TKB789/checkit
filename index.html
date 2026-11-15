@@ -411,6 +411,9 @@ nav.tabs .tabnote{grid-column:1/-1;margin:3px 2px 0;padding:7px 4px 2px;border-t
 <style>/*SMART*/.pxm .smart .smcount{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 10px;font-size:.92rem}.pxm .smart .smcount b{font-size:1.05rem}.pxm .smart .smbtns{margin-top:8px}.pxm .smart .smbtns .btn{flex:1;min-width:62px;padding-left:6px;padding-right:6px}.pxm .smart .smnote{margin:6px 0 0}.pxm .smcur{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.pxm .smcur ol{margin:6px 0;padding-left:20px}.pxm .smcur li{margin:3px 0}.pxm .smwhy{display:inline-block;font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-left:4px;color:var(--ink-2)}</style>
 <style>/*GBAR*/.greader-bar{flex-wrap:wrap}.greader-bar #gtoc{order:3;flex:1 1 100%;min-width:0}</style>
 <style>/*GFILT*/.gfilt{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.gfilt .chip{border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:999px;padding:7px 12px;font:600 .88rem var(--sans);cursor:pointer;min-height:36px}.gfilt .chip span{font-weight:500;opacity:.75;margin-left:2px}.gfilt .chip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}</style>
+<style>/*EXAM-END*/.pxm .autoend,.pxm .pxwarn{margin:12px 0 4px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--muted-bg)}.pxm .pxwarn{border-color:var(--warn,#d9822b)}</style>
+<style>/*PROG2*/.pfilt{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}.pfilt .chip{border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:999px;padding:7px 14px;font:600 .88rem var(--sans);cursor:pointer;min-height:36px}.pfilt .chip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}.dacts.dslots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.dslots .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:76px;padding:6px 4px;text-align:center;line-height:1.2;width:100%}.dslots .btn b{font-size:.86rem}.dslots .btn span{font-size:.74rem;font-weight:500;opacity:.85}.dslots .btn[disabled]{opacity:.45}.rsel{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}.rsel label{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--card);font-size:.92rem}.rsel input{width:18px;height:18px}#preset .pxwarn,#main .pxwarn{margin:10px 0 0;padding:10px 12px;border-radius:10px;border:1px solid var(--warn,#d9822b);background:var(--muted-bg)}</style>
+<style>/*DESK-zoom*/@media (min-width:940px){html{zoom:1.25}}@media (min-width:1120px){html{zoom:1.5}}@media (min-width:1320px){html{zoom:1.75}}@media print{html{zoom:1!important}}</style>
 </head>
 <body>
 <div class="wrap">
@@ -641,11 +644,13 @@ function runHTML(att){ const R=runDef(view.run), rs=runStats(att,R.ids), tt=time
     <h2 style="margin:8px 0 2px">${esc(R.title)}</h2><p class="small" style="margin:0" id="runprog">${rs.answered}/${rs.n} answered · ${rs.pts}/${rs.amax} points so far · ${rs.tmax} points in all · ${R.min} minutes allowed</p>
     ${list.length>1?`<div class="jump">${list.map(({s,si},i)=>{ const sts=PARTS.filter(p=>p.sid===s.id).map(p=>partState(att,p)); const cls=sts.some(x=>x==='miss')?'miss':sts.every(x=>x==='done')?'done':sts.some(x=>x==='done')?'part':sts.some(x=>x==='skip')?'skip':''; return `<button class="${cls} ${si===view.si?'cur':''}" data-si="${si}" title="${esc(s.title)}">${i+1}</button>`; }).join('')}</div>`:''}</section>`;
   if(fin){ const used=T.end-T.start, wrong=rs.ps.filter(p=>att.ans[p.id]&&!att.ans[p.id].ok);
-    h+=`<section class="panel"><h2>Score: ${rs.pts} / ${rs.amax} points (${rs.pct===null?'–':rs.pct+'%'})</h2><p class="small" style="margin:0 0 4px">${rs.answered} of ${rs.n} questions answered (${rs.tmax} points possible in all; unanswered questions don't count) · ${rs.ok} fully right.</p><p class="small">Time used ${fmtT(used)} of ${R.min}:00${used>R.min*60000?' (over time)':''}. ${wrong.length?`Missed: ${wrong.map(p=>esc(EXAM[p.si].title)+' '+p.letter.toUpperCase()).join(', ')} (saved in My notes).`:'Nothing missed.'}</p><div class="row"><button class="btn" data-retake="${view.run.kind}:${view.run.kind==='set'?view.run.k:view.run.si}">Retake</button><button class="btn ghost" id="pxhome2">Back to all sets &amp; scenarios</button></div></section>`; }
+    h+=`<section class="panel"><h2>Score: ${rs.pts} / ${rs.amax} points (${rs.pct===null?'–':rs.pct+'%'})</h2><p class="small" style="margin:0 0 4px">${rs.answered} of ${rs.n} questions answered (${rs.tmax} points possible in all; unanswered questions don't count) · ${rs.ok} fully right.</p><p class="small">Time used ${fmtT(used)} of ${R.min}:00${used>R.min*60000?' (over time)':''}. ${wrong.length?`Missed: ${wrong.map(p=>esc(EXAM[p.si].title)+' '+p.letter.toUpperCase()).join(', ')} (saved in Notes).`:'Nothing missed.'}</p><div class="row"><button class="btn" data-retake="${view.run.kind}:${view.run.kind==='set'?view.run.k:view.run.si}">Retake</button><button class="btn ghost" id="pxhome2">Back to all sets &amp; scenarios</button></div></section>`; }
   const s=EXAM[view.si], ps=PARTS.filter(p=>p.sid===s.id);
   h+=`<section class="panel" id="pxscen"><p class="small" style="margin:0">${list.length>1?`Scenario ${pos+1} of ${list.length}`:'Scenario'}</p><h2>${esc(s.title)}</h2><div class="setup">${s.setup}</div>`;
   ps.forEach(p=>{ h+=partHTML(att,p); });
-  h+=`<div class="navrow"><button class="btn quiet" id="pxprev" ${pos<=0?'disabled':''}>← Previous</button>${fin?'':`<button class="btn quiet" id="pxfinish">Finish${view.run.kind!=='scen'?' set':''}</button>`}<button class="btn" id="pxnext" ${pos>=list.length-1?'disabled':''}>Next →</button></div></section>`;
+  /*EXAM-END*/const nsi=view.run.kind==='scen'&&view.si+1<EXAM.length?view.si+1:null;
+  if(fin&&view.justEnded) h+=`<div class="autoend" id="pxautoend"><b>Every question is answered or skipped.</b> The exam ended and the timer stopped.<div class="row" style="margin-top:8px"><button class="btn" id="pxsee">See score</button>${nsi!==null?`<button class="btn quiet" data-nextscen="${nsi}">Next scenario →</button>`:''}</div></div>`;
+  h+=`<div class="navrow"><button class="btn quiet" id="pxprev" ${pos<=0?'disabled':''}>← Previous</button>${fin?'':`<button class="btn quiet" id="pxfinish">End exam</button>`}${view.run.kind==='scen'?(nsi!==null?`<button class="btn" data-nextscen="${nsi}">Next scenario →</button>`:''):`<button class="btn" id="pxnext" ${pos>=list.length-1?'disabled':''}>Next →</button>`}</div><div id="pxwarn"></div></section>`;
   return {h,list,pos}; }
 function runBanner(att){ if(!view.run) return; const R=runDef(view.run), rs=runStats(att,R.ids), el=$('#runprog'); if(el) el.textContent=`${rs.answered}/${rs.n} answered · ${rs.pts}/${rs.amax} points so far · ${rs.tmax} points in all · ${R.min} minutes allowed`; }
 function renderExam(){
@@ -661,9 +666,13 @@ function renderExam(){
   const home=()=>{ view.run=null; renderExam(); window.scrollTo(0,0); }; $('#pxhome').onclick=home; if($('#pxhome2')) $('#pxhome2').onclick=home;
   document.querySelectorAll('.pxm .jump button').forEach(b=>b.onclick=()=>{view.si=+b.dataset.si; renderExam(); scrollToEl($('#pxscen'));});
   const go=d=>{ const t=list[pos+d]; if(t){ view.si=t.si; renderExam(); scrollToEl($('#pxscen')); } };
-  $('#pxprev').onclick=()=>go(-1); $('#pxnext').onclick=()=>go(1);
-  if($('#pxfinish')) $('#pxfinish').onclick=()=>{ const rs=runStats(att,R.ids); if(rs.answered<rs.n&&!confirm(`${rs.n-rs.answered} question(s) not answered yet. Finish anyway? Unanswered questions count as not attempted.`)) return;
-    const T=DB.timers[R.key]||{start:Date.now()}; T.end=Date.now(); DB.timers[R.key]=T; DB.runs=DB.runs||[]; DB.runs.push({attempt:att.n,title:R.title,ok:rs.ok,answered:rs.answered,n:rs.n,pts:rs.pts,amax:rs.amax,tmax:rs.tmax,ms:T.end-T.start,min:R.min,at:T.end}); save(); renderExam(); window.scrollTo(0,0); };
+  $('#pxprev').onclick=()=>go(-1); if($('#pxnext')) $('#pxnext').onclick=()=>go(1);
+  const doEnd=()=>{ endRun(att,R); view.justEnded=false; renderExam(); window.scrollTo(0,0); };
+  if($('#pxfinish')) $('#pxfinish').onclick=()=>{ const left=leftIn(att,R); if(!left) return doEnd();
+    const w=$('#pxwarn'); w.innerHTML=`<div class="pxwarn" role="alert"><b>${left} question${left>1?'s haven’t':' hasn’t'} been submitted.</b> Unsubmitted questions count as not attempted.<div class="row" style="margin-top:8px"><button class="btn" id="pxendany">End exam anyway</button><button class="btn quiet" id="pxkeep">Keep going</button></div></div>`;
+    $('#pxendany').onclick=doEnd; $('#pxkeep').onclick=()=>{ w.innerHTML=''; }; w.scrollIntoView({block:'nearest'}); };
+  if($('#pxsee')) $('#pxsee').onclick=()=>{ view.justEnded=false; renderExam(); window.scrollTo(0,0); };
+  document.querySelectorAll('.pxm [data-nextscen]').forEach(b=>b.onclick=()=>{ const si=+b.dataset.nextscen, k='scen'+EXAM[si].id; view.justEnded=false; openRun('scen:'+si,!(DB.timers||{})[k]); });
   bindParts(att);
 }
 // ---- smart review set (Part N #2)
@@ -714,7 +723,13 @@ function smartHTML(att){ const c=smartCounts(), S=DB.smart, R=S&&S.ids.length?ru
       ${live?'<p class="small" style="margin:6px 0 0">Starting a new set replaces this one; answers you already gave stay in your history.</p>':''}</div>`; }
   return h+'</section>'; }
 document.addEventListener('click',e=>{ const b=e.target.closest('.pxm [data-smart]'); if(!b||!M||!M.contains(b)) return; startSmart(+b.dataset.smart); });
-function openRun(spec,fresh){ const [kind,x]=spec.split(':'); view.run=kind==='smart'?{kind}:kind==='set'?{kind,k:+x}:{kind,si:+x}; const R=runDef(view.run); view.si=EXAM.findIndex(s=>s.id===R.ids[0]); startTimer(R,fresh); renderExam(); window.scrollTo(0,0); }
+// ---- end a run: by hand (End exam) or by itself when nothing is left
+function leftIn(att,R){ return PARTS.filter(p=>R.ids.includes(p.sid)&&!att.ans[p.id]&&!att.skip[p.id]).length; }
+function endRun(att,R){ const rs=runStats(att,R.ids), T=(DB.timers||{})[R.key]||{start:Date.now()}; if(T.end) return; T.end=Date.now(); DB.timers=DB.timers||{}; DB.timers[R.key]=T;
+  DB.runs=DB.runs||[]; DB.runs.push({attempt:att.n,title:R.title,ok:rs.ok,answered:rs.answered,n:rs.n,pts:rs.pts,amax:rs.amax,tmax:rs.tmax,ms:T.end-T.start,min:R.min,at:T.end}); save(); }
+function autoEnd(att){ if(!view.run) return; const R=runDef(view.run), T=(DB.timers||{})[R.key]; if(!T||T.end||leftIn(att,R)) return;
+  endRun(att,R); view.justEnded=true; const y=window.scrollY; renderExam(); window.scrollTo(0,y); const n=$('#pxautoend'); if(n) n.scrollIntoView({block:'nearest',behavior:'smooth'}); }
+function openRun(spec,fresh){ view.justEnded=false; const [kind,x]=spec.split(':'); view.run=kind==='smart'?{kind}:kind==='set'?{kind,k:+x}:{kind,si:+x}; const R=runDef(view.run); view.si=EXAM.findIndex(s=>s.id===R.ids[0]); startTimer(R,fresh); renderExam(); window.scrollTo(0,0); }
 document.addEventListener('click',e=>{ const b=e.target.closest('.pxm [data-run], .pxm [data-retake]'); if(!b||!M||!M.contains(b)) return; const att=cur();
   if(b.dataset.run) return openRun(b.dataset.run,!!b.dataset.fresh);
   const spec=b.dataset.retake, [kind,x]=spec.split(':'), R=runDef(kind==='smart'?{kind}:kind==='set'?{kind,k:+x}:{kind,si:+x});
@@ -774,8 +789,8 @@ function bindParts(att){
     z.ondragover=e=>{ e.preventDefault(); z.classList.add('over'); }; z.ondragleave=()=>z.classList.remove('over');
     z.ondrop=e=>{ e.preventDefault(); z.classList.remove('over'); const [pid,i]=(e.dataTransfer.getData('text/plain')||'').split('|'); if(pid===p.id) place(p,+i,c); }; });
   document.querySelectorAll('.pxm [data-submit]').forEach(b=>b.onclick=()=>{ const p=PBYID[b.dataset.submit]; const d=draft[p.id]||[]; if(!d.length) return; if(p.type==='match'&&d.some(c=>c<0)) return;
-    att.ans[p.id]={picks:d,ok:isCorrect(p,d),at:Date.now(),over:curOver()}; delete att.skip[p.id]; save(); rerenderTop(att); rerenderPart(att,p); });
-  document.querySelectorAll('.pxm [data-skip]').forEach(b=>b.onclick=()=>{ const p=PBYID[b.dataset.skip]; att.skip[p.id]=1; save(); rerenderTop(att); rerenderPart(att,p); });
+    att.ans[p.id]={picks:d,ok:isCorrect(p,d),at:Date.now(),over:curOver()}; delete att.skip[p.id]; save(); rerenderTop(att); rerenderPart(att,p); autoEnd(att); });
+  document.querySelectorAll('.pxm [data-skip]').forEach(b=>b.onclick=()=>{ const p=PBYID[b.dataset.skip]; att.skip[p.id]=1; save(); rerenderTop(att); rerenderPart(att,p); autoEnd(att); });
   document.querySelectorAll('.pxm [data-unskip]').forEach(b=>b.onclick=()=>{ const p=PBYID[b.dataset.unskip]; delete att.skip[p.id]; save(); rerenderTop(att); rerenderPart(att,p); });
 }
 function rerenderPart(att,p){ const el=document.getElementById('p-'+p.id); if(!el) return; const y=window.scrollY; el.outerHTML=partHTML(att,p); bindParts(att); window.scrollTo(0,y); }
@@ -847,6 +862,7 @@ return {
     return out; },
   openNotes(){ sub='exam'; },
   unpin(pid){ delete DB.pins[pid]; save(); },
+  resetProgress(){ DB.attempts=[]; DB.timers={}; DB.runs=[]; DB.prior={}; delete DB.smart; delete DB.archived; view={si:0,run:null}; draft={}; newAttempt(); save(); },
   mergeNotes(o){ let n=0; if(!o||typeof o!=='object') return 0;
     (Array.isArray(o.custom)?o.custom:[]).forEach(c=>{ if(c&&c.id&&typeof c.text==='string'&&!DB.custom.some(x=>x.id===c.id)){ DB.custom.push({id:String(c.id),text:c.text,mod:String(c.mod||'MIX'),ref:String(c.ref||''),at:+c.at||Date.now()}); n++; } });
     Object.entries(o.pins&&typeof o.pins==='object'?o.pins:{}).forEach(([pid,t])=>{ if(PBYID[pid]&&!DB.pins[pid]){ DB.pins[pid]=+t||Date.now(); n++; } });
@@ -880,6 +896,7 @@ window.PX={
   allNotes(){ return INST.flatMap((x,ei)=>x.notes().map(n=>Object.assign(n,{ei,src:x.label}))); },/*NH-px*/
   openNotes(ei){ setAct(ei); INST[ei].openNotes(); const b=document.getElementById('tab-notes'); if(b) b.click(); },
   unpin(ei,pid){ INST[ei].unpin(pid); },
+  resetProgress(ei){ INST[ei].resetProgress(); },
   mergeNotes(ei,o){ return INST[ei].mergeNotes(o); },
   keys:INST.map(x=>x.key), modname:MODNAME, modorder:MODORDER
 };
@@ -6506,12 +6523,12 @@ function dashPanel(){
   pick.forEach(x=>{
     const why=[]; if(x.pmiss) why.push(`${x.pmiss} practice part${x.pmiss>1?'s':''} missed`); if(x.fx) why.push(`${x.fx} flashcard${x.fx>1?'s':''} to redo`); if(x.rv) why.push(`${x.rv} ELI5 concept${x.rv>1?'s':''} to retry`);
     if(!why.length) why.push(x.touched?`${Math.round(100*x.comfort)}% comfortable so far`:'not started yet');
-    const acts=[]; const sc=firstScen(null,x.M);
-    if(sc&&(x.pmiss||x.pnew)) acts.push([`Practice questions (${x.pnew} new${x.pmiss?`, ${x.pmiss} missed`:''})`,`scen:${sc.ei}:${sc.si}`]);
-    if(x.fx||x.fnew) acts.push([`Flashcards (${x.fx?x.fx+' to redo, ':''}${x.fnew} new)`,`fc:${x.m}`]);
-    if(x.rv||x.rnew) acts.push([`Explain it (${x.rnew+x.rv} to do)`,`rc:${x.m}`]);
-    const first=x.pmiss?0:(x.fx?acts.findIndex(a=>a[1].startsWith('fc')):0);
-    h+=`<div class="dcard"><div class="dtop"><b>${esc(MODS[x.m]||x.m)}</b><span class="small">${why.join(' · ')}</span></div><div class="bar"><div class="t"><i class="m" style="width:${100*x.comfort}%"></i></div></div><div class="dacts">${acts.map((a,i)=>`<button class="btn ${i===Math.max(0,first)?'primary':'quiet'}" data-go="${a[1]}">${a[0]}</button>`).join('')}</div></div>`;
+    /*PROG2*/const sc=firstScen(null,x.M);
+    const acts=[['Practice exam',sc&&(x.pmiss||x.pnew)?[x.pmiss?`${x.pmiss} missed`:'',x.pnew?`${x.pnew} new`:''].filter(Boolean).join(' · '):'',sc?`scen:${sc.ei}:${sc.si}`:''],
+      ['Flashcards',x.fx||x.fnew?[x.fx?`${x.fx} to redo`:'',x.fnew?`${x.fnew} new`:''].filter(Boolean).join(' · '):'',`fc:${x.m}`],
+      ['ELI5',x.rv||x.rnew?`${x.rnew+x.rv} to do`:'',`rc:${x.m}`]];
+    const first=x.pmiss?0:x.fx?1:x.rv?2:acts.findIndex(a=>a[1]);
+    h+=`<div class="dcard"><div class="dtop"><b>${esc(MODS[x.m]||x.m)}</b><span class="small">${why.join(' · ')}</span></div><div class="bar"><div class="t"><i class="m" style="width:${100*x.comfort}%"></i></div></div><div class="dacts dslots">${acts.map((a,i)=>a[1]?`<button class="btn ${i===first?'primary':'quiet'}" data-go="${a[2]}"><b>${a[0]}</b><span>${a[1]}</span></button>`:`<button class="btn quiet" disabled><b>${a[0]}</b><span>${a[2]?'all done':'none here'}</span></button>`).join('')}</div></div>`;
   });
   return h+`</section>`;
 }
@@ -6543,22 +6560,40 @@ function renderProgress(){
   const rs=RC.filter(rOk).length, rr=RC.filter(rP).length;
   const overall=Math.round(100*(ACT.filter(isM).length+rs+FCS.k)/((ACT.length+RC.length+FCT)||1));
   const dq=MQ.filter(q=>q.disc), dr=RC.filter(r=>r.disc);
-  let html=dashPanel()+`<section class="panel"><h2>What you're comfortable with</h2>
+  const PF=window.PROGF||'all';
+  let html=`<div class="pfilt" role="group" aria-label="Show">${[['all','All'],['mid','Midterms'],['fc','Flashcards'],['eli5','ELI5']].map(([k,l])=>`<button class="chip" data-pf="${k}" aria-pressed="${PF===k}">${l}</button>`).join('')}</div>`+dashPanel()+`<section class="panel"><h2>What you're comfortable with</h2>
    <p class="big">${overall}%</p><p class="small">of all ${FCT} slide flashcards and ${RC.length} ELI5 concepts combined (the practice midterm is graded separately below)</p>
-   <div class="bars">${PX.summaries().map((P,ei)=>bar(P.label+' practice (attempt '+P.attempt+'): correct',P.correct,P.answered-P.correct,P.total,'mid:'+ei)).join('')}${bar('Slide flashcards known',FCS.k,FCS.x,FCT,'ss')}${bar('Explain-it concepts solid',rs,rr,RC.length,'recall')}${bar("Discussion topics",dq.filter(isM).length+dr.filter(rOk).length,dq.filter(isP).length+dr.filter(rP).length,dq.length+dr.length,'recall')}</div>
+   <div class="bars">${PX.summaries().map((P,ei)=>bar(P.label+' practice (attempt '+P.attempt+'): correct',P.correct,P.answered-P.correct,P.total,'mid:'+ei)).join('')}${bar('Slide flashcards known',FCS.k,FCS.x,FCT,'ss')}${bar('ELI5 concepts solid',rs,rr,RC.length,'recall')}${bar("Discussion topics",dq.filter(isM).length+dr.filter(rOk).length,dq.filter(isP).length+dr.filter(rP).length,dq.length+dr.length,'recall')}</div>
    <div class="legend"><span style="--c:var(--ok)">Comfortable</span><span style="--c:var(--warn)">In progress (missed questions or missed ELI5 points)</span></div></section>
-   <section class="panel"><h2>By module</h2><p class="small" style="margin-top:0">Slide flashcards plus ELI5 concepts, grouped by module.</p><div class="bars">`;
+   <section class="panel" data-ps="fc eli5" id="pbymod"><h2>By module</h2><p class="small" style="margin-top:0">Slide flashcards plus ELI5 concepts, grouped by module.</p><div class="bars">`;
   [...MOD_KEYS.filter(k=>/^m\d+$/.test(k)),'m10','m11','m12','m13','m14','m15','m16'].forEach(m=>{
     const qq=ACT.filter(q=>q.m===m), rr2=RC.filter(r=>r.m===m), f=FCS.by[m]||{k:0,x:0}, fn=FCN[m]||0; if(!qq.length&&!rr2.length&&!fn) return;
     html+=bar(MODS[m],qq.filter(isM).length+rr2.filter(rOk).length+f.k,qq.filter(isP).length+rr2.filter(rP).length+f.x,qq.length+rr2.length+fn,'mod:'+m);/*FCI-bymod*/
   });
   html+=`</div><p class="small" style="margin-bottom:0">Weakest modules first: ${weakest()}</p></section>
-   ${PX.summaries().map((P,ei)=>`<section class="panel"><h2>${esc(P.label)} practice</h2><p class="small" style="margin-top:0">Attempt ${P.attempt}: ${P.answered} of ${P.total} questions answered, grade <b>${P.pct===null?'–':P.pct+'%'}</b> (correct ÷ answered)${P.best.length>1?` · earlier attempts: ${P.best.slice(0,-1).map(x=>x+'%').join(', ')}`:''}${P.open?` · ${P.open} still missed`:''}.</p><div class="cov">${P.byMod.map(x=>`<div class="go" data-go="pm:${ei}:${x.m}" role="button" tabindex="0"><b>${esc(x.name)}</b>${x.answered?`${x.pct}% (${x.correct}/${x.answered} answered)`:`not started`} · ${x.total} questions<i style="--w:${x.answered?Math.round(100*x.correct/x.total):0}%"></i></div>`).join('')}</div></section>`).join('')}
-   <section class="panel"><h2>Slide flashcards</h2><p class="small" style="margin-top:0">${FCS.k} of ${FCT} known, ${FCS.x} to redo. One card per slide summary; practice them on the <a href="#ss">Slide summaries</a> page (each deck and module has a Flashcards button).</p>
+   ${PX.summaries().map((P,ei)=>`<section class="panel" data-ps="mid"><h2>${esc(P.label)} practice</h2><p class="small" style="margin-top:0">Attempt ${P.attempt}: ${P.answered} of ${P.total} questions answered, grade <b>${P.pct===null?'–':P.pct+'%'}</b> (correct ÷ answered)${P.best.length>1?` · earlier attempts: ${P.best.slice(0,-1).map(x=>x+'%').join(', ')}`:''}${P.open?` · ${P.open} still missed`:''}.</p><div class="cov">${P.byMod.map(x=>`<div class="go" data-go="pm:${ei}:${x.m}" role="button" tabindex="0"><b>${esc(x.name)}</b>${x.answered?`${x.pct}% (${x.correct}/${x.answered} answered)`:`not started`} · ${x.total} questions<i style="--w:${x.answered?Math.round(100*x.correct/x.total):0}%"></i></div>`).join('')}</div></section>`).join('')}
+   <section class="panel" data-ps="fc"><h2>Slide flashcards</h2><p class="small" style="margin-top:0">${FCS.k} of ${FCT} known, ${FCS.x} to redo. One card per slide summary; practice them on the <a href="#ss">Slide summaries</a> page (each deck and module has a Flashcards button).</p>
    <div class="cov">${Object.keys(FCN).sort((a,b)=>+a.slice(1)-+b.slice(1)).map(m=>{const f=FCS.by[m]; return `<div class="go" data-go="fc:${m}" role="button" tabindex="0"><b>${esc(MODS[m]||m)}</b>${f.k}/${FCN[m]} known${f.x?` · ${f.x} to redo`:''}<i style="--w:${Math.round(100*f.k/FCN[m])}%"></i></div>`;}).join('')}</div></section>
-   <section class="panel"><h2>Start over</h2><p class="small" style="margin-top:0">Clears every saved answer and ELI5 result on this page.</p><button class="btn danger" id="reset">Reset all progress</button></section>`;
+   <section class="panel" data-ps="eli5"><h2>ELI5 concepts</h2><p class="small" style="margin-top:0">${rs} of ${RC.length} solid, ${rr} to retry. Tap a module to practice its concepts.</p>
+   <div class="cov">${[...new Set([...MOD_KEYS.filter(k=>/^m\d+$/.test(k)),'m10','m11','m12','m13','m14','m15','m16'])].map(m=>{ const q=RC.filter(r=>r.m===m); if(!q.length) return ''; const ok=q.filter(rOk).length, rv=q.filter(rP).length; return `<div class="go" data-go="rc:${m}" role="button" tabindex="0"><b>${esc(MODS[m]||m)}</b>${ok}/${q.length} solid${rv?` · ${rv} to retry`:''}<i style="--w:${Math.round(100*ok/q.length)}%"></i></div>`; }).join('')}</div></section>
+   <section class="panel" id="preset"><h2>Reset progress</h2><p class="small" style="margin-top:0">Pick what to clear. Your notes stay: saved questions, saved flashcards and everything you wrote.</p>
+   <div class="rsel">${[['mid0','Midterm 1 practice'],['mid1','Midterm 2 practice'],['fc','Flashcards'],['eli5','ELI5']].map(([k,l])=>`<label><input type="checkbox" value="${k}"> ${l}</label>`).join('')}</div>
+   <div class="row" style="margin-top:8px"><button class="btn danger" id="reset" disabled>Reset selected</button></div><div id="rask"></div></section>`;
   main.innerHTML=html; wireProgress();
-  $('#reset').onclick=()=>confirmDlg('Reset all progress? This can\'t be undone.','Reset everything',()=>{ st={v:1,updatedAt:0,q:{},r:{}}; save(); renderProgress(); });
+  const PF2=window.PROGF||'all', showSec=k=>{ main.querySelectorAll('[data-ps]').forEach(x=>x.hidden=!(k==='all'||x.dataset.ps.split(' ').includes(k))); };
+  showSec(PF2);
+  main.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{ window.PROGF=b.dataset.pf; main.querySelectorAll('[data-pf]').forEach(c=>c.setAttribute('aria-pressed',String(c===b))); showSec(b.dataset.pf);
+    const t=b.dataset.pf==='all'?main.querySelector('.pfilt'):main.querySelector('[data-ps]:not([hidden])'); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); });
+  const boxes=[...main.querySelectorAll('#preset input[type=checkbox]')], rb=$('#reset'), lab={mid0:'Midterm 1 practice',mid1:'Midterm 2 practice',fc:'Flashcards',eli5:'ELI5'};
+  boxes.forEach(x=>x.onchange=()=>{ rb.disabled=!boxes.some(y=>y.checked); $('#rask').innerHTML=''; });
+  rb.onclick=()=>{ const pick=boxes.filter(y=>y.checked).map(y=>y.value); if(!pick.length) return;
+    $('#rask').innerHTML=`<div class="pxwarn" role="alert"><b>Clear ${pick.map(k=>lab[k]).join(', ')}?</b> This can't be undone. Notes are kept.<div class="row" style="margin-top:8px"><button class="btn danger" id="rgo">Reset</button><button class="btn quiet" id="rno">Cancel</button></div></div>`;
+    $('#rno').onclick=()=>{ $('#rask').innerHTML=''; };
+    $('#rgo').onclick=()=>{ pick.forEach(k=>{
+        if(k==='mid0'||k==='mid1'){ try{ PX.resetProgress(+k.slice(3)); }catch(e){} }
+        else if(k==='fc'){ try{ const f=JSON.parse(localStorage.getItem('isye-fc-v1')||'null')||{}; f.c={}; localStorage.setItem('isye-fc-v1',JSON.stringify(f)); }catch(e){} }
+        else if(k==='eli5'){ st={v:1,updatedAt:0,q:{},r:{}}; save(); } });
+      renderProgress(); const p=$('#preset'); if(p){ p.insertAdjacentHTML('beforeend',`<p class="small" style="margin:8px 0 0">Cleared: ${pick.map(k=>lab[k]).join(', ')}.</p>`); p.scrollIntoView({block:'nearest'}); } }; };
 }
 function bar(label,c,p,t,go){ const pc=t?100*c/t:0, pp=t?100*p/t:0;
   return `<div class="bar${go?' go':''}"${go?` data-go="${go}" role="button" tabindex="0"`:''}><div class="lab"><span>${label}</span><span>${Math.round(pc)}% · ${c}/${t}</span></div><div class="t" role="img" aria-label="${label}: ${c} of ${t} comfortable"><i class="m" style="width:${pc}%"></i><i class="r" style="width:${pp}%"></i></div></div>`; }
@@ -6791,7 +6826,7 @@ return {render,migrate,searchItems,show};
   const theme=()=>document.documentElement.getAttribute('data-theme')||'';
   const send=()=>{ const f=fr(); if(f&&f.contentWindow) try{ f.contentWindow.postMessage({ssTheme:theme()},'*'); }catch(e){} };
   let pend=null;
-  const go=()=>{ const f=fr(); if(!pend||!f||Date.now()>pend.until) return; const y=Math.max(0,Math.round(f.getBoundingClientRect().top+window.scrollY+pend.off-8));
+  const go=()=>{ const f=fr(); if(!pend||!f||Date.now()>pend.until) return; const z=parseFloat(getComputedStyle(document.documentElement).zoom)||1; const y=Math.max(0,Math.round(f.getBoundingClientRect().top+window.scrollY+(pend.off-8)*z));
     window.scrollTo(0,y); const se=document.scrollingElement||document.documentElement; if(Math.abs(se.scrollTop-y)>2) se.scrollTop=y; };
   ['touchstart','wheel','keydown'].forEach(t=>addEventListener(t,()=>{ pend=null; },{passive:true}));
   addEventListener('message',e=>{ const f=fr(); if(!f||e.source!==f.contentWindow) return; const d=e.data||{};

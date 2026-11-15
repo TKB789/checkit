@@ -244,7 +244,7 @@ document.addEventListener('click',e=>{
   else if(b.dataset.clear){delete WIP[b.dataset.clear];SEL=null;renderQuiz(findP(b.dataset.clear).pr);}
   else if(b.dataset.add){const ex=DB1.notes.find(n=>n.pid===b.dataset.add);if(ex){ex.saved=true;saveNotes();toast('Saved to notes');}else if(addNote(findP(b.dataset.add),'added'))toast('Saved to notes');render();document.getElementById('c-'+b.dataset.add).scrollIntoView({block:'nearest'});}
   else if(b.dataset.retest){const pr=PR[b.dataset.pr],att=pr.cur(),ids=b.dataset.retest==='missed'?att.ids.filter(id=>!att.ans[id].ok):pr.P.map(p=>p.id);pr.newAttempt(ids,b.dataset.retest);render();window.scrollTo(0,0);toast('New attempt started. Options are reshuffled.');}
-  else if(b.dataset.goto){tab(b.dataset.goto);}
+  else if(b.dataset.goto){if(b.dataset.goto==='notes'){try{top.location.href=new URL('index.html#notes',location.href).href;}catch(e){location.href='index.html#notes';}}else tab(b.dataset.goto);}/* 2026-11-14: Review notes opens the main Notes tab */
   else if(b.dataset.filter){renderNotes.f=b.dataset.filter;renderNotes();}
   else if(b.dataset.del){DB1.notes=DB1.notes.filter(n=>n.id!==b.dataset.del);saveNotes();render();}
   else if(b.id==='addOwn'){const t=document.getElementById('newNote').value.trim();if(!t)return;DB1.notes.push({id:'n'+Date.now(),title:'My note',mine:t,at:Date.now()});saveNotes();render();toast('Note added');}
